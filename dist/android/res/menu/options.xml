@@ -1,0 +1,5 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/next_hand"
+          android:title="@string/next_hand" android:icon="@drawable/ic_menu_forward"></item>
+    <item android:title="Share" android:id="@+id/share" android:icon="@drawable/ic_menu_share"></item>
+</menu>
