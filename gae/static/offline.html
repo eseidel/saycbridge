@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html manifest="/bidder.appcache">
+<head>
+<title>Network Trouble</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<style>
+body {
+    width: 310px; /*Leaves just enought room for android scrollbars*/
+    margin: auto;
+    text-align: center;
+    font-size: 24px;
+}
+#logo {
+    margin-top: 20px;
+}
+#retry {
+    padding: 10px;
+    font-size: 48px;
+}
+</style>
+</head>
+<body>
+<img id="logo" src="/apple-touch-icon-114x114.png">
+<p>Sorry, the bridge practice bidder requires a network connection.</p>
+<button id="retry" onclick="window.location.reload(); return false;">retry</button>
+</body>
+</html>

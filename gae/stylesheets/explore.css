@@ -1,0 +1,49 @@
+#help table {
+    margin-top: 0px;
+    margin-left: 10px;
+}
+.explore_table {
+    min-width: 300px;
+    border-top: 1px solid gray;
+    margin-top: 5px;
+    padding-top: 5px;
+    float: left;
+}
+.explore_table td {
+    padding-left: 10px;
+    padding-right: 10px;
+}
+.explore_table tr:nth-child(even) { background-color: #CCF }
+.explore_table tr:nth-child(odd) { background-color: #FFC }
+.bid_button {
+    -webkit-appearance: square-button;
+    width: 50px;
+    height: 25px;
+    font-size: 15px;
+}
+#right_panel {
+    float: left;
+    text-align: left;
+    max-width: 400px;
+    margin-left: 20px;
+}
+#footer_links {
+    margin-top: 10px;
+    font-size: 24px;
+    text-align: center;
+}
+.priority {
+    text-align: center;
+}
+.term {
+    text-align: right;
+}
+.term:after {
+    content: ': ';
+}
+.definition {
+    padding-left: 10px;
+}
+#returntobidder {
+    display: block;
+}

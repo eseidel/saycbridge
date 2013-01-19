@@ -1,0 +1,57 @@
+#!/usr/bin/python
+
+import logging
+import unittest
+import sys
+import random
+
+from core.callhistory import CallHistory
+from kbb.interpreter import BidInterpreter
+from kbb.knowledge import Knowledge
+from core.callexplorer import CallExplorer
+
+
+_log = logging.getLogger(__name__)
+
+
+def configure_logging(is_verbose):
+    handler = logging.StreamHandler(sys.stderr)
+    formatter = logging.Formatter("%(levelname)-8s: %(message)s")
+    handler.setFormatter(formatter)
+
+    logger = logging.getLogger()
+    logger.addHandler(handler)
+    if is_verbose:
+        logger.setLevel(logging.NOTSET)
+
+
+def choose_call(explorer):
+    while True:
+        for call in explorer.possible_calls_over(history):
+            if random.random() > .5:
+                return call
+
+if __name__ == '__main__':
+    # Logging is a big hack.
+    args = sys.argv[1:]
+    is_verbose = '-v' in args
+    if is_verbose:
+        args.remove('-v')
+    configure_logging(is_verbose)
+
+    if args:
+        print "USAGE: fuzz-bids"
+        print
+        sys.exit(0)
+
+    explorer = CallExplorer()
+    interpreter = BidInterpreter()
+
+    while True:
+        history = CallHistory()
+        while True:
+            history.calls.append(choose_call(explorer))
+            interpreter.knowledge_from_history(history, loose_constraints=True)
+            if history.is_complete():
+                print history.calls_string()
+                break

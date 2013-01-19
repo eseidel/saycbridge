@@ -1,0 +1,416 @@
+/*body {
+    background-color: #999;
+    color: white;
+}*/
+
+.suit {
+    text-align: left;
+    /* white-space nowrap unfortunately causes the display to slightly overflow the android screen, causing scroll */
+    /* white-space: nowrap; */
+}
+
+.hand_stats {
+    font-family: sans-serif;
+    font-size: 9pt;
+    color: gray;
+}
+
+.card {
+    padding: 0px;
+    border: 1px solid black;
+    border-radius: 3px;
+    height: 40px;
+    width: 20px;
+    background-color: white;
+    margin: 0px;
+    font-weight: bold;
+}
+
+#double {
+    background: red;
+}
+
+#pass {
+    background: green;
+}
+
+#redouble{
+    background: blue;
+}
+
+.history th {
+    border-radius: 3px;
+}
+
+.history th.vulnerable {
+    background-color: red;
+}
+
+.history th.nonvulnerable {
+    background-color: green;
+}
+
+* {
+    font-family: Helvetica, sans-serif;
+}
+.clubs {
+    color: #191970;
+}
+.diamonds {
+    color: #FF4200;
+}
+.hearts {
+    color: red;
+}
+.spades {
+    color: black;
+}
+.hand {
+    display: inline-block;
+    margin: auto;
+    text-align: left;
+}
+.card {
+    display: inline-block;
+}
+.levelrow {
+    width: 100%;
+}
+.callcard {
+    border-top: 2px solid black;
+    border-left: 2px solid black;
+    border-right: 2px solid black;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+    height: 30px;
+    width: 20%;
+    margin: 1px;
+    color: black;
+    background-color: white;
+    font-size: 18px;
+    text-align: center;
+    line-height: 24px;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    cursor: pointer;
+    background: -webkit-linear-gradient(top, #ffffff 0%, #fdfdfd 100%);
+}
+.specialbids .callcard {
+    color: white;
+}
+#pass {
+    width: 208px;
+}
+.history {
+    margin-top: 3px;
+    width: 100%;
+    font-size: 18px;
+}
+.history td {
+    text-align: center;
+    width: 25%;
+    color: black;
+}
+.history th {
+    font-weight: bold;
+    margin-bottom: 3px;
+}
+.biddinghand .handstats {
+    display: inline-block;
+    margin-left: 25px;
+    text-align: right;
+    vertical-align: top;
+}
+.deal {
+    width: 100%;
+}
+.deal td {
+    width: 33%;
+}
+.position {
+    margin: auto;
+    display: inline-block;
+}
+.dealstats {
+    display: inline-block;
+}
+.dealstats .suitcount {
+    margin-left: 1ex;
+    margin-right: 3px;
+}
+.listhand .suitgroup .rank {
+    padding: 2.5px;
+    color: black;
+    /* I've played with making this use uniform spacing, doesn't look quite right: */
+/*    width: 20px;
+    text-align: center;
+    display: inline-block;
+*/
+}
+.listhand .suitgroup:before {
+    padding: 2.5px;
+}
+.listhand .suitgroup.clubs:before {
+    content: "\2663 ";
+}
+.listhand .suitgroup.diamonds:before {
+    content: "\2666 ";
+}
+.listhand .suitgroup.hearts:before {
+    content: "\2665 ";
+}
+.listhand .suitgroup.spades:before {
+    content: "\2660 ";
+}
+.positionlabels {
+    background-color: green;
+    border-radius: 15px;
+    margin: 10px;
+    padding: 1px;
+    padding-left: 3px;
+    padding-right: 2px;
+    width: 68px;
+    height: 60px;
+    font-size: 16px;
+    border-spacing: 0px;
+    text-decoration: bold;
+}
+.positionlabels td {
+    padding: 0px;
+    margin: 0px;
+    height: 24px;
+}
+.handstats {
+    font-size: 12px;
+    color: gray;
+}
+.highlighted {
+    background-color: #FFA;
+}
+.history td.highlighted {
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+}
+.helprow td {
+    background-color: #FFA;
+    border-bottom-left-radius: 5px;
+    border-bottom-right-radius: 5px;
+}
+.helprow .explore {
+    display: inline-block;
+    margin-top: 10px;
+}
+.button {
+    margin: auto;
+    border-radius: 10px;
+    text-decoration: none;
+    font-size: 34px;
+    border: 2px solid #555;
+    box-shadow: 0px 2px 2px #aaa;
+    padding-bottom: 3px;
+    margin-bottom: 7px;
+    cursor: pointer;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -o-user-select: none;
+    user-select: none;
+    color: #444;
+    background-color: white;
+    background: -webkit-linear-gradient(top, #ffffff 0%, #fdfdfd 100%);
+}
+.nexthand {
+    background: green;
+    border-radius: 10px;
+    color: white;
+}
+.suggestbid {
+    font-size: 18px;
+    min-height: 44px;
+    margin-bottom: 7px;
+}
+.bid {
+    display: inline-block;
+    width: 100%;
+    height: 40px;
+    line-height: 45px; /* Otherwise the spade vs. NT cells don't align properly. */
+}
+
+.dealselect {
+    color: #444;
+    font-size: 24px;
+}
+.dealselect select {
+    color: #444;
+    margin-top: 10px;
+    font-size: 24px;
+}
+
+.selected {
+    background-color: #ccF;
+    border-color: #99a;
+    box-shadow: none;
+}
+
+.disabled * {
+    color: #999;
+}
+
+.disabled {
+    visibility: hidden;
+    color: #999;
+    background-color: #CCC;
+    border-color: #aaa;
+}
+
+.statefulbidder table {
+    width: 100%;
+    border-spacing: 4px;
+}
+.bid {
+    font-size: 28px;
+    margin-bottom: 0px;
+}
+
+.playtable {
+    height: 310px;
+    background-color: green;
+    border-radius: 10px;
+    width: 100%;
+}
+.playtable td {
+    width: 33%;
+    min-height: 100px;
+}
+.playtable .handstats {
+    display: none;
+}
+.cardhand .suitgroup {
+    display: inline-block;
+}
+.cardhand .suitgroup:before {
+    content: none;
+}
+.cardhand .suitgroup .rank {
+    color: inherit;
+    padding: 0px;
+    padding-left: 3px;
+    letter-spacing: -1px; /* Make the 1 and 0 closer together */
+    border: 2px solid #555;
+    border-radius: 4px;
+    height: 35px;
+    width: 21px;
+    background-color: white;
+    margin: 0px;
+    margin-left: -8px;
+    font-weight: bold;
+    cursor: pointer;
+    display: inline-block;
+    overflow: hidden;
+    position: relative;
+    background: -webkit-linear-gradient(left, #ffffff 0%, #fdfdfd 100%);
+}
+.cardhand .suitgroup .rank:after {
+    position: relative;
+    padding: 0px;
+    top: -5px;
+    font-size: 18px;
+}
+.cardhand .suitgroup.clubs .rank:after {
+    content: "\A\00A0\2663";
+}
+.cardhand .suitgroup.diamonds .rank:after {
+    content: "\A\00A0\2666";
+}
+.cardhand .suitgroup.hearts .rank:after {
+    content: "\A\00A0\2665";
+}
+.cardhand .suitgroup.spades .rank:after {
+    content: "\A\00A0\2660";
+}
+.cardhand {
+    padding-left: 8px; /* Compensate for the -5px margin on .cardhand .suitgroup .rank */
+    zoom: 128%;
+    -moz-transform: scale(1.2);
+}
+
+.playtable .cardhand {
+    zoom: 75%;
+    -moz-transform: scale(.75);
+}
+
+.trick {
+    width: 100%;
+}
+.trick td {
+    width: 33%;
+}
+.tricklist {
+    width: 100%;
+}
+.debuginfo {
+    font-size: 12px;
+    margin-top: 10px;
+}
+.unittests {
+    margin-top: 10px;
+    margin-bottom: 10px;
+    white-space: pre;
+    display: block;
+    font-family: monospace;
+    text-align: left;
+}
+.tricklist {
+    border-collapse: collapse;
+}
+.tricklist:nth-child(even) {
+}
+.tricklist:nth-child(odd) {
+}
+.tricklist th, .tricklist td {
+    border: thin solid black;
+    padding: 0.3em;
+}
+.lead:after {
+    content: '*';
+}
+.winner {
+    text-decoration: underline;
+}
+
+.about {
+    margin-top: 10px;
+    font-size: 12px;
+    color: #555;
+    text-align: left;
+    padding: 20px;
+}
+
+hr {
+    visibility: hidden;
+}
+
+@media all and (orientation: portrait) {
+}
+
+@media all and (orientation: landscape) {
+}
+
+@media only screen and (device-width: 768px) {
+  /* General iPad layouts */
+}
+
+@media only screen and (min-device-width: 481px) and (max-device-width: 1024px) and (orientation:portrait) {
+  /* iPad portrait layouts only */
+  body {
+      zoom: 2.0;
+  }
+}
+
+@media only screen and (min-device-width: 481px) and (max-device-width: 1024px) and (orientation:landscape) {
+  /* iPad landscape layouts only */
+}
+
+@media only screen and (max-device-width: 480px) {
+    /* iPhone [portrait + landscape] */
+}

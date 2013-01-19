@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+.bidcard {
+    font-family: helvetica;
+    width: 500px;
+    position: relative;
+}
+.cardbody {
+    border-top-right-radius: 20px;
+    border-bottom-right-radius: 20px;
+    border: 4px solid black;
+    border-left: none;
+    position: absolute;
+    right: 0px;
+    width: 400px;
+    height: 200px;
+}
+.level {
+    font-weight: bold;
+}
+.clubs {
+    color: navy;
+}
+.hearts {
+    color: red;
+}
+.cardtab {
+    width: 100px;
+    height: 40px;
+    position: absolute;
+    border: 1px solid blue;
+    border-top-left-radius: 20px;
+    border-top-right-radius: 20px;
+    border: 4px solid black;
+    border-bottom: none;
+    left: 52px;
+    bottom: -252px;
+    -webkit-transform-origin: 0 0;
+    -webkit-transform: rotate(-90deg);
+}
+.cardtab .bidname {
+    position: absolute;
+    right: 0px;
+    width: 35px;
+    height: 35px;
+    font-size: 18px;
+    background: pink;
+    padding: 5px;
+    padding-left: 10px;
+    padding-bottom: 0px;
+    border-top-right-radius: 17px;
+}
+.cardtab .level {
+    display: inline;
+}
+.cardtab .strain {
+    display: inline;
+}
+.cardbody .bidname {
+        font-size: 75px;
+    position: absolute;
+    right: 0px;
+    width: 150px;
+    text-align: center;
+}
+</style>
+</head>
+<body>
+<div class='bidcard'>
+    <div class='cardtab'>
+        <div class='bidname'>
+            <div class='level'>2</div>
+            <div class='strain hearts'>&hearts;</div>
+        </div>
+    </div>
+    <div class='cardbody'>
+        <div class='bidname'>
+            <div class='level'>2</div>
+            <div class='strain hearts'>&hearts;</div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

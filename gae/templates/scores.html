@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Bridge Scores - SAYC Bridge</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="description" content="Practice bridge bidding using the Standard American Yellow Card (SAYC) convention system.">
+<meta http-equiv="X-UA-Compatible" content="chrome=1">
+<script src="/scripts/third_party/jquery-1.6.2.min.js"></script>
+<script src="/scripts/model.js"></script>
+<script src="/scripts/view.js"></script>
+<script src="/scripts/controller.js"></script>
+<script src="/scripts/scores.js"></script>
+<link rel="stylesheet" type="text/css" href="/stylesheets/hand.css" />
+<style>
+.contract {
+    margin-right: 10px;
+}
+.vulnerable {
+    text-align: center;
+}
+.nonvulnerable {
+    text-align: center;
+}
+.header {
+    text-align: center;
+    font-weight: bold;
+    text-decoration: underline;
+}
+.score {
+    text-align: center;
+    font-weight: bold;
+}
+body {
+    margin: auto;
+    width: 800px;
+}
+</style>
+{% include "analytics.html" %}
+</head>
+<body>
+{% include "chrome_frame.html" %}
+<div id="about" class="about">
+In bridge there are 35 possible contracts (7 * 5), which can be doubled or redoubled, and partnerships can make anywhere from 0-13 tricks.  This results in 7 (levels) * 5 (strains) * 3 (X, XX or neither) * 13 (tricks made) * 2 (vulnerability) * 2 (your partnership or theirs) = 5,460 possible different scores.  There are only 204 unique scores however:
+</div>
+</body>
+</html>

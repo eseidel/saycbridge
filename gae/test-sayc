@@ -1,0 +1,44 @@
+#!/usr/bin/python
+
+from core.callhistory_unittest import *
+from core.call_unittest import *
+from core.board_unittest import *
+from core.deal_unittest import *
+from core.hand_unittest import *
+from core.position_unittest import *
+from core.sayc_unittest import *
+
+from kbb.handconstraints_unittest import *
+from kbb.semanticbids_unittest import *
+from kbb.interpreter_unittest import *
+
+import logging
+import unittest
+import sys
+
+
+def configure_logging(is_verbose):
+    handler = logging.StreamHandler(sys.stdout)
+    formatter = logging.Formatter("%(levelname)-8s: %(message)s")
+    handler.setFormatter(formatter)
+
+    logger = logging.getLogger()
+    logger.addHandler(handler)
+    if is_verbose:
+        logger.setLevel(logging.NOTSET)
+
+
+if __name__ == '__main__':
+    # Logging is a big hack.
+    is_verbose = '-v' in sys.argv
+    configure_logging(is_verbose)
+
+    if '-g' in sys.argv:
+        sys.argv.remove('-g')
+        SAYCBidderTest.use_gib_bidder = True
+
+    try:
+        unittest.main()
+    except SystemExit:
+        # FIXME: This is a hack until we can use Python 2.7's fancier unitest library.
+        SAYCBidderTest.summarize_total_failures()

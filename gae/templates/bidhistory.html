@@ -1,0 +1,25 @@
+<table class="history">
+<tr id="position_labels">
+    <th class='{{ north_south_is_vulnerable|yesno:"vulnerable,nonvulnerable" }}'>North</th>
+    <th class='{{ east_west_is_vulnerable|yesno:"vulnerable,nonvulnerable" }}'>East</th>
+    <th class='{{ north_south_is_vulnerable|yesno:"vulnerable,nonvulnerable" }}'>South</th>
+    <th class='{{ east_west_is_vulnerable|yesno:"vulnerable,nonvulnerable" }}'>West</th>
+</tr>
+{% for round in call_history.bidding_rounds %}
+    <tr>
+    {% for previous_calls_names in round %}
+    <td>
+        {% if previous_calls_names %}
+            {% if explore_links %}
+                <a href='/explore/{{ previous_calls_names|slice:':-1'|join:',' }}'>
+            {% endif %}
+                {{ previous_calls_names|last }}
+            {% if explore_links %}
+                </a>
+            {% endif %}
+        {% endif %}
+    </td>
+    {% endfor %}
+    </tr>
+{% endfor %}
+</table>

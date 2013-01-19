@@ -1,0 +1,65 @@
+#!/usr/bin/python
+
+import logging
+import unittest
+import sys
+
+from core.call import Call
+from core.board import Board
+from core.suit import *
+from core.position import *
+from kbb import KnowledgeBasedBidder
+from core.callhistory import CallHistory, Vulnerability
+from core.hand import Hand
+from gib import Gib
+
+
+_log = logging.getLogger(__name__)
+
+
+def configure_logging(is_verbose):
+    handler = logging.StreamHandler(sys.stderr)
+    formatter = logging.Formatter("%(levelname)-8s: %(message)s")
+    handler.setFormatter(formatter)
+
+    logger = logging.getLogger()
+    logger.addHandler(handler)
+    if is_verbose:
+        logger.setLevel(logging.NOTSET)
+
+
+def _convert_shdc_to_cdhs(hand_string):
+    shdc_ordered_suits = hand_string.upper().split(" ")
+    return ".".join(reversed(shdc_ordered_suits))
+
+
+if __name__ == '__main__':
+    # Logging is a big hack.
+    args = sys.argv[1:]
+    is_verbose = '-v' in args
+    if is_verbose:
+        args.remove('-v')
+    configure_logging(is_verbose)
+
+    if '-g' in args:
+        args.remove('-g')
+        bidder = Gib()
+    else:
+        bidder = KnowledgeBasedBidder()
+
+    if not args:
+        print "USAGE: test-hand HAND [HISTORY]"
+        print " HAND is either C.D.H.S or S H D C"
+        print " HISTORY is space separated"
+        print
+        sys.exit(0)
+
+    hand_string = args[0]
+    if " " in hand_string:
+        hand_string = _convert_shdc_to_cdhs(hand_string)
+
+    history_string = args[1] if len(args) > 1 else ""
+    hand = Hand.from_cdhs_string(hand_string)
+    print hand.pretty_one_line()
+    call_history = CallHistory.from_string(history_string)
+    print bidder.find_call_for(hand, call_history)

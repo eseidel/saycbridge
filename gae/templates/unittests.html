@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>{{ unittest_file_name }} - Unittest Results</title>
+{% include "analytics.html" %}
+</head>
+<body>
+<div class="content">
+{{ unittests_output|safe }}
+</div>
+</body>
+</html>

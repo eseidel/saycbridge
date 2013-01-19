@@ -1,0 +1,57 @@
+div.history {
+    display: inline;
+}
+div.strain {
+    display: inline;
+}
+div.level {
+    display: inline;
+}
+.clubs {
+    color: #191970;
+}
+.diamonds {
+    color: #FF4200;
+}
+.hearts {
+    color: red;
+}
+.spades {
+    color: black;
+}
+.hand {
+    display: block;
+}
+.history {
+    float: left;
+    clear: left;
+    width: 240px;
+}
+.history th {
+    border-radius: 3px;
+}
+.history th.vulnerable {
+    background: red;
+}
+.history th.nonvulnerable {
+    background: green;
+}
+.history td {
+    text-align: center;
+    width: 25%;
+}
+.history th {
+    font-weight: bold;
+}
+.navigation {
+    position: fixed;
+    top: 0;
+    left: 0;
+    background-color: #eeeeee;
+    padding-left: 5px;
+    padding-right: 5px;
+    opacity: 80%;
+}
+.computedmatchpoints {
+    width: 800px;
+}
