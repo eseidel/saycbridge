@@ -1,0 +1,16 @@
+{
+  "name": "Bridge",
+  "description": "Practice bidding Standard American Yellow Card",
+  "version": "0.412",
+  "app": {
+    "urls": [
+      "http://www.saycbridge.com/"
+    ],
+    "launch": {
+      "web_url": "http://www.saycbridge.com/"
+    }
+  },
+  "icons": {
+    "128": "icon_128.png"
+  }
+}

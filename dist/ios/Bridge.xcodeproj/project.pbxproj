@@ -1,0 +1,594 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		A80C9AFE1465C7A400D5CF8C /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A80C9AFD1465C7A400D5CF8C /* UIKit.framework */; };
+		A80C9B001465C7A400D5CF8C /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A80C9AFF1465C7A400D5CF8C /* Foundation.framework */; };
+		A80C9B021465C7A400D5CF8C /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A80C9B011465C7A400D5CF8C /* CoreGraphics.framework */; };
+		A80C9B081465C7A400D5CF8C /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = A80C9B061465C7A400D5CF8C /* InfoPlist.strings */; };
+		A80C9B0A1465C7A500D5CF8C /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = A80C9B091465C7A400D5CF8C /* main.m */; };
+		A80C9B0E1465C7A500D5CF8C /* BridgeAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = A80C9B0D1465C7A500D5CF8C /* BridgeAppDelegate.m */; };
+		A80C9B111465C7A500D5CF8C /* MainWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = A80C9B0F1465C7A500D5CF8C /* MainWindow.xib */; };
+		A80C9B141465C7A500D5CF8C /* BridgeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A80C9B131465C7A500D5CF8C /* BridgeViewController.m */; };
+		A80C9B171465C7A500D5CF8C /* BridgeViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = A80C9B151465C7A500D5CF8C /* BridgeViewController.xib */; };
+		A80C9B1F1465C7A500D5CF8C /* SenTestingKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A80C9B1E1465C7A500D5CF8C /* SenTestingKit.framework */; };
+		A80C9B201465C7A500D5CF8C /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A80C9AFD1465C7A400D5CF8C /* UIKit.framework */; };
+		A80C9B211465C7A500D5CF8C /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A80C9AFF1465C7A400D5CF8C /* Foundation.framework */; };
+		A80C9B221465C7A500D5CF8C /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A80C9B011465C7A400D5CF8C /* CoreGraphics.framework */; };
+		A80C9B2A1465C7A500D5CF8C /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = A80C9B281465C7A500D5CF8C /* InfoPlist.strings */; };
+		A80C9B2C1465C7A500D5CF8C /* BridgeTests.h in Resources */ = {isa = PBXBuildFile; fileRef = A80C9B2B1465C7A500D5CF8C /* BridgeTests.h */; };
+		A80C9B2E1465C7A500D5CF8C /* BridgeTests.m in Sources */ = {isa = PBXBuildFile; fileRef = A80C9B2D1465C7A500D5CF8C /* BridgeTests.m */; };
+		A80C9B3A1466051C00D5CF8C /* MainWindow-iPad.xib in Resources */ = {isa = PBXBuildFile; fileRef = A80C9B381466051C00D5CF8C /* MainWindow-iPad.xib */; };
+		A8558EAC1487F1E90066AB67 /* apple-touch-icon-57x57.png in Resources */ = {isa = PBXBuildFile; fileRef = A8558EA91487F1E90066AB67 /* apple-touch-icon-57x57.png */; };
+		A8558EAD1487F1E90066AB67 /* apple-touch-icon-72x72.png in Resources */ = {isa = PBXBuildFile; fileRef = A8558EAA1487F1E90066AB67 /* apple-touch-icon-72x72.png */; };
+		A8558EAE1487F1E90066AB67 /* apple-touch-icon-114x114.png in Resources */ = {isa = PBXBuildFile; fileRef = A8558EAB1487F1E90066AB67 /* apple-touch-icon-114x114.png */; };
+		A8D916DD1489964A00616F01 /* offline.html in Resources */ = {isa = PBXBuildFile; fileRef = A8D916DC1489964A00616F01 /* offline.html */; };
+		A8D916E71489980300616F01 /* NSData+Base64.m in Sources */ = {isa = PBXBuildFile; fileRef = A8D916E61489980300616F01 /* NSData+Base64.m */; };
+		A8E26521148B65130052F9EE /* loading.html in Resources */ = {isa = PBXBuildFile; fileRef = A8E26520148B65130052F9EE /* loading.html */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		A80C9B231465C7A500D5CF8C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A80C9AF01465C7A400D5CF8C /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = A80C9AF81465C7A400D5CF8C;
+			remoteInfo = Bridge;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		A80C9AF91465C7A400D5CF8C /* Bridge.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Bridge.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		A80C9AFD1465C7A400D5CF8C /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
+		A80C9AFF1465C7A400D5CF8C /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		A80C9B011465C7A400D5CF8C /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
+		A80C9B051465C7A400D5CF8C /* Bridge-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Bridge-Info.plist"; sourceTree = "<group>"; };
+		A80C9B071465C7A400D5CF8C /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		A80C9B091465C7A400D5CF8C /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		A80C9B0B1465C7A500D5CF8C /* Bridge-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Bridge-Prefix.pch"; sourceTree = "<group>"; };
+		A80C9B0C1465C7A500D5CF8C /* BridgeAppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BridgeAppDelegate.h; sourceTree = "<group>"; };
+		A80C9B0D1465C7A500D5CF8C /* BridgeAppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BridgeAppDelegate.m; sourceTree = "<group>"; };
+		A80C9B101465C7A500D5CF8C /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/MainWindow.xib; sourceTree = "<group>"; };
+		A80C9B121465C7A500D5CF8C /* BridgeViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BridgeViewController.h; sourceTree = "<group>"; };
+		A80C9B131465C7A500D5CF8C /* BridgeViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BridgeViewController.m; sourceTree = "<group>"; };
+		A80C9B161465C7A500D5CF8C /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/BridgeViewController.xib; sourceTree = "<group>"; };
+		A80C9B1D1465C7A500D5CF8C /* BridgeTests.octest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BridgeTests.octest; sourceTree = BUILT_PRODUCTS_DIR; };
+		A80C9B1E1465C7A500D5CF8C /* SenTestingKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SenTestingKit.framework; path = Library/Frameworks/SenTestingKit.framework; sourceTree = DEVELOPER_DIR; };
+		A80C9B271465C7A500D5CF8C /* BridgeTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "BridgeTests-Info.plist"; sourceTree = "<group>"; };
+		A80C9B291465C7A500D5CF8C /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		A80C9B2B1465C7A500D5CF8C /* BridgeTests.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BridgeTests.h; sourceTree = "<group>"; };
+		A80C9B2D1465C7A500D5CF8C /* BridgeTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BridgeTests.m; sourceTree = "<group>"; };
+		A80C9B391466051C00D5CF8C /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = "iPad/en.lproj/MainWindow-iPad.xib"; sourceTree = "<group>"; };
+		A8558EA91487F1E90066AB67 /* apple-touch-icon-57x57.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "apple-touch-icon-57x57.png"; sourceTree = "<group>"; };
+		A8558EAA1487F1E90066AB67 /* apple-touch-icon-72x72.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "apple-touch-icon-72x72.png"; sourceTree = "<group>"; };
+		A8558EAB1487F1E90066AB67 /* apple-touch-icon-114x114.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "apple-touch-icon-114x114.png"; sourceTree = "<group>"; };
+		A8D916DC1489964A00616F01 /* offline.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = offline.html; sourceTree = "<group>"; };
+		A8D916E51489980300616F01 /* NSData+Base64.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSData+Base64.h"; sourceTree = "<group>"; };
+		A8D916E61489980300616F01 /* NSData+Base64.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSData+Base64.m"; sourceTree = "<group>"; };
+		A8E26520148B65130052F9EE /* loading.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = loading.html; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		A80C9AF61465C7A400D5CF8C /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A80C9AFE1465C7A400D5CF8C /* UIKit.framework in Frameworks */,
+				A80C9B001465C7A400D5CF8C /* Foundation.framework in Frameworks */,
+				A80C9B021465C7A400D5CF8C /* CoreGraphics.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A80C9B191465C7A500D5CF8C /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A80C9B1F1465C7A500D5CF8C /* SenTestingKit.framework in Frameworks */,
+				A80C9B201465C7A500D5CF8C /* UIKit.framework in Frameworks */,
+				A80C9B211465C7A500D5CF8C /* Foundation.framework in Frameworks */,
+				A80C9B221465C7A500D5CF8C /* CoreGraphics.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		A80C9AEE1465C7A400D5CF8C = {
+			isa = PBXGroup;
+			children = (
+				A80C9B031465C7A400D5CF8C /* Bridge */,
+				A80C9B251465C7A500D5CF8C /* BridgeTests */,
+				A80C9AFC1465C7A400D5CF8C /* Frameworks */,
+				A80C9AFA1465C7A400D5CF8C /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		A80C9AFA1465C7A400D5CF8C /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				A80C9AF91465C7A400D5CF8C /* Bridge.app */,
+				A80C9B1D1465C7A500D5CF8C /* BridgeTests.octest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		A80C9AFC1465C7A400D5CF8C /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				A80C9AFD1465C7A400D5CF8C /* UIKit.framework */,
+				A80C9AFF1465C7A400D5CF8C /* Foundation.framework */,
+				A80C9B011465C7A400D5CF8C /* CoreGraphics.framework */,
+				A80C9B1E1465C7A500D5CF8C /* SenTestingKit.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		A80C9B031465C7A400D5CF8C /* Bridge */ = {
+			isa = PBXGroup;
+			children = (
+				A80C9B371466051A00D5CF8C /* iPad */,
+				A80C9B0C1465C7A500D5CF8C /* BridgeAppDelegate.h */,
+				A80C9B0D1465C7A500D5CF8C /* BridgeAppDelegate.m */,
+				A80C9B0F1465C7A500D5CF8C /* MainWindow.xib */,
+				A80C9B121465C7A500D5CF8C /* BridgeViewController.h */,
+				A80C9B131465C7A500D5CF8C /* BridgeViewController.m */,
+				A80C9B151465C7A500D5CF8C /* BridgeViewController.xib */,
+				A80C9B041465C7A400D5CF8C /* Supporting Files */,
+			);
+			path = Bridge;
+			sourceTree = "<group>";
+		};
+		A80C9B041465C7A400D5CF8C /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				A8D916E31489980300616F01 /* ThirdParty */,
+				A8D916DC1489964A00616F01 /* offline.html */,
+				A8E26520148B65130052F9EE /* loading.html */,
+				A8558EA91487F1E90066AB67 /* apple-touch-icon-57x57.png */,
+				A8558EAA1487F1E90066AB67 /* apple-touch-icon-72x72.png */,
+				A8558EAB1487F1E90066AB67 /* apple-touch-icon-114x114.png */,
+				A80C9B051465C7A400D5CF8C /* Bridge-Info.plist */,
+				A80C9B061465C7A400D5CF8C /* InfoPlist.strings */,
+				A80C9B091465C7A400D5CF8C /* main.m */,
+				A80C9B0B1465C7A500D5CF8C /* Bridge-Prefix.pch */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		A80C9B251465C7A500D5CF8C /* BridgeTests */ = {
+			isa = PBXGroup;
+			children = (
+				A80C9B2B1465C7A500D5CF8C /* BridgeTests.h */,
+				A80C9B2D1465C7A500D5CF8C /* BridgeTests.m */,
+				A80C9B261465C7A500D5CF8C /* Supporting Files */,
+			);
+			path = BridgeTests;
+			sourceTree = "<group>";
+		};
+		A80C9B261465C7A500D5CF8C /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				A80C9B271465C7A500D5CF8C /* BridgeTests-Info.plist */,
+				A80C9B281465C7A500D5CF8C /* InfoPlist.strings */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		A80C9B371466051A00D5CF8C /* iPad */ = {
+			isa = PBXGroup;
+			children = (
+				A80C9B381466051C00D5CF8C /* MainWindow-iPad.xib */,
+			);
+			name = iPad;
+			sourceTree = "<group>";
+		};
+		A8D916E31489980300616F01 /* ThirdParty */ = {
+			isa = PBXGroup;
+			children = (
+				A8D916E41489980300616F01 /* base64 */,
+			);
+			path = ThirdParty;
+			sourceTree = "<group>";
+		};
+		A8D916E41489980300616F01 /* base64 */ = {
+			isa = PBXGroup;
+			children = (
+				A8D916E51489980300616F01 /* NSData+Base64.h */,
+				A8D916E61489980300616F01 /* NSData+Base64.m */,
+			);
+			path = base64;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		A80C9AF81465C7A400D5CF8C /* Bridge */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A80C9B311465C7A500D5CF8C /* Build configuration list for PBXNativeTarget "Bridge" */;
+			buildPhases = (
+				A80C9AF51465C7A400D5CF8C /* Sources */,
+				A80C9AF61465C7A400D5CF8C /* Frameworks */,
+				A80C9AF71465C7A400D5CF8C /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = Bridge;
+			productName = Bridge;
+			productReference = A80C9AF91465C7A400D5CF8C /* Bridge.app */;
+			productType = "com.apple.product-type.application";
+		};
+		A80C9B1C1465C7A500D5CF8C /* BridgeTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A80C9B341465C7A500D5CF8C /* Build configuration list for PBXNativeTarget "BridgeTests" */;
+			buildPhases = (
+				A80C9B181465C7A500D5CF8C /* Sources */,
+				A80C9B191465C7A500D5CF8C /* Frameworks */,
+				A80C9B1A1465C7A500D5CF8C /* Resources */,
+				A80C9B1B1465C7A500D5CF8C /* ShellScript */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				A80C9B241465C7A500D5CF8C /* PBXTargetDependency */,
+			);
+			name = BridgeTests;
+			productName = BridgeTests;
+			productReference = A80C9B1D1465C7A500D5CF8C /* BridgeTests.octest */;
+			productType = "com.apple.product-type.bundle";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		A80C9AF01465C7A400D5CF8C /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0420;
+				ORGANIZATIONNAME = Google;
+			};
+			buildConfigurationList = A80C9AF31465C7A400D5CF8C /* Build configuration list for PBXProject "Bridge" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = A80C9AEE1465C7A400D5CF8C;
+			productRefGroup = A80C9AFA1465C7A400D5CF8C /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				A80C9AF81465C7A400D5CF8C /* Bridge */,
+				A80C9B1C1465C7A500D5CF8C /* BridgeTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		A80C9AF71465C7A400D5CF8C /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A80C9B081465C7A400D5CF8C /* InfoPlist.strings in Resources */,
+				A80C9B111465C7A500D5CF8C /* MainWindow.xib in Resources */,
+				A80C9B171465C7A500D5CF8C /* BridgeViewController.xib in Resources */,
+				A80C9B3A1466051C00D5CF8C /* MainWindow-iPad.xib in Resources */,
+				A8558EAC1487F1E90066AB67 /* apple-touch-icon-57x57.png in Resources */,
+				A8558EAD1487F1E90066AB67 /* apple-touch-icon-72x72.png in Resources */,
+				A8558EAE1487F1E90066AB67 /* apple-touch-icon-114x114.png in Resources */,
+				A8D916DD1489964A00616F01 /* offline.html in Resources */,
+				A8E26521148B65130052F9EE /* loading.html in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A80C9B1A1465C7A500D5CF8C /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A80C9B2A1465C7A500D5CF8C /* InfoPlist.strings in Resources */,
+				A80C9B2C1465C7A500D5CF8C /* BridgeTests.h in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		A80C9B1B1465C7A500D5CF8C /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# Run the unit tests in this test bundle.\n\"${SYSTEM_DEVELOPER_DIR}/Tools/RunUnitTests\"\n";
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		A80C9AF51465C7A400D5CF8C /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A80C9B0A1465C7A500D5CF8C /* main.m in Sources */,
+				A80C9B0E1465C7A500D5CF8C /* BridgeAppDelegate.m in Sources */,
+				A80C9B141465C7A500D5CF8C /* BridgeViewController.m in Sources */,
+				A8D916E71489980300616F01 /* NSData+Base64.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A80C9B181465C7A500D5CF8C /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A80C9B2E1465C7A500D5CF8C /* BridgeTests.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		A80C9B241465C7A500D5CF8C /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = A80C9AF81465C7A400D5CF8C /* Bridge */;
+			targetProxy = A80C9B231465C7A500D5CF8C /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		A80C9B061465C7A400D5CF8C /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				A80C9B071465C7A400D5CF8C /* en */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+		A80C9B0F1465C7A500D5CF8C /* MainWindow.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				A80C9B101465C7A500D5CF8C /* en */,
+			);
+			name = MainWindow.xib;
+			sourceTree = "<group>";
+		};
+		A80C9B151465C7A500D5CF8C /* BridgeViewController.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				A80C9B161465C7A500D5CF8C /* en */,
+			);
+			name = BridgeViewController.xib;
+			sourceTree = "<group>";
+		};
+		A80C9B281465C7A500D5CF8C /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				A80C9B291465C7A500D5CF8C /* en */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+		A80C9B381466051C00D5CF8C /* MainWindow-iPad.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				A80C9B391466051C00D5CF8C /* en */,
+			);
+			name = "MainWindow-iPad.xib";
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		A80C9B2F1465C7A500D5CF8C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_VERSION = com.apple.compilers.llvmgcc42;
+				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 4.2;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		A80C9B301465C7A500D5CF8C /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_VERSION = com.apple.compilers.llvmgcc42;
+				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 4.2;
+				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		A80C9B321465C7A500D5CF8C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "Bridge/Bridge-Prefix.pch";
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				INFOPLIST_FILE = "Bridge/Bridge-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 4.2;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TARGETED_DEVICE_FAMILY = "1,2";
+				WRAPPER_EXTENSION = app;
+			};
+			name = Debug;
+		};
+		A80C9B331465C7A500D5CF8C /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "Bridge/Bridge-Prefix.pch";
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				INFOPLIST_FILE = "Bridge/Bridge-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 4.2;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TARGETED_DEVICE_FAMILY = "1,2";
+				WRAPPER_EXTENSION = app;
+			};
+			name = Release;
+		};
+		A80C9B351465C7A500D5CF8C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/Bridge.app/Bridge";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(SDKROOT)/Developer/Library/Frameworks",
+					"$(DEVELOPER_LIBRARY_DIR)/Frameworks",
+				);
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "Bridge/Bridge-Prefix.pch";
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				INFOPLIST_FILE = "BridgeTests/BridgeTests-Info.plist";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUNDLE_LOADER)";
+				WRAPPER_EXTENSION = octest;
+			};
+			name = Debug;
+		};
+		A80C9B361465C7A500D5CF8C /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/Bridge.app/Bridge";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(SDKROOT)/Developer/Library/Frameworks",
+					"$(DEVELOPER_LIBRARY_DIR)/Frameworks",
+				);
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "Bridge/Bridge-Prefix.pch";
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				INFOPLIST_FILE = "BridgeTests/BridgeTests-Info.plist";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUNDLE_LOADER)";
+				WRAPPER_EXTENSION = octest;
+			};
+			name = Release;
+		};
+		A8EDF200148F04F5002C6A15 /* Distribution */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = (
+					armv6,
+					armv7,
+				);
+				CODE_SIGN_IDENTITY = "iPhone Distribution";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
+				COPY_PHASE_STRIP = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_VERSION = com.apple.compilers.llvmgcc42;
+				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 4.2;
+				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
+				PROVISIONING_PROFILE = "";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Distribution;
+		};
+		A8EDF201148F04F5002C6A15 /* Distribution */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "Bridge/Bridge-Prefix.pch";
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				INFOPLIST_FILE = "Bridge/Bridge-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 4.2;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TARGETED_DEVICE_FAMILY = "1,2";
+				WRAPPER_EXTENSION = app;
+			};
+			name = Distribution;
+		};
+		A8EDF202148F04F5002C6A15 /* Distribution */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/Bridge.app/Bridge";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(SDKROOT)/Developer/Library/Frameworks",
+					"$(DEVELOPER_LIBRARY_DIR)/Frameworks",
+				);
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "Bridge/Bridge-Prefix.pch";
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				INFOPLIST_FILE = "BridgeTests/BridgeTests-Info.plist";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUNDLE_LOADER)";
+				WRAPPER_EXTENSION = octest;
+			};
+			name = Distribution;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		A80C9AF31465C7A400D5CF8C /* Build configuration list for PBXProject "Bridge" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A80C9B2F1465C7A500D5CF8C /* Debug */,
+				A80C9B301465C7A500D5CF8C /* Release */,
+				A8EDF200148F04F5002C6A15 /* Distribution */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		A80C9B311465C7A500D5CF8C /* Build configuration list for PBXNativeTarget "Bridge" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A80C9B321465C7A500D5CF8C /* Debug */,
+				A80C9B331465C7A500D5CF8C /* Release */,
+				A8EDF201148F04F5002C6A15 /* Distribution */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		A80C9B341465C7A500D5CF8C /* Build configuration list for PBXNativeTarget "BridgeTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A80C9B351465C7A500D5CF8C /* Debug */,
+				A80C9B361465C7A500D5CF8C /* Release */,
+				A8EDF202148F04F5002C6A15 /* Distribution */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = A80C9AF01465C7A400D5CF8C /* Project object */;
+}

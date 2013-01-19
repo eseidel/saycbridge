@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<style>
+* {
+    font-family: Helvetica, sans-serif;
+}
+body {
+    width: 310px; /*Leaves just enought room for android scrollbars*/
+    margin: auto;
+    text-align: center;
+    font-size: 24px;
+}
+#logo {
+    margin-top: 40px;
+}
+#retry {
+    padding: 10px;
+    font-size: 48px;
+}
+@media only screen and (device-width: 768px) {
+    /* General iPad layouts */
+}
+@media only screen and (min-device-width: 481px) and (max-device-width: 1024px) and (orientation:portrait) {
+    /* iPad portrait layouts only */
+    body {
+        zoom: 2.0;
+    }
+}
+@media only screen and (min-device-width: 481px) and (max-device-width: 1024px) and (orientation:landscape) {
+    /* iPad landscape layouts only */
+}
+
+@media only screen and (max-device-width: 480px) {
+    /* iPhone [portrait + landscape] */
+}
+</style>
+</head>
+<body>
+<img id="logo" src="ICON_CONTENTS">
+<p>Contacting the bidding server...</p>
+<script>
+window.onload = function() {
+    window.location.replace('SERVER_URL');
+}
+</script>
+</body>
+</html>
