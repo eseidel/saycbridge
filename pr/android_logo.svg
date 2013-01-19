@@ -1,0 +1,70 @@
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg version="1.1"
+     xmlns="http://www.w3.org/2000/svg"
+     xmlns:xlink="http://www.w3.org/1999/xlink"
+     width='512px' height='512px'>
+<style type="text/css">
+#logo {
+    border: 10px solid #223;
+    border-radius: 15%;
+    box-shadow: 0px 20px 20px gray;
+}
+#spade {
+    font-family: helvetica;
+    font-size: 400px;
+    text-shadow: 0px 3px 3px gray;
+}
+#max_size {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 512px;
+    height: 512px;
+    border: 1px solid blue;
+    margin: 8px;
+}
+#recommended_size {
+    width: 426px;
+    height: 426px;
+    border: 1px solid red;
+}
+</style>
+<defs>
+  <linearGradient id="gradient" x1='0%' y1="0%" x2='0%' y2='100%'>
+    <stop offset="0%" stop-color='#f9f9f9' />
+    <stop offset="47%" stop-color='#f0f0f9' />
+    <stop offset="100%" stop-color='#eef' />
+  </linearGradient>
+  <filter id="outershadow" width="150%" height="150%">
+      <feOffset result="offOut" in="SourceAlpha" dy="15"/>
+      <feGaussianBlur result="blurOut" in="offOut" stdDeviation="7"/>
+      <feComponentTransfer result="blurOut" in="blurOut">
+        <feFuncR type="linear"  intercept=".3"/>
+        <feFuncG type="linear"  intercept=".3"/>
+        <feFuncB type="linear"  intercept=".3"/>
+      </feComponentTransfer>
+      <feBlend in="SourceGraphic" in2="blurOut" mode="normal"/>
+  </filter>
+  <filter id="textshadow" width="150%" height="150%">
+      <feOffset result="offOut" in="SourceAlpha" dx='1' dy="1"/>
+      <feGaussianBlur result="blurOut" in="offOut" stdDeviation=".1"/>
+      <feComponentTransfer result="blurOut" in="blurOut">
+        <feFuncR type="linear"  intercept=".5"/>
+        <feFuncG type="linear"  intercept=".5"/>
+        <feFuncB type="linear"  intercept=".5"/>
+      </feComponentTransfer>
+      <feBlend in="SourceGraphic" in2="blurOut" mode="normal"/>
+  </filter>
+</defs>
+
+<rect id='logo' x='42' y='42'
+  width='418' height='418'
+  rx='60' ry='60'
+  fill='url(#gradient)' stroke='#223'
+  stroke-width='10px' filter="url(#outershadow)"></rect>
+
+<text id='spade' x='55' y='400' fill='#223' filter="url(#textshadow)">&#9824;</text>
+
+<rect id="max_size"></rect>
+<rect id="recommended_size"></rect>
+</svg>

@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<style>
+body {
+    width: 512px;
+    margin: 8px;
+}
+#logo {
+    border: 10px solid #223;
+    border-radius: 15%;
+    box-shadow: 0px 20px 20px gray;
+    height: 408px; /* 428 - 20 for the border */
+    margin: 42px;
+    margin-top: 50px;
+    background: -webkit-linear-gradient(top, #f9f9f9 0%,#f0f0f9 47%,#eef 100%);
+}
+#spade {
+    font-family: helvetica;
+    font-size: 400px;
+    text-shadow: 0px 3px 3px gray;
+    position: relative;
+    top: -24%;
+    left: 2%;
+    color: #223;
+}
+#max_size {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 512px;
+    height: 512px;
+    border: 1px solid blue;
+    margin: 8px;
+}
+/*#recommended_size {
+    position: absolute;
+    margin: 42px;
+    width: 426px;
+    height: 426px;
+    border: 1px solid red;
+}*/
+</style>
+<div id='logo'>
+    <div id='spade'>&spades;</div>
+</div>
+<div id="max_size">
+    <div id="recommended_size">
+    </div>
+</div>
