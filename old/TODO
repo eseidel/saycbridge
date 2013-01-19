@@ -1,0 +1,182 @@
+- make the fallback bidder use support_points instead of high_card_points for suit fits.
+- Opener's rebids and Responder's rebids!
+- Preempts
+- Preemptive overcalls
+- Doubles
+- Understanding Jump-shifts
+- Fill in empty possible_resulting_history!
+
+I need to have a high-level overview of how well the bidder does.
+Being able to compare against all the unit tests results would be one way.
+Simply making the unit tests write to stdout would be a start!
+
+# Possible implementation for ResponseToOneOfAMajor:
+
+    def possible_resulting_history(self, history):
+        history_before_bidder = history.copy_with_partial_history(-1)
+        if not self.matches_call_history(history_before_bidder):
+            return False
+
+        bidder = history.last_to_call()
+        last_call = history.last_call_by(bidder)
+        if not last_call.is_contract():
+            return False
+        partner_last_call = history.last_call_by(partner_of(bidder))
+        if last_call.strain == NOTRUMP:  # Notrump is covered by NotrumpRebid
+            return False
+        level_change = last_call.level() - partner_last_call.level()
+        if last_call.strain == partner_last_call.strain:
+            return level_change == 1
+        return last_call.strain != partner_last_call.strain and level_change == 0
+
+    def update_hand_constraints_for_history(self, constraints, history):
+        bidder = history.last_to_call()
+        last_call = history.last_call_by(bidder)
+        partner_last_call = history.last_call_by(partner_of(bidder))
+        # FIXME: This is an incomplete implementation!
+        if partner_last_call.strain == last_call.strain:
+            constraints.set_hcp_range(6, 10)
+            if last_call.strain == CLUBS:
+                # Clubs can only be 3, so supporting them should mean 5.
+                constraints.set_min_length(last_call.strain, 5)
+            else:
+                # Diamonds can be 3, but are normally 4, so we can support with 4.
+                constraints.set_min_length(last_call.strain, 4)
+        else:
+            # Any mention of a new suit promises at least 4.
+            constraints.set_min_length(last_call.strain, 4)
+
+The goal of Conventions is to make unforced bids, which further describe the hand
+or respond to conventional bids.
+
+The fallback bidder is responsible for making bids when conventions don't cover things,
+often retreating to cheapest notrump.
+
+Exceptions:
+8-19698358718428985536367628251760-N:NO:  # Exception due to long minors over stayman.
+
+
+From Dana, needs to rebid diamonds:
+http://localhost:8083/autobid/5-9015393422922163930313453863422-E:NS:1D,P,1H,P,1N,P,P,P
+
+From Dana, should have said 3 hearts:
+http://localhost:8083/autobid/6-13281055028058210813005817806616-S:EW:1S,2C,2H,P,2N,P,3N,P,P,P
+
+From Nick, East jumps to 3N, when it should bid another suit first.
+http://localhost:8083/autobid/11-15516513128457595171295904948924-W:NO:
+
+South failed to mention his 4-card spade suit
+http://localhost:8083/autobid/13-12820582061720413454968719076077-E:BO:
+
+North wanted a negative double, south can't bid NT without stoppers.
+http://localhost:8083/autobid/15-13780264151805956424559071595032-W:NS:P,1C,2H,P,P,2N,P,3H,P,3N,P,P,P
+
+Missed game for not understanding rebid means 6!
+http://localhost:8083/autobid/2-15480751349056173883676774682345-S:NS:1H,P,1S,P,2H,P,2N,P,P,P
+
+Need to understand stayman slam try:
+http://localhost:8083/autobid/15-14062708631604917835773411089146-W:NS:P,1N,P,2C,P,2D,P,3C,P,3N,P,P,P
+
+Need Gerber (bots don't understand jump-shifts!)
+http://localhost:8083/autobid/12-11142795047771119701203855793639-N:NS:1S,P,2D,P,2N,P,3C,P,3S,P,7S,P,P,P
+Also, what does his nt mean?
+
+Another missing jump-shift?  Or should east have made a super-support game jump?
+http://localhost:8083/autobid/8-17531025888047029229692472380134-N:NO:P,P
+
+Need to teach penalty doubles (also, escaping to NT is a bad idea!):
+http://localhost:8083/autobid/1-14051140799501442013090691158593-E:NO:P,P,1D,P,P,P
+
+I think I want the 5h jump?
+http://localhost:8083/autobid/14-11190917964226413247943303084169-S:NO:1C,P,1H,P,3D,P,3N,P,5H,P,P,P
+
+3n is not their right game. My x may be wrong too:
+http://localhost:8083/autobid/3-7777312376432072871483674535171-W:EW:1H,P,2H,X,2N,P,3H,P,3N,P,P,P
+
+West should double?
+http://localhost:8083/autobid/16-8087525203290005445964033020522-N:EW:1S,P,P,P
+
+This auction just feels wrong
+http://localhost:8083/autobid/7-17326685445962038513560647050302-W:BO:1D,2C,3D,P,3N,P,P,P
+
+I don't know if I'm supposed to bid to 3n!
+http://localhost:8083/autobid/16-1022180948977366455909157353780-N:EW:2N,P,P,P
+
+East can't bid nt
+http://localhost:8083/autobid/9-2713109889156458295693804380142-E:EW:1H,P,1S,2D,2N,P,3N,P,P,X,P,P,P
+And west has no business raising to game!
+I think its confused by the 2n
+
+I think n could have looked at a sacrifice 4s
+http://localhost:8083/autobid/16-12877438211445637974662139586305-N:EW:P,1H,1S,3H,P,4H,P,P,P
+
+2n was wrong. Should I have know to support spades?
+http://localhost:8083/autobid/2-1070080939980675187976153280762-S:NS:1C,P,1S,P,1N,P,2N,P,P,P
+
+Should have left me in 2c
+http://localhost:8083/autobid/16-11107261459139499215344695145101-N:EW:1C,P,1H,P,1N,P,2C,P,2S,P,3C,P,3N,P
+
+North should have reopening doubled.
+http://localhost:8083/autobid/15-6554697292209879349238560237812-W:NS:P,1C,1S,P,P,P
+
+North could have opened 3rd seat.
+http://localhost:8083/autobid/10-3743708216669847879409403135355-S:BO:P,P,P,P
+
+North should have rebid his 6c heart suit.
+http://localhost:8083/autobid/6-2769918700136441412923135040135-S:EW:P,P,1H,2D,P,P,P
+
+North should have overcalled 1N
+http://localhost:8083/autobid/5-7727742787557724568258509017951-E:NS:1D,P,P,P
+
+North could have explored slam?
+http://localhost:8083/autobid/10-13088874228145452653788664601144-S:BO:1C,P,1D,P,3C,P,3N,P,P,P
+
+North could have rebid his clubs?
+http://localhost:8083/autobid/10-1550437588648000000769175423291-S:BO:P,P,1C,1D,P,P,P
+
+West can't bid 2C, it would be michaels:
+http://localhost:8083/autobid/16-16532515469452536436662052400622-N:EW:1C,1H,P,2C,P,2N,P,3N,P,P,P
+
+North should have jumped to game (weak major fit), and East had no business bidding 3N!
+http://localhost:8083/autobid/4-3671751808619204154877099765227-N:BO:P,1D,1H,1N,3H,3N,X,P,P,P
+
+
+Need an escape bidder which does not bid 2N:
+
+East should not have bid 2N without a club stopper
+http://localhost:8083/autobid/3-1451742747551065233962058671130-W:EW:1H,P,1S,X,2N,P,P,P
+East should probably just rebid his Spades.
+
+North's 2N response was incorrect:
+http://localhost:8083/autobid/14-13606103596752719478271548781389-S:NO:1S,P,2D,P,2S,P,2N,P,3N,P,P,P
+(I'm not sure that my spade rebid was correct?)
+
+Confusion with 2n again, West should prefer to rebid his spades.
+http://localhost:8083/autobid/10-16470666068559934302050576802945-S:BO:P,1S,P,2H,P,2N,P,3N,P,P,P
+
+East should never have bid 2N, instead escaped to 2H:
+http://localhost:8083/autobid/9-11132096549145279831166942029099-E:EW:P,P,1D,P,1H,P,1N,P,2N,P,P,P
+
+North should have escaped to 2D
+http://localhost:8083/autobid/4-17019437114256344182436658096411-N:BO:P,P,1H,P,1S,P,2C,P,2N,P,3N,P,P,P
+
+I'm not sure how to bid this:
+http://localhost:8083/autobid/16-8278216119249518788283672223369-N:EW:1D,P,3C,P,3N,P,P,P
+
+I think I'm supposed to negative double
+http://localhost:8083/autobid/6-5770417409926255390455664421280-S:EW:P,1D,P,1S,P,1N,P,2N,P,3N,P,P,P
+
+The bot views JacobyTransfer accepts as forcing bids (since they're a new suit)
+http://localhost:8083/autobid/16-17722217102379974085163255608564-N:EW:
+
+Why did west bid 3n if it knew they didn't have the points!?
+http://localhost:8083/autobid/3-8768256087997801306984704533217-W:EW:P,P,1D,1S,1N,P,2N,P,3N,P,P,P
+
+Need to learn doubles.
+http://localhost:8083/autobid/8-9837030872089115899649359459428-N:NO:P,P,1C,P,P,P
+
+Need to bid the long suit after a strong double:
+http://localhost:8083/autobid/9-3868223905251980905651275302427-E:EW:1H,P,1S,X,1N,2D,P,3N,P,P,P
+
+Doesn't understand 4N after 2N:
+http://saycbot.appspot.com/autobid/4-2972104438268780692698347151093-N:BO:1S,P,2N,P,4D,P,4N
