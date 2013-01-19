@@ -1,0 +1,31 @@
+SAYC Bridge
+A Python library and Google App Engine instance for bidding bridge hands using Standard American Yellow Card conventions.
+
+http://www.saycbridge.com/
+https://play.google.com/store/apps/details?id=com.saycbridge.bridge
+http://saycbot.appspot.com/
+
+
+Make Rules:
+
+make clean -- removes stray *.pyc files
+make baseline -- creates a new local kbb_baseline.txt file
+make check -- checks your latest changes against your kbb_baseline.txt
+
+
+Testing Scripts:
+
+./test-hand HAND_STRING [HISTORY_STRING] -- Bids a single hand.
+./test-sayc -- Runs the unit tests.
+./saycbot.py [-a] -- Command-line interactive bidder.  -a auto-bids all hands (for finding crashes).
+
+
+Code Layout:
+
+kbb -- Knowledge Based Bidder
+core -- Basic Python objects for dealing with bridge hands/boards.
+commmon -- Python support objects not relating to bridge.
+handers -- GAE handlers
+models -- GAE models
+templates -- GAE templates
+third_party -- External code goes here.
