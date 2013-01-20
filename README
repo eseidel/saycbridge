@@ -24,7 +24,6 @@ Code Layout:
 
 kbb -- Knowledge Based Bidder
 core -- Basic Python objects for dealing with bridge hands/boards.
-commmon -- Python support objects not relating to bridge.
 handers -- GAE handlers
 models -- GAE models
 templates -- GAE templates
