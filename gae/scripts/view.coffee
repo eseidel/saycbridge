@@ -1,10 +1,11 @@
-HTMLDivElement.prototype.htmlTag = 'div'
 HTMLAnchorElement.prototype.htmlTag = 'a'
-HTMLTableElement.prototype.htmlTag = 'table'
-HTMLTableCellElement.prototype.htmlTag = 'td'
-HTMLTableRowElement.prototype.htmlTag = 'tr'
+HTMLButtonElement.prototype.htmlTag = 'button'
+HTMLDivElement.prototype.htmlTag = 'div'
 HTMLImageElement.prototype.htmlTag = 'img'
 HTMLPreElement.prototype.htmlTag = 'pre'
+HTMLTableCellElement.prototype.htmlTag = 'td'
+HTMLTableElement.prototype.htmlTag = 'table'
+HTMLTableRowElement.prototype.htmlTag = 'tr'
 
 
 # FIXME: These ugly hacks are to support both FF and Chrome.
@@ -764,6 +765,15 @@ class BidInterpretationView extends HTMLDivElement
         return alloc @, board, calls
 
 
+class CallButton extends HTMLButtonElement
+    constructor: (@call) ->
+        $(@).addClass('bid_button')
+        @.appendChild CallView.fromCall(@call)
+
+    @fromCall: (call) ->
+        return alloc @, call
+
+
 class CallExplorerTable extends HTMLTableElement
     constructor: (@callHistory) ->
         @className = 'explore_table'
@@ -785,19 +795,15 @@ class CallExplorerTable extends HTMLTableElement
 
         board = new model.Board(1) # This is a hack, we just want a non-vuln board to display.
         for possibleCall in @callHistory.possibleNextCalls()
-            calls = @callHistory.calls.slice()
-            calls.push possibleCall
             callRow = @insertRow(-1)
-            bidButton = document.createElement('button')
-            $(bidButton).addClass('bid_button')
-            bidButton.onclick = "document.location"
-            bidButton.appendChild CallView.fromCall(calls[calls.length - 1])
-            callRow.insertCell(-1).appendChild bidButton
+            callRow.insertCell(-1).appendChild CallButton.fromCall(possibleCall)
             callRow.insertCell(-1).appendChild WaitingImage.new()
             callRow.insertCell(-1).appendChild WaitingImage.new()
             callRow.insertCell(-1).appendChild WaitingImage.new()
 
-            # FIXME: Need to figure out how to bind callRow
+            calls = @callHistory.calls.slice()
+            calls.push possibleCall
+            # FIXME: Need to figure out how to bind callRow and then delete _rowForCall.
             controller.BidInterpreter.interpretLastCallInCallsFromBoard calls, board, (calls, interpretation) =>
                 row = @_rowForCall(calls[calls.length - 1])
                 row.cells[1].textContent = interpretation.ruleName

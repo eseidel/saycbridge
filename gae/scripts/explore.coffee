@@ -17,7 +17,7 @@ class Explore
             callsString = ""
 
         try
-            callHistory = model.CallHistory.fromCallsStringAndDealerChar(callsString, "N")
+            callHistory = model.CallHistory.fromIdentifier(callsString)
         catch error
             callHistory = new model.CallHistory
 
@@ -27,7 +27,7 @@ class Explore
         return "/explore/" + callsString
 
     saveState: ->
-        callsString = @callHistory.callsString()
+        callsString = @callHistory.identifier()
         urlForCurrentState = @pathForCallsString callsString
         # If we already have a history entry for the current URL, no need to save.
         if window.location.pathname == urlForCurrentState
@@ -43,6 +43,14 @@ class Explore
         [@basePath, @callHistory] = @basePathAndCallHistoryFromPath(urlParser.pathname)
         @setupView()
 
+    recordCall: (call) ->
+        @callHistory.calls.push(call)
+        @saveState()
+
+    updateView: ->
+        # FIXME: Maybe we'll make this smarter some day.
+        @setupView()
+
     setupView: ->
         content = document.body
         $(content).empty()
@@ -52,8 +60,13 @@ class Explore
         historyTable = view.CallHistoryTable.fromBoardAndHistory(board, @callHistory)
         content.appendChild historyTable
 
-        possibleCallTable = view.CallExplorerTable.fromCallHistory(@callHistory)
+        possibleCallTable = view.CallExplorerTable.fromCallHistory(@callHistory, @recordCall)
         content.appendChild possibleCallTable
+        $('.bid_button', possibleCallTable).bind 'click', (event) =>
+            callButton = event.target
+            while callButton and not callButton.call
+                callButton = callButton.parentNode
+            @recordCall callButton.call
 
         content.appendChild @aboutDiv
 
