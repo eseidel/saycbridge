@@ -725,12 +725,7 @@ class ConstraintsView extends HTMLDivElement
         for [needle, substitution] in replacements
             constraintsString = constraintsString.replace(needle, substitution)
 
-        for char in constraintsString
-            if char in "CDHSN"
-                strain = model.Strain.fromChar char
-                @appendChild StrainView.fromStrain strain
-            else
-                @appendChild document.createTextNode char
+        @appendChild StrainView.fragmentReplacingStrainChars(constraintsString)
 
     @fromConstraintsString: (constraintsString) ->
         return alloc @, constraintsString
