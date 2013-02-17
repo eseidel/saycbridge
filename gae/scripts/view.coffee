@@ -822,8 +822,8 @@ class CallExplorerTable extends HTMLTableElement
             # FIXME: Need to figure out how to bind callRow and then delete _rowForCall.
             controller.BidInterpreter.interpretLastCallInCallsFromBoard calls, board, (calls, interpretation) =>
                 row = @_rowForCall(calls[calls.length - 1])
-                row.cells[1].textContent = interpretation.ruleName
-                row.cells[2].textContent = interpretation.rulePriority
+                row.cells[1].textContent = if interpretation.ruleName then interpretation.ruleName else ""
+                row.cells[2].textContent = if interpretation.rulePriority then interpretation.ruleName else ""
                 row.cells[3].textContent = ""
                 row.cells[3].appendChild StrainView.fragmentReplacingStrainChars(interpretation.constraintsString)
 
