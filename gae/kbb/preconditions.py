@@ -815,7 +815,7 @@ class Jump(Precondition):
             bid = knowledge.last_contract()
 
         last_call = self._last_call(knowledge)
-        if not last_call:  # If we don't have a previous bid to compare to, this can't be a jump.
+        if not last_call or not last_call.is_contract():  # If we don't have a previous bid to compare to, this can't be a jump.
             return False
         jump_size = self._jump_size(last_call, bid)
         if self.exact_size is None:
