@@ -395,10 +395,10 @@ class MainController
         state = { 'roundIdentifier': @roundController.round.identifier() }
         if @initialLoadFromBaseURL
             # We use replaceState to avoid the back button taking users to a new random board.
-            window.History.replaceState state, "", urlForCurrentState
+            window.History.replaceState state, document.title, urlForCurrentState
             @initialLoadFromBaseURL = false
         else
-            window.History.pushState state, "", urlForCurrentState
+            window.History.pushState state, document.title, urlForCurrentState
 
     updateFromState: (state) ->
         urlParser = document.createElement 'a'
