@@ -192,7 +192,8 @@ FAIL: None (expected X) for AKQ76..AT32.AT84 (hcp: 17 lp: 18 sp: 22), history: P
 FAIL: P (expected X) for AT6.KJ864.A4.A42 (hcp: 16 lp: 17 sp: 17), history: P 2H
 FAIL: None (expected 2N) for 962.863.KQJ7.KJ7 (hcp: 10 lp: 10 sp: 10), history: P P 1D 1S X P 2C P
 FAIL: None (expected 3N) for AKJ.T53.KQ65.KJ2 (hcp: 17 lp: 17 sp: 17), history: P 1N P 2C P 2H P 2N P
-Pass 319 of 367 hands
+FAIL: 1S (expected 1H) for AK.72.KT942.AQT5 (hcp: 16 lp: 17 sp: 18), history: P 1C
+Pass 319 of 368 hands
 
 test_negative_double:
 FAIL: 2S (expected P) for 4.A3.KQ65.KJT865 (hcp: 13 lp: 15 sp: 17), history: 1C 1S P P X P
@@ -339,4 +340,4 @@ Pass 2 of 3 hands
 test_weak_game_jump_over_one_nt:
 Pass 3 of 3 hands
 
-Pass 842 (80%) of 1040 total hands
+Pass 842 (80%) of 1041 total hands
