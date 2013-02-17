@@ -131,7 +131,7 @@ Pass 12 of 12 hands
 
 test_misc_hands_from_play:
 FAIL: P (expected 4H) for Q9754.AJ8.A9653. (hcp: 11 lp: 13 sp: 16), history: 1H P 3H P
-FAIL: None (expected P) for 6.AKJ75.KJT86.A4 (hcp: 16 lp: 18 sp: 20), history: 1H P 2N P 4D P 4H P
+FAIL: 5N (expected P) for 6.AKJ75.KJT86.A4 (hcp: 16 lp: 18 sp: 20), history: 1H P 2N P 4D P 4H P
 WARNING : Multiple bids of priority Default:  ['3C from ResponseToJacoby2N()', '4D from ResponseToJacoby2N()']  Choosing highest: 4D
 FAIL: None (expected 3N) for KQ4.KT4.AJ32.954 (hcp: 13 lp: 13 sp: 13), history: P 1C P 1H P 1N P
 WARNING : Multiple bids of priority NewSuit:  ['2D from NewTwoLevelSuitByResponder()', '2H from NewTwoLevelSuitByResponder()']  Choosing highest: 2H
@@ -192,7 +192,7 @@ FAIL: None (expected X) for AKQ76..AT32.AT84 (hcp: 17 lp: 18 sp: 22), history: P
 FAIL: P (expected X) for AT6.KJ864.A4.A42 (hcp: 16 lp: 17 sp: 17), history: P 2H
 FAIL: None (expected 2N) for 962.863.KQJ7.KJ7 (hcp: 10 lp: 10 sp: 10), history: P P 1D 1S X P 2C P
 FAIL: None (expected 3N) for AKJ.T53.KQ65.KJ2 (hcp: 17 lp: 17 sp: 17), history: P 1N P 2C P 2H P 2N P
-Pass 318 of 366 hands
+Pass 319 of 367 hands
 
 test_negative_double:
 FAIL: 2S (expected P) for 4.A3.KQ65.KJT865 (hcp: 13 lp: 15 sp: 17), history: 1C 1S P P X P
@@ -339,4 +339,4 @@ Pass 2 of 3 hands
 test_weak_game_jump_over_one_nt:
 Pass 3 of 3 hands
 
-Pass 841 (80%) of 1039 total hands
+Pass 842 (80%) of 1040 total hands

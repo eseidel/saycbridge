@@ -21,8 +21,11 @@ class Jacoby2N(ResponseToMajorOpen):
         # For example, after 1S P, holding 3-3-4-3, Jacoby2N makes the most sense.
         # Jacoby2N is basically highest priority if you have 4-card support, but
         # temporizing with a new suit is better if you only have 3 card support.
-        '2N': [SupportForPartnerLastBid(4), MinHighCardPoints(13)]
+        # The book says high card points, but we're using 14 LengthPoints instead
+        # to allow bidding Jacoby with a 12hcp hand and 5 card support.
+        '2N': [SupportForPartnerLastBid(4), MinHighCardPoints(14)]
     }
+    point_system = point_systems.LengthPoints
     priority = priorities.Jacoby2N
     semantic_bid_class = semanticbids.Jacoby2N
 
