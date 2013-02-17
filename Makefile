@@ -58,7 +58,7 @@ serve: clean
 	python2.7 `which dev_appserver.py` $(appengine_dir) --use_sqlite
 
 publish: compile
-	@appcfg.py --no_cookies --email=macdome@gmail.com update $(appengine_dir)
+	@appcfg.py --oauth2 --email=macdome@gmail.com update $(appengine_dir)
 
 chromeapp:
 	zip -r bridge.zip dist/crx/*
