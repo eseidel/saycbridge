@@ -68,6 +68,8 @@ class Strain
         if @name not in 'CDHSN'
             throw "Unknown Strain " + @name
 
+    @ORDERED_CHARS = "CDHSN"
+
     @CLUBS = new Strain 'C'
     @DIAMONDS = new Strain 'D'
     @HEARTS = new Strain 'H'
@@ -82,7 +84,7 @@ class Strain
     ]
 
     index: ->
-        return "CDHSN".indexOf(@name)
+        return Strain.ORDERED_CHARS.indexOf(@name)
 
     gameLevel: ->
         if @isNotrump()
@@ -115,8 +117,11 @@ class Strain
     @fromIdentifier: (identifier) ->
         return Strain.fromChar(identifier)
 
+    @isKnownChar: (strainChar) ->
+        return strainChar in Strain.ORDERED_CHARS
+
     @fromChar: (strainChar) ->
-        strainIndex = "CDHSN".indexOf(strainChar)
+        strainIndex = Strain.ORDERED_CHARS.indexOf(strainChar)
         return Strain.STRAINS[strainIndex]
 
 

@@ -85,6 +85,22 @@ class StrainView extends SuitView
             return 'NT'
         return super
 
+    @fragmentReplacingStrainChars: (string) ->
+        fragment = document.createDocumentFragment()
+        currentSubstring = ""
+        for char in string
+            # FIXME: This is a horrible hack for the explorer page which uses "4rS" and expects the "S" not to be replaced.
+            if model.Strain.isKnownChar(char) and (not currentSubstring or currentSubstring[currentSubstring.length-1] != "r")
+                if currentSubstring
+                    fragment.appendChild document.createTextNode(currentSubstring)
+                    currentSubstring = ""
+                fragment.appendChild StrainView.fromStrain(model.Strain.fromChar(char))
+            else
+                currentSubstring += char
+        if currentSubstring
+            fragment.appendChild document.createTextNode(currentSubstring)
+        return fragment
+
     @fromStrain: (strain) ->
         return alloc @, strain
 
@@ -808,7 +824,8 @@ class CallExplorerTable extends HTMLTableElement
                 row = @_rowForCall(calls[calls.length - 1])
                 row.cells[1].textContent = interpretation.ruleName
                 row.cells[2].textContent = interpretation.rulePriority
-                row.cells[3].textContent = interpretation.constraintsString
+                row.cells[3].textContent = ""
+                row.cells[3].appendChild StrainView.fragmentReplacingStrainChars(interpretation.constraintsString)
 
     @fromCallHistory: (callHistory) ->
         return alloc @, callHistory

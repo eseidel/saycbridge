@@ -21,10 +21,12 @@ class BiddingController
         @main.updateView()  # We intentionally do not save the state here.
         @bidAllOtherHands()
 
-    createOption: (name, value) ->
+    createOption: (nameFragment, value) ->
         option = document.createElement 'option'
-        option.value = value or name
-        option.textContent = name
+        option.value = value
+        if typeof nameFragment == "string"
+            nameFragment = document.createTextNode(nameFragment)
+        option.appendChild nameFragment
         return option
 
     createDealSelector: (selectedName, changeFunction) ->
@@ -35,7 +37,7 @@ class BiddingController
         dealSelect.appendChild @createOption('random', 'random')
         dealSelect.appendChild @createOption('notrump hands', 'notrump')
         dealSelect.appendChild @createOption('preempts', 'preempts')
-        dealSelect.appendChild @createOption('2c opens', 'twoclub')
+        dealSelect.appendChild @createOption(view.StrainView.fragmentReplacingStrainChars("2C opens"), 'twoclub')
         $('option', dealSelect).each (index, option) =>
             if option.value == selectedName
                 option.selected = "1"
