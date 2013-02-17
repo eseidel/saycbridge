@@ -389,28 +389,3 @@
 hr {
     visibility: hidden;
 }
-
-@media all and (orientation: portrait) {
-}
-
-@media all and (orientation: landscape) {
-}
-
-@media only screen and (device-width: 768px) {
-  /* General iPad layouts */
-}
-
-@media only screen and (min-device-width: 481px) and (max-device-width: 1024px) and (orientation:portrait) {
-  /* iPad portrait layouts only */
-  body {
-      zoom: 2.0;
-  }
-}
-
-@media only screen and (min-device-width: 481px) and (max-device-width: 1024px) and (orientation:landscape) {
-  /* iPad landscape layouts only */
-}
-
-@media only screen and (max-device-width: 480px) {
-    /* iPhone [portrait + landscape] */
-}
