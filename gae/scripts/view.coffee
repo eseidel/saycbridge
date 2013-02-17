@@ -770,7 +770,7 @@ class BidInterpretationView extends HTMLDivElement
 
         exploreLink = ExploreLink.fromPartialHistory @calls
         exploreLink.textContent = "open in bid explorer"
-        @appendChild exploreLink
+        #@appendChild exploreLink
 
     @fromBoardAndCalls: (board, calls) ->
         return alloc @, board, calls
