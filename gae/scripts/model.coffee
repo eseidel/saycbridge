@@ -725,9 +725,9 @@ class CallHistory
     _indexOfLastNonPass: ->
         if not @calls.length
             return null
-        for call in (@calls[i] for i in [@calls.length - 1..0])
-            if not call.isPass()
-                return call
+        for index in [@calls.length - 1..0]
+            if not @calls[index].isPass()
+                return index
         return null
 
     lastToNotPass: ->
