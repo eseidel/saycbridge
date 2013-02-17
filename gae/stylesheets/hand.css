@@ -330,7 +330,7 @@
 }
 .cardhand {
     padding-left: 8px; /* Compensate for the -5px margin on .cardhand .suitgroup .rank */
-    zoom: 128%;
+    zoom: 118%;
     -moz-transform: scale(1.2);
 }
 
