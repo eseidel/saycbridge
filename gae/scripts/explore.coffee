@@ -52,7 +52,7 @@ class Explore
         @setupView()
 
     setupView: ->
-        content = document.body
+        content = document.getElementById('content')
         $(content).empty()
 
         # FIXME: We probably don't want to display N/S/E/W as part of the CallHistory.
@@ -67,8 +67,6 @@ class Explore
             while callButton and not callButton.call
                 callButton = callButton.parentNode
             @recordCall callButton.call
-
-        content.appendChild @aboutDiv
 
 $ ->
     window.mainController = new Explore
