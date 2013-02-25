@@ -7,6 +7,9 @@
 
 # use a final tie-breaking priority to pick the bid from the list
 
+(Or(clubs > diamonds, clubs == diamonds == 3) AND !(ROT AND hearts >= 5) AND !(ROT AND spades >= 5))
+OR
+(!Or(clubs > diamonds, clubs == diamonds == 3) AND !(ROT AND diamonds >=3) AND !(ROT AND hearts >= 5) AND !(ROT AND spades >= 5))
 
 Intrepretation:
 
@@ -23,6 +26,12 @@ OneOfASuit:
   Level = 1
  constraint:
   rule_of_twenty
+
+
+Metadata associated with bids:
+- warning bit
+- alertable
+
 
 
 namespace Preconditions {
