@@ -29,7 +29,6 @@ point_systems = enum.Enum(
 # rules for our partnership vs. theirs.
 class Knowledge(object):
     def __init__(self):
-        # Using a deque to make the rotate function easy to implement
         self._last_contract = None
         self.me = PositionKnowledge()
         self.rho = PositionKnowledge()
