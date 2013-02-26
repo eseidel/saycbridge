@@ -3,7 +3,7 @@ from suit import *
 
 class Call(object):
     def __init__(self, name):
-        self.name = name
+        self.name = name.upper()
         self.strain = None if self.name in ('P', 'X', 'XX') else strain_from_char(self.name[1])
         self._validate()
 
@@ -57,6 +57,15 @@ class Call(object):
 
     def is_redouble(self):
         return self.name == "XX"
+
+    def __eq__(self, other):
+        return other and self.name == other.name
+
+    def __ne__(self, other):
+        return not self.__eq__(other)
+
+    def __hash__(self):
+        return hash(self.name)
 
     def __cmp__(self, other):
         if other is None:
