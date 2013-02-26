@@ -56,7 +56,7 @@ class Rule(object):
         assert call.name == self.call_name, self.call_name
         for condition, priority in self.conditional_priorites:
             yield priority, condition
-        yield self.priority, True
+        yield self.priority, Bool(True)
 
 
 opening_priorities = enum.Enum(
@@ -73,7 +73,7 @@ class OneClubOpening(Rule):
     call_name = '1C'
     constraints = And(rule_of_twenty, clubs >= 3)
     conditional_priorites = [
-        (Or(clubs > diamonds, clubs == diamonds == 3), opening_priorities.LongestMinor),
+        (Or(clubs > diamonds, And(clubs == 3, diamonds == 3)), opening_priorities.LongestMinor),
     ]
     priority = opening_priorities.LowerMinor
 
@@ -197,7 +197,7 @@ class RuleSelector(object):
             situational_constraints = [condition]
             for unmade_call, unmade_rule in self._call_to_rule_map().iteritems():
                 for unmade_priority, unmade_condition in unmade_rule.possible_priorities_and_conditions_for_call(unmade_call):
-                    if unmade_priority > priority:
+                    if unmade_priority < priority: # FIXME: < means > for priority compares.
                         situational_constraints.append(Not(And(unmade_condition, unmade_rule.constraints)))
             situations.append(And(situational_constraints))
         constraints = Or(situations)
@@ -276,4 +276,4 @@ solver.add(axioms)
 print solver.check()
 
 interpreter = Interpreter()
-print interpreter.knowledge_from_history(CallHistory.from_string('1H')).rho
+print interpreter.knowledge_from_history(CallHistory.from_string('1C')).rho
