@@ -213,20 +213,6 @@ class Interpreter(object):
         OneSpadeOpening(),
     ]
 
-    def _constraints_for_calls_with_priorites_greater_than(self, priority, call_history, knowledge):
-        # Generate a mapping of bid -> fitting rules
-        # Sort fitting rules for each bid, based on priority
-        # generate a map of bid -> highest_priority rule
-        # walk this list of rules, and grab each set of possible priorities, priority_conditions
-        # if !(possible_priority <= priority), then add it to the list of 
-        # return a list of priority_conditions + constraints
-        # FIXME: Isn't SuitedToPlay always going to contribute many available bids?
-        # We should probably only consult rules if they can produce bids of higher priority.
-        bid_to_priority_and_constraints
-        for rule in rules:
-            rule.add_constraints_for_all_conditions_above_priority(priority, )
-
-
     def _select_highest_priority_rule(self, rules):
         # This compares intra-bid priorities and makes sure we are using
         # the right 3H interpretation for this history.
@@ -258,16 +244,6 @@ class Interpreter(object):
             knowledge.rotate()
 
         return knowledge
-            # Take the set of bids which have higher inter-bid priority than the bids your partner made
-            # For each possible prio bid, for each possible priority of that bid
-            # if that possible priority is higher than the pri
-            # take the negation of their constrait.  Add that knowledge to their hand.
-            # take the bid they did make, and add that knowledge to their hand.
-
-
-            # (Or(clubs > diamonds, clubs == diamonds == 3) AND !(ROT AND hearts >= 5) AND !(ROT AND spades >= 5))
-            # OR
-            # (!Or(clubs > diamonds, clubs == diamonds == 3) AND !(ROT AND diamonds >=3) AND !(ROT AND hearts >= 5) AND !(ROT AND spades >= 5))
 
 
 solver = Solver()
