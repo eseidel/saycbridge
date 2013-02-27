@@ -236,6 +236,7 @@ class Interpreter(object):
             partial_history_before_last_call = partial_history.copy_with_partial_history(-1)
 
             rule = selector.rule_for_call(call)
+            knowledge.me.append(rule.constraints)
             # We can interpret bids we know how to make.
             if rule:
                 # Now we know which rule they must have used to make this bid, we need to know which priorities it could have been.
@@ -252,4 +253,6 @@ solver.add(axioms)
 print solver.check()
 
 interpreter = Interpreter()
-print interpreter.knowledge_from_history(CallHistory.from_string('1C')).rho
+solver.add(interpreter.knowledge_from_history(CallHistory.from_string('1C')).rho)
+print solver.check()
+print solver.model()
