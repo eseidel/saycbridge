@@ -64,23 +64,21 @@ class Rule(object):
             yield priority, condition
         yield self.priority, Bool(True)
 
-    def call_and_priority_for_hand(self, hand):
+    def priority_for_call_and_hand(self, call, hand):
         solver = Solver()
         solver.add(axioms)
         solver.add(self.constraints)
         solver.add(expr_from_hand(hand))
-        if not solver.check():
-            return (None, None)
+        if solver.check() != sat:
+            return None
 
-        # FIXME: We may support more calls per rule later.
-        call = Call.from_string(self.call_name)
         for condition, priority in self.conditional_priorities:
             solver.push()
             solver.add(condition)
-            if solver.check():
-                return call, priority
+            if solver.check() != sat:
+                return priority
             solver.pop()
-        return call, self.priority
+        return self.priority
 
 
 opening_priorities = enum.Enum(
@@ -172,7 +170,8 @@ def expr_from_hand(hand):
 
 class PartialOrdering(object):
     def less_than(self, left, right):
-        return left < right
+        # Our enums are written highest to lowest, so we use > for less_than. :)
+        return left > right
 
 
 class StandardAmericanYellowCard(object):
@@ -299,8 +298,8 @@ class RuleSelector(object):
             rule = self.rule_for_call(call)
             if not rule:
                 continue
-            call, priority = rule.call_and_priority_for_hand(hand)
-            if call:
+            priority = rule.priority_for_call_and_hand(call, hand)
+            if priority:
                 possible_calls.add_call_with_priority(call, priority)
         return possible_calls
 
@@ -351,6 +350,6 @@ class Interpreter(object):
 # print solver.model()
 
 bidder = Bidder()
-hand = Hand.from_cdhs_string("AKQJ7.A76.65.432")
+hand = Hand.from_cdhs_string("A76.65.AKQJ7.432")
 print hand
 print bidder.find_call_for(hand, CallHistory.from_string(""))
