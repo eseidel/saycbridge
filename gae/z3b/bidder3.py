@@ -5,6 +5,8 @@ from core.call import Call
 from core.hand import Hand
 from core.callexplorer import CallExplorer
 import core.suit as suit
+from itertools import chain
+import copy
 
 
 spades, hearts, diamonds, clubs, points = Ints('spades hearts diamonds clubs points')
@@ -40,29 +42,68 @@ rule_of_fifteen = spades + points >= 15
 # Inter-bid priorities, "which do you look at first" -- these order preference between "1H, vs. 1S"
 # Tie-breaker-priorities -- planner stage, when 2 bids match which we make.
 
+positions = enum.Enum(
+    "RHO",
+    "Partner",
+    "LHO",
+    "Me",
+)
+
+
+annotations = enum.Enum(
+    "Opening",
+)
+
+
+class Precondition(object):
+    def __repr__(self):
+        return "%s()" % self.name()
+
+    def name(self):
+        return self.__class__.__name__
+
+    def fits(self, history, call):
+        pass
+
+
+class NoOpening(Precondition):
+    def fits(self, history, call):
+        return annotations.Opening not in history.annotations
+
+
+class Opened(Precondition):
+    def __init__(self, position):
+        self.position = position
+
+    def fits(self, history, call):
+        return annotations.Opening in history.annotations_for_position(self.position)
+
+
 class Rule(object):
     preconditions = []
-    category = None
-    # FIXME: This is probably not right.
-    call_name = None
+    category = None # Intra-bid priority
 
+    call_name = None # FIXME: We will likely support more than one call per rule eventually.
+    constraints = None
+    annotations = []
+    conditional_priorities = []
+    priority = None
 
-    def make_call(self, knowlege):
-        # FIXME: It's unclear if this should take a call_history or not
-        # in the kbb, the call history is not passed to apply_rule.
-        for precondition in self.preconditions:
-            if not precondition.matches(knowledge):
-                return None
+    def create_call(self, history):
         # FIXME: kbb rules can make more than one type of call, it's unclear
         # if we should follow that model here or not.
-        return Call(self.call_name)
+        call = Call(self.call_name)
+        for precondition in self.preconditions:
+            if not precondition.fits(history, call):
+                return None
+        return call
 
     def possible_priorities_and_conditions_for_call(self, call):
         # We're eventually going to allow more than one call per rule.
         assert call.name == self.call_name, self.call_name
         for condition, priority in self.conditional_priorities:
             yield priority, condition
-        yield self.priority, Bool(True)
+        yield self.priority, BoolVal(True)
 
     def priority_for_call_and_hand(self, call, hand):
         solver = Solver()
@@ -90,8 +131,14 @@ opening_priorities = enum.Enum(
     "LowerMinor",
 )
 
+
+class Opening(Rule):
+    annotations = [annotations.Opening]
+    preconditions = [NoOpening()]
+
+
 # FIXME: This is preconditioned on no-one having opened.
-class OneClubOpening(Rule):
+class OneClubOpening(Opening):
     call_name = '1C'
     constraints = And(rule_of_twenty, clubs >= 3)
     conditional_priorities = [
@@ -99,7 +146,8 @@ class OneClubOpening(Rule):
     ]
     priority = opening_priorities.LowerMinor
 
-class OneDiamondOpening(Rule):
+
+class OneDiamondOpening(Opening):
     call_name = '1D'
     constraints = And(rule_of_twenty, diamonds >= 3)
     conditional_priorities = [
@@ -107,7 +155,8 @@ class OneDiamondOpening(Rule):
     ]
     priority = opening_priorities.HigherMinor
 
-class OneHeartOpening(Rule):
+
+class OneHeartOpening(Opening):
     call_name = '1H'
     constraints = And(rule_of_twenty, hearts >= 5)
     conditional_priorities = [
@@ -115,7 +164,8 @@ class OneHeartOpening(Rule):
     ]
     priority = opening_priorities.LowerMajor
 
-class OneSpadeOpening(Rule):
+
+class OneSpadeOpening(Opening):
     call_name = '1S'
     constraints = And(rule_of_twenty, spades >= 5)
     conditional_priorities = [
@@ -134,11 +184,19 @@ response_priorities = enum.Enum(
     "OneNotrumpResponse",
 )
 
-class OneDiamondResponse:
+
+class Response(Rule):
+    preconditions = [Opened(positions.Partner)]
+
+
+class OneDiamondResponse(Response):
+    call_name = '1D'
     constraints = And(points >= 6, diamonds >= 4)
     priority = response_priorities.OneDiamondResponse
 
-class OneHeartResponse:
+
+class OneHeartResponse(Response):
+    call_name = '1H'
     constraints = And(points >= 6, hearts >= 4)
     conditional_priorities = [
         (And(hearts >= 5, hearts > spades), response_priorities.LongestNewMajor),
@@ -146,14 +204,18 @@ class OneHeartResponse:
     ]
     priority = response_priorities.OneHeartWithFourResponse
 
-class OneSpadeResponse:
+
+class OneSpadeResponse(Response):
+    call_name = '1S'
     constraints = And(points >= 6, spades >= 4)
     conditional_priorities = [
         (spades >= 5, response_priorities.OneSpadeWithFiveResponse)
     ]
     priority = response_priorities.OneSpadeWithFourResponse
 
-class OneNotrumpResponse:
+
+class OneNotrumpResponse(Response):
+    call_name = '1N'
     constraints = points >= 6
     priority = response_priorities.OneNotrumpResponse
 
@@ -180,23 +242,84 @@ class StandardAmericanYellowCard(object):
         OneDiamondOpening(),
         OneHeartOpening(),
         OneSpadeOpening(),
+        OneDiamondResponse(),
+        OneHeartResponse(),
+        OneSpadeResponse(),
+        OneNotrumpResponse(),
     ]
     priority_ordering = PartialOrdering()
 
 
-class Knowledge(object):
-    def __init__(self):
-        self.me = []
-        self.rho = []
-        self.partner = []
-        self.lho = []
+# The dream:
+# history.my.knowledge
+# history.my.solver
+# history.partner.knowledge
+# annotations.Opening in history.rho.annotations
+# annotations.Opening in history.rho.last_call.annotations
 
-    def rotate(self):
-        old_me = self.me
-        self.me = self.lho
-        self.lho = self.partner
-        self.partner = self.rho
-        self.rho = old_me
+
+class HistoryView(object):
+    def __init__(self, history, position):
+        self.history = history
+        self.position = position
+
+    @property
+    def knowledge(self):
+        return self.history.knowledge_for_position(self.position)
+
+    @property
+    def annotations(self):
+        return self.history.annotations_for_position(self.position)
+
+
+# This class is immutable.
+class History(object):
+    def __init__(self):
+        self.call_history = CallHistory()
+        self._annotation_history = []
+        self._constraint_history = []
+
+    @property
+    def annotations(self):
+        return chain.from_iterable(self._annotation_history)
+
+    def extend_with(self, call, annotations, constraints):
+        history = History()
+        history.call_history = copy.copy(self.call_history)
+        history.call_history.calls.append(call)
+        history._annotation_history = self._annotation_history + [annotations]
+        history._constraint_history = self._constraint_history + [constraints]
+        return history
+
+    def _project_for_position(self, items, position):
+        end = -1 - position.index
+        start = (len(items) + end) % 4
+        return items[start::4]
+
+    def knowledge_for_position(self, position):
+        constraints = self._project_for_position(self._constraint_history, position)
+        if not constraints:
+            return BoolVal(True)
+        return And(*constraints)
+
+    def annotations_for_position(self, position):
+        return chain.from_iterable(self._project_for_position(self._annotation_history, position))
+
+    @property
+    def rho(self):
+        return HistoryView(self, positions.RHO)
+
+    @property
+    def me(self):
+        return HistoryView(self, positions.Me)
+
+    @property
+    def partner(self):
+        return HistoryView(self, positions.Partner)
+
+    @property
+    def lho(self):
+        return HistoryView(self, positions.LHO)
 
 
 class PossibleCalls(object):
@@ -230,9 +353,9 @@ class Bidder(object):
         self.system = StandardAmericanYellowCard
 
     def find_call_for(self, hand, call_history):
-        knowledge = Interpreter().knowledge_from_history(call_history)
+        history = Interpreter().create_history(call_history)
         # Select highest-intra-bid-priority rules for all possible bids
-        rule_selector = RuleSelector(self.system, call_history, knowledge)
+        rule_selector = RuleSelector(self.system, history)
         # Compute inter-bid priorities for each using the hand.
         possible_calls = rule_selector.possible_calls_for_hand(hand)
         # The resulting priorities are only partially ordered, so have to be walked in a tree.
@@ -245,10 +368,9 @@ class Bidder(object):
 
 
 class RuleSelector(object):
-    def __init__(self, system, call_history, knowledge):
-        self._system = system
-        self.call_history = call_history
-        self.knowledge = knowledge
+    def __init__(self, system, history):
+        self.system = system
+        self.history = history
         self._call_to_rule_cache = None
         self._call_to_compiled_constraints = {}
 
@@ -257,8 +379,8 @@ class RuleSelector(object):
             return self._call_to_rule_cache
 
         self._call_to_rule_cache = {}
-        for rule in self._system.rules:
-            call = rule.make_call(self.knowledge)
+        for rule in self.system.rules:
+            call = rule.create_call(self.history)
             if call:
                 exisiting_rule = self._call_to_rule_cache.get(call)
                 if not exisiting_rule or rule.category > exisiting_rule.category:
@@ -293,8 +415,8 @@ class RuleSelector(object):
         return constraints
 
     def possible_calls_for_hand(self, hand):
-        possible_calls = PossibleCalls(self._system.priority_ordering)
-        for call in CallExplorer().possible_calls_over(self.call_history):
+        possible_calls = PossibleCalls(self.system.priority_ordering)
+        for call in CallExplorer().possible_calls_over(self.history.call_history):
             rule = self.rule_for_call(call)
             if not rule:
                 continue
@@ -315,41 +437,38 @@ class Interpreter(object):
         # This lets us chose conventional bids over natural bids, for instance.
         return rules[0]
 
-    def knowledge_from_history(self, call_history):
-        knowledge = Knowledge()
+    def create_history(self, call_history):
+        history = History()
         viewer = call_history.position_to_call()
 
         for partial_history in call_history.ascending_partial_histories(step=1):
-            selector = RuleSelector(self.system, partial_history, knowledge)
+            selector = RuleSelector(self.system, history)
 
             call = partial_history.last_call()
-            position_knowledge = knowledge.me
-            partial_history_before_last_call = partial_history.copy_with_partial_history(-1)
-
             rule = selector.rule_for_call(call)
             # We can interpret bids we know how to make.
+            constraints = BoolVal(True)
+            annotations = []
             if rule:
-                new_constraints = [rule.constraints]
-                new_constraints.append(selector.compile_constraints_for_call(call))
+                annotations.extend(rule.annotations)
+                constraints = And(rule.constraints, selector.compile_constraints_for_call(call))
                 # FIXME: We should validate the new constraints before saving them in the knowledge.
-                knowledge.me.extend(new_constraints)
+            history = history.extend_with(call, annotations, constraints)
 
-            knowledge.rotate()
-
-        return knowledge
+        return history
 
 
-# solver = Solver()
-# solver.add(axioms)
+solver = Solver()
+solver.add(axioms)
 
-# print solver.check()
-
-# interpreter = Interpreter()
-# solver.add(interpreter.knowledge_from_history(CallHistory.from_string('1C')).rho)
-# print solver.check()
-# print solver.model()
+interpreter = Interpreter()
+history = interpreter.create_history(CallHistory.from_string('1C P 1H'))
+solver.add(history.rho.knowledge)
+print list(history.rho.annotations)
+print solver.check()
+print solver.model()
 
 bidder = Bidder()
 hand = Hand.from_cdhs_string("A76.65.AKQJ7.432")
 print hand
-print bidder.find_call_for(hand, CallHistory.from_string(""))
+print bidder.find_call_for(hand, CallHistory.from_string("1C P"))
