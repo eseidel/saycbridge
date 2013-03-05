@@ -132,6 +132,7 @@ class Rule(object):
 
 
 opening_priorities = enum.Enum(
+    "StrongTwoClubs",
     "NoTrumpOpening",
     "LongestMajor",
     "HigherMajor",
@@ -188,6 +189,12 @@ class OneNoTrumpOpening(Opening):
     call_name = '1N'
     constraints = And(points >= 15, points <= 17, balanced)
     priority = opening_priorities.NoTrumpOpening
+
+
+class StrongTwoClubs(Opening):
+    call_name = '2C'
+    constraints = points >= 22  # FIXME: Should support "or 9+ winners"
+    priority = opening_priorities.StrongTwoClubs
 
 
 response_priorities = enum.Enum(
@@ -264,6 +271,7 @@ class StandardAmericanYellowCard(object):
         OneSpadeResponse(),
         OneNotrumpResponse(),
         OneNoTrumpOpening(),
+        StrongTwoClubs(),
     ]
     priority_ordering = PartialOrdering()
 
@@ -480,8 +488,9 @@ class Interpreter(object):
 # solver.add(axioms)
 
 # interpreter = Interpreter()
-# history = interpreter.create_history(CallHistory.from_string('1C P 1H'))
+# history = interpreter.create_history(CallHistory.from_string('1C'))
 # solver.add(history.rho.knowledge)
+# print simplify(simplify(history.rho.knowledge))
 # print list(history.rho.annotations)
 # print solver.check()
 # print solver.model()
