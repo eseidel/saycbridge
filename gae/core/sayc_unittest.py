@@ -11,7 +11,6 @@ from core.callhistory import CallHistory, Vulnerability
 from core.board import Board
 from core.hand import Hand
 from handlers.autobidder import Autobidder
-from gib import Gib
 
 
 _log = logging.getLogger(__name__)
@@ -55,7 +54,7 @@ class SAYCBidderTest(unittest.TestCase):
     # FIXME: Once we can use Python 2.7, we'd rather use setUpClass and tearDownClass.
     total_tests = 0
     total_failures = 0
-    use_gib_bidder = False
+    bidder_class = KnowledgeBasedBidder
 
     @classmethod
     def summarize_total_failures(cls):
@@ -1076,10 +1075,7 @@ class SAYCBidderTest(unittest.TestCase):
 
     def _run_bidding_tests(self, expected_calls):
         fail_count = 0
-        if self.use_gib_bidder:
-            bidder = Gib()
-        else:
-            bidder = KnowledgeBasedBidder()
+        bidder = self.bidder_class()
         tests_run = dict()
 
         for expectation in expected_calls:

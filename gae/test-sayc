@@ -11,6 +11,8 @@ from core.sayc_unittest import *
 from kbb.handconstraints_unittest import *
 from kbb.semanticbids_unittest import *
 from kbb.interpreter_unittest import *
+import gib
+import z3b.bidder3 as z3b
 
 import logging
 import unittest
@@ -35,7 +37,10 @@ if __name__ == '__main__':
 
     if '-g' in sys.argv:
         sys.argv.remove('-g')
-        SAYCBidderTest.use_gib_bidder = True
+        SAYCBidderTest.bidder_class = gib.Gib
+    if '-z' in sys.argv:
+        sys.argv.remove('-z')
+        SAYCBidderTest.bidder_class = z3b.Bidder
 
     try:
         unittest.main()
