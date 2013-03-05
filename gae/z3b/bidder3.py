@@ -125,7 +125,7 @@ class Rule(object):
         for condition, priority in self.conditional_priorities:
             solver.push()
             solver.add(condition)
-            if solver.check() != sat:
+            if solver.check() == sat:
                 return priority
             solver.pop()
         return self.priority
@@ -474,3 +474,19 @@ class Interpreter(object):
             history = history.extend_with(call, annotations, constraints)
 
         return history
+
+
+# solver = Solver()
+# solver.add(axioms)
+
+# interpreter = Interpreter()
+# history = interpreter.create_history(CallHistory.from_string('1C P 1H'))
+# solver.add(history.rho.knowledge)
+# print list(history.rho.annotations)
+# print solver.check()
+# print solver.model()
+
+# bidder = Bidder()
+# hand = Hand.from_cdhs_string("AJ763.Q32.K8.A65")
+# print hand
+# print bidder.find_call_for(hand, CallHistory.from_string(""))
