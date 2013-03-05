@@ -474,19 +474,3 @@ class Interpreter(object):
             history = history.extend_with(call, annotations, constraints)
 
         return history
-
-
-solver = Solver()
-solver.add(axioms)
-
-interpreter = Interpreter()
-history = interpreter.create_history(CallHistory.from_string('1C P 1H'))
-solver.add(history.rho.knowledge)
-print list(history.rho.annotations)
-print solver.check()
-print solver.model()
-
-bidder = Bidder()
-hand = Hand.from_cdhs_string("A76.65.AKQJ7.432")
-print hand
-print bidder.find_call_for(hand, CallHistory.from_string("1C P"))

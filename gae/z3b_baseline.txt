@@ -1,12 +1,3 @@
-[]
-sat
-[hearts = 4,
- points = 6,
- diamonds = 0,
- clubs = 6,
- spades = 3]
-Hand(['A76', '65', 'AKQJ7', '432'])
-1H
 WARNING : Rule ThreeLevelSuitRebidByResponder() for bid 3H resulted in invalid knowledge: me: 10-13 hcp, 0-3C 0-3D 6-3H 6+S (last: 2H fsf) partner: 12-18 hcp, 4+C 4+D 0-5H 0-3S (last: 3C, opened) lho 0-16 hcp (last: P) rho: 0-16 hcp (last: P)
 WARNING : Rule ResponderReverse() for bid 2S resulted in invalid knowledge: me: 12-7 hcp, 4+S (last: 2D) partner: 22+ hcp, 5+H (last: 2H, opened) lho 0-16 hcp (last: P) rho: 0-16 hcp (last: P)
 test_doubles:
