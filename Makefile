@@ -1,4 +1,4 @@
-.PHONY: all clean baseline accept check compile serve publish chromeapp
+.PHONY: all clean baseline baseline-z3 accept accept-z3 check check-z3 compile serve publish chromeapp
 
 appengine_dir = gae
 scripts_dir = $(appengine_dir)/scripts
@@ -28,12 +28,22 @@ clean:
 baseline:
 	@$(appengine_dir)/test-sayc > $(appengine_dir)/kbb_baseline.txt ; true
 
+baseline-z3:
+	@$(appengine_dir)/test-sayc -z > $(appengine_dir)/z3b_baseline.txt ; true
+
 accept:
 	@mv $(appengine_dir)/kbb_actual.txt $(appengine_dir)/kbb_baseline.txt
+
+accept-z3:
+	@mv $(appengine_dir)/z3b_actual.txt $(appengine_dir)/z3b_baseline.txt
 
 check: clean
 	@$(appengine_dir)/test-sayc > $(appengine_dir)/kbb_actual.txt ; true
 	@diff -U 7 $(appengine_dir)/kbb_baseline.txt $(appengine_dir)/kbb_actual.txt ; true
+
+check-z3: clean
+	@$(appengine_dir)/test-sayc -z > $(appengine_dir)/z3b_actual.txt ; true
+	@diff -U 7 $(appengine_dir)/z3b_baseline.txt $(appengine_dir)/z3b_actual.txt ; true
 
 compile:
 	coffee --compile $(scripts_dir)/*.coffee

@@ -38,6 +38,15 @@ rule_of_nineteen = Or(
 
 rule_of_fifteen = spades + points >= 15
 
+balanced = And(clubs >= 2, diamonds >= 2, hearts >= 2, spades >= 2,
+    Or(
+        And(hearts > 2, diamonds > 2, clubs > 2),
+        And(spades > 2, diamonds > 2, clubs > 2),
+        And(spades > 2, hearts > 2, clubs > 2),
+        And(spades > 2, hearts > 2, diamonds > 2),
+    )
+)
+
 # Intra-bid priorities, first phase, "interpretation priorities", like "natural, conventional" (possibly should be called types?) These select which "1N" meaning is correct.
 # Inter-bid priorities, "which do you look at first" -- these order preference between "1H, vs. 1S"
 # Tie-breaker-priorities -- planner stage, when 2 bids match which we make.
@@ -123,6 +132,7 @@ class Rule(object):
 
 
 opening_priorities = enum.Enum(
+    "NoTrumpOpening",
     "LongestMajor",
     "HigherMajor",
     "LowerMajor",
@@ -172,6 +182,12 @@ class OneSpadeOpening(Opening):
         (spades > hearts, opening_priorities.LongestMajor),
     ]
     priority = opening_priorities.HigherMajor
+
+
+class OneNoTrumpOpening(Opening):
+    call_name = '1N'
+    constraints = And(points >= 15, points <= 17, balanced)
+    priority = opening_priorities.NoTrumpOpening
 
 
 response_priorities = enum.Enum(
@@ -237,6 +253,7 @@ class PartialOrdering(object):
 
 
 class StandardAmericanYellowCard(object):
+    # Rule ordering does not matter.  We could have python crawl the files to generate this list instead.
     rules = [
         OneClubOpening(),
         OneDiamondOpening(),
@@ -246,6 +263,7 @@ class StandardAmericanYellowCard(object):
         OneHeartResponse(),
         OneSpadeResponse(),
         OneNotrumpResponse(),
+        OneNoTrumpOpening(),
     ]
     priority_ordering = PartialOrdering()
 
