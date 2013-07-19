@@ -65,6 +65,8 @@ annotations = enum.Enum(
     "Opening",
 )
 
+def expr_for_suit(suit):
+    return (clubs, diamonds, hearts, spades)[suit]
 
 class Precondition(object):
     def __repr__(self):
@@ -92,10 +94,10 @@ class Opened(Precondition):
 
 class RaiseOfPartnersLastSuit(Precondition):
     def fits(self, history, call):
-        partner_last_call_suit = history.partner.last_call.strain
-        if partner_last_call_suit not in SUITS:
+        partner_last_call = history.partner.last_call
+        if not partner_last_call or partner_last_call.strain not in suit.SUITS:
             return False
-        return call.strain == partner_last_call_suit and history.partner.min_length(partner_last_call_suit) >= 3
+        return call.strain == partner_last_call.strain and history.partner.min_length(partner_last_call.strain) >= 3
 
 
 class Rule(object):
@@ -271,10 +273,10 @@ class Constraint(object):
 
 class Z3(object):
     def __init__(self, expr):
-        self.expr = expr
+        self._expr = expr
 
     def expr(self, history, call):
-        return self.expr
+        return self._expr
 
 
 class MinimumCombinedLength(Constraint):
@@ -324,7 +326,7 @@ class StandardAmericanYellowCard(object):
         OneNotrumpResponse(),
         OneNoTrumpOpening(),
         StrongTwoClubs(),
-        #TwoHeartMinimumRaise(),
+        TwoHeartMinimumRaise(),
     ]
     priority_ordering = PartialOrdering()
 
@@ -353,6 +355,10 @@ class PositionView(object):
     @property
     def annotations(self):
         return self.history.annotations_for_position(self.position)
+
+    @property
+    def last_call(self):
+        return self.history.call_history.last_call_by(self.history._offset_from_dealer(self.position))
 
     def min_length(self, suit):
         return self.history.min_length_for_position(self.position, suit)
@@ -385,6 +391,9 @@ class History(object):
         history._constraint_history = self._constraint_history + [constraints]
         return history
 
+    def _offset_from_dealer(self, position):
+        return (len(self.call_history) - 1 - position.index) % 4
+
     def _project_for_position(self, items, position):
         end = -1 - position.index
         start = (len(items) + end) % 4
@@ -401,7 +410,8 @@ class History(object):
     def solver_for_position(self, position):
         solver = Solver()
         solver.add(axioms)
-        solver.add(self.knowledge)
+        solver.add(self.knowledge_for_position(position))
+        return solver
 
     @memoized
     def annotations_for_position(self, position):
@@ -466,9 +476,9 @@ class Bidder(object):
 
     def find_call_for(self, hand, call_history):
         history = Interpreter().create_history(call_history)
-        # Select highest-intra-bid-priority rules for all possible bids
+        # Select highest-intra-bid-priority (category) rules for all possible bids
         rule_selector = RuleSelector(self.system, history)
-        # Compute inter-bid priorities for each using the hand.
+        # Compute inter-bid priorities (priority) for each using the hand.
         possible_calls = rule_selector.possible_calls_for_hand(history, hand)
         # The resulting priorities are only partially ordered, so have to be walked in a tree.
         maximal_calls = possible_calls.calls_of_maximal_priority()
@@ -582,7 +592,7 @@ class Interpreter(object):
 # print solver.check()
 # print solver.model()
 
-# bidder = Bidder()
-# hand = Hand.from_cdhs_string("AJ763.Q32.K8.A65")
-# print hand
-# print bidder.find_call_for(hand, CallHistory.from_string(""))
+bidder = Bidder()
+hand = Hand.from_cdhs_string("AJ763.Q32.K8.A65")
+print hand
+print bidder.find_call_for(hand, CallHistory.from_string("1H P"))

@@ -111,6 +111,9 @@ class CallHistory(object):
     def __str__(self):
         return "<CallHistory: %s>" % self.calls_string()
 
+    def __len__(self):
+        return len(self.calls)
+
     def can_double(self):
         # Make sure we haven't already doubled.
         if not self.last_non_pass().is_contract():
