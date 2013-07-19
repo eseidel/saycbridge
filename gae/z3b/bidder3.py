@@ -237,6 +237,9 @@ class OneDiamondResponse(Response):
     z3_constraint = And(points >= 6, diamonds >= 4)
     priority = response_priorities.OneDiamondResponse
 
+# FAIL: None (expected 1S) for 432.K765.K8.A753 (hcp: 10 lp: 10 sp: 11), history: 1H P
+# FAIL: None (expected 2D) for Q98.KJ732.KJ.JT9 (hcp: 11 lp: 12 sp: 11), history: 1H P
+# FAIL: None (expected 2C) for QJ54.J753.KT2.A4 (hcp: 11 lp: 11 sp: 12), history: 1S P
 
 class OneHeartResponse(Response):
     call_name = '1H'
@@ -291,26 +294,21 @@ class MinimumCombinedLength(Constraint):
         return expr_for_suit(suit) >= implied_length
 
 
-class TwoHeartMinimumRaise(Rule):
+class TwoHeartMinimumRaise(Response):
     call_name = '2H'
     preconditions = [RaiseOfPartnersLastSuit()]
     constraints = [MinimumCombinedLength(8), Z3(points >= 6)]
     priority = response_priorities.MajorMinimumRaise
 
 
-class TwoSpadeMinimumRaise(Rule):
+class TwoSpadeMinimumRaise(Response):
     call_name = '2S'
     preconditions = [RaiseOfPartnersLastSuit()]
     constraints = [MinimumCombinedLength(8), Z3(points >= 6)]
     priority = response_priorities.MajorMinimumRaise
 
-# FAIL: None (expected 1S) for 432.K765.K8.A753 (hcp: 10 lp: 10 sp: 11), history: 1H P
-# FAIL: None (expected 2D) for Q98.KJ732.KJ.JT9 (hcp: 11 lp: 12 sp: 11), history: 1H P
-# FAIL: None (expected 2C) for QJ54.J753.KT2.A4 (hcp: 11 lp: 11 sp: 12), history: 1S P
-# FAIL: 2H (expected 3H) for 43.KT76.K85.A753 (hcp: 10 lp: 10 sp: 11), history: 1H P
 
-
-class ThreeHeartLimitRaise(Rule):
+class ThreeHeartLimitRaise(Response):
     call_name = '3H'
     preconditions = [RaiseOfPartnersLastSuit()]
     constraints = [MinimumCombinedLength(8), Z3(points >= 10)]
@@ -421,25 +419,21 @@ class History(object):
         start = (len(items) + end) % 4
         return items[start::4]
 
-    @memoized
     def knowledge_for_position(self, position):
         constraints = self._project_for_position(self._constraint_history, position)
         if not constraints:
             return BoolVal(True)
         return And(*constraints)
 
-    @memoized
     def solver_for_position(self, position):
         solver = Solver()
         solver.add(axioms)
         solver.add(self.knowledge_for_position(position))
         return solver
 
-    @memoized
     def annotations_for_position(self, position):
         return chain.from_iterable(self._project_for_position(self._annotation_history, position))
 
-    @memoized
     def min_length_for_position(self, position, suit):
         solver = self.solver_for_position(position)
         suit_expr = expr_for_suit(suit)
@@ -531,11 +525,9 @@ class RuleSelector(object):
                     self._call_to_rule_cache[call] = rule
         return self._call_to_rule_cache
 
-    # FIXME: This could just use @memoized?
     def rule_for_call(self, call_to_lookup):
         return self._call_to_rule_map().get(call_to_lookup)
 
-    # FIXME: This could just use @memoized?
     def compile_constraints_for_call(self, history, call):
         constraints = self._call_to_compiled_constraints.get(call)
         if constraints:
@@ -552,7 +544,7 @@ class RuleSelector(object):
             for unmade_call, unmade_rule in self._call_to_rule_map().iteritems():
                 for unmade_priority, unmade_condition in unmade_rule.possible_priorities_and_conditions_for_call(unmade_call):
                     if unmade_priority < priority: # FIXME: < means > for priority compares.
-                        situational_constraints.append(Not(And(unmade_condition, unmade_rule.constraints_expr_for_call(history, call))))
+                        situational_constraints.append(Not(And(unmade_condition, unmade_rule.constraints_expr_for_call(history, unmade_call))))
             situations.append(And(situational_constraints))
         constraints = Or(situations)
         self._call_to_compiled_constraints[call] = constraints
@@ -614,7 +606,10 @@ class Interpreter(object):
 # print solver.check()
 # print solver.model()
 
-bidder = Bidder()
-hand = Hand.from_cdhs_string("A8763.32.KQ8.765")
-print hand
-print bidder.find_call_for(hand, CallHistory.from_string("1H P"))
+    # ["K4.AKQJ94.87.A96", "3N", "1D P 1H P"],  # p54, h21
+
+
+# bidder = Bidder()
+# hand = Hand.from_cdhs_string("T.8.AKJ762.AKT32")
+# print hand
+# print bidder.find_call_for(hand, CallHistory.from_string("1H P 1N P"))
