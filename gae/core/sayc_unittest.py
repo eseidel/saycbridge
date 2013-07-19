@@ -1050,6 +1050,7 @@ class SAYCBidderTest(unittest.TestCase):
         ['AKJ.T53.KQ65.KJ2', '3N', 'P 1N P 2C P 2H P 2N P', 'Both'],  # 10-cddc6288b36f35691da2c051bb, S should bid 3N with 17 hcp?  Even if flat?
         ['K.K7.KJ98542.QT8', '2N', '1H P', 'Both'],  # 7-9f9ee86653fd2209088b7f4447, N should bid Jacoby 2NT with 12 hcp and 5+
         ['AK.72.KT942.AQT5', '1H', 'P 1C', 'N-S'], # S should bid 1H
+        ['AKT4.AT.A82.J876', '1N', '1C P P', 'E-W'],  # 9-9e00d3d9a9b93e48d91d07f2d8, W should overcall 1N (or maybe big-hand double?)
     ]
 
     # Boards for further examination:

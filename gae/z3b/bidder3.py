@@ -7,6 +7,8 @@ from core.callexplorer import CallExplorer
 import core.suit as suit
 from itertools import chain
 import copy
+from third_party.memoized import memoized
+
 
 
 spades, hearts, diamonds, clubs, points = Ints('spades hearts diamonds clubs points')
@@ -88,12 +90,21 @@ class Opened(Precondition):
         return annotations.Opening in history.annotations_for_position(self.position)
 
 
+class RaiseOfPartnersLastSuit(Precondition):
+    def fits(self, history, call):
+        partner_last_call_suit = history.partner.last_call.strain
+        if partner_last_call_suit not in SUITS:
+            return False
+        return call.strain == partner_last_call_suit and history.partner.min_length(partner_last_call_suit) >= 3
+
+
 class Rule(object):
     preconditions = []
     category = None # Intra-bid priority
 
     call_name = None # FIXME: We will likely support more than one call per rule eventually.
-    constraints = None
+    constraints = []
+    z3_constraint = None
     annotations = []
     conditional_priorities = []
     priority = None
@@ -114,10 +125,10 @@ class Rule(object):
             yield priority, condition
         yield self.priority, BoolVal(True)
 
-    def priority_for_call_and_hand(self, call, hand):
+    def priority_for_call_and_hand(self, history, call, hand):
         solver = Solver()
         solver.add(axioms)
-        solver.add(self.constraints)
+        solver.add(self.constraints_expr_for_call(history, call))
         solver.add(expr_from_hand(hand))
         if solver.check() != sat:
             return None
@@ -129,6 +140,12 @@ class Rule(object):
                 return priority
             solver.pop()
         return self.priority
+
+    def constraints_expr_for_call(self, history, call):
+        exprs = [constraint.expr(history, call) for constraint in self.constraints]
+        if self.z3_constraint:
+            exprs.append(self.z3_constraint)
+        return And(exprs)
 
 
 opening_priorities = enum.Enum(
@@ -148,10 +165,9 @@ class Opening(Rule):
     preconditions = [NoOpening()]
 
 
-# FIXME: This is preconditioned on no-one having opened.
 class OneClubOpening(Opening):
     call_name = '1C'
-    constraints = And(rule_of_twenty, clubs >= 3)
+    z3_constraint = And(rule_of_twenty, clubs >= 3)
     conditional_priorities = [
         (Or(clubs > diamonds, And(clubs == 3, diamonds == 3)), opening_priorities.LongestMinor),
     ]
@@ -160,7 +176,7 @@ class OneClubOpening(Opening):
 
 class OneDiamondOpening(Opening):
     call_name = '1D'
-    constraints = And(rule_of_twenty, diamonds >= 3)
+    z3_constraint = And(rule_of_twenty, diamonds >= 3)
     conditional_priorities = [
         (diamonds > clubs, opening_priorities.LongestMinor),
     ]
@@ -169,7 +185,7 @@ class OneDiamondOpening(Opening):
 
 class OneHeartOpening(Opening):
     call_name = '1H'
-    constraints = And(rule_of_twenty, hearts >= 5)
+    z3_constraint = And(rule_of_twenty, hearts >= 5)
     conditional_priorities = [
         (hearts > spades, opening_priorities.LongestMajor),
     ]
@@ -178,7 +194,7 @@ class OneHeartOpening(Opening):
 
 class OneSpadeOpening(Opening):
     call_name = '1S'
-    constraints = And(rule_of_twenty, spades >= 5)
+    z3_constraint = And(rule_of_twenty, spades >= 5)
     conditional_priorities = [
         (spades > hearts, opening_priorities.LongestMajor),
     ]
@@ -187,17 +203,18 @@ class OneSpadeOpening(Opening):
 
 class OneNoTrumpOpening(Opening):
     call_name = '1N'
-    constraints = And(points >= 15, points <= 17, balanced)
+    z3_constraint = And(points >= 15, points <= 17, balanced)
     priority = opening_priorities.NoTrumpOpening
 
 
 class StrongTwoClubs(Opening):
     call_name = '2C'
-    constraints = points >= 22  # FIXME: Should support "or 9+ winners"
+    z3_constraint = points >= 22  # FIXME: Should support "or 9+ winners"
     priority = opening_priorities.StrongTwoClubs
 
 
 response_priorities = enum.Enum(
+    "MajorMinimumRaise",
     "LongestNewMajor",
     "OneSpadeWithFiveResponse",
     "OneHeartWithFiveResponse",
@@ -214,13 +231,13 @@ class Response(Rule):
 
 class OneDiamondResponse(Response):
     call_name = '1D'
-    constraints = And(points >= 6, diamonds >= 4)
+    z3_constraint = And(points >= 6, diamonds >= 4)
     priority = response_priorities.OneDiamondResponse
 
 
 class OneHeartResponse(Response):
     call_name = '1H'
-    constraints = And(points >= 6, hearts >= 4)
+    z3_constraint = And(points >= 6, hearts >= 4)
     conditional_priorities = [
         (And(hearts >= 5, hearts > spades), response_priorities.LongestNewMajor),
         (hearts >= 5, response_priorities.OneHeartWithFiveResponse),
@@ -230,7 +247,7 @@ class OneHeartResponse(Response):
 
 class OneSpadeResponse(Response):
     call_name = '1S'
-    constraints = And(points >= 6, spades >= 4)
+    z3_constraint = And(points >= 6, spades >= 4)
     conditional_priorities = [
         (spades >= 5, response_priorities.OneSpadeWithFiveResponse)
     ]
@@ -239,8 +256,43 @@ class OneSpadeResponse(Response):
 
 class OneNotrumpResponse(Response):
     call_name = '1N'
-    constraints = points >= 6
+    z3_constraint = points >= 6
     priority = response_priorities.OneNotrumpResponse
+
+
+# Move to z3_constraint for constraints?
+# Add Constraint type, and Z3() wrapper
+
+
+class Constraint(object):
+    def expr(self, history, call):
+        pass
+
+
+class Z3(object):
+    def __init__(self, expr):
+        self.expr = expr
+
+    def expr(self, history, call):
+        return self.expr
+
+
+class MinimumCombinedLength(Constraint):
+    def __init__(self, min_count):
+        self.min_count = min_count
+
+    def expr(self, history, call):
+        suit = call.strain
+        partner_promised_length = history.partner.min_length(suit)
+        implied_length = max(self.min_count - partner_promised_length, 0)
+        return expr_for_suit(suit) >= implied_length
+
+
+class TwoHeartMinimumRaise(Rule):
+    call_name = '2H'
+    preconditions = [RaiseOfPartnersLastSuit()]
+    constraints = [MinimumCombinedLength(8), Z3(points >= 6)]
+    priority = response_priorities.MajorMinimumRaise
 
 
 def expr_from_hand(hand):
@@ -272,6 +324,7 @@ class StandardAmericanYellowCard(object):
         OneNotrumpResponse(),
         OneNoTrumpOpening(),
         StrongTwoClubs(),
+        #TwoHeartMinimumRaise(),
     ]
     priority_ordering = PartialOrdering()
 
@@ -282,9 +335,13 @@ class StandardAmericanYellowCard(object):
 # history.partner.knowledge
 # annotations.Opening in history.rho.annotations
 # annotations.Opening in history.rho.last_call.annotations
+# history.partner.min_length(suit)
+# history.partner.max_length(suit)
+# history.partner.min_hcp()
+# history.partner.max_hcp()
 
 
-class HistoryView(object):
+class PositionView(object):
     def __init__(self, history, position):
         self.history = history
         self.position = position
@@ -296,6 +353,17 @@ class HistoryView(object):
     @property
     def annotations(self):
         return self.history.annotations_for_position(self.position)
+
+    def min_length(self, suit):
+        return self.history.min_length_for_position(self.position, suit)
+
+
+def is_valid(solver, expr):
+    solver.push()
+    solver.add(Not(expr))
+    result = solver.check() == unsat
+    solver.pop()
+    return result
 
 
 # This class is immutable.
@@ -322,30 +390,48 @@ class History(object):
         start = (len(items) + end) % 4
         return items[start::4]
 
+    @memoized
     def knowledge_for_position(self, position):
         constraints = self._project_for_position(self._constraint_history, position)
         if not constraints:
             return BoolVal(True)
         return And(*constraints)
 
+    @memoized
+    def solver_for_position(self, position):
+        solver = Solver()
+        solver.add(axioms)
+        solver.add(self.knowledge)
+
+    @memoized
     def annotations_for_position(self, position):
         return chain.from_iterable(self._project_for_position(self._annotation_history, position))
 
+    @memoized
+    def min_length_for_position(self, position, suit):
+        solver = self.solver_for_position(position)
+        suit_expr = expr_for_suit(suit)
+        # FIXME: This would be faster as a binary search.
+        for length in range(13, 0, -1):
+            if is_valid(solver, suit_expr >= length):
+                return length
+        return 0
+
     @property
     def rho(self):
-        return HistoryView(self, positions.RHO)
+        return PositionView(self, positions.RHO)
 
     @property
     def me(self):
-        return HistoryView(self, positions.Me)
+        return PositionView(self, positions.Me)
 
     @property
     def partner(self):
-        return HistoryView(self, positions.Partner)
+        return PositionView(self, positions.Partner)
 
     @property
     def lho(self):
-        return HistoryView(self, positions.LHO)
+        return PositionView(self, positions.LHO)
 
 
 class PossibleCalls(object):
@@ -383,7 +469,7 @@ class Bidder(object):
         # Select highest-intra-bid-priority rules for all possible bids
         rule_selector = RuleSelector(self.system, history)
         # Compute inter-bid priorities for each using the hand.
-        possible_calls = rule_selector.possible_calls_for_hand(hand)
+        possible_calls = rule_selector.possible_calls_for_hand(history, hand)
         # The resulting priorities are only partially ordered, so have to be walked in a tree.
         maximal_calls = possible_calls.calls_of_maximal_priority()
         # Currently we have no tie-breaking priorities (no planner), so we just select the first call we found.
@@ -418,8 +504,8 @@ class RuleSelector(object):
         return self._call_to_rule_map().get(call_to_lookup)
 
     # FIXME: This could just use @memoized?
-    def compile_constraints_for_call(self, call_to_lookup):
-        constraints = self._call_to_compiled_constraints.get(call_to_lookup)
+    def compile_constraints_for_call(self, history, call):
+        constraints = self._call_to_compiled_constraints.get(call)
         if constraints:
             return constraints
 
@@ -428,25 +514,25 @@ class RuleSelector(object):
         # (!Or(clubs > diamonds, clubs == diamonds == 3) AND !(ROT AND diamonds >=3) AND !(ROT AND hearts >= 5) AND !(ROT AND spades >= 5))
 
         situations = []
-        used_rule = self.rule_for_call(call_to_lookup)
-        for priority, condition in used_rule.possible_priorities_and_conditions_for_call(call_to_lookup):
+        used_rule = self.rule_for_call(call)
+        for priority, condition in used_rule.possible_priorities_and_conditions_for_call(call):
             situational_constraints = [condition]
             for unmade_call, unmade_rule in self._call_to_rule_map().iteritems():
                 for unmade_priority, unmade_condition in unmade_rule.possible_priorities_and_conditions_for_call(unmade_call):
                     if unmade_priority < priority: # FIXME: < means > for priority compares.
-                        situational_constraints.append(Not(And(unmade_condition, unmade_rule.constraints)))
+                        situational_constraints.append(Not(And(unmade_condition, unmade_rule.constraints_expr_for_call(history, call))))
             situations.append(And(situational_constraints))
         constraints = Or(situations)
-        self._call_to_compiled_constraints[call_to_lookup] = constraints
+        self._call_to_compiled_constraints[call] = constraints
         return constraints
 
-    def possible_calls_for_hand(self, hand):
+    def possible_calls_for_hand(self, history, hand):
         possible_calls = PossibleCalls(self.system.priority_ordering)
         for call in CallExplorer().possible_calls_over(self.history.call_history):
             rule = self.rule_for_call(call)
             if not rule:
                 continue
-            priority = rule.priority_for_call_and_hand(call, hand)
+            priority = rule.priority_for_call_and_hand(history, call, hand)
             if priority:
                 possible_calls.add_call_with_priority(call, priority)
         return possible_calls
@@ -477,7 +563,8 @@ class Interpreter(object):
             annotations = []
             if rule:
                 annotations.extend(rule.annotations)
-                constraints = And(rule.constraints, selector.compile_constraints_for_call(call))
+                constraints = And(rule.constraints_expr_for_call(history, call),
+                                  selector.compile_constraints_for_call(history, call))
                 # FIXME: We should validate the new constraints before saving them in the knowledge.
             history = history.extend_with(call, annotations, constraints)
 

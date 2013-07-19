@@ -65,7 +65,7 @@ closure:
 
 serve: clean
 	coffee --watch --compile $(scripts_dir)/*.coffee &
-	python2.7 `which dev_appserver.py` $(appengine_dir) --use_sqlite
+	python2.7 `which dev_appserver.py` $(appengine_dir)
 
 publish: compile
 	@appcfg.py --oauth2 --email=macdome@gmail.com update $(appengine_dir)
