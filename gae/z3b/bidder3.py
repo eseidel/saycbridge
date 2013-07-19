@@ -216,6 +216,7 @@ class StrongTwoClubs(Opening):
 
 
 response_priorities = enum.Enum(
+    "MajorLimitRaise",
     "MajorMinimumRaise",
     "LongestNewMajor",
     "OneSpadeWithFiveResponse",
@@ -297,6 +298,25 @@ class TwoHeartMinimumRaise(Rule):
     priority = response_priorities.MajorMinimumRaise
 
 
+class TwoSpadeMinimumRaise(Rule):
+    call_name = '2S'
+    preconditions = [RaiseOfPartnersLastSuit()]
+    constraints = [MinimumCombinedLength(8), Z3(points >= 6)]
+    priority = response_priorities.MajorMinimumRaise
+
+# FAIL: None (expected 1S) for 432.K765.K8.A753 (hcp: 10 lp: 10 sp: 11), history: 1H P
+# FAIL: None (expected 2D) for Q98.KJ732.KJ.JT9 (hcp: 11 lp: 12 sp: 11), history: 1H P
+# FAIL: None (expected 2C) for QJ54.J753.KT2.A4 (hcp: 11 lp: 11 sp: 12), history: 1S P
+# FAIL: 2H (expected 3H) for 43.KT76.K85.A753 (hcp: 10 lp: 10 sp: 11), history: 1H P
+
+
+class ThreeHeartLimitRaise(Rule):
+    call_name = '3H'
+    preconditions = [RaiseOfPartnersLastSuit()]
+    constraints = [MinimumCombinedLength(8), Z3(points >= 10)]
+    priority = response_priorities.MajorLimitRaise
+
+
 def expr_from_hand(hand):
     return And(
         clubs == len(hand.cards_in_suit(suit.CLUBS)),
@@ -327,6 +347,8 @@ class StandardAmericanYellowCard(object):
         OneNoTrumpOpening(),
         StrongTwoClubs(),
         TwoHeartMinimumRaise(),
+        TwoSpadeMinimumRaise(),
+        ThreeHeartLimitRaise(),
     ]
     priority_ordering = PartialOrdering()
 
@@ -593,6 +615,6 @@ class Interpreter(object):
 # print solver.model()
 
 bidder = Bidder()
-hand = Hand.from_cdhs_string("AJ763.Q32.K8.A65")
+hand = Hand.from_cdhs_string("A8763.32.KQ8.765")
 print hand
 print bidder.find_call_for(hand, CallHistory.from_string("1H P"))
