@@ -49,6 +49,33 @@ balanced = z3.And(clubs >= 2, diamonds >= 2, hearts >= 2, spades >= 2,
     )
 )
 
+
+def expr_for_suit(suit):
+    return (clubs, diamonds, hearts, spades)[suit]
+
+
+def expr_for_hand(hand):
+    return z3.And(
+        clubs == len(hand.cards_in_suit(suit.CLUBS)),
+        diamonds == len(hand.cards_in_suit(suit.DIAMONDS)),
+        hearts == len(hand.cards_in_suit(suit.HEARTS)),
+        spades == len(hand.cards_in_suit(suit.SPADES)),
+        points == hand.high_card_points()
+    )
+
+
+class SolverPool(object):
+    @memoized
+    def solver_for_hand(self, hand):
+        solver = z3.Solver()
+        solver.add(axioms)
+        solver.add(expr_for_hand(hand))
+        return solver
+
+
+solver_pool = SolverPool()
+
+
 # Intra-bid priorities, first phase, "interpretation priorities", like "natural, conventional" (possibly should be called types?) These select which "1N" meaning is correct.
 # Inter-bid priorities, "which do you look at first" -- these order preference between "1H, vs. 1S"
 # Tie-breaker-priorities -- planner stage, when 2 bids match which we make.
@@ -75,10 +102,6 @@ categories = enum.Enum(
     "FeatureAsking",
     "NoTrump",
 )
-
-
-def expr_for_suit(suit):
-    return (clubs, diamonds, hearts, spades)[suit]
 
 
 class Precondition(object):
@@ -610,15 +633,6 @@ class GerberForKings(Gerber):
     call_name = '5C'
 
 
-def expr_from_hand(hand):
-    return z3.And(
-        clubs == len(hand.cards_in_suit(suit.CLUBS)),
-        diamonds == len(hand.cards_in_suit(suit.DIAMONDS)),
-        hearts == len(hand.cards_in_suit(suit.HEARTS)),
-        spades == len(hand.cards_in_suit(suit.SPADES)),
-        points == hand.high_card_points()
-    )
-
 
 class PartialOrdering(object):
     def __init__(self):
@@ -848,17 +862,6 @@ class Bidder(object):
             # If we failed to find any rule able to bid, this is an error.
             return None
         return maximal_calls[0]
-
-
-class SolverPool(object):
-    @memoized
-    def solver_for_hand(self, hand):
-        solver = z3.Solver()
-        solver.add(axioms)
-        solver.add(expr_from_hand(hand))
-        return solver
-
-solver_pool = SolverPool()
 
 
 class RuleSelector(object):
