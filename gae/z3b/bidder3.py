@@ -338,18 +338,25 @@ class OneSpadeOpening(Opening):
     priority = opening_priorities.HigherMajor
 
 
-class OneNoTrumpOpening(Opening):
+class NoTrumpOpening(Opening):
     annotations = Opening.annotations + [annotations.NoTrumpSystemsOn]
-    call_name = '1N'
-    z3_constraint = z3.And(points >= 15, points <= 17, balanced)
+    constraints = {
+        '1N': z3.And(points >= 15, points <= 17, balanced),
+        '2N': z3.And(points >= 20, points <= 21, balanced)
+    }
     priority = opening_priorities.NoTrumpOpening
 
 
-class TwoNoTrumpOpening(Opening):
-    annotations = Opening.annotations + [annotations.NoTrumpSystemsOn]
-    call_name = '2N'
-    z3_constraint = z3.And(points >= 20, points <= 21, balanced)
-    priority = opening_priorities.NoTrumpOpening
+# class OneNoTrumpOpening(Opening):
+#     call_name = '1N'
+#     z3_constraint = 
+
+
+# class TwoNoTrumpOpening(Opening):
+#     annotations = Opening.annotations + [annotations.NoTrumpSystemsOn]
+#     call_name = '2N'
+#     z3_constraint = z3.And(points >= 20, points <= 21, balanced)
+#     priority = opening_priorities.NoTrumpOpening
 
 
 class StrongTwoClubs(Opening):
@@ -439,27 +446,15 @@ class RaiseResponse(Response):
     preconditions = Response.preconditions + [RaiseOfPartnersLastSuit(), LastBidHasAnnotation(positions.Partner, annotations.Opening)]
 
 
-class TwoHeartMinimumRaise(RaiseResponse):
-    call_name = '2H'
-    constraints = [MinimumCombinedLength(8), Z3(points >= 6)]
+class MajorMinimumRaise(RaiseResponse):
+    call_names = ['2H', '2S']
+    shared_constraints = [MinimumCombinedLength(8), Z3(points >= 6)]
     priority = response_priorities.MajorMinimumRaise
 
 
-class TwoSpadeMinimumRaise(RaiseResponse):
-    call_name = '2S'
-    constraints = [MinimumCombinedLength(8), Z3(points >= 6)]
-    priority = response_priorities.MajorMinimumRaise
-
-
-class ThreeHeartLimitRaise(RaiseResponse):
-    call_name = '3H'
-    constraints = [MinimumCombinedLength(8), Z3(points >= 10)]
-    priority = response_priorities.MajorLimitRaise
-
-
-class ThreeSpadeLimitRaise(RaiseResponse):
-    call_name = '3S'
-    constraints = [MinimumCombinedLength(8), Z3(points >= 10)]
+class MajorLimitRaise(RaiseResponse):
+    call_names = ['3H', '3S']
+    shared_constraints = [MinimumCombinedLength(8), Z3(points >= 10)]
     priority = response_priorities.MajorLimitRaise
 
 
@@ -468,31 +463,38 @@ class ThreeSpadeLimitRaise(RaiseResponse):
 
 class NewSuitAtTheTwoLevel(Response):
     preconditions = Response.preconditions + [UnbidSuit(), NotJumpFromLastContract()]
+    constraints = {
+        '2C' : (MinLength(4), response_priorities.TwoClubNewSuitResponse),
+        '2D' : (MinLength(4), response_priorities.TwoDiamondNewSuitResponse),
+        '2H' : (MinLength(5), response_priorities.TwoHeartNewSuitResponse),
+        '2S' : (MinLength(5), response_priorities.TwoSpadeNewSuitResponse),
+    }
+    shared_constraints = [ Z3(points >= 10) ]
 
 
-class TwoClubNewSuitResponse(NewSuitAtTheTwoLevel):
-    call_name = '2C'
-    z3_constraint = z3.And(clubs >= 4, points >= 10)
-    priority = response_priorities.TwoClubNewSuitResponse
+# class TwoClubNewSuitResponse(NewSuitAtTheTwoLevel):
+#     call_name = '2C'
+#     z3_constraint = z3.And(clubs >= 4, points >= 10)
+#     priority = response_priorities.TwoClubNewSuitResponse
 
 
-class TwoDiamondNewSuitResponse(NewSuitAtTheTwoLevel):
-    call_name = '2D'
-    z3_constraint = z3.And(diamonds >= 4, points >= 10)
-    priority = response_priorities.TwoDiamondNewSuitResponse
+# class TwoDiamondNewSuitResponse(NewSuitAtTheTwoLevel):
+#     call_name = '2D'
+#     z3_constraint = z3.And(diamonds >= 4, points >= 10)
+#     priority = response_priorities.TwoDiamondNewSuitResponse
 
 
-class TwoHeartNewSuitResponse(NewSuitAtTheTwoLevel):
-    call_name = '2H'
-    z3_constraint = z3.And(hearts >= 5, points >= 10)
-    priority = response_priorities.TwoHeartNewSuitResponse
+# class TwoHeartNewSuitResponse(NewSuitAtTheTwoLevel):
+#     call_name = '2H'
+#     z3_constraint = z3.And(hearts >= 5, points >= 10)
+#     priority = response_priorities.TwoHeartNewSuitResponse
 
 
-# Only possible in competative bidding.
-class TwoSpadeNewSuitResponse(NewSuitAtTheTwoLevel):
-    call_name = '2S'
-    z3_constraint = z3.And(spades >= 5, points >= 10)
-    priority = response_priorities.TwoSpadeNewSuitResponse
+# # Only possible in competative bidding.
+# class TwoSpadeNewSuitResponse(NewSuitAtTheTwoLevel):
+#     call_name = '2S'
+#     z3_constraint = z3.And(spades >= 5, points >= 10)
+#     priority = response_priorities.TwoSpadeNewSuitResponse
 
 
 nt_response_priorities = enum.Enum(
@@ -528,9 +530,12 @@ class TransferTo(object):
         self.suit = suit
 
 
-class JacobyTransferToHearts(NoTrumpResponse):
-    call_name = '2D'
+class JacobyTransfer(NoTrumpResponse):
     annotations = NoTrumpResponse.annotations + [annotations.Artificial, TransferTo(suit.HEARTS)]
+
+
+class JacobyTransferToHearts(JacobyTransfer):
+    call_name = '2D'
     z3_constraint = hearts >= 5
     conditional_priorities = [
         (hearts > spades, nt_response_priorities.JacobyTransferToLongerMajor),
@@ -539,9 +544,8 @@ class JacobyTransferToHearts(NoTrumpResponse):
     priority = nt_response_priorities.JacobyTransferToHearts
 
 
-class JacobyTransferToSpades(NoTrumpResponse):
+class JacobyTransferToSpades(JacobyTransfer):
     call_name = '2H'
-    annotations = NoTrumpResponse.annotations + [annotations.Artificial, TransferTo(suit.SPADES)]
     z3_constraint = spades >= 5
     conditional_priorities = [
         (spades > hearts, nt_response_priorities.JacobyTransferToLongerMajor),
@@ -567,25 +571,29 @@ stayman_response_priorities = enum.Enum(
 
 class StaymanResponse(Rule):
     preconditions = Rule.preconditions + [LastBidHasAnnotation(positions.Partner, annotations.Stayman)]
+    constraints = {
+        '2D': (NO_CONSTRAINTS, stayman_response_priorities.DiamondStaymanResponse),
+        '2H': (Z3(hearts >= 4), stayman_response_priorities.HeartStaymanResponse),
+        '2S': (Z3(spades >= 4), stayman_response_priorities.SpadeStaymanResponse)
+    }
+
+# class DiamondStaymanResponse(StaymanResponse):
+#     call_name = '2D'
+#     priority = stayman_response_priorities.DiamondStaymanResponse
+#     z3_constraint = z3.BoolVal(True)
+#     annotations = StaymanResponse.annotations + [annotations.Artificial]
 
 
-class DiamondStaymanResponse(StaymanResponse):
-    call_name = '2D'
-    priority = stayman_response_priorities.DiamondStaymanResponse
-    z3_constraint = z3.BoolVal(True)
-    annotations = StaymanResponse.annotations + [annotations.Artificial]
+# class HeartStaymanResponse(StaymanResponse):
+#     call_name = '2H'
+#     z3_constraint = hearts >= 4
+#     priority = stayman_response_priorities.HeartStaymanResponse
 
 
-class HeartStaymanResponse(StaymanResponse):
-    call_name = '2H'
-    z3_constraint = hearts >= 4
-    priority = stayman_response_priorities.HeartStaymanResponse
-
-
-class SpadeStaymanResponse(StaymanResponse):
-    call_name = '2S'
-    z3_constraint = spades >= 4
-    priority = stayman_response_priorities.SpadeStaymanResponse
+# class SpadeStaymanResponse(StaymanResponse):
+#     call_name = '2S'
+#     z3_constraint = spades >= 4
+#     priority = stayman_response_priorities.SpadeStaymanResponse
 
 
 overcall_priorities = enum.Enum(
@@ -598,19 +606,24 @@ class DirectOvercall(Rule):
     priority = overcall_priorities.DirectOvercall
 
 
-class OneDiamondDirectOvercall(DirectOvercall):
-    call_name = '1D'
-    z3_constraint = z3.And(diamonds >= 5, points >= 8)
+class OneLevelOvercall(DirectOvercall):
+    call_names = ['1D', '1H', '1S']
+    shared_constraints = [MinLength(5), Z3(points >= 8)]
 
 
-class OneHeartDirectOvercall(DirectOvercall):
-    call_name = '1H'
-    z3_constraint = z3.And(hearts >= 5, points >= 8)
+# class OneDiamondDirectOvercall(DirectOvercall):
+#     call_name = '1D'
+#     z3_constraint = z3.And(diamonds >= 5, points >= 8)
 
 
-class OneSpadeDirectOvercall(DirectOvercall):
-    call_name = '1S'
-    z3_constraint = z3.And(spades >= 5, points >= 8)
+# class OneHeartDirectOvercall(DirectOvercall):
+#     call_name = '1H'
+#     z3_constraint = z3.And(hearts >= 5, points >= 8)
+
+
+# class OneSpadeDirectOvercall(DirectOvercall):
+#     call_name = '1S'
+#     z3_constraint = z3.And(spades >= 5, points >= 8)
 
 
 feature_asking_priorites = enum.Enum(
