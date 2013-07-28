@@ -282,7 +282,7 @@ class JumpFromPartnerLastBid(Jump):
 
 class NotJumpFromLastContract(JumpFromLastContract):
     def __init__(self):
-        Jump.__init__(self, exact_size=0)
+        JumpFromLastContract.__init__(self, exact_size=0)
 
 
 class NotJumpFromMyLastBid(JumpFromMyLastBid):
