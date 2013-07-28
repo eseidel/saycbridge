@@ -51,16 +51,25 @@ class AutobidTest(unittest2.TestCase):
 
 
 class SAYCBidderTest(unittest2.TestCase):
-    # FIXME: Once we can use Python 2.7, we'd rather use setUpClass and tearDownClass.
-    total_tests = 0
-    total_failures = 0
     bidder_class = KnowledgeBasedBidder
 
     @classmethod
-    def summarize_total_failures(cls):
+    def setUpClass(cls):
+        cls.total_tests = 0
+        cls.total_failures = 0
+
+    @classmethod
+    def tearDownClass(cls):
         total_pass = cls.total_tests - cls.total_failures
         percent = 100 * total_pass / cls.total_tests if cls.total_tests else 0
         print "Pass %s (%d%%) of %s total hands" % (total_pass, percent, cls.total_tests)
+
+    @classmethod
+    def record_test_results(cls, tests, failures):
+        cls.total_tests += tests
+        cls.total_failures += failures
+        print "Pass %s of %s hands" % (tests - failures, tests)
+        print # Make the test results a bit more readable by giving some space.
 
     def test_open_one_nt(self):
         self._assert_hands_match_calls([
@@ -1131,8 +1140,4 @@ class SAYCBidderTest(unittest2.TestCase):
         caller_method_name = inspect.stack()[1][3]  # A convenient hack.
         print "%s:" % caller_method_name
         tests_count, fail_count = self._run_bidding_tests(expected_calls)
-        # FIXME: Unclear why I can't use self.total_tests here, but that doesn't seem to work.
-        SAYCBidderTest.total_tests += tests_count
-        SAYCBidderTest.total_failures += fail_count
-        print "Pass %s of %s hands" % (tests_count - fail_count, tests_count)
-        print # Make the test results a bit more readable by giving some space.
+        self.record_test_results(tests_count, fail_count)
