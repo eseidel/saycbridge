@@ -358,14 +358,12 @@ response_priorities = enum.Enum(
 class Response(Rule):
     preconditions = [Opened(positions.Partner)]
 
+
 class OneDiamondResponse(Response):
     call_name = '1D'
     z3_constraint = And(points >= 6, diamonds >= 4)
     priority = response_priorities.OneDiamondResponse
 
-# FAIL: None (expected 1S) for 432.K765.K8.A753 (hcp: 10 lp: 10 sp: 11), history: 1H P
-# FAIL: None (expected 2D) for Q98.KJ732.KJ.JT9 (hcp: 11 lp: 12 sp: 11), history: 1H P
-# FAIL: None (expected 2C) for QJ54.J753.KT2.A4 (hcp: 11 lp: 11 sp: 12), history: 1S P
 
 class OneHeartResponse(Response):
     call_name = '1H'
@@ -391,9 +389,6 @@ class OneNotrumpResponse(Response):
     z3_constraint = points >= 6
     priority = response_priorities.OneNotrumpResponse
 
-
-# Move to z3_constraint for constraints?
-# Add Constraint type, and Z3() wrapper
 
 
 class Constraint(object):
@@ -929,12 +924,6 @@ class Interpreter(object):
         # Assuming SAYC for all sides.
         self.system = StandardAmericanYellowCard
 
-    def _select_highest_priority_rule(self, rules):
-        # This compares intra-bid priorities and makes sure we are using
-        # the right 3H interpretation for this history.
-        # This lets us chose conventional bids over natural bids, for instance.
-        return rules[0]
-
     def create_history(self, call_history):
         history = History()
         viewer = call_history.position_to_call()
@@ -956,27 +945,3 @@ class Interpreter(object):
 
         return history
 
-
-# solver = Solver()
-# solver.add(axioms)
-
-# interpreter = Interpreter()
-# history = interpreter.create_history(CallHistory.from_string('1C'))
-# solver.add(history.rho.knowledge)
-# print simplify(simplify(history.rho.knowledge))
-# print list(history.rho.annotations)
-# print solver.check()
-# print solver.model()
-
-    # ["K4.AKQJ94.87.A96", "3N", "1D P 1H P"],  # p54, h21
-
-
-# test_invitational_response_to_one_of_a_major:
-# FAIL: 1N (expected 2D) for Q98.KJ732.KJ.JT9 (hcp: 11 lp: 12 sp: 11), history: 1H P
-# FAIL: 1N (expected 2C) for QJ54.J753.KT2.A4 (hcp: 11 lp: 11 sp: 12), history: 1S P
-# Pass 2 of 4 hands
-
-# bidder = Bidder()
-# hand = Hand.from_cdhs_string("T9.AJ72.K65.Q732")
-# print hand
-# print bidder.find_call_for(hand, CallHistory.from_string("1N P"))
