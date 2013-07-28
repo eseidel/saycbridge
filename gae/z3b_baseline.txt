@@ -601,6 +601,9 @@ Pass 8 of 37 hands
 test_open_one_nt:
 Pass 7 of 7 hands
 
+test_open_two_nt:
+Pass 1 of 1 hands
+
 test_opener_rebid_after_a_limit_raise:
 FAIL: None (expected P) for Q6.Q86.KT5.AQ982 (hcp: 13 lp: 14 sp: 12), history: 1S P 3S P
 FAIL: None (expected 4S) for 6.KJ86.KT5.AQ982 (hcp: 13 lp: 14 sp: 16), history: 1S P 3S P
@@ -901,4 +904,4 @@ FAIL: None (expected 2H) for K74.9.J98.KJT742 (hcp: 8 lp: 10 sp: 11), history: 1
 FAIL: None (expected P) for Q87.J843.K65.Q93 (hcp: 8 lp: 8 sp: 8), history: 1N P
 Pass 0 of 3 hands
 
-Pass 255 (24%) of 1042 total hands
+Pass 256 (24%) of 1043 total hands

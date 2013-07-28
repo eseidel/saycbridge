@@ -73,6 +73,11 @@ class SAYCBidderTest(unittest2.TestCase):
             ["AKT92.T98.AQ9.AT", "1N"],  #p3, h5 - Too "big", plan to do 1C, 2N
         ])
 
+    def test_open_two_nt(self):
+        self._assert_hands_match_calls([
+            ["KQ4.AQ8.AK873.K2", "2N"],
+        ])
+
     def test_weak_game_jump_over_one_nt(self):
         self._assert_hands_match_calls([
             # FIXME: The book says to "get your partnership to game" with h1.  Probably easiest with a texas transfer.
