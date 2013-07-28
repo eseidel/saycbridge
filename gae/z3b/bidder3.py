@@ -213,6 +213,7 @@ class Rule(object):
         for precondition in self.preconditions:
             if not precondition.fits(history, call):
                 return None
+        assert self.priority, "" + self.__class__.__name__ + " is missing priority"
         return call
 
     def possible_priorities_and_conditions_for_call(self, call):
@@ -537,6 +538,31 @@ class SpadeStaymanResponse(StaymanResponse):
     call_name = '2S'
     z3_constraint = spades >= 4
     priority = stayman_response_priorities.SpadeStaymanResponse
+
+
+overcall_priorities = enum.Enum(
+    # FIXME: This needs the prefer the longer suit pattern.
+    "DirectOvercall",
+)
+
+class DirectOvercall(Rule):
+    preconditions = Rule.preconditions + [LastBidHasAnnotation(positions.RHO, annotations.Opening)]
+    priority = overcall_priorities.DirectOvercall
+
+
+class OneDiamondDirectOvercall(DirectOvercall):
+    call_name = '1D'
+    z3_constraint = And(diamonds >= 5, points >= 8)
+
+
+class OneHeartDirectOvercall(DirectOvercall):
+    call_name = '1H'
+    z3_constraint = And(hearts >= 5, points >= 8)
+
+
+class OneSpadeDirectOvercall(DirectOvercall):
+    call_name = '1S'
+    z3_constraint = And(spades >= 5, points >= 8)
 
 
 def expr_from_hand(hand):
