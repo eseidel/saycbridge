@@ -11,7 +11,7 @@ jinja_environment = jinja2.Environment(loader=jinja2.FileSystemLoader("templates
 
 
 class UnittestHandler(webapp2.RequestHandler):
-    unittest_file_path = "core/sayc_unittest2.py"
+    unittest_file_path = "core/sayc_unittest.py"
     baseline_file_path = "z3b_baseline.txt"
 
     test_method_regexp = re.compile(r"\s+def (test_\w*)\(")
