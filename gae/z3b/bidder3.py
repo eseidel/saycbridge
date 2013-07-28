@@ -317,15 +317,6 @@ response_priorities = enum.Enum(
 )
 
 
-nt_response_priorities = enum.Enum(
-    "NoTrumpJumpRaise",
-    "NoTrumpMinimumRaise",
-    "JacobyTransfer",
-    "Stayman",
-    "ClubBust",
-)
-
-
 class Response(Rule):
     preconditions = [Opened(positions.Partner)]
 
@@ -443,6 +434,19 @@ class TwoSpadeNewSuitResponse(Response):
     priority = response_priorities.TwoSpadeNewSuitResponse
 
 
+nt_response_priorities = enum.Enum(
+    "NoTrumpJumpRaise",
+    "NoTrumpMinimumRaise",
+    "JacobyTransferToLongerMajor",
+    "JacobyTransferToSpadesWithGameForcingValues",
+    "JacobyTransferToHeartsWithGameForcingValues",
+    "JacobyTransferToHearts",
+    "JacobyTransferToSpades",
+    "Stayman",
+    "ClubBust",
+)
+
+
 class NoTrumpResponse(Response):
     category = categories.NoTrump
     preconditions = Response.preconditions + [
@@ -456,6 +460,26 @@ class BasicStayman(NoTrumpResponse):
     annotations = Response.annotations + [annotations.Stayman]
     priority = nt_response_priorities.Stayman
     z3_constraint = And(points >= 8, Or(hearts >= 4, spades >= 4))
+
+
+class JacobyTransferToHearts(NoTrumpResponse):
+    call_name = '2D'
+    z3_constraint = hearts >= 5
+    conditional_priorities = [
+        (hearts > spades, nt_response_priorities.JacobyTransferToLongerMajor),
+        (And(hearts == spades, points >= 10), nt_response_priorities.JacobyTransferToHeartsWithGameForcingValues),
+    ]
+    priority = nt_response_priorities.JacobyTransferToHearts
+
+
+class JacobyTransferToSpades(NoTrumpResponse):
+    call_name = '2H'
+    z3_constraint = spades >= 5
+    conditional_priorities = [
+        (spades > hearts, nt_response_priorities.JacobyTransferToLongerMajor),
+        (And(hearts == spades, points >= 10), nt_response_priorities.JacobyTransferToSpadesWithGameForcingValues),
+    ]
+    priority = nt_response_priorities.JacobyTransferToSpades
 
 
 stayman_response_priorities = enum.Enum(
