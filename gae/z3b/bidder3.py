@@ -625,10 +625,18 @@ stayman_response_priorities = enum.Enum(
     "HeartStaymanResponse",
     "SpadeStaymanResponse",
     "DiamondStaymanResponse",
+    "PassStaymanResponse",
 )
 
 class StaymanResponse(Rule):
     preconditions = Rule.preconditions + [LastBidHasAnnotation(positions.Partner, annotations.Stayman)]
+
+
+class PassStaymanResponse(StaymanResponse):
+    call_name = 'P'
+    priority = stayman_response_priorities.PassStaymanResponse
+    z3_constraint = z3.BoolVal(True)
+    annotations = StaymanResponse.annotations + [annotations.Artificial]
 
 
 class DiamondStaymanResponse(StaymanResponse):
