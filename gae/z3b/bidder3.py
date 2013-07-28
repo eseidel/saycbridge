@@ -797,7 +797,7 @@ class PositionView(object):
         return self.history.min_length_for_position(self.position, suit)
 
 
-def is_valid(solver, expr):
+def is_certain(solver, expr):
     solver.push()
     solver.add(z3.Not(expr))
     result = solver.check() == z3.unsat
@@ -874,7 +874,7 @@ class History(object):
         suit_expr = expr_for_suit(suit)
         # FIXME: This would be faster as a binary search.
         for length in range(13, 0, -1):
-            if is_valid(solver, suit_expr >= length):
+            if is_certain(solver, suit_expr >= length):
                 return length
         return 0
 
