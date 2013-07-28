@@ -42,6 +42,10 @@ if __name__ == '__main__':
         sys.argv.remove('-z')
         SAYCBidderTest.bidder_class = z3b.Bidder
 
-    # import cProfile as profile
-    # profile.run("unittest2.main()", "output_file2")
-    unittest2.main()
+    if '-p' in sys.argv:
+        sys.argv.remove('-p')
+        import cProfile as profile
+        profile.run("unittest2.main()", "profile")
+        print "Use 'python -m pstats profile' to see results"
+    else:
+        unittest2.main()
