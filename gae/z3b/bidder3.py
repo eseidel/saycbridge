@@ -100,6 +100,72 @@ class RaiseOfPartnersLastSuit(Precondition):
         return call.strain == partner_last_call.strain and history.partner.min_length(partner_last_call.strain) >= 3
 
 
+class UnbidSuit(Precondition):
+    def fits(self, history, call):
+        if call.strain not in suit.SUITS:
+            return False
+        return history.is_unbid_suit(call.strain)
+
+
+class Jump(Precondition):
+    def __init__(self, exact_size=None):
+        self.exact_size = exact_size
+
+    def _jump_size(self, last_call, call):
+        if call.strain <= last_call.strain:
+            # If the new suit is less than the last bid one, than we need to change more than one level for it to be a jump.
+            return call.level() - last_call.level() - 1
+        # Otherwise any bid not at the current level is a jump.
+        return call.level() - last_call.level()
+
+    def fits(self, history, call):
+        if call.is_pass():
+            return False
+        if call.is_double() or call.is_redouble():
+            call = history.last_contract()
+
+        last_call = self._last_call(history)
+        if not last_call or not last_call.is_contract():  # If we don't have a previous bid to compare to, this can't be a jump.
+            return False
+        jump_size = self._jump_size(last_call, call)
+        if self.exact_size is None:
+            return jump_size != 0
+        return self.exact_size == jump_size
+
+    def _last_call(self, history):
+        raise NotImplementedError
+
+
+class JumpFromLastContract(Jump):
+    def _last_call(self, history):
+        return history.last_contract()
+
+
+class JumpFromMyLastBid(Jump):
+    def _last_call(self, history):
+        return history.me.last_call
+
+
+class JumpFromPartnerLastBid(Jump):
+    def _last_call(self, history):
+        return history.partner.last_call
+
+
+class NotJumpFromLastContract(JumpFromLastContract):
+    def __init__(self):
+        Jump.__init__(self, exact_size=0)
+
+
+class NotJumpFromMyLastBid(JumpFromMyLastBid):
+    def __init__(self):
+        JumpFromMyLastBid.__init__(self, exact_size=0)
+
+
+class NotJumpFromPartnerLastBid(JumpFromPartnerLastBid):
+    def __init__(self):
+        JumpFromPartnerLastBid.__init__(self, exact_size=0)
+
+
 class Rule(object):
     preconditions = []
     category = None # Intra-bid priority
@@ -224,6 +290,7 @@ response_priorities = enum.Enum(
     "OneDiamondResponse",
     "OneHeartWithFourResponse",
     "OneSpadeWithFourResponse",
+    "NewMinorResponse",
     "OneNotrumpResponse",
 )
 
@@ -296,23 +363,30 @@ class MinimumCombinedLength(Constraint):
 
 class TwoHeartMinimumRaise(Response):
     call_name = '2H'
-    preconditions = [RaiseOfPartnersLastSuit()]
+    preconditions = Response.preconditions + [RaiseOfPartnersLastSuit()]
     constraints = [MinimumCombinedLength(8), Z3(points >= 6)]
     priority = response_priorities.MajorMinimumRaise
 
 
 class TwoSpadeMinimumRaise(Response):
     call_name = '2S'
-    preconditions = [RaiseOfPartnersLastSuit()]
+    preconditions = Response.preconditions + [RaiseOfPartnersLastSuit()]
     constraints = [MinimumCombinedLength(8), Z3(points >= 6)]
     priority = response_priorities.MajorMinimumRaise
 
 
 class ThreeHeartLimitRaise(Response):
     call_name = '3H'
-    preconditions = [RaiseOfPartnersLastSuit()]
+    preconditions = Response.preconditions + [RaiseOfPartnersLastSuit()]
     constraints = [MinimumCombinedLength(8), Z3(points >= 10)]
     priority = response_priorities.MajorLimitRaise
+
+
+class TwoClubNewSuitResponse(Response):
+    call_name = '2C'
+    preconditions = Response.preconditions + [UnbidSuit(), NotJumpFromLastContract()]
+    z3_constraint = And(clubs >= 4, points >= 10)
+    priority = response_priorities.NewMinorResponse
 
 
 def expr_from_hand(hand):
@@ -347,6 +421,7 @@ class StandardAmericanYellowCard(object):
         TwoHeartMinimumRaise(),
         TwoSpadeMinimumRaise(),
         ThreeHeartLimitRaise(),
+        TwoClubNewSuitResponse(),
     ]
     priority_ordering = PartialOrdering()
 
@@ -442,6 +517,14 @@ class History(object):
             if is_valid(solver, suit_expr >= length):
                 return length
         return 0
+
+    def is_unbid_suit(self, suit):
+        suit_expr = expr_for_suit(suit)
+        for position in positions:
+            solver = self.solver_for_position(position)
+            if not is_valid(solver, suit_expr < 3):
+                return False
+        return True
 
     @property
     def rho(self):
