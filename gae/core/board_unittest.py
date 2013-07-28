@@ -1,11 +1,11 @@
 #!/usr/bin/python
 
-import unittest
+import unittest2
 from core.board import Board
 from core.position import *
 
 
-class BoardTest(unittest.TestCase):
+class BoardTest(unittest2.TestCase):
     def test_identifier(self):
         board = Board.from_identifier("8-2190948053667986713720276813968-N:NO:")
         # Note how we can handle parsing old-style identfiiers, but we prefer new ones:

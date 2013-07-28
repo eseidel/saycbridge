@@ -1,11 +1,11 @@
 #!/usr/bin/python
 
-import unittest
+import unittest2
 from kbb.handconstraints import HandConstraints, HonorConstraint
 from core.suit import CLUBS, DIAMONDS, HEARTS, SPADES
 
 
-class HandConstraintsTest(unittest.TestCase):
+class HandConstraintsTest(unittest2.TestCase):
     def test_pretty_one_line(self):
         constraints = HandConstraints()
         self.assertEqual(constraints.pretty_one_line(), "?")

@@ -1,13 +1,13 @@
 #!/usr/bin/python
 
-import unittest
+import unittest2
 from core.call import Call
 from core.callhistory import CallHistory, Vulnerability
 from position import *
 from suit import *
 
 
-class VulnerabilityTest(unittest.TestCase):
+class VulnerabilityTest(unittest2.TestCase):
     def test_vunerability_from_board_number(self):
         expectations = {
             1: 'None',
@@ -34,7 +34,7 @@ class VulnerabilityTest(unittest.TestCase):
             self.assertEquals(Vulnerability.from_board_number(number).name, expected_vulnerability)
 
 
-class CallHistoryTest(unittest.TestCase):
+class CallHistoryTest(unittest2.TestCase):
 
     def _assert_declarer(self, history_string, dealer, declarer):
         self.assertEquals(CallHistory.from_string(history_string, position_char(dealer)).declarer(), declarer)
@@ -159,4 +159,4 @@ class CallHistoryTest(unittest.TestCase):
 
 
 if __name__ == '__main__':
-    unittest.main()
+    unittest2.main()

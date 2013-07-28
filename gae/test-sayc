@@ -15,7 +15,7 @@ import gib
 import z3b.bidder3 as z3b
 
 import logging
-import unittest
+import unittest2
 import sys
 
 
@@ -43,7 +43,7 @@ if __name__ == '__main__':
         SAYCBidderTest.bidder_class = z3b.Bidder
 
     try:
-        unittest.main()
+        unittest2.main()
     except SystemExit:
         # FIXME: This is a hack until we can use Python 2.7's fancier unitest library.
         SAYCBidderTest.summarize_total_failures()

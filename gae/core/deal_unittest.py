@@ -1,10 +1,10 @@
 #!/usr/bin/python
 
-import unittest
+import unittest2
 from deal import Deal
 
 
-class DealTest(unittest.TestCase):
+class DealTest(unittest2.TestCase):
     def test_identifier(self):
         deal = Deal.from_string("23456789TJQKA... .23456789TJQKA.. ..23456789TJQKA. ...23456789TJQKA")
         self.assertEquals(deal.identifier(), '0000001555555aaaaaabffffff')
@@ -16,4 +16,4 @@ class DealTest(unittest.TestCase):
 
 
 if __name__ == '__main__':
-    unittest.main()
+    unittest2.main()

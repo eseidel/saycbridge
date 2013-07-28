@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
 import logging
-import unittest
+import unittest2
 import sys
 import inspect
 
@@ -16,7 +16,7 @@ from handlers.autobidder import Autobidder
 _log = logging.getLogger(__name__)
 
 
-class AutobidTest(unittest.TestCase):
+class AutobidTest(unittest2.TestCase):
     # These are more integration tests. Mostly they test to make sure no exceptions are thrown.
     def test_autobid_boards(self):
         return  # We haven't validated the correct sequences for these boards yet.
@@ -50,7 +50,7 @@ class AutobidTest(unittest.TestCase):
             self.assertEquals(board.call_history.calls_string(), expected_calls_string)
 
 
-class SAYCBidderTest(unittest.TestCase):
+class SAYCBidderTest(unittest2.TestCase):
     # FIXME: Once we can use Python 2.7, we'd rather use setUpClass and tearDownClass.
     total_tests = 0
     total_failures = 0

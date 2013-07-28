@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
 import logging
-import unittest
+import unittest2
 import sys
 import random
 

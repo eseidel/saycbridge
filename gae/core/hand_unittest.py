@@ -1,11 +1,11 @@
 #!/usr/bin/python
 
-import unittest
+import unittest2
 from core.hand import Hand
 from core.suit import *
 
 
-class HandTest(unittest.TestCase):
+class HandTest(unittest2.TestCase):
     def _assert_balanced(self, hand_string, balanced):
         self.assertEquals(Hand.from_cdhs_string(hand_string).is_balanced(), balanced)
 
@@ -79,4 +79,4 @@ class HandTest(unittest.TestCase):
 
 
 if __name__ == '__main__':
-    unittest.main()
+    unittest2.main()

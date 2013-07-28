@@ -1,12 +1,12 @@
 #!/usr/bin/python
 
-import unittest
+import unittest2
 from kbb.interpreter import BidInterpreter
 from core.callhistory import CallHistory
 from core.suit import CLUBS, DIAMONDS, HEARTS, SPADES, NOTRUMP
 
 
-class BidInterpreterTest(unittest.TestCase):
+class BidInterpreterTest(unittest2.TestCase):
     def setUp(self):
         self.interpreter = BidInterpreter()
 
