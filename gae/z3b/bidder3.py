@@ -1,4 +1,4 @@
-from z3 import *
+import z3
 from third_party import enum
 from core.callhistory import CallHistory
 from core.call import Call
@@ -11,7 +11,7 @@ from third_party.memoized import memoized
 
 
 
-spades, hearts, diamonds, clubs, points = Ints('spades hearts diamonds clubs points')
+spades, hearts, diamonds, clubs, points = z3.Ints('spades hearts diamonds clubs points')
 
 axioms = [
     spades + hearts + diamonds + clubs == 13,
@@ -22,7 +22,7 @@ axioms = [
     0 <= points <= 37,
 ]
 
-rule_of_twenty = Or(
+rule_of_twenty = z3.Or(
     spades + hearts + points >= 20,
     spades + diamonds + points >= 20,
     spades + clubs + points >= 20,
@@ -30,7 +30,7 @@ rule_of_twenty = Or(
     hearts + clubs + points >= 20,
     diamonds + clubs + points >= 20)
 
-rule_of_nineteen = Or(
+rule_of_nineteen = z3.Or(
     spades + hearts + points >= 19,
     spades + diamonds + points >= 19,
     spades + clubs + points >= 19,
@@ -40,12 +40,12 @@ rule_of_nineteen = Or(
 
 rule_of_fifteen = spades + points >= 15
 
-balanced = And(clubs >= 2, diamonds >= 2, hearts >= 2, spades >= 2,
-    Or(
-        And(hearts > 2, diamonds > 2, clubs > 2),
-        And(spades > 2, diamonds > 2, clubs > 2),
-        And(spades > 2, hearts > 2, clubs > 2),
-        And(spades > 2, hearts > 2, diamonds > 2),
+balanced = z3.And(clubs >= 2, diamonds >= 2, hearts >= 2, spades >= 2,
+    z3.Or(
+        z3.And(hearts > 2, diamonds > 2, clubs > 2),
+        z3.And(spades > 2, diamonds > 2, clubs > 2),
+        z3.And(spades > 2, hearts > 2, clubs > 2),
+        z3.And(spades > 2, hearts > 2, diamonds > 2),
     )
 )
 
@@ -246,7 +246,7 @@ class Rule(object):
         assert call.name == self.call_name, self.call_name
         for condition, priority in self.conditional_priorities:
             yield priority, condition
-        yield self.priority, BoolVal(True)
+        yield self.priority, z3.BoolVal(True)
 
     @memoized
     def priority_for_call_and_hand(self, solver, history, call, hand):
@@ -262,7 +262,7 @@ class Rule(object):
         exprs = [constraint.expr(history, call) for constraint in self.constraints]
         if self.z3_constraint:
             exprs.append(self.z3_constraint)
-        return And(exprs)
+        return z3.And(exprs)
 
 
 opening_priorities = enum.Enum(
@@ -284,16 +284,16 @@ class Opening(Rule):
 
 class OneClubOpening(Opening):
     call_name = '1C'
-    z3_constraint = And(rule_of_twenty, clubs >= 3)
+    z3_constraint = z3.And(rule_of_twenty, clubs >= 3)
     conditional_priorities = [
-        (Or(clubs > diamonds, And(clubs == 3, diamonds == 3)), opening_priorities.LongestMinor),
+        (z3.Or(clubs > diamonds, z3.And(clubs == 3, diamonds == 3)), opening_priorities.LongestMinor),
     ]
     priority = opening_priorities.LowerMinor
 
 
 class OneDiamondOpening(Opening):
     call_name = '1D'
-    z3_constraint = And(rule_of_twenty, diamonds >= 3)
+    z3_constraint = z3.And(rule_of_twenty, diamonds >= 3)
     conditional_priorities = [
         (diamonds > clubs, opening_priorities.LongestMinor),
     ]
@@ -302,7 +302,7 @@ class OneDiamondOpening(Opening):
 
 class OneHeartOpening(Opening):
     call_name = '1H'
-    z3_constraint = And(rule_of_twenty, hearts >= 5)
+    z3_constraint = z3.And(rule_of_twenty, hearts >= 5)
     conditional_priorities = [
         (hearts > spades, opening_priorities.LongestMajor),
     ]
@@ -311,7 +311,7 @@ class OneHeartOpening(Opening):
 
 class OneSpadeOpening(Opening):
     call_name = '1S'
-    z3_constraint = And(rule_of_twenty, spades >= 5)
+    z3_constraint = z3.And(rule_of_twenty, spades >= 5)
     conditional_priorities = [
         (spades > hearts, opening_priorities.LongestMajor),
     ]
@@ -321,14 +321,14 @@ class OneSpadeOpening(Opening):
 class OneNoTrumpOpening(Opening):
     annotations = Opening.annotations + [annotations.NoTrumpSystemsOn]
     call_name = '1N'
-    z3_constraint = And(points >= 15, points <= 17, balanced)
+    z3_constraint = z3.And(points >= 15, points <= 17, balanced)
     priority = opening_priorities.NoTrumpOpening
 
 
 class TwoNoTrumpOpening(Opening):
     annotations = Opening.annotations + [annotations.NoTrumpSystemsOn]
     call_name = '2N'
-    z3_constraint = And(points >= 20, points <= 21, balanced)
+    z3_constraint = z3.And(points >= 20, points <= 21, balanced)
     priority = opening_priorities.NoTrumpOpening
 
 
@@ -361,15 +361,15 @@ class Response(Rule):
 
 class OneDiamondResponse(Response):
     call_name = '1D'
-    z3_constraint = And(points >= 6, diamonds >= 4)
+    z3_constraint = z3.And(points >= 6, diamonds >= 4)
     priority = response_priorities.OneDiamondResponse
 
 
 class OneHeartResponse(Response):
     call_name = '1H'
-    z3_constraint = And(points >= 6, hearts >= 4)
+    z3_constraint = z3.And(points >= 6, hearts >= 4)
     conditional_priorities = [
-        (And(hearts >= 5, hearts > spades), response_priorities.LongestNewMajor),
+        (z3.And(hearts >= 5, hearts > spades), response_priorities.LongestNewMajor),
         (hearts >= 5, response_priorities.OneHeartWithFiveResponse),
     ]
     priority = response_priorities.OneHeartWithFourResponse
@@ -377,7 +377,7 @@ class OneHeartResponse(Response):
 
 class OneSpadeResponse(Response):
     call_name = '1S'
-    z3_constraint = And(points >= 6, spades >= 4)
+    z3_constraint = z3.And(points >= 6, spades >= 4)
     conditional_priorities = [
         (spades >= 5, response_priorities.OneSpadeWithFiveResponse)
     ]
@@ -441,21 +441,21 @@ class ThreeHeartLimitRaise(Response):
 class TwoClubNewSuitResponse(Response):
     call_name = '2C'
     preconditions = Response.preconditions + [UnbidSuit(), NotJumpFromLastContract()]
-    z3_constraint = And(clubs >= 4, points >= 10)
+    z3_constraint = z3.And(clubs >= 4, points >= 10)
     priority = response_priorities.TwoClubNewSuitResponse
 
 
 class TwoDiamondNewSuitResponse(Response):
     call_name = '2D'
     preconditions = Response.preconditions + [UnbidSuit(), NotJumpFromLastContract()]
-    z3_constraint = And(diamonds >= 4, points >= 10)
+    z3_constraint = z3.And(diamonds >= 4, points >= 10)
     priority = response_priorities.TwoDiamondNewSuitResponse
 
 
 class TwoHeartNewSuitResponse(Response):
     call_name = '2H'
     preconditions = Response.preconditions + [UnbidSuit(), NotJumpFromLastContract()]
-    z3_constraint = And(hearts >= 5, points >= 10)
+    z3_constraint = z3.And(hearts >= 5, points >= 10)
     priority = response_priorities.TwoHeartNewSuitResponse
 
 
@@ -463,7 +463,7 @@ class TwoHeartNewSuitResponse(Response):
 class TwoSpadeNewSuitResponse(Response):
     call_name = '2S'
     preconditions = Response.preconditions + [UnbidSuit(), NotJumpFromLastContract()]
-    z3_constraint = And(spades >= 5, points >= 10)
+    z3_constraint = z3.And(spades >= 5, points >= 10)
     priority = response_priorities.TwoSpadeNewSuitResponse
 
 
@@ -492,7 +492,7 @@ class BasicStayman(NoTrumpResponse):
     call_name = '2C'
     annotations = Response.annotations + [annotations.Artificial, annotations.Stayman]
     priority = nt_response_priorities.Stayman
-    z3_constraint = And(points >= 8, Or(hearts >= 4, spades >= 4))
+    z3_constraint = z3.And(points >= 8, z3.Or(hearts >= 4, spades >= 4))
 
 
 class TransferTo(object):
@@ -506,7 +506,7 @@ class JacobyTransferToHearts(NoTrumpResponse):
     z3_constraint = hearts >= 5
     conditional_priorities = [
         (hearts > spades, nt_response_priorities.JacobyTransferToLongerMajor),
-        (And(hearts == spades, points >= 10), nt_response_priorities.JacobyTransferToHeartsWithGameForcingValues),
+        (z3.And(hearts == spades, points >= 10), nt_response_priorities.JacobyTransferToHeartsWithGameForcingValues),
     ]
     priority = nt_response_priorities.JacobyTransferToHearts
 
@@ -517,7 +517,7 @@ class JacobyTransferToSpades(NoTrumpResponse):
     z3_constraint = spades >= 5
     conditional_priorities = [
         (spades > hearts, nt_response_priorities.JacobyTransferToLongerMajor),
-        (And(hearts == spades, points >= 10), nt_response_priorities.JacobyTransferToSpadesWithGameForcingValues),
+        (z3.And(hearts == spades, points >= 10), nt_response_priorities.JacobyTransferToSpadesWithGameForcingValues),
     ]
     priority = nt_response_priorities.JacobyTransferToSpades
 
@@ -544,7 +544,7 @@ class StaymanResponse(Rule):
 class DiamondStaymanResponse(StaymanResponse):
     call_name = '2D'
     priority = stayman_response_priorities.DiamondStaymanResponse
-    z3_constraint = BoolVal(True)
+    z3_constraint = z3.BoolVal(True)
     annotations = StaymanResponse.annotations + [annotations.Artificial]
 
 
@@ -572,17 +572,17 @@ class DirectOvercall(Rule):
 
 class OneDiamondDirectOvercall(DirectOvercall):
     call_name = '1D'
-    z3_constraint = And(diamonds >= 5, points >= 8)
+    z3_constraint = z3.And(diamonds >= 5, points >= 8)
 
 
 class OneHeartDirectOvercall(DirectOvercall):
     call_name = '1H'
-    z3_constraint = And(hearts >= 5, points >= 8)
+    z3_constraint = z3.And(hearts >= 5, points >= 8)
 
 
 class OneSpadeDirectOvercall(DirectOvercall):
     call_name = '1S'
-    z3_constraint = And(spades >= 5, points >= 8)
+    z3_constraint = z3.And(spades >= 5, points >= 8)
 
 
 feature_asking_priorites = enum.Enum(
@@ -592,7 +592,7 @@ feature_asking_priorites = enum.Enum(
 class Gerber(Rule):
     category = categories.FeatureAsking
     requires_planning = True
-    z3_constraint = BoolVal(True)
+    z3_constraint = z3.BoolVal(True)
     annotations = [annotations.Gerber]
     priority = feature_asking_priorites.Gerber
 
@@ -611,7 +611,7 @@ class GerberForKings(Gerber):
 
 
 def expr_from_hand(hand):
-    return And(
+    return z3.And(
         clubs == len(hand.cards_in_suit(suit.CLUBS)),
         diamonds == len(hand.cards_in_suit(suit.DIAMONDS)),
         hearts == len(hand.cards_in_suit(suit.HEARTS)),
@@ -691,8 +691,8 @@ class PositionView(object):
 
 def is_valid(solver, expr):
     solver.push()
-    solver.add(Not(expr))
-    result = solver.check() == unsat
+    solver.add(z3.Not(expr))
+    result = solver.check() == z3.unsat
     solver.pop()
     return result
 
@@ -700,7 +700,7 @@ def is_valid(solver, expr):
 def is_possible(solver, expr):
     solver.push()
     solver.add(expr)
-    result = solver.check() == sat
+    result = solver.check() == z3.sat
     solver.pop()
     return result
 
@@ -739,13 +739,13 @@ class History(object):
     def knowledge_for_position(self, position):
         constraints = self._project_for_position(self._constraint_history, position)
         if not constraints:
-            return BoolVal(True)
-        return And(*constraints)
+            return z3.BoolVal(True)
+        return z3.And(*constraints)
 
     @memoized
     def solver_for_position(self, position):
         if not self._previous_history:
-            solver = Solver()
+            solver = z3.Solver()
             solver.add(axioms)
             return solver
         position_in_previous_history = self._position_in_previous_history(position)
@@ -853,7 +853,7 @@ class Bidder(object):
 class SolverPool(object):
     @memoized
     def solver_for_hand(self, hand):
-        solver = Solver()
+        solver = z3.Solver()
         solver.add(axioms)
         solver.add(expr_from_hand(hand))
         return solver
@@ -889,9 +889,9 @@ class RuleSelector(object):
         if constraints:
             return constraints
 
-        # (Or(clubs > diamonds, clubs == diamonds == 3) AND !(ROT AND hearts >= 5) AND !(ROT AND spades >= 5))
+        # (z3.Or(clubs > diamonds, clubs == diamonds == 3) AND !(ROT AND hearts >= 5) AND !(ROT AND spades >= 5))
         # OR
-        # (!Or(clubs > diamonds, clubs == diamonds == 3) AND !(ROT AND diamonds >=3) AND !(ROT AND hearts >= 5) AND !(ROT AND spades >= 5))
+        # (!z3.Or(clubs > diamonds, clubs == diamonds == 3) AND !(ROT AND diamonds >=3) AND !(ROT AND hearts >= 5) AND !(ROT AND spades >= 5))
 
         situations = []
         used_rule = self.rule_for_call(call)
@@ -900,9 +900,9 @@ class RuleSelector(object):
             for unmade_call, unmade_rule in self._call_to_rule_map().iteritems():
                 for unmade_priority, unmade_condition in unmade_rule.possible_priorities_and_conditions_for_call(unmade_call):
                     if unmade_priority < priority: # FIXME: < means > for priority compares.
-                        situational_constraints.append(Not(And(unmade_condition, unmade_rule.constraints_expr_for_call(history, unmade_call))))
-            situations.append(And(situational_constraints))
-        constraints = Or(situations)
+                        situational_constraints.append(z3.Not(z3.And(unmade_condition, unmade_rule.constraints_expr_for_call(history, unmade_call))))
+            situations.append(z3.And(situational_constraints))
+        constraints = z3.Or(situations)
         self._call_to_compiled_constraints[call] = constraints
         return constraints
 
@@ -934,11 +934,11 @@ class Interpreter(object):
             call = partial_history.last_call()
             rule = selector.rule_for_call(call)
             # We can interpret bids we know how to make.
-            constraints = BoolVal(True)
+            constraints = z3.BoolVal(True)
             annotations = []
             if rule:
                 annotations.extend(rule.annotations)
-                constraints = And(rule.constraints_expr_for_call(history, call),
+                constraints = z3.And(rule.constraints_expr_for_call(history, call),
                                   selector.compile_constraints_for_call(history, call))
                 # FIXME: We should validate the new constraints before saving them in the knowledge.
             history = history.extend_with(call, annotations, constraints)
