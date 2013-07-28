@@ -130,7 +130,7 @@ def expr_for_hand(hand):
 class SolverPool(object):
     @memoized
     def solver_for_hand(self, hand):
-        solver = z3.Solver()
+        solver = z3.SolverFor('QF_LIA')
         solver.add(axioms)
         solver.add(expr_for_hand(hand))
         return solver
@@ -888,7 +888,7 @@ class History(object):
     @memoized
     def solver_for_position(self, position):
         if not self._previous_history:
-            solver = z3.Solver()
+            solver = z3.SolverFor('QF_LIA')
             solver.add(axioms)
             return solver
         position_in_previous_history = self._position_in_previous_history(position)
