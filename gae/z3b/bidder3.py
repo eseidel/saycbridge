@@ -12,14 +12,14 @@ from third_party.memoized import memoized
 
 spades, hearts, diamonds, clubs, points = z3.Ints('spades hearts diamonds clubs points')
 
-ace_of_spades, king_of_spades, queen_of_spades, jack_of_spades =
-    z3.Ints('ace_of_spades king_of_spades queen_of_spades jack_of_spades')
-ace_of_hearts, king_of_hearts, queen_of_hearts, jack_of_hearts =
-    z3.Ints('ace_of_hearts king_of_hearts queen_of_hearts jack_of_hearts')
-ace_of_diamonds, king_of_diamonds, queen_of_diamonds, jack_of_diamonds =
-    z3.Ints('ace_of_diamonds king_of_diamonds queen_of_diamonds jack_of_diamonds')
-ace_of_clubs, king_of_clubs, queen_of_clubs, jack_of_clubs =
-    z3.Ints('ace_of_clubs king_of_clubs queen_of_clubs jack_of_clubs')
+ace_of_spades, king_of_spades, queen_of_spades, jack_of_spades = z3.Ints(
+    'ace_of_spades king_of_spades queen_of_spades jack_of_spades')
+ace_of_hearts, king_of_hearts, queen_of_hearts, jack_of_hearts = z3.Ints(
+    'ace_of_hearts king_of_hearts queen_of_hearts jack_of_hearts')
+ace_of_diamonds, king_of_diamonds, queen_of_diamonds, jack_of_diamonds = z3.Ints(
+    'ace_of_diamonds king_of_diamonds queen_of_diamonds jack_of_diamonds')
+ace_of_clubs, king_of_clubs, queen_of_clubs, jack_of_clubs = z3.Ints(
+    'ace_of_clubs king_of_clubs queen_of_clubs jack_of_clubs')
 
 axioms = [
     spades + hearts + diamonds + clubs == 13,
