@@ -10,8 +10,12 @@ import copy
 from third_party.memoized import memoized
 
 
-
 spades, hearts, diamonds, clubs, points = z3.Ints('spades hearts diamonds clubs points')
+
+ace_of_spades,   king_of_spades,   queen_of_spades,   jack_of_spades   = z3.Ints('ace_of_spades king_of_spades queen_of_spades jack_of_spades')
+ace_of_hearts,   king_of_hearts,   queen_of_hearts,   jack_of_hearts   = z3.Ints('ace_of_hearts king_of_hearts queen_of_hearts jack_of_hearts')
+ace_of_diamonds, king_of_diamonds, queen_of_diamonds, jack_of_diamonds = z3.Ints('ace_of_diamonds king_of_diamonds queen_of_diamonds jack_of_diamonds')
+ace_of_clubs,    king_of_clubs,    queen_of_clubs,    jack_of_clubs    = z3.Ints('ace_of_clubs king_of_clubs queen_of_clubs jack_of_clubs')
 
 axioms = [
     spades + hearts + diamonds + clubs == 13,
@@ -20,6 +24,35 @@ axioms = [
     diamonds >= 0,
     clubs >= 0,
     0 <= points <= 37,
+
+    0 <= ace_of_spades <= 1,
+    0 <= king_of_spades <= 1,
+    0 <= queen_of_spades <= 1,
+    0 <= jack_of_spades <= 1,
+    ace_of_spades + king_of_spades + queen_of_spades + jack_of_spades <= spades,
+
+    0 <= ace_of_hearts <= 1,
+    0 <= king_of_hearts <= 1,
+    0 <= queen_of_hearts <= 1,
+    0 <= jack_of_hearts <= 1,
+    ace_of_hearts + king_of_hearts + queen_of_hearts + jack_of_hearts <= hearts,
+
+    0 <= ace_of_diamonds <= 1,
+    0 <= king_of_diamonds <= 1,
+    0 <= queen_of_diamonds <= 1,
+    0 <= jack_of_diamonds <= 1,
+    ace_of_diamonds + king_of_diamonds + queen_of_diamonds + jack_of_diamonds <= diamonds,
+
+    0 <= ace_of_clubs <= 1,
+    0 <= king_of_clubs <= 1,
+    0 <= queen_of_clubs <= 1,
+    0 <= jack_of_clubs <= 1,
+    ace_of_clubs + king_of_clubs + queen_of_clubs + jack_of_clubs <= clubs,
+
+    4 * ace_of_spades   + 3 * king_of_spades   + 2 * queen_of_spades   + 1 * jack_of_spades   + 
+    4 * ace_of_hearts   + 3 * king_of_hearts   + 2 * queen_of_hearts   + 1 * jack_of_hearts   +
+    4 * ace_of_diamonds + 3 * king_of_diamonds + 2 * queen_of_diamonds + 1 * jack_of_diamonds +
+    4 * ace_of_clubs    + 3 * king_of_clubs    + 2 * queen_of_clubs    + 1 * jack_of_clubs    == points
 ]
 
 rule_of_twenty = z3.Or(
@@ -55,14 +88,37 @@ def expr_for_suit(suit):
 
 
 def expr_for_hand(hand):
-    return z3.And(
-        clubs == len(hand.cards_in_suit(suit.CLUBS)),
-        diamonds == len(hand.cards_in_suit(suit.DIAMONDS)),
-        hearts == len(hand.cards_in_suit(suit.HEARTS)),
-        spades == len(hand.cards_in_suit(suit.SPADES)),
-        points == hand.high_card_points()
-    )
+    cards_in_spades = hand.cards_in_suit(suit.SPADES)
+    cards_in_hearts = hand.cards_in_suit(suit.HEARTS)
+    cards_in_diamonds = hand.cards_in_suit(suit.DIAMONDS)
+    cards_in_clubs = hand.cards_in_suit(suit.CLUBS)
 
+    return z3.And(
+        spades == len(cards_in_spades),
+        hearts == len(cards_in_hearts),
+        diamonds == len(cards_in_diamonds),
+        clubs == len(cards_in_clubs),
+
+        ace_of_spades == int('A' in cards_in_spades),
+        king_of_spades == int('K' in cards_in_spades),
+        queen_of_spades == int('Q' in cards_in_spades),
+        jack_of_spades == int('J' in cards_in_spades),
+
+        ace_of_hearts == int('A' in cards_in_hearts),
+        king_of_hearts == int('K' in cards_in_hearts),
+        queen_of_hearts == int('Q' in cards_in_hearts),
+        jack_of_hearts == int('J' in cards_in_hearts),
+
+        ace_of_diamonds == int('A' in cards_in_diamonds),
+        king_of_diamonds == int('K' in cards_in_diamonds),
+        queen_of_diamonds == int('Q' in cards_in_diamonds),
+        jack_of_diamonds == int('J' in cards_in_diamonds),
+
+        ace_of_clubs == int('A' in cards_in_clubs),
+        king_of_clubs == int('K' in cards_in_clubs),
+        queen_of_clubs == int('Q' in cards_in_clubs),
+        jack_of_clubs == int('J' in cards_in_clubs),
+    )
 
 
 class SolverPool(object):
