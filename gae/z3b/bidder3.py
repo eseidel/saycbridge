@@ -468,10 +468,6 @@ class PositionView(object):
         self.position = position
 
     @property
-    def knowledge(self):
-        return self.history.knowledge_for_position(self.position)
-
-    @property
     def annotations(self):
         return self.history.annotations_for_position(self.position)
 
@@ -501,17 +497,18 @@ def is_possible(solver, expr):
 
 # This class is immutable.
 class History(object):
-    def __init__(self):
+    def __init__(self, previous_history=None):
         self.call_history = CallHistory()
         self._annotation_history = []
         self._constraint_history = []
+        self._previous_history = previous_history
 
     @property
     def annotations(self):
         return chain.from_iterable(self._annotation_history)
 
     def extend_with(self, call, annotations, constraints):
-        history = History()
+        history = History(self)
         history.call_history = copy.copy(self.call_history)
         history.call_history.calls.append(call)
         history._annotation_history = self._annotation_history + [annotations]
@@ -526,6 +523,9 @@ class History(object):
         start = (len(items) + end) % 4
         return items[start::4]
 
+    def _position_in_previous_history(self, position):
+        return positions[(position.index - 1) % 4]
+
     def knowledge_for_position(self, position):
         constraints = self._project_for_position(self._constraint_history, position)
         if not constraints:
@@ -534,9 +534,16 @@ class History(object):
 
     @memoized
     def solver_for_position(self, position):
-        solver = Solver()
-        solver.add(axioms)
-        solver.add(self.knowledge_for_position(position))
+        if not self._previous_history:
+            solver = Solver()
+            solver.add(axioms)
+            return solver
+        position_in_previous_history = self._position_in_previous_history(position)
+        solver_in_previous_history = self._previous_history.solver_for_position.take(position_in_previous_history)
+        if position_in_previous_history != positions.Me:
+            return solver_in_previous_history
+        solver = solver_in_previous_history
+        solver.add(self._constraint_history[-1])
         return solver
 
     def annotations_for_position(self, position):
