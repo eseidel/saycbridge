@@ -67,7 +67,9 @@ annotations = enum.Enum(
     "Stayman",
 )
 
+
 categories = enum.Enum(
+    "Relay",
     "NoTrump",
 )
 
@@ -107,6 +109,16 @@ class LastBidHasAnnotation(Precondition):
 
     def fits(self, history, call):
         return self.annotation in history.view_for(self.position).annotations_for_last_call
+
+
+class LastBidHasAnnotationOfClass(Precondition):
+    def __init__(self, position, annotation_class):
+        self.position = position
+        self.annotation_class = annotation_class
+
+    def fits(self, history, call):
+        annotations = history.view_for(self.position).annotations_for_last_call
+        return any(isinstance(annotation, self.annotation_class) for annotation in annotations)
 
 
 class RaiseOfPartnersLastSuit(Precondition):
@@ -462,8 +474,14 @@ class BasicStayman(NoTrumpResponse):
     z3_constraint = And(points >= 8, Or(hearts >= 4, spades >= 4))
 
 
+class TransferTo(object):
+    def __init__(self, suit):
+        self.suit = suit
+
+
 class JacobyTransferToHearts(NoTrumpResponse):
     call_name = '2D'
+    annotations = NoTrumpResponse.annotations + [TransferTo(suit.HEARTS)]
     z3_constraint = hearts >= 5
     conditional_priorities = [
         (hearts > spades, nt_response_priorities.JacobyTransferToLongerMajor),
@@ -474,12 +492,22 @@ class JacobyTransferToHearts(NoTrumpResponse):
 
 class JacobyTransferToSpades(NoTrumpResponse):
     call_name = '2H'
+    annotations = NoTrumpResponse.annotations + [TransferTo(suit.SPADES)]
     z3_constraint = spades >= 5
     conditional_priorities = [
         (spades > hearts, nt_response_priorities.JacobyTransferToLongerMajor),
         (And(hearts == spades, points >= 10), nt_response_priorities.JacobyTransferToSpadesWithGameForcingValues),
     ]
     priority = nt_response_priorities.JacobyTransferToSpades
+
+
+# FIXME: We don't support multiple call names...
+# class AcceptTransfer(Rule):
+#     category = categories.Relay
+#     preconditions = Rule.preconditions + [
+#         LastBidHasAnnotationOfClass(positions.Partner, TransferTo),
+#         NotJumpFromPartnerLastBid(),
+#     ]
 
 
 stayman_response_priorities = enum.Enum(
