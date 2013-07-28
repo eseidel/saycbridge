@@ -1063,7 +1063,7 @@ class Interpreter(object):
             constraints = z3.BoolVal(True)
             annotations = []
             if rule:
-                annotations.extend(rule.annotations)
+                annotations = rule.annotations
                 constraints = selector.constraints_for_call(call)
                 # FIXME: We should validate the new constraints before saving them in the knowledge.
             history = history.extend_with(call, annotations, constraints)
