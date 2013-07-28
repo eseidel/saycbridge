@@ -290,7 +290,10 @@ response_priorities = enum.Enum(
     "OneDiamondResponse",
     "OneHeartWithFourResponse",
     "OneSpadeWithFourResponse",
-    "NewMinorResponse",
+    "TwoHeartNewSuitResponse",
+    "TwoSpadeNewSuitResponse",
+    "TwoClubNewSuitResponse",
+    "TwoDiamondNewSuitResponse",
     "OneNotrumpResponse",
 )
 
@@ -382,11 +385,35 @@ class ThreeHeartLimitRaise(Response):
     priority = response_priorities.MajorLimitRaise
 
 
+# We should bid longer suits when possible, up the line for 4 cards.
+# we don't currently bid 2D over 2C when we have longer diamonds.
 class TwoClubNewSuitResponse(Response):
     call_name = '2C'
     preconditions = Response.preconditions + [UnbidSuit(), NotJumpFromLastContract()]
     z3_constraint = And(clubs >= 4, points >= 10)
-    priority = response_priorities.NewMinorResponse
+    priority = response_priorities.TwoClubNewSuitResponse
+
+
+class TwoDiamondNewSuitResponse(Response):
+    call_name = '2D'
+    preconditions = Response.preconditions + [UnbidSuit(), NotJumpFromLastContract()]
+    z3_constraint = And(diamonds >= 4, points >= 10)
+    priority = response_priorities.TwoDiamondNewSuitResponse
+
+
+class TwoHeartNewSuitResponse(Response):
+    call_name = '2H'
+    preconditions = Response.preconditions + [UnbidSuit(), NotJumpFromLastContract()]
+    z3_constraint = And(hearts >= 5, points >= 10)
+    priority = response_priorities.TwoHeartNewSuitResponse
+
+
+# Only possible in competative bidding.
+class TwoSpadeNewSuitResponse(Response):
+    call_name = '2S'
+    preconditions = Response.preconditions + [UnbidSuit(), NotJumpFromLastContract()]
+    z3_constraint = And(spades >= 5, points >= 10)
+    priority = response_priorities.TwoSpadeNewSuitResponse
 
 
 def expr_from_hand(hand):
@@ -422,6 +449,9 @@ class StandardAmericanYellowCard(object):
         TwoSpadeMinimumRaise(),
         ThreeHeartLimitRaise(),
         TwoClubNewSuitResponse(),
+        TwoDiamondNewSuitResponse(),
+        TwoHeartNewSuitResponse(),
+        TwoSpadeNewSuitResponse(),
     ]
     priority_ordering = PartialOrdering()
 
