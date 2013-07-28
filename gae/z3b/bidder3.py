@@ -997,7 +997,6 @@ class RuleSelector(object):
     def __init__(self, system, history):
         self.system = system
         self.history = history
-        self._call_to_compiled_constraints = {}
 
     @property
     @memoized
@@ -1030,7 +1029,7 @@ class RuleSelector(object):
                     if unmade_priority < priority: # FIXME: < means > for priority compares.
                         situational_constraints.append(z3.Not(z3.And(unmade_condition, unmade_rule.constraints_expr_for_call(self.history, unmade_call))))
             situations.append(z3.And(situational_constraints))
-        return z3.Or(situations)
+        return z3.And(used_rule.constraints_expr_for_call(self.history, call), z3.Or(situations))
 
     def possible_calls_for_hand(self, hand):
         possible_calls = PossibleCalls(self.system.priority_ordering)
@@ -1065,8 +1064,7 @@ class Interpreter(object):
             annotations = []
             if rule:
                 annotations.extend(rule.annotations)
-                constraints = z3.And(rule.constraints_expr_for_call(history, call),
-                                  selector.constraints_for_call(call))
+                constraints = selector.constraints_for_call(call)
                 # FIXME: We should validate the new constraints before saving them in the knowledge.
             history = history.extend_with(call, annotations, constraints)
 
