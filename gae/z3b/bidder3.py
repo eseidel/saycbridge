@@ -221,6 +221,16 @@ class LastBidHasStrain(Precondition):
         return last_call and last_call.strain == self.strain
 
 
+class LastBidWas(Precondition):
+    def __init__(self, position, call_name):
+        self.position = position
+        self.call_name = call_name
+
+    def fits(self, history, call):
+        last_call = history.view_for(self.position).last_call
+        return last_call and last_call.name == self.call_name
+
+
 class RaiseOfPartnersLastSuit(Precondition):
     def fits(self, history, call):
         partner_last_call = history.partner.last_call
@@ -652,9 +662,23 @@ class HeartStaymanResponse(StaymanResponse):
     priority = stayman_response_priorities.HeartStaymanResponse
 
 
+class StolenHeartStaymanResponse(StaymanResponse):
+    call_name = 'X'
+    z3_constraint = hearts >= 4
+    preconditions = StaymanResponse.preconditions + [LastBidWas(positions.RHO, '2H')]
+    priority = stayman_response_priorities.HeartStaymanResponse
+
+
 class SpadeStaymanResponse(StaymanResponse):
     call_name = '2S'
     z3_constraint = spades >= 4
+    priority = stayman_response_priorities.SpadeStaymanResponse
+
+
+class StolenSpadeStaymanResponse(StaymanResponse):
+    call_name = 'X'
+    z3_constraint = spades >= 4
+    preconditions = StaymanResponse.preconditions + [LastBidWas(positions.RHO, '2S')]
     priority = stayman_response_priorities.SpadeStaymanResponse
 
 

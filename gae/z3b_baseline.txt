@@ -114,14 +114,12 @@ FAIL: None (expected 2D) for 982.T75432.86.32 (hcp: 0 lp: 2 sp: 2), history: 1N 
 FAIL: None (expected XX) for 982.T75432.86.32 (hcp: 0 lp: 2 sp: 2), history: 1N X (subtest of 1N X XX P 2C P)
 FAIL: 2D (expected P) for KT82.AKT8.Q8.A62 (hcp: 16 lp: 16 sp: 15), history: 1N P 2C X
 FAIL: 2D (expected XX) for AKT82.AKT.Q8.862 (hcp: 16 lp: 17 sp: 15), history: 1N P 2C X
-FAIL: P (expected X) for KT8.AKT8.AQT8.62 (hcp: 16 lp: 16 sp: 17), history: 1N P 2C 2H
 FAIL: None (expected XX) for AQT.KJ8.AK987.43 (hcp: 17 lp: 18 sp: 18), history: 1N P 2H X
 FAIL: None (expected 2S) for K87.AKT8.AT8.Q62 (hcp: 16 lp: 16 sp: 16), history: 1N P 2H X
 FAIL: None (expected 3S) for AKT.AKJT.87.QT76 (hcp: 17 lp: 17 sp: 18), history: 1N P 2H X
 FAIL: None (expected P) for KJ87.AKT8.AT8.62 (hcp: 15 lp: 15 sp: 16), history: 1N P 2H X
 FAIL: None (expected 3H) for AQT9.KJ87.Q86.A2 (hcp: 16 lp: 16 sp: 17), history: 1N P 2D 2S
-FAIL: P (expected X) for KT8.AKT8.86.AQT7 (hcp: 16 lp: 16 sp: 17), history: 1N P 2C 2S
-Pass 17 of 30 hands
+Pass 19 of 30 hands
 
 test_invitational_rebid_by_opener:
 FAIL: None (expected 4S) for .AKT42.Q63.AK754 (hcp: 16 lp: 18 sp: 21), history: 1S P 2S P
@@ -861,4 +859,4 @@ FAIL: None (expected 4S) for K74.9.J98.KJT742 (hcp: 8 lp: 10 sp: 11), history: 1
 FAIL: None (expected P) for Q87.J843.K65.Q93 (hcp: 8 lp: 8 sp: 8), history: 1N P
 Pass 1 of 3 hands
 
-Pass 299 (28%) of 1043 total hands
+Pass 301 (28%) of 1043 total hands
