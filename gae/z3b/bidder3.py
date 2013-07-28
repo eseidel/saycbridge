@@ -221,6 +221,16 @@ class LastBidHasStrain(Precondition):
         return last_call and last_call.strain == self.strain
 
 
+class LastBidWas(Precondition):
+    def __init__(self, position, call_name):
+        self.position = position
+        self.call_name = call_name
+
+    def fits(self, history, call):
+        last_call = history.view_for(self.position).last_call
+        return last_call and last_call.name == self.call_name
+
+
 class RaiseOfPartnersLastSuit(Precondition):
     def fits(self, history, call):
         partner_last_call = history.partner.last_call
@@ -282,7 +292,7 @@ class JumpFromPartnerLastBid(Jump):
 
 class NotJumpFromLastContract(JumpFromLastContract):
     def __init__(self):
-        Jump.__init__(self, exact_size=0)
+        JumpFromLastContract.__init__(self, exact_size=0)
 
 
 class NotJumpFromMyLastBid(JumpFromMyLastBid):
@@ -438,7 +448,7 @@ response_priorities = enum.Enum(
 
 
 class Response(Rule):
-    preconditions = [Opened(positions.Partner)]
+    preconditions = [LastBidHasAnnotation(positions.Partner, annotations.Opening)]
 
 
 class OneDiamondResponse(Response):
@@ -498,7 +508,7 @@ class MinimumCombinedLength(Constraint):
 
 
 class RaiseResponse(Response):
-    preconditions = Response.preconditions + [RaiseOfPartnersLastSuit(), LastBidHasAnnotation(positions.Partner, annotations.Opening)]
+    preconditions = Response.preconditions + [RaiseOfPartnersLastSuit()]
 
 
 class TwoHeartMinimumRaise(RaiseResponse):
@@ -579,10 +589,18 @@ class NoTrumpResponse(Response):
 
 
 class BasicStayman(NoTrumpResponse):
-    call_name = '2C'
     annotations = Response.annotations + [annotations.Artificial, annotations.Stayman]
     priority = nt_response_priorities.Stayman
     z3_constraint = z3.And(points >= 8, z3.Or(hearts >= 4, spades >= 4))
+
+
+class Stayman(BasicStayman):
+    call_name = '2C'
+
+
+class StolenStayman(BasicStayman):
+    call_name = 'X'
+    preconditions = BasicStayman.preconditions + [LastBidWas(positions.RHO, '2C')]
 
 
 class TransferTo(object):
@@ -625,10 +643,18 @@ stayman_response_priorities = enum.Enum(
     "HeartStaymanResponse",
     "SpadeStaymanResponse",
     "DiamondStaymanResponse",
+    "PassStaymanResponse",
 )
 
 class StaymanResponse(Rule):
     preconditions = Rule.preconditions + [LastBidHasAnnotation(positions.Partner, annotations.Stayman)]
+
+
+class PassStaymanResponse(StaymanResponse):
+    call_name = 'P'
+    priority = stayman_response_priorities.PassStaymanResponse
+    z3_constraint = z3.BoolVal(True)
+    annotations = StaymanResponse.annotations + [annotations.Artificial]
 
 
 class DiamondStaymanResponse(StaymanResponse):
@@ -644,9 +670,23 @@ class HeartStaymanResponse(StaymanResponse):
     priority = stayman_response_priorities.HeartStaymanResponse
 
 
+class StolenHeartStaymanResponse(StaymanResponse):
+    call_name = 'X'
+    z3_constraint = hearts >= 4
+    preconditions = StaymanResponse.preconditions + [LastBidWas(positions.RHO, '2H')]
+    priority = stayman_response_priorities.HeartStaymanResponse
+
+
 class SpadeStaymanResponse(StaymanResponse):
     call_name = '2S'
     z3_constraint = spades >= 4
+    priority = stayman_response_priorities.SpadeStaymanResponse
+
+
+class StolenSpadeStaymanResponse(StaymanResponse):
+    call_name = 'X'
+    z3_constraint = spades >= 4
+    preconditions = StaymanResponse.preconditions + [LastBidWas(positions.RHO, '2S')]
     priority = stayman_response_priorities.SpadeStaymanResponse
 
 
