@@ -1,5 +1,3 @@
-#!/usr/bin/python
-
 import unittest2
 from core.board import Board
 from core.position import *

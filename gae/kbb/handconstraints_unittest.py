@@ -1,5 +1,3 @@
-#!/usr/bin/python
-
 import unittest2
 from kbb.handconstraints import HandConstraints, HonorConstraint
 from core.suit import CLUBS, DIAMONDS, HEARTS, SPADES
