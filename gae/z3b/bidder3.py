@@ -77,6 +77,8 @@ rule_of_nineteen = z3.Or(
 
 rule_of_fifteen = spades + points >= 15
 
+number_of_aces = ace_of_spades + ace_of_hearts + ace_of_diamonds + ace_of_clubs
+
 balanced = z3.And(clubs >= 2, diamonds >= 2, hearts >= 2, spades >= 2,
     z3.Or(
         z3.And(hearts > 2, diamonds > 2, clubs > 2),
@@ -708,23 +710,22 @@ class ResponseToGerberForAces(Rule):
 
 class ZeroOrFourAcesResponseToGerber(ResponseToGerberForAces):
     call_name = '4D'
-    z3_constraint = z3.Or(ace_of_spades + ace_of_hearts + ace_of_diamonds + ace_of_clubs == 0,
-                          ace_of_spades + ace_of_hearts + ace_of_diamonds + ace_of_clubs == 4)
+    z3_constraint = z3.Or(number_of_aces == 0, number_of_aces == 4)
 
 
 class OneAceResponseToGerber(ResponseToGerberForAces):
     call_name = '4H'
-    z3_constraint = ace_of_spades + ace_of_hearts + ace_of_diamonds + ace_of_clubs == 1
+    z3_constraint = number_of_aces == 1
 
 
 class TwoAcesResponseToGerber(ResponseToGerberForAces):
     call_name = '4S'
-    z3_constraint = ace_of_spades + ace_of_hearts + ace_of_diamonds + ace_of_clubs == 2
+    z3_constraint = number_of_aces == 2
 
 
 class ThreeAcesResponseToGerber(ResponseToGerberForAces):
     call_name = '4H'
-    z3_constraint = ace_of_spades + ace_of_hearts + ace_of_diamonds + ace_of_clubs == 3
+    z3_constraint = number_of_aces == 3
 
 
 class PartialOrdering(object):
