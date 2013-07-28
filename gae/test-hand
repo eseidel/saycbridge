@@ -12,6 +12,7 @@ from kbb import KnowledgeBasedBidder
 from core.callhistory import CallHistory, Vulnerability
 from core.hand import Hand
 from gib import Gib
+import z3b.bidder3 as z3b
 
 
 _log = logging.getLogger(__name__)
@@ -44,6 +45,9 @@ if __name__ == '__main__':
     if '-g' in args:
         args.remove('-g')
         bidder = Gib()
+    elif '-z' in args:
+        args.remove('-z')
+        bidder = z3b.Bidder()
     else:
         bidder = KnowledgeBasedBidder()
 
