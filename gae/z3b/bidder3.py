@@ -438,7 +438,7 @@ response_priorities = enum.Enum(
 
 
 class Response(Rule):
-    preconditions = [Opened(positions.Partner)]
+    preconditions = [LastBidHasAnnotation(positions.Partner, annotations.Opening)]
 
 
 class OneDiamondResponse(Response):
