@@ -269,6 +269,12 @@ class OneNoTrumpOpening(Opening):
     priority = opening_priorities.NoTrumpOpening
 
 
+class TwoNoTrumpOpening(Opening):
+    call_name = '2N'
+    z3_constraint = And(points >= 20, points <= 21, balanced)
+    priority = opening_priorities.NoTrumpOpening
+
+
 class StrongTwoClubs(Opening):
     call_name = '2C'
     z3_constraint = points >= 22  # FIXME: Should support "or 9+ winners"
@@ -426,27 +432,19 @@ class PartialOrdering(object):
         return left > right
 
 
+# FIXME: This is wrong as soon as we try to support more than one system.
+def _get_subclasses(base_class):
+    subclasses = base_class.__subclasses__()
+    for subclass in list(subclasses):
+        subclasses.extend(_get_subclasses(subclass))
+    return subclasses
+
+def _concrete_rule_classes():
+    return filter(lambda rule: rule.call_name, _get_subclasses(Rule))
+
 class StandardAmericanYellowCard(object):
     # Rule ordering does not matter.  We could have python crawl the files to generate this list instead.
-    rules = [
-        OneClubOpening(),
-        OneDiamondOpening(),
-        OneHeartOpening(),
-        OneSpadeOpening(),
-        OneDiamondResponse(),
-        OneHeartResponse(),
-        OneSpadeResponse(),
-        OneNotrumpResponse(),
-        OneNoTrumpOpening(),
-        StrongTwoClubs(),
-        TwoHeartMinimumRaise(),
-        TwoSpadeMinimumRaise(),
-        ThreeHeartLimitRaise(),
-        TwoClubNewSuitResponse(),
-        TwoDiamondNewSuitResponse(),
-        TwoHeartNewSuitResponse(),
-        TwoSpadeNewSuitResponse(),
-    ]
+    rules = [rule() for rule in _concrete_rule_classes()]
     priority_ordering = PartialOrdering()
 
 
