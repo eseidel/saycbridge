@@ -458,6 +458,35 @@ class BasicStayman(NoTrumpResponse):
     z3_constraint = And(points >= 8, Or(hearts >= 4, spades >= 4))
 
 
+stayman_response_priorities = enum.Enum(
+    "HeartStaymanResponse",
+    "SpadeStaymanResponse",
+    "DiamondStaymanResponse",
+)
+
+class StaymanResponse(Rule):
+    preconditions = Rule.preconditions + [LastBidHasAnnotation(positions.Partner, annotations.Stayman)]
+
+
+class DiamondStaymanResponse(StaymanResponse):
+    call_name = '2D'
+    priority = stayman_response_priorities.DiamondStaymanResponse
+    z3_constraint = BoolVal(True)
+    # FIXME: Artificial.
+
+
+class HeartStaymanResponse(StaymanResponse):
+    call_name = '2H'
+    z3_constraint = hearts >= 4
+    priority = stayman_response_priorities.HeartStaymanResponse
+
+
+class SpadeStaymanResponse(StaymanResponse):
+    call_name = '2S'
+    z3_constraint = spades >= 4
+    priority = stayman_response_priorities.SpadeStaymanResponse
+
+
 def expr_from_hand(hand):
     return And(
         clubs == len(hand.cards_in_suit(suit.CLUBS)),
@@ -608,7 +637,10 @@ class History(object):
         return chain.from_iterable(self._project_for_position(self._annotation_history, position))
 
     def annotations_for_last_call(self, position):
-        return self._project_for_position(self._annotation_history, position)[-1]
+        projection = self._project_for_position(self._annotation_history, position)
+        if not projection:
+            return []
+        return projection[-1]
 
     @memoized
     def min_length_for_position(self, position, suit):
