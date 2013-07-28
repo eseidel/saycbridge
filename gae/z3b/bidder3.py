@@ -64,12 +64,15 @@ positions = enum.Enum(
 annotations = enum.Enum(
     "Opening",
     "NoTrumpSystemsOn",
+    "Artificial",
     "Stayman",
+    "Gerber",
 )
 
 
 categories = enum.Enum(
     "Relay",
+    "FeatureAsking",
     "NoTrump",
 )
 
@@ -87,6 +90,17 @@ class Precondition(object):
 
     def fits(self, history, call):
         pass
+
+
+class InvertedPrecondition(Precondition):
+    def __init__(self, precondition):
+        self.precondition = precondition
+
+    def name(self):
+        return "not" + self.precondition.name()
+
+    def fits(self, history, call):
+        return not self.precondition.fits(history, call)
 
 
 class NoOpening(Precondition):
@@ -119,6 +133,16 @@ class LastBidHasAnnotationOfClass(Precondition):
     def fits(self, history, call):
         annotations = history.view_for(self.position).annotations_for_last_call
         return any(isinstance(annotation, self.annotation_class) for annotation in annotations)
+
+
+class LastBidHasStrain(Precondition):
+    def __init__(self, position, strain):
+        self.position = position
+        self.strain = strain
+
+    def fits(self, history, call):
+        last_call = history.view_for(self.position).last_call
+        return last_call and last_call.strain == self.strain
 
 
 class RaiseOfPartnersLastSuit(Precondition):
@@ -198,6 +222,7 @@ class NotJumpFromPartnerLastBid(JumpFromPartnerLastBid):
 class Rule(object):
     preconditions = []
     category = None # Intra-bid priority
+    requires_planning = False
 
     call_name = None # FIXME: We will likely support more than one call per rule eventually.
     constraints = []
@@ -470,7 +495,7 @@ class NoTrumpResponse(Response):
 
 class BasicStayman(NoTrumpResponse):
     call_name = '2C'
-    annotations = Response.annotations + [annotations.Stayman]
+    annotations = Response.annotations + [annotations.Artificial, annotations.Stayman]
     priority = nt_response_priorities.Stayman
     z3_constraint = And(points >= 8, Or(hearts >= 4, spades >= 4))
 
@@ -482,7 +507,7 @@ class TransferTo(object):
 
 class JacobyTransferToHearts(NoTrumpResponse):
     call_name = '2D'
-    annotations = NoTrumpResponse.annotations + [TransferTo(suit.HEARTS)]
+    annotations = NoTrumpResponse.annotations + [annotations.Artificial, TransferTo(suit.HEARTS)]
     z3_constraint = hearts >= 5
     conditional_priorities = [
         (hearts > spades, nt_response_priorities.JacobyTransferToLongerMajor),
@@ -493,7 +518,7 @@ class JacobyTransferToHearts(NoTrumpResponse):
 
 class JacobyTransferToSpades(NoTrumpResponse):
     call_name = '2H'
-    annotations = NoTrumpResponse.annotations + [TransferTo(suit.SPADES)]
+    annotations = NoTrumpResponse.annotations + [annotations.Artificial, TransferTo(suit.SPADES)]
     z3_constraint = spades >= 5
     conditional_priorities = [
         (spades > hearts, nt_response_priorities.JacobyTransferToLongerMajor),
@@ -525,7 +550,7 @@ class DiamondStaymanResponse(StaymanResponse):
     call_name = '2D'
     priority = stayman_response_priorities.DiamondStaymanResponse
     z3_constraint = BoolVal(True)
-    # FIXME: Artificial.
+    annotations = StaymanResponse.annotations + [annotations.Artificial]
 
 
 class HeartStaymanResponse(StaymanResponse):
@@ -563,6 +588,31 @@ class OneHeartDirectOvercall(DirectOvercall):
 class OneSpadeDirectOvercall(DirectOvercall):
     call_name = '1S'
     z3_constraint = And(spades >= 5, points >= 8)
+
+
+feature_asking_priorites = enum.Enum(
+    "Gerber",
+)
+
+class Gerber(Rule):
+    category = categories.FeatureAsking
+    requires_planning = True
+    z3_constraint = BoolVal(True)
+    annotations = [annotations.Gerber]
+    priority = feature_asking_priorites.Gerber
+
+
+class GerberForAces(Gerber):
+    preconditions = Gerber.preconditions + [
+        LastBidHasStrain(positions.Partner, suit.NOTRUMP),
+        InvertedPrecondition(LastBidHasAnnotation(positions.Partner, annotations.Artificial))
+    ]
+    call_name = '4C'
+
+
+class GerberForKings(Gerber):
+    preconditions = Gerber.preconditions + [LastBidHasAnnotation(positions.Me, annotations.Gerber)]
+    call_name = '5C'
 
 
 def expr_from_hand(hand):
@@ -798,6 +848,7 @@ class Bidder(object):
         # The resulting priorities are only partially ordered, so have to be walked in a tree.
         maximal_calls = possible_calls.calls_of_maximal_priority()
         # Currently we have no tie-breaking priorities (no planner), so we just select the first call we found.
+        maximal_calls = filter(lambda call: not rule_selector.rule_for_call(call).requires_planning, maximal_calls)
         if not maximal_calls:
             # If we failed to find any rule able to bid, this is an error.
             return None
