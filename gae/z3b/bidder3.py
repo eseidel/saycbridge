@@ -149,16 +149,6 @@ class LastBidHasAnnotation(Precondition):
         return self.annotation in history.view_for(self.position).annotations_for_last_call
 
 
-class LastBidHasAnnotationOfClass(Precondition):
-    def __init__(self, position, annotation_class):
-        self.position = position
-        self.annotation_class = annotation_class
-
-    def fits(self, history, call):
-        annotations = history.view_for(self.position).annotations_for_last_call
-        return any(isinstance(annotation, self.annotation_class) for annotation in annotations)
-
-
 class LastBidHasStrain(Precondition):
     def __init__(self, position, strain):
         self.position = position
