@@ -772,15 +772,11 @@ FAIL: None (expected 3C) for AK8743.K2.K52.J8 (hcp: 14 lp: 16 sp: 15), history: 
 FAIL: None (expected 2C) for AK8743.K2.K52.J8 (hcp: 14 lp: 16 sp: 15), history: 1N P (subtest of 1N P 2C P 2H P)
 FAIL: None (expected 3D) for A3.KJT976.KQ2.76 (hcp: 13 lp: 15 sp: 15), history: 1N P 2C P 2H P
 FAIL: None (expected 2C) for A3.KJT976.KQ2.76 (hcp: 13 lp: 15 sp: 15), history: 1N P (subtest of 1N P 2C P 2H P)
-FAIL: None (expected 4D) for KQ4.KQJ.K9873.K2 (hcp: 17 lp: 18 sp: 18), history: 1N P 4C P
-FAIL: None (expected 4H) for KQ4.AQ8.K9873.K2 (hcp: 17 lp: 18 sp: 18), history: 1N P 4C P
-FAIL: None (expected 4S) for 97.KJ2.AT3.AKQ95 (hcp: 17 lp: 18 sp: 18), history: 1N P 4C P
 FAIL: None (expected 4N) for 972.A2.AT3.AKQ95 (hcp: 17 lp: 18 sp: 18), history: 1N P 4C P
-FAIL: None (expected 4D) for A975.A73.A52.A65 (hcp: 16 lp: 16 sp: 16), history: 1N P 4C P
 FAIL: None (expected P) for AJ4.KQ8.K9873.Q2 (hcp: 15 lp: 16 sp: 14), history: 1N P 4N P
 FAIL: None (expected 5N) for AJ4.KQ8.K9873.K2 (hcp: 16 lp: 17 sp: 17), history: 1N P 4N P
 FAIL: None (expected 6N) for AJ4.KQ8.K9873.A2 (hcp: 17 lp: 18 sp: 18), history: 1N P 4N P
-Pass 8 of 22 hands
+Pass 12 of 22 hands
 
 test_slam_zone_response_to_one_of_a_minor:
 FAIL: 1S (expected 2S) for AJ3.K76.A8.AKJ75 (hcp: 20 lp: 21 sp: 21), history: 1D P
@@ -863,4 +859,4 @@ FAIL: None (expected 4S) for K74.9.J98.KJT742 (hcp: 8 lp: 10 sp: 11), history: 1
 FAIL: None (expected P) for Q87.J843.K65.Q93 (hcp: 8 lp: 8 sp: 8), history: 1N P
 Pass 1 of 3 hands
 
-Pass 297 (28%) of 1043 total hands
+Pass 301 (28%) of 1043 total hands

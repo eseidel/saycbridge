@@ -671,6 +671,7 @@ class OneSpadeDirectOvercall(DirectOvercall):
 
 feature_asking_priorites = enum.Enum(
     "Gerber",
+    "GerberResponse",
 )
 
 class Gerber(Rule):
@@ -693,6 +694,33 @@ class GerberForKings(Gerber):
     preconditions = Gerber.preconditions + [LastBidHasAnnotation(positions.Me, annotations.Gerber)]
     call_name = '5C'
 
+
+class ResponseToGerberForAces(Rule):
+    category = categories.Relay
+    preconditions = Rule.preconditions + [LastBidHasAnnotation(positions.Partner, annotations.Gerber)]
+    annotations = [annotations.Artificial]
+    priority = feature_asking_priorites.GerberResponse
+
+
+class ZeroOrFourAcesResponseToGerber(ResponseToGerberForAces):
+    call_name = '4D'
+    z3_constraint = z3.Or(ace_of_spades + ace_of_hearts + ace_of_diamonds + ace_of_clubs == 0,
+                          ace_of_spades + ace_of_hearts + ace_of_diamonds + ace_of_clubs == 4)
+
+
+class OneAceResponseToGerber(ResponseToGerberForAces):
+    call_name = '4H'
+    z3_constraint = ace_of_spades + ace_of_hearts + ace_of_diamonds + ace_of_clubs == 1
+
+
+class TwoAcesResponseToGerber(ResponseToGerberForAces):
+    call_name = '4S'
+    z3_constraint = ace_of_spades + ace_of_hearts + ace_of_diamonds + ace_of_clubs == 2
+
+
+class ThreeAcesResponseToGerber(ResponseToGerberForAces):
+    call_name = '4H'
+    z3_constraint = ace_of_spades + ace_of_hearts + ace_of_diamonds + ace_of_clubs == 3
 
 
 class PartialOrdering(object):
