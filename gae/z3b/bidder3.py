@@ -942,7 +942,7 @@ class Bidder(object):
         # Select highest-intra-bid-priority (category) rules for all possible bids
         rule_selector = RuleSelector(self.system, history)
         # Compute inter-bid priorities (priority) for each using the hand.
-        possible_calls = rule_selector.possible_calls_for_hand(history, hand)
+        possible_calls = rule_selector.possible_calls_for_hand(hand)
         # The resulting priorities are only partially ordered, so have to be walked in a tree.
         maximal_calls = possible_calls.calls_of_maximal_priority()
         # Currently we have no tie-breaking priorities (no planner), so we just select the first call we found.
@@ -957,30 +957,26 @@ class RuleSelector(object):
     def __init__(self, system, history):
         self.system = system
         self.history = history
-        self._call_to_rule_cache = None
         self._call_to_compiled_constraints = {}
 
-    def _call_to_rule_map(self):
-        if self._call_to_rule_cache is not None:
-            return self._call_to_rule_cache
-
-        self._call_to_rule_cache = {}
+    @property
+    @memoized
+    def _call_to_rule(self):
+        result = {}
         for rule in self.system.rules:
             call = rule.create_call(self.history)
             if call:
-                exisiting_rule = self._call_to_rule_cache.get(call)
-                if not exisiting_rule or rule.category > exisiting_rule.category:
-                    self._call_to_rule_cache[call] = rule
-        return self._call_to_rule_cache
+                existing_rule = result.get(call)
+                if not existing_rule or rule.category > existing_rule.category:
+                    result[call] = rule
+        return result
 
-    def rule_for_call(self, call_to_lookup):
-        return self._call_to_rule_map().get(call_to_lookup)
+    def rule_for_call(self, call):
+        return self._call_to_rule.get(call)
 
-    def compile_constraints_for_call(self, history, call):
-        constraints = self._call_to_compiled_constraints.get(call)
-        if constraints:
-            return constraints
-
+    @memoized
+    def constraints_for_call(self, call):
+        # Example:
         # (z3.Or(clubs > diamonds, clubs == diamonds == 3) AND !(ROT AND hearts >= 5) AND !(ROT AND spades >= 5))
         # OR
         # (!z3.Or(clubs > diamonds, clubs == diamonds == 3) AND !(ROT AND diamonds >=3) AND !(ROT AND hearts >= 5) AND !(ROT AND spades >= 5))
@@ -989,25 +985,24 @@ class RuleSelector(object):
         used_rule = self.rule_for_call(call)
         for priority, condition in used_rule.possible_priorities_and_conditions_for_call(call):
             situational_constraints = [condition]
-            for unmade_call, unmade_rule in self._call_to_rule_map().iteritems():
+            for unmade_call, unmade_rule in self._call_to_rule.iteritems():
                 for unmade_priority, unmade_condition in unmade_rule.possible_priorities_and_conditions_for_call(unmade_call):
                     if unmade_priority < priority: # FIXME: < means > for priority compares.
-                        situational_constraints.append(z3.Not(z3.And(unmade_condition, unmade_rule.constraints_expr_for_call(history, unmade_call))))
+                        situational_constraints.append(z3.Not(z3.And(unmade_condition, unmade_rule.constraints_expr_for_call(self.history, unmade_call))))
             situations.append(z3.And(situational_constraints))
-        constraints = z3.Or(situations)
-        self._call_to_compiled_constraints[call] = constraints
-        return constraints
+        return z3.Or(situations)
 
-    def possible_calls_for_hand(self, history, hand):
+    def possible_calls_for_hand(self, hand):
         possible_calls = PossibleCalls(self.system.priority_ordering)
         solver = solver_pool.solver_for_hand(hand)
         for call in CallExplorer().possible_calls_over(self.history.call_history):
             rule = self.rule_for_call(call)
             if not rule:
                 continue
-            priority = rule.priority_for_call_and_hand(solver, history, call, hand)
-            if priority:
-                possible_calls.add_call_with_priority(call, priority)
+            priority = rule.priority_for_call_and_hand(solver, self.history, call, hand)
+            if not priority:
+                continue
+            possible_calls.add_call_with_priority(call, priority)
         return possible_calls
 
 
@@ -1031,7 +1026,7 @@ class Interpreter(object):
             if rule:
                 annotations.extend(rule.annotations)
                 constraints = z3.And(rule.constraints_expr_for_call(history, call),
-                                  selector.compile_constraints_for_call(history, call))
+                                  selector.constraints_for_call(call))
                 # FIXME: We should validate the new constraints before saving them in the knowledge.
             history = history.extend_with(call, annotations, constraints)
 
