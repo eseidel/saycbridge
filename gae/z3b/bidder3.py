@@ -122,7 +122,7 @@ class Jump(Precondition):
         if call.is_pass():
             return False
         if call.is_double() or call.is_redouble():
-            call = history.last_contract()
+            call = history.call_history.last_contract()
 
         last_call = self._last_call(history)
         if not last_call or not last_call.is_contract():  # If we don't have a previous bid to compare to, this can't be a jump.
@@ -138,7 +138,7 @@ class Jump(Precondition):
 
 class JumpFromLastContract(Jump):
     def _last_call(self, history):
-        return history.last_contract()
+        return history.call_history.last_contract()
 
 
 class JumpFromMyLastBid(Jump):
@@ -467,6 +467,14 @@ def is_valid(solver, expr):
     return result
 
 
+def is_possible(solver, expr):
+    solver.push()
+    solver.add(expr)
+    result = solver.check() == sat
+    solver.pop()
+    return result
+
+
 # This class is immutable.
 class History(object):
     def __init__(self):
@@ -500,6 +508,7 @@ class History(object):
             return BoolVal(True)
         return And(*constraints)
 
+    @memoized
     def solver_for_position(self, position):
         solver = Solver()
         solver.add(axioms)
@@ -522,7 +531,7 @@ class History(object):
         suit_expr = expr_for_suit(suit)
         for position in positions:
             solver = self.solver_for_position(position)
-            if not is_valid(solver, suit_expr < 3):
+            if not is_possible(solver, suit_expr < 3):
                 return False
         return True
 
@@ -692,7 +701,12 @@ class Interpreter(object):
     # ["K4.AKQJ94.87.A96", "3N", "1D P 1H P"],  # p54, h21
 
 
+# test_invitational_response_to_one_of_a_major:
+# FAIL: 1N (expected 2D) for Q98.KJ732.KJ.JT9 (hcp: 11 lp: 12 sp: 11), history: 1H P
+# FAIL: 1N (expected 2C) for QJ54.J753.KT2.A4 (hcp: 11 lp: 11 sp: 12), history: 1S P
+# Pass 2 of 4 hands
+
 # bidder = Bidder()
-# hand = Hand.from_cdhs_string("T.8.AKJ762.AKT32")
+# hand = Hand.from_cdhs_string("QJ54.J753.KT2.A4")
 # print hand
-# print bidder.find_call_for(hand, CallHistory.from_string("1H P 1N P"))
+# print bidder.find_call_for(hand, CallHistory.from_string("1S P"))
