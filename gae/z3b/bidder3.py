@@ -498,7 +498,7 @@ class MinimumCombinedLength(Constraint):
 
 
 class RaiseResponse(Response):
-    preconditions = Response.preconditions + [RaiseOfPartnersLastSuit(), LastBidHasAnnotation(positions.Partner, annotations.Opening)]
+    preconditions = Response.preconditions + [RaiseOfPartnersLastSuit()]
 
 
 class TwoHeartMinimumRaise(RaiseResponse):
