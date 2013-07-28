@@ -95,6 +95,7 @@ class SAYCBidderTest(unittest2.TestCase):
 
     def test_minimum_stayman(self):
         self._assert_hands_match_calls([
+            ["T9.AJ72.K65.Q732", "X", "1N 2C"],
             ["T9.AJ72.K65.Q732", "3N", "1N P 2C P 2D P"],  # p6, h3
             ["T9.AJ72.K65.Q732", "3N", "1N P 2C P 2H P"],  # p6, h3
             ["T9.AJ72.K65.Q732", "4S", "1N P 2C P 2S P"],  # p6, h3

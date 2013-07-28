@@ -258,7 +258,7 @@ FAIL: None (expected 3S) for T2.AJ7.J652.QJ32 (hcp: 9 lp: 9 sp: 10), history: 1N
 FAIL: None (expected 3N) for T9.AJ72.Q732.K65 (hcp: 10 lp: 10 sp: 11), history: 1N P 2C P 2D P
 FAIL: None (expected 4H) for T9.AJ72.Q732.K65 (hcp: 10 lp: 10 sp: 11), history: 1N P 2C P 2H P
 FAIL: None (expected 3N) for T9.AJ72.Q732.K65 (hcp: 10 lp: 10 sp: 11), history: 1N P 2C P 2S P
-Pass 3 of 12 hands
+Pass 4 of 13 hands
 
 test_misc_hands_from_play:
 FAIL: None (expected 2C) for A852.K6.T3.A8732 (hcp: 11 lp: 12 sp: 13), history: 1S P 1N P
@@ -859,4 +859,4 @@ FAIL: None (expected 4S) for K74.9.J98.KJT742 (hcp: 8 lp: 10 sp: 11), history: 1
 FAIL: None (expected P) for Q87.J843.K65.Q93 (hcp: 8 lp: 8 sp: 8), history: 1N P
 Pass 1 of 3 hands
 
-Pass 301 (28%) of 1043 total hands
+Pass 302 (28%) of 1044 total hands

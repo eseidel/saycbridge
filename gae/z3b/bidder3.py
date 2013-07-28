@@ -589,10 +589,18 @@ class NoTrumpResponse(Response):
 
 
 class BasicStayman(NoTrumpResponse):
-    call_name = '2C'
     annotations = Response.annotations + [annotations.Artificial, annotations.Stayman]
     priority = nt_response_priorities.Stayman
     z3_constraint = z3.And(points >= 8, z3.Or(hearts >= 4, spades >= 4))
+
+
+class Stayman(BasicStayman):
+    call_name = '2C'
+
+
+class StolenStayman(BasicStayman):
+    call_name = 'X'
+    preconditions = BasicStayman.preconditions + [LastBidWas(positions.RHO, '2C')]
 
 
 class TransferTo(object):
