@@ -64,6 +64,7 @@ def expr_for_hand(hand):
     )
 
 
+
 class SolverPool(object):
     @memoized
     def solver_for_hand(self, hand):
@@ -254,6 +255,12 @@ class Rule(object):
     conditional_priorities = []
     priority = None
 
+    def name(self):
+        return self.__class__.__name__
+
+    def __repr__(self):
+        return "%s()" % self.name()
+
     def create_call(self, history):
         # FIXME: kbb rules can make more than one type of call, it's unclear
         # if we should follow that model here or not.
@@ -261,7 +268,7 @@ class Rule(object):
         for precondition in self.preconditions:
             if not precondition.fits(history, call):
                 return None
-        assert self.priority, "" + self.__class__.__name__ + " is missing priority"
+        assert self.priority, "" + self.name() + " is missing priority"
         return call
 
     def possible_priorities_and_conditions_for_call(self, call):
