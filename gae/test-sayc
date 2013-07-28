@@ -43,6 +43,8 @@ if __name__ == '__main__':
         SAYCBidderTest.bidder_class = z3b.Bidder
 
     try:
+        # import cProfile as profile
+        # profile.run("unittest2.main()", "output_file2")
         unittest2.main()
     except SystemExit:
         # FIXME: This is a hack until we can use Python 2.7's fancier unitest library.

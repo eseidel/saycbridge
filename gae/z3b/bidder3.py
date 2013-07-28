@@ -193,20 +193,14 @@ class Rule(object):
             yield priority, condition
         yield self.priority, BoolVal(True)
 
-    def priority_for_call_and_hand(self, history, call, hand):
-        solver = Solver()
-        solver.add(axioms)
-        solver.add(self.constraints_expr_for_call(history, call))
-        solver.add(expr_from_hand(hand))
-        if solver.check() != sat:
+    @memoized
+    def priority_for_call_and_hand(self, solver, history, call, hand):
+        if not is_possible(solver, self.constraints_expr_for_call(history, call)):
             return None
 
         for condition, priority in self.conditional_priorities:
-            solver.push()
-            solver.add(condition)
-            if solver.check() == sat:
+            if is_possible(solver, condition):
                 return priority
-            solver.pop()
         return self.priority
 
     def constraints_expr_for_call(self, history, call):
@@ -548,6 +542,7 @@ class History(object):
     def annotations_for_position(self, position):
         return chain.from_iterable(self._project_for_position(self._annotation_history, position))
 
+    @memoized
     def min_length_for_position(self, position, suit):
         solver = self.solver_for_position(position)
         suit_expr = expr_for_suit(suit)
@@ -557,6 +552,7 @@ class History(object):
                 return length
         return 0
 
+    @memoized
     def is_unbid_suit(self, suit):
         suit_expr = expr_for_suit(suit)
         for position in positions:
@@ -627,6 +623,17 @@ class Bidder(object):
         return maximal_calls[0]
 
 
+class SolverPool(object):
+    @memoized
+    def solver_for_hand(self, hand):
+        solver = Solver()
+        solver.add(axioms)
+        solver.add(expr_from_hand(hand))
+        return solver
+
+solver_pool = SolverPool()
+
+
 class RuleSelector(object):
     def __init__(self, system, history):
         self.system = system
@@ -674,11 +681,12 @@ class RuleSelector(object):
 
     def possible_calls_for_hand(self, history, hand):
         possible_calls = PossibleCalls(self.system.priority_ordering)
+        solver = solver_pool.solver_for_hand(hand)
         for call in CallExplorer().possible_calls_over(self.history.call_history):
             rule = self.rule_for_call(call)
             if not rule:
                 continue
-            priority = rule.priority_for_call_and_hand(history, call, hand)
+            priority = rule.priority_for_call_and_hand(solver, history, call, hand)
             if priority:
                 possible_calls.add_call_with_priority(call, priority)
         return possible_calls
