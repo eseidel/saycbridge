@@ -445,54 +445,62 @@ class MinimumCombinedLength(Constraint):
         return expr_for_suit(suit) >= implied_length
 
 
-class TwoHeartMinimumRaise(Response):
+class RaiseResponse(Response):
+    preconditions = Response.preconditions + [RaiseOfPartnersLastSuit(), LastBidHasAnnotation(positions.Partner, annotations.Opening)]
+
+
+class TwoHeartMinimumRaise(RaiseResponse):
     call_name = '2H'
-    preconditions = Response.preconditions + [RaiseOfPartnersLastSuit()]
     constraints = [MinimumCombinedLength(8), Z3(points >= 6)]
     priority = response_priorities.MajorMinimumRaise
 
 
-class TwoSpadeMinimumRaise(Response):
+class TwoSpadeMinimumRaise(RaiseResponse):
     call_name = '2S'
-    preconditions = Response.preconditions + [RaiseOfPartnersLastSuit()]
     constraints = [MinimumCombinedLength(8), Z3(points >= 6)]
     priority = response_priorities.MajorMinimumRaise
 
 
-class ThreeHeartLimitRaise(Response):
+class ThreeHeartLimitRaise(RaiseResponse):
     call_name = '3H'
-    preconditions = Response.preconditions + [RaiseOfPartnersLastSuit()]
+    constraints = [MinimumCombinedLength(8), Z3(points >= 10)]
+    priority = response_priorities.MajorLimitRaise
+
+
+class ThreeSpadeLimitRaise(RaiseResponse):
+    call_name = '3S'
     constraints = [MinimumCombinedLength(8), Z3(points >= 10)]
     priority = response_priorities.MajorLimitRaise
 
 
 # We should bid longer suits when possible, up the line for 4 cards.
 # we don't currently bid 2D over 2C when we have longer diamonds.
-class TwoClubNewSuitResponse(Response):
-    call_name = '2C'
+
+class NewSuitAtTheTwoLevel(Response):
     preconditions = Response.preconditions + [UnbidSuit(), NotJumpFromLastContract()]
+
+
+class TwoClubNewSuitResponse(NewSuitAtTheTwoLevel):
+    call_name = '2C'
     z3_constraint = z3.And(clubs >= 4, points >= 10)
     priority = response_priorities.TwoClubNewSuitResponse
 
 
-class TwoDiamondNewSuitResponse(Response):
+class TwoDiamondNewSuitResponse(NewSuitAtTheTwoLevel):
     call_name = '2D'
-    preconditions = Response.preconditions + [UnbidSuit(), NotJumpFromLastContract()]
     z3_constraint = z3.And(diamonds >= 4, points >= 10)
     priority = response_priorities.TwoDiamondNewSuitResponse
 
 
-class TwoHeartNewSuitResponse(Response):
+class TwoHeartNewSuitResponse(NewSuitAtTheTwoLevel):
     call_name = '2H'
-    preconditions = Response.preconditions + [UnbidSuit(), NotJumpFromLastContract()]
     z3_constraint = z3.And(hearts >= 5, points >= 10)
     priority = response_priorities.TwoHeartNewSuitResponse
 
 
 # Only possible in competative bidding.
-class TwoSpadeNewSuitResponse(Response):
+class TwoSpadeNewSuitResponse(NewSuitAtTheTwoLevel):
     call_name = '2S'
-    preconditions = Response.preconditions + [UnbidSuit(), NotJumpFromLastContract()]
     z3_constraint = z3.And(spades >= 5, points >= 10)
     priority = response_priorities.TwoSpadeNewSuitResponse
 
@@ -757,11 +765,6 @@ class History(object):
     def _position_in_previous_history(self, position):
         return positions[(position.index - 1) % 4]
 
-    def knowledge_for_position(self, position):
-        constraints = self._project_for_position(self._constraint_history, position)
-        if not constraints:
-            return z3.BoolVal(True)
-        return z3.And(*constraints)
 
     @memoized
     def solver_for_position(self, position):
