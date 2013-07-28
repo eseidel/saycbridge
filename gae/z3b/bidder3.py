@@ -63,10 +63,18 @@ positions = enum.Enum(
 
 annotations = enum.Enum(
     "Opening",
+    "NoTrumpSystemsOn",
+    "Stayman",
 )
+
+categories = enum.Enum(
+    "NoTrump",
+)
+
 
 def expr_for_suit(suit):
     return (clubs, diamonds, hearts, spades)[suit]
+
 
 class Precondition(object):
     def __repr__(self):
@@ -90,6 +98,15 @@ class Opened(Precondition):
 
     def fits(self, history, call):
         return annotations.Opening in history.annotations_for_position(self.position)
+
+
+class LastBidHasAnnotation(Precondition):
+    def __init__(self, position, annotation):
+        self.position = position
+        self.annotation = annotation
+
+    def fits(self, history, call):
+        return self.annotation in history.view_for(self.position).annotations_for_last_call
 
 
 class RaiseOfPartnersLastSuit(Precondition):
@@ -264,12 +281,14 @@ class OneSpadeOpening(Opening):
 
 
 class OneNoTrumpOpening(Opening):
+    annotations = Opening.annotations + [annotations.NoTrumpSystemsOn]
     call_name = '1N'
     z3_constraint = And(points >= 15, points <= 17, balanced)
     priority = opening_priorities.NoTrumpOpening
 
 
 class TwoNoTrumpOpening(Opening):
+    annotations = Opening.annotations + [annotations.NoTrumpSystemsOn]
     call_name = '2N'
     z3_constraint = And(points >= 20, points <= 21, balanced)
     priority = opening_priorities.NoTrumpOpening
@@ -298,9 +317,17 @@ response_priorities = enum.Enum(
 )
 
 
+nt_response_priorities = enum.Enum(
+    "NoTrumpJumpRaise",
+    "NoTrumpMinimumRaise",
+    "JacobyTransfer",
+    "Stayman",
+    "ClubBust",
+)
+
+
 class Response(Rule):
     preconditions = [Opened(positions.Partner)]
-
 
 class OneDiamondResponse(Response):
     call_name = '1D'
@@ -416,6 +443,21 @@ class TwoSpadeNewSuitResponse(Response):
     priority = response_priorities.TwoSpadeNewSuitResponse
 
 
+class NoTrumpResponse(Response):
+    category = categories.NoTrump
+    preconditions = Response.preconditions + [
+        LastBidHasAnnotation(positions.Partner, annotations.Opening),
+        LastBidHasAnnotation(positions.Partner, annotations.NoTrumpSystemsOn),
+    ]
+
+
+class BasicStayman(NoTrumpResponse):
+    call_name = '2C'
+    annotations = Response.annotations + [annotations.Stayman]
+    priority = nt_response_priorities.Stayman
+    z3_constraint = And(points >= 8, Or(hearts >= 4, spades >= 4))
+
+
 def expr_from_hand(hand):
     return And(
         clubs == len(hand.cards_in_suit(suit.CLUBS)),
@@ -428,6 +470,10 @@ def expr_from_hand(hand):
 
 class PartialOrdering(object):
     def less_than(self, left, right):
+        # FIXME: enum.py should be asserting when comparing different types
+        # but it seems to be silently succeeding in python 2.7.
+        if left.enumtype != right.enumtype:
+            return False
         # Our enums are written highest to lowest, so we use > for less_than. :)
         return left > right
 
@@ -449,9 +495,7 @@ class StandardAmericanYellowCard(object):
 
 
 # The dream:
-# history.my.knowledge
 # history.my.solver
-# history.partner.knowledge
 # annotations.Opening in history.rho.annotations
 # annotations.Opening in history.rho.last_call.annotations
 # history.partner.min_length(suit)
@@ -468,6 +512,12 @@ class PositionView(object):
     @property
     def annotations(self):
         return self.history.annotations_for_position(self.position)
+
+    # FIXME: We could hang annotations off of the Call object, but currently
+    # Call is from the old system.
+    @property
+    def annotations_for_last_call(self):
+        return self.history.annotations_for_last_call(self.position)
 
     @property
     def last_call(self):
@@ -547,6 +597,9 @@ class History(object):
     def annotations_for_position(self, position):
         return chain.from_iterable(self._project_for_position(self._annotation_history, position))
 
+    def annotations_for_last_call(self, position):
+        return self._project_for_position(self._annotation_history, position)[-1]
+
     @memoized
     def min_length_for_position(self, position, suit):
         solver = self.solver_for_position(position)
@@ -581,6 +634,9 @@ class History(object):
     @property
     def lho(self):
         return PositionView(self, positions.LHO)
+
+    def view_for(self, position):
+        return PositionView(self, position)
 
 
 class PossibleCalls(object):
@@ -750,6 +806,6 @@ class Interpreter(object):
 # Pass 2 of 4 hands
 
 # bidder = Bidder()
-# hand = Hand.from_cdhs_string("QJ54.J753.KT2.A4")
+# hand = Hand.from_cdhs_string("T9.AJ72.K65.Q732")
 # print hand
-# print bidder.find_call_for(hand, CallHistory.from_string("1S P"))
+# print bidder.find_call_for(hand, CallHistory.from_string("1N P"))
