@@ -1,16 +1,31 @@
 SAYC Bridge
-A Python library and Google App Engine instance for bidding bridge hands using Standard American Yellow Card conventions.
+A Python library and Google App Engine instance for bidding bridge hands
+using Standard American Yellow Card conventions.
 
 http://www.saycbridge.com/
 https://play.google.com/store/apps/details?id=com.saycbridge.bridge
 http://saycbot.appspot.com/
 
+Setup
+
+Development of SAYC Bridge (both the site and the core bidding logic)
+requires the Google App Engine SDK:
+https://developers.google.com/appengine/
+
+Development of the Android wrapper requires Eclipse and the Android SDK:
+http://developer.android.com/sdk/
+
+Development of the iOS wrapper requires Apple's Xcode:
+https://developer.apple.com/xcode/
+
 
 Make Rules
 
-make clean -- removes stray *.pyc files
-make baseline -- creates a new local kbb_baseline.txt file
-make check -- checks your latest changes against your kbb_baseline.txt
+make serve -- run a local copy of saycbridge.com for testing
+make check -- check your latest changes against your kbb_baseline.txt
+make accept -- replace the current baseline file with your last make check results
+make clean -- remove stray *.pyc files
+make baseline -- create a new local kbb_baseline.txt file
 
 
 Testing Scripts
