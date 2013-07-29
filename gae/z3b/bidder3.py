@@ -78,6 +78,7 @@ rule_of_nineteen = z3.Or(
 rule_of_fifteen = spades + points >= 15
 
 number_of_aces = ace_of_spades + ace_of_hearts + ace_of_diamonds + ace_of_clubs
+number_of_kings = king_of_spades + king_of_hearts + king_of_diamonds + king_of_clubs
 
 balanced = z3.And(clubs >= 2, diamonds >= 2, hearts >= 2, spades >= 2,
     z3.Or(
@@ -766,14 +767,21 @@ class GerberForKings(Gerber):
     ]
 
 
-class ResponseToGerberForAces(Rule):
+class ResponseToGerber(Rule):
     category = categories.Relay
-    preconditions = Rule.preconditions + [LastBidHasAnnotation(positions.Partner, annotations.Gerber)]
+    preconditions = Rule.preconditions + [
+        LastBidHasAnnotation(positions.Partner, annotations.Gerber),
+        NotJumpFromPartnerLastBid(),
+    ]
     constraints = {
         '4D': z3.Or(number_of_aces == 0, number_of_aces == 4),
         '4H': number_of_aces == 1,
         '4S': number_of_aces == 2,
         '4N': number_of_aces == 3,
+        '5D': z3.Or(number_of_kings == 0, number_of_kings == 4),
+        '5H': number_of_kings == 1,
+        '5S': number_of_kings == 2,
+        '5N': number_of_kings == 3,
     }
     priority = feature_asking_priorites.GerberResponse
     annotations = [annotations.Artificial]
