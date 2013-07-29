@@ -804,6 +804,7 @@ class FourLevelPremptiveOpen(Opening):
     priority = preempt_priorities.FourLevelPremptive
 
 
+# FIXME: Should we use conditional priorities instead of upper bounding the points?
 class TwoLevelPremptiveOvercall(DirectOvercall):
     preconditions = DirectOvercall.preconditions + [JumpFromLastContract()]
     call_names = ['2C', '2D', '2H', '2S']
