@@ -1,5 +1,3 @@
-#!/usr/bin/python
-
 import unittest2
 from core.hand import Hand
 from core.suit import *
