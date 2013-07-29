@@ -253,6 +253,7 @@ class Rule(object):
 
     def __init__(self):
         assert self.priority or self.constraints, "" + self.name() + " is missing priority"
+        assert not self.conditional_priorities or not self.constraints
         # conditional_priorities only works with a single call_name.
         assert not self.conditional_priorities or self.call_name
 
@@ -286,9 +287,13 @@ class Rule(object):
                 yield call
 
     def possible_priorities_and_conditions_for_call(self, call):
+        # conditional_priorities only work for a single call_name
         for condition, priority in self.conditional_priorities:
             yield priority, condition
-        yield self.priority, NO_CONSTRAINTS
+
+        _, priority = self._per_call_constraints_and_priority(call)
+        assert priority
+        yield priority, NO_CONSTRAINTS
 
     @memoized
     def priority_for_call_and_hand(self, solver, history, call, hand):
@@ -298,6 +303,11 @@ class Rule(object):
         for condition, priority in self.conditional_priorities:
             if is_possible(solver, condition):
                 return priority
+
+        _, priority = self._per_call_constraints_and_priority(call)
+        if priority:
+            return priority
+
         return self.priority
 
     def _exprs_from_constraints(self, constraints, history, call):
@@ -316,18 +326,23 @@ class Rule(object):
     # constraints = { '1H': hearts > 5 }
     # constraints = { '1H': (hearts > 5, priority) }
 
-    def _constraints_from_constraints_tuple(self, constraints_tuple):
+    # FIXME: Should we split this into two methods? on for priority and one for constraints?
+    def _per_call_constraints_and_priority(self, call):
+        constraints_tuple = self.constraints.get(call.name)
+        if not constraints_tuple:
+            return None, self.priority
+
         try:
             if isinstance(list(constraints_tuple)[-1], enum.EnumValue):
-                return constraints_tuple[0]
-        except TypeError, te:
-            return constraints_tuple
+                assert len(constraints_tuple) == 2
+                return constraints_tuple
+        except TypeError:
+            return constraints_tuple, self.priority
 
     def constraints_expr_for_call(self, history, call):
         exprs = []
-        constraints_tuple = self.constraints.get(call.name)
-        if constraints_tuple:
-            per_call_constraints = self._constraints_from_constraints_tuple(constraints_tuple)
+        per_call_constraints, _ = self._per_call_constraints_and_priority(call)
+        if per_call_constraints:
             exprs.extend(self._exprs_from_constraints(per_call_constraints, history, call))
         exprs.extend(self._exprs_from_constraints(self.shared_constraints, history, call))
         return z3.And(exprs)
@@ -504,13 +519,13 @@ class RaiseResponse(Response):
 
 class MajorMinimumRaise(RaiseResponse):
     call_names = ['2H', '2S']
-    shared_constraints = [MinimumCombinedLength(8), Z3(points >= 6)]
+    shared_constraints = [MinimumCombinedLength(8), points >= 6]
     priority = response_priorities.MajorMinimumRaise
 
 
 class MajorLimitRaise(RaiseResponse):
     call_names = ['3H', '3S']
-    shared_constraints = [MinimumCombinedLength(8), Z3(points >= 10)]
+    shared_constraints = [MinimumCombinedLength(8), points >= 10]
     priority = response_priorities.MajorLimitRaise
 
 
@@ -525,7 +540,7 @@ class NewSuitAtTheTwoLevel(Response):
         '2H' : (hearts >= 5, response_priorities.TwoHeartNewSuitResponse),
         '2S' : (spades >= 5, response_priorities.TwoSpadeNewSuitResponse),
     }
-    shared_constraints = [ Z3(points >= 10) ]
+    shared_constraints = points >= 10
 
 
 nt_response_priorities = enum.Enum(
@@ -622,7 +637,7 @@ class DirectOvercall(Rule):
 
 class OneLevelOvercall(DirectOvercall):
     call_names = ['1D', '1H', '1S']
-    shared_constraints = [MinLength(5), Z3(points >= 8)]
+    shared_constraints = [MinLength(5), points >= 8]
 
 
 feature_asking_priorites = enum.Enum(
