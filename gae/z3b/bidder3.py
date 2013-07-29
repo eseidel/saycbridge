@@ -12,14 +12,14 @@ from third_party.memoized import memoized
 
 spades, hearts, diamonds, clubs, points = z3.Ints('spades hearts diamonds clubs points')
 
-ace_of_spades, king_of_spades, queen_of_spades, jack_of_spades = z3.Ints(
-    'ace_of_spades king_of_spades queen_of_spades jack_of_spades')
-ace_of_hearts, king_of_hearts, queen_of_hearts, jack_of_hearts = z3.Ints(
-    'ace_of_hearts king_of_hearts queen_of_hearts jack_of_hearts')
-ace_of_diamonds, king_of_diamonds, queen_of_diamonds, jack_of_diamonds = z3.Ints(
-    'ace_of_diamonds king_of_diamonds queen_of_diamonds jack_of_diamonds')
-ace_of_clubs, king_of_clubs, queen_of_clubs, jack_of_clubs = z3.Ints(
-    'ace_of_clubs king_of_clubs queen_of_clubs jack_of_clubs')
+ace_of_spades, king_of_spades, queen_of_spades, jack_of_spades, ten_of_spades = z3.Ints(
+    'ace_of_spades king_of_spades queen_of_spades jack_of_spades ten_of_spades')
+ace_of_hearts, king_of_hearts, queen_of_hearts, jack_of_hearts, ten_of_hearts = z3.Ints(
+    'ace_of_hearts king_of_hearts queen_of_hearts jack_of_hearts ten_of_hearts')
+ace_of_diamonds, king_of_diamonds, queen_of_diamonds, jack_of_diamonds, ten_of_diamonds = z3.Ints(
+    'ace_of_diamonds king_of_diamonds queen_of_diamonds jack_of_diamonds ten_of_diamonds')
+ace_of_clubs, king_of_clubs, queen_of_clubs, jack_of_clubs, ten_of_clubs = z3.Ints(
+    'ace_of_clubs king_of_clubs queen_of_clubs jack_of_clubs ten_of_clubs')
 
 axioms = [
     spades + hearts + diamonds + clubs == 13,
@@ -33,25 +33,29 @@ axioms = [
     0 <= king_of_spades <= 1,
     0 <= queen_of_spades <= 1,
     0 <= jack_of_spades <= 1,
-    ace_of_spades + king_of_spades + queen_of_spades + jack_of_spades <= spades,
+    0 <= ten_of_spades <= 1,
+    ace_of_spades + king_of_spades + queen_of_spades + jack_of_spades + ten_of_spades <= spades,
 
     0 <= ace_of_hearts <= 1,
     0 <= king_of_hearts <= 1,
     0 <= queen_of_hearts <= 1,
     0 <= jack_of_hearts <= 1,
-    ace_of_hearts + king_of_hearts + queen_of_hearts + jack_of_hearts <= hearts,
+    0 <= ten_of_hearts <= 1,
+    ace_of_hearts + king_of_hearts + queen_of_hearts + jack_of_hearts + ten_of_hearts <= hearts,
 
     0 <= ace_of_diamonds <= 1,
     0 <= king_of_diamonds <= 1,
     0 <= queen_of_diamonds <= 1,
     0 <= jack_of_diamonds <= 1,
-    ace_of_diamonds + king_of_diamonds + queen_of_diamonds + jack_of_diamonds <= diamonds,
+    0 <= ten_of_diamonds <= 1,
+    ace_of_diamonds + king_of_diamonds + queen_of_diamonds + jack_of_diamonds + ten_of_diamonds <= diamonds,
 
     0 <= ace_of_clubs <= 1,
     0 <= king_of_clubs <= 1,
     0 <= queen_of_clubs <= 1,
     0 <= jack_of_clubs <= 1,
-    ace_of_clubs + king_of_clubs + queen_of_clubs + jack_of_clubs <= clubs,
+    0 <= ten_of_clubs <= 1,
+    ace_of_clubs + king_of_clubs + queen_of_clubs + jack_of_clubs + ten_of_clubs <= clubs,
 
     4 * ace_of_spades   + 3 * king_of_spades   + 2 * queen_of_spades   + 1 * jack_of_spades   +
     4 * ace_of_hearts   + 3 * king_of_hearts   + 2 * queen_of_hearts   + 1 * jack_of_hearts   +
@@ -77,10 +81,10 @@ rule_of_nineteen = z3.Or(
 
 rule_of_fifteen = spades + points >= 15
 
-three_of_the_top_five_spades = ace_of_spades + king_of_spades + queen_of_spades + jack_of_spades >= 3
-three_of_the_top_five_hearts = ace_of_hearts + king_of_hearts + queen_of_hearts + jack_of_hearts >= 3
-three_of_the_top_five_diamonds = ace_of_diamonds + king_of_diamonds + queen_of_diamonds + jack_of_diamonds >= 3
-three_of_the_top_five_clubs = ace_of_clubs + king_of_clubs + queen_of_clubs + jack_of_clubs >= 3
+three_of_the_top_five_spades = ace_of_spades + king_of_spades + queen_of_spades + jack_of_spades + ten_of_spades >= 3
+three_of_the_top_five_hearts = ace_of_hearts + king_of_hearts + queen_of_hearts + jack_of_hearts + ten_of_hearts >= 3
+three_of_the_top_five_diamonds = ace_of_diamonds + king_of_diamonds + queen_of_diamonds + jack_of_diamonds + ten_of_diamonds >= 3
+three_of_the_top_five_clubs = ace_of_clubs + king_of_clubs + queen_of_clubs + jack_of_clubs + ten_of_clubs >= 3
 
 number_of_aces = ace_of_spades + ace_of_hearts + ace_of_diamonds + ace_of_clubs
 number_of_kings = king_of_spades + king_of_hearts + king_of_diamonds + king_of_clubs
@@ -117,21 +121,25 @@ def expr_for_hand(hand):
         king_of_spades == int('K' in cards_in_spades),
         queen_of_spades == int('Q' in cards_in_spades),
         jack_of_spades == int('J' in cards_in_spades),
+        ten_of_spades == int('T' in cards_in_spades),
 
         ace_of_hearts == int('A' in cards_in_hearts),
         king_of_hearts == int('K' in cards_in_hearts),
         queen_of_hearts == int('Q' in cards_in_hearts),
         jack_of_hearts == int('J' in cards_in_hearts),
+        ten_of_hearts == int('T' in cards_in_hearts),
 
         ace_of_diamonds == int('A' in cards_in_diamonds),
         king_of_diamonds == int('K' in cards_in_diamonds),
         queen_of_diamonds == int('Q' in cards_in_diamonds),
         jack_of_diamonds == int('J' in cards_in_diamonds),
+        ten_of_diamonds == int('T' in cards_in_diamonds),
 
         ace_of_clubs == int('A' in cards_in_clubs),
         king_of_clubs == int('K' in cards_in_clubs),
         queen_of_clubs == int('Q' in cards_in_clubs),
         jack_of_clubs == int('J' in cards_in_clubs),
+        ten_of_clubs == int('T' in cards_in_clubs),
     )
 
 
@@ -762,10 +770,10 @@ class StolenSpadeStaymanResponse(StaymanResponse):
 
 overcall_priorities = enum.Enum(
     # FIXME: This needs the prefer the longer suit pattern.
+    "DirectOvercall",
     "FourLevelPremptive",
     "ThreeLevelPremptive",
     "TwoLevelPremptive",
-    "DirectOvercall",
 )
 
 
@@ -808,21 +816,21 @@ class FourLevelPremptiveOpen(Opening):
 class TwoLevelPremptiveOvercall(DirectOvercall):
     preconditions = DirectOvercall.preconditions + [JumpFromLastContract()]
     call_names = ['2C', '2D', '2H', '2S']
-    shared_constraints = [MinLength(6), ThreeOfTheTopFive(), 5 <= points <= 11]
+    shared_constraints = [MinLength(6), ThreeOfTheTopFive(), points >= 5]
     priority = overcall_priorities.TwoLevelPremptive
 
 
 class ThreeLevelPremptiveOvercall(DirectOvercall):
     preconditions = DirectOvercall.preconditions + [JumpFromLastContract()]
     call_names = ['3C', '3D', '3H', '3S']
-    shared_constraints = [MinLength(7), ThreeOfTheTopFive(), 5 <= points <= 11]
+    shared_constraints = [MinLength(7), ThreeOfTheTopFive(), points >= 5]
     priority = overcall_priorities.ThreeLevelPremptive
 
 
 class FourLevelPremptiveOvercall(DirectOvercall):
     preconditions = DirectOvercall.preconditions + [JumpFromLastContract()]
     call_names = ['4C', '4D', '4H', '4S']
-    shared_constraints = [MinLength(8), ThreeOfTheTopFive(), 5 <= points <= 11]
+    shared_constraints = [MinLength(8), ThreeOfTheTopFive(), points >= 5]
     priority = overcall_priorities.FourLevelPremptive
 
 
