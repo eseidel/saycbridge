@@ -913,8 +913,8 @@ class History(object):
         solver = self.solver_for_position(position)
         suit_expr = expr_for_suit(suit)
         # FIXME: This would be faster as a binary search.
-        for length in range(13, 0, -1):
-            if is_valid(solver, suit_expr >= length):
+        for length in range(0, 13):
+            if is_possible(solver, suit_expr == length):
                 return length
         return 0
 
