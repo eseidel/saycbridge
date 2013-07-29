@@ -275,6 +275,8 @@ class Rule(object):
             return [Call.from_string(self.call_name)]
         elif self.call_names:
             return map(Call.from_string, self.call_names)
+        elif self.constraints:
+            return map(Call.from_string, self.constraints.keys())
         # Otherwise we need to run all possible calls through the preconditions.
         return CallExplorer().possible_calls_over(history.call_history)
 
