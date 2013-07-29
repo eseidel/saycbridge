@@ -117,6 +117,13 @@ class SAYCBidderTest(unittest2.TestCase):
         ])
         # FIXME: We haven't implemented ResponseToResponseToStayman yet.
 
+
+    def test_3c_stayman(self):
+        self._assert_hands_match_calls([
+            ["T9.AJ2.T652.T973", "3C", "2N P"],
+            ["AQ.AQ2.AK52.Q973", "3H", "2N P 3C P"],
+        ])
+
     def test_escape_route_stayman(self):
         self._assert_hands_match_calls([
             ["9.8753.7652.8732", "P", "1N P 2C P 2D P"],  # p7

@@ -1,5 +1,8 @@
 WARNING : Rule ThreeLevelSuitRebidByResponder() for bid 3H resulted in invalid knowledge: me: 10-13 hcp, 0-3C 0-3D 6-3H 6+S (last: 2H fsf) partner: 12-18 hcp, 4+C 4+D 0-5H 0-3S (last: 3C, opened) lho 0-16 hcp (last: P) rho: 0-16 hcp (last: P)
 WARNING : Rule ResponderReverse() for bid 2S resulted in invalid knowledge: me: 12-7 hcp, 4+S (last: 2D) partner: 22+ hcp, 5+H (last: 2H, opened) lho 0-16 hcp (last: P) rho: 0-16 hcp (last: P)
+test_3c_stayman:
+Pass 3 of 3 hands
+
 test_doubles:
 FAIL: None (expected P) for T98.KQ4.863.Q875 (hcp: 7 lp: 7 sp: 7), history: 1N X P
 FAIL: None (expected 2S) for J7.872.53.QJ9874 (hcp: 4 lp: 6 sp: 5), history: 1N X P
@@ -850,4 +853,4 @@ FAIL: None (expected 4S) for K74.9.J98.KJT742 (hcp: 8 lp: 10 sp: 11), history: 1
 FAIL: None (expected P) for Q87.J843.K65.Q93 (hcp: 8 lp: 8 sp: 8), history: 1N P
 Pass 1 of 3 hands
 
-Pass 316 (30%) of 1049 total hands
+Pass 319 (30%) of 1052 total hands

@@ -575,6 +575,14 @@ class MinimumCombinedLength(Constraint):
         return expr_for_suit(suit) >= implied_length
 
 
+class MinimumCombinedPoints(Constraint):
+    def __init__(self, min_points):
+        self.min_points = min_points
+
+    def expr(self, history, call):
+        return points >= max(0, self.min_points - history.partner.min_points)
+
+
 class MinLength(Constraint):
     def __init__(self, min_length):
         self.min_length = min_length
@@ -642,16 +650,25 @@ class NoTrumpResponse(Response):
 class BasicStayman(NoTrumpResponse):
     annotations = Response.annotations + [annotations.Artificial, annotations.Stayman]
     priority = nt_response_priorities.Stayman
-    shared_constraints = [points >= 8, z3.Or(hearts >= 4, spades >= 4)]
+    shared_constraints = [z3.Or(hearts >= 4, spades >= 4)]
 
 
 class Stayman(BasicStayman):
-    call_name = '2C'
+    preconditions = BasicStayman.preconditions + [NotJumpFromPartnerLastBid()]
+    constraints = {
+        '2C': MinimumCombinedPoints(23),
+        '3C': MinimumCombinedPoints(25),
+    }
 
 
-class StolenStayman(BasicStayman):
-    call_name = 'X'
+class StolenTwoClubStayman(BasicStayman):
     preconditions = BasicStayman.preconditions + [LastBidWas(positions.RHO, '2C')]
+    constraints = { 'X': MinimumCombinedPoints(23) }
+
+
+class StolenThreeClubStayman(BasicStayman):
+    preconditions = BasicStayman.preconditions + [LastBidWas(positions.RHO, '3C')]
+    constraints = { 'X': MinimumCombinedPoints(25) }
 
 
 class TransferTo(object):
@@ -705,30 +722,40 @@ class StaymanResponse(Rule):
 
 
 class NaturalStaymanResponse(StaymanResponse):
+    preconditions = StaymanResponse.preconditions + [NotJumpFromPartnerLastBid()]
     constraints = {
         '2H': (hearts >= 4, stayman_response_priorities.HeartStaymanResponse),
         '2S': (spades >= 4, stayman_response_priorities.SpadeStaymanResponse),
-        'P': (NO_CONSTRAINTS, stayman_response_priorities.PassStaymanResponse),
+        '3H': (hearts >= 4, stayman_response_priorities.HeartStaymanResponse),
+        '3S': (spades >= 4, stayman_response_priorities.SpadeStaymanResponse),
     }
 
 
-class DiamondStaymanResponse(StaymanResponse):
-    call_name = '2D'
-    priority = stayman_response_priorities.DiamondStaymanResponse
+class PassStaymanResponse(StaymanResponse):
+    call_name = 'P'
     shared_constraints = NO_CONSTRAINTS
+    priority = stayman_response_priorities.PassStaymanResponse
+
+
+class DiamondStaymanResponse(StaymanResponse):
+    preconditions = StaymanResponse.preconditions + [NotJumpFromPartnerLastBid()]
+    constraints = {
+        '2D': NO_CONSTRAINTS,
+        '3D': NO_CONSTRAINTS,
+    }
+    priority = stayman_response_priorities.DiamondStaymanResponse
     annotations = StaymanResponse.annotations + [annotations.Artificial]
 
 
+# FIXME: Need "Stolen" variants for 3-level.
 class StolenHeartStaymanResponse(StaymanResponse):
-    call_name = 'X'
-    shared_constraints = hearts >= 4
+    constraints = { 'X': hearts >= 4 }
     preconditions = StaymanResponse.preconditions + [LastBidWas(positions.RHO, '2H')]
     priority = stayman_response_priorities.HeartStaymanResponse
 
 
 class StolenSpadeStaymanResponse(StaymanResponse):
-    call_name = 'X'
-    shared_constraints = spades >= 4
+    constraints = { 'X': spades >= 4 }
     preconditions = StaymanResponse.preconditions + [LastBidWas(positions.RHO, '2S')]
     priority = stayman_response_priorities.SpadeStaymanResponse
 
@@ -775,7 +802,7 @@ class FourLevelPremptiveOpen(Opening):
 
 feature_asking_priorites = enum.Enum(
     "Gerber",
-    "GerberResponse",
+    "Blackwood",
 )
 
 
@@ -818,8 +845,53 @@ class ResponseToGerber(Rule):
         '5S': number_of_kings == 2,
         '5N': number_of_kings == 3,
     }
-    priority = feature_asking_priorites.GerberResponse
+    priority = feature_asking_priorites.Gerber
     annotations = [annotations.Artificial]
+
+
+# Blackwood is done, just needs JumpOrHaveFit() and some testing.
+# class Blackwood(Rule):
+#     category = categories.FeatureAsking
+#     requires_planning = True
+#     shared_constraints = NO_CONSTRAINTS
+#     annotations = [annotations.Blackwood]
+#     priority = feature_asking_priorites.Blackwood
+
+
+# class BlackwoodForAces(Blackwood):
+#     call_name = '4N'
+#     preconditions = Blackwood.preconditions + [
+#         InvertedPrecondition(LastBidHasStrain(positions.Partner, suit.NOTRUMP)),
+#         InvertedPrecondition(LastBidHasAnnotation(positions.Partner, annotations.Artificial)),
+#         JumpOrHaveFit()
+#     ]
+
+
+# class BlackwoodForKings(Blackwood):
+#     call_name = '5N'
+#     preconditions = Blackwood.preconditions + [
+#         LastBidHasAnnotation(positions.Me, annotations.Blackwood)
+#     ]
+
+
+# class ResponseToBlackwood(Rule):
+#     category = categories.Relay
+#     preconditions = Rule.preconditions + [
+#         LastBidHasAnnotation(positions.Partner, annotations.Blackwood),
+#         NotJumpFromPartnerLastBid(),
+#     ]
+#     constraints = {
+#         '4C': z3.Or(number_of_aces == 0, number_of_aces == 4),
+#         '4D': number_of_aces == 1,
+#         '4H': number_of_aces == 2,
+#         '4S': number_of_aces == 3,
+#         '5C': z3.Or(number_of_kings == 0, number_of_kings == 4),
+#         '5D': number_of_kings == 1,
+#         '5H': number_of_kings == 2,
+#         '5S': number_of_kings == 3,
+#     }
+#     priority = feature_asking_priorites.Blackwood
+#     annotations = [annotations.Artificial]
 
 
 class PartialOrdering(object):
@@ -891,6 +963,10 @@ class PositionView(object):
 
     def min_length(self, suit):
         return self.history.min_length_for_position(self.position, suit)
+
+    @property
+    def min_points(self):
+        return self.history.min_points_for_position(self.position)
 
 
 def is_certain(solver, expr):
@@ -968,10 +1044,17 @@ class History(object):
     def min_length_for_position(self, position, suit):
         solver = self.solver_for_position(position)
         suit_expr = expr_for_suit(suit)
-        # FIXME: This would be faster as a binary search.
         for length in range(0, 13):
             if is_possible(solver, suit_expr == length):
                 return length
+        return 0
+
+    @memoized
+    def min_points_for_position(self, position):
+        solver = self.solver_for_position(position)
+        for pts in range(0, 37):
+            if is_possible(solver, points == pts):
+                return pts
         return 0
 
     @memoized
