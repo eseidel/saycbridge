@@ -586,6 +586,13 @@ class SAYCBidderTest(unittest2.TestCase):
             ["8.9873.AKQT864.4", "4H", "P P P"], # p88, h27
         ])
 
+    def test_preemptive_overcalls(self):
+        self._assert_hands_match_calls([
+            ["4.Q765.83.KQJ932", "2S", "1H"],
+            ["9.QJ2.AQJ984.986", "2H", "1C"],
+            ["Q9.QT82.AQJ984.2", "2H", "1D"],
+        ])
+
     def test_strong_two_club(self): # Chap 11
         self._assert_hands_match_calls([
             # The Strong 2C Opening, chap 11.

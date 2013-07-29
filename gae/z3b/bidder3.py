@@ -762,8 +762,12 @@ class StolenSpadeStaymanResponse(StaymanResponse):
 
 overcall_priorities = enum.Enum(
     # FIXME: This needs the prefer the longer suit pattern.
+    "FourLevelPremptive",
+    "ThreeLevelPremptive",
+    "TwoLevelPremptive",
     "DirectOvercall",
 )
+
 
 class DirectOvercall(Rule):
     preconditions = Rule.preconditions + [LastBidHasAnnotation(positions.RHO, annotations.Opening)]
@@ -776,28 +780,49 @@ class OneLevelOvercall(DirectOvercall):
 
 
 preempt_priorities = enum.Enum(
-    "FourLevelPremptiveOpen",
-    "ThreeLevelPremptiveOpen",
-    "TwoLevelPremptiveOpen",
+    "FourLevelPremptive",
+    "ThreeLevelPremptive",
+    "TwoLevelPremptive",
 )
 
 
 class TwoLevelPremptiveOpen(Opening):
     call_names = ['2D', '2H', '2S']
     shared_constraints = [MinLength(6), ThreeOfTheTopFive(), points >= 5]
-    priority = preempt_priorities.TwoLevelPremptiveOpen
+    priority = preempt_priorities.TwoLevelPremptive
 
 
 class ThreeLevelPremptiveOpen(Opening):
     call_names = ['3C', '3D', '3H', '3S']
     shared_constraints = [MinLength(7), ThreeOfTheTopFive(), points >= 5]
-    priority = preempt_priorities.ThreeLevelPremptiveOpen
+    priority = preempt_priorities.ThreeLevelPremptive
 
 
 class FourLevelPremptiveOpen(Opening):
     call_names = ['4C', '4D', '4H', '4S']
     shared_constraints = [MinLength(8), ThreeOfTheTopFive(), points >= 5]
-    priority = preempt_priorities.FourLevelPremptiveOpen
+    priority = preempt_priorities.FourLevelPremptive
+
+
+class TwoLevelPremptiveOvercall(DirectOvercall):
+    preconditions = DirectOvercall.preconditions + [JumpFromLastContract()]
+    call_names = ['2C', '2D', '2H', '2S']
+    shared_constraints = [MinLength(6), ThreeOfTheTopFive(), 5 <= points <= 11]
+    priority = overcall_priorities.TwoLevelPremptive
+
+
+class ThreeLevelPremptiveOvercall(DirectOvercall):
+    preconditions = DirectOvercall.preconditions + [JumpFromLastContract()]
+    call_names = ['3C', '3D', '3H', '3S']
+    shared_constraints = [MinLength(7), ThreeOfTheTopFive(), 5 <= points <= 11]
+    priority = overcall_priorities.ThreeLevelPremptive
+
+
+class FourLevelPremptiveOvercall(DirectOvercall):
+    preconditions = DirectOvercall.preconditions + [JumpFromLastContract()]
+    call_names = ['4C', '4D', '4H', '4S']
+    shared_constraints = [MinLength(8), ThreeOfTheTopFive(), 5 <= points <= 11]
+    priority = overcall_priorities.FourLevelPremptive
 
 
 feature_asking_priorites = enum.Enum(
