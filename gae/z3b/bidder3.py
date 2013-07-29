@@ -77,6 +77,11 @@ rule_of_nineteen = z3.Or(
 
 rule_of_fifteen = spades + points >= 15
 
+three_of_the_top_five_spades = ace_of_spades + king_of_spades + queen_of_spades + jack_of_spades >= 3
+three_of_the_top_five_hearts = ace_of_hearts + king_of_hearts + queen_of_hearts + jack_of_hearts >= 3
+three_of_the_top_five_diamonds = ace_of_diamonds + king_of_diamonds + queen_of_diamonds + jack_of_diamonds >= 3
+three_of_the_top_five_clubs = ace_of_clubs + king_of_clubs + queen_of_clubs + jack_of_clubs >= 3
+
 number_of_aces = ace_of_spades + ace_of_hearts + ace_of_diamonds + ace_of_clubs
 number_of_kings = king_of_spades + king_of_hearts + king_of_diamonds + king_of_clubs
 
@@ -336,7 +341,7 @@ class Rule(object):
     def __repr__(self):
         return "%s()" % self.name()
 
-    def fits_preconditions(self, history, call):
+    def _fits_preconditions(self, history, call):
         for precondition in self.preconditions:
             if not precondition.fits(history, call):
                 return False
@@ -356,7 +361,7 @@ class Rule(object):
 
     def calls_over(self, history):
         for call in self._possible_calls_over(history):
-            if self.fits_preconditions(history, call):
+            if self._fits_preconditions(history, call):
                 yield call
 
     def possible_priorities_and_conditions_for_call(self, call):
@@ -578,6 +583,11 @@ class MinLength(Constraint):
         return expr_for_suit(call.strain) >= self.min_length
 
 
+class ThreeOfTheTopFive(Constraint):
+    def expr(self, history, call):
+        return (three_of_the_top_five_clubs, three_of_the_top_five_diamonds, three_of_the_top_five_hearts, three_of_the_top_five_spades)[call.strain]
+
+
 class RaiseResponse(Response):
     preconditions = Response.preconditions + [RaiseOfPartnersLastSuit(), LastBidHasAnnotation(positions.Partner, annotations.Opening)]
 
@@ -738,6 +748,31 @@ class OneLevelOvercall(DirectOvercall):
     shared_constraints = [MinLength(5), points >= 8]
 
 
+preempt_priorities = enum.Enum(
+    "FourLevelPremptiveOpen",
+    "ThreeLevelPremptiveOpen",
+    "TwoLevelPremptiveOpen",
+)
+
+
+class TwoLevelPremptiveOpen(Opening):
+    call_names = ['2D', '2H', '2S']
+    shared_constraints = [MinLength(6), ThreeOfTheTopFive(), points >= 5]
+    priority = preempt_priorities.TwoLevelPremptiveOpen
+
+
+class ThreeLevelPremptiveOpen(Opening):
+    call_names = ['3C', '3D', '3H', '3S']
+    shared_constraints = [MinLength(7), ThreeOfTheTopFive(), points >= 5]
+    priority = preempt_priorities.ThreeLevelPremptiveOpen
+
+
+class FourLevelPremptiveOpen(Opening):
+    call_names = ['4C', '4D', '4H', '4S']
+    shared_constraints = [MinLength(8), ThreeOfTheTopFive(), points >= 5]
+    priority = preempt_priorities.FourLevelPremptiveOpen
+
+
 feature_asking_priorites = enum.Enum(
     "Gerber",
     "GerberResponse",
@@ -821,6 +856,8 @@ class StandardAmericanYellowCard(object):
     priority_ordering = PartialOrdering()
 
     priority_ordering.make_less_than(response_priorities, nt_response_priorities)
+    priority_ordering.make_less_than(preempt_priorities, opening_priorities)
+
 
 
 # The dream:
