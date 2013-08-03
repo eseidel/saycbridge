@@ -50,3 +50,17 @@ gae/scripts -- CoffeeScript files supporting the web-front-end for the bidder
 gae/templates -- GAE templates (generate the HTML and JSON served at www.saycbridge.com)
 gae/third_party -- External code goes here
 gae/z3b -- Z3 Bidder (experimental new bidder on top of MSR's Z3 Theorem Prover)
+
+
+The Z3 Bidder
+
+Development is now focused on a new bidding engine to replace the previous
+Knowledge Based Bidder.
+
+Developing for the Z3 Bidder requires installing Z3 from Microsoft Research:
+http://z3.codeplex.com/
+
+I recommend cloning their git repository and building directly from there,
+however you can also use one of their pre-built binaries.
+
+I installed z3py directly, but you can also just set PYTHON_PATH in your environment.
