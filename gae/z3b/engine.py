@@ -2,24 +2,24 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import z3
-from third_party import enum
-from core.callhistory import CallHistory
-from core.call import Call
-from core.hand import Hand
 from core.callexplorer import CallExplorer
+from core.callhistory import CallHistory
 from itertools import chain
-import copy
+from third_party import enum
 from third_party.memoized import memoized
-from .rules import *
+from z3b.model import positions, expr_for_suit, is_possible
+import copy
+import z3
+import z3b.model as model
+import z3b.rules as rules
 
 
 class SolverPool(object):
     @memoized
     def solver_for_hand(self, hand):
         solver = z3.SolverFor('QF_LIA')
-        solver.add(axioms)
-        solver.add(expr_for_hand(hand))
+        solver.add(model.axioms)
+        solver.add(model.expr_for_hand(hand))
         return solver
 
 
@@ -104,7 +104,7 @@ class History(object):
     def solver_for_position(self, position):
         if not self._previous_history:
             solver = z3.SolverFor('QF_LIA')
-            solver.add(axioms)
+            solver.add(model.axioms)
             return solver
         position_in_previous_history = self._position_in_previous_history(position)
         solver_in_previous_history = self._previous_history.solver_for_position.take(position_in_previous_history)
@@ -136,7 +136,7 @@ class History(object):
     def min_points_for_position(self, position):
         solver = self.solver_for_position(position)
         for pts in range(0, 37):
-            if is_possible(solver, points == pts):
+            if is_possible(solver, model.points == pts):
                 return pts
         return 0
 
@@ -197,7 +197,7 @@ class PossibleCalls(object):
 class Bidder(object):
     def __init__(self):
         # Assuming SAYC for all sides.
-        self.system = StandardAmericanYellowCard
+        self.system = rules.StandardAmericanYellowCard
 
     def find_call_for(self, hand, call_history):
         history = Interpreter().create_history(call_history)
@@ -269,7 +269,7 @@ class RuleSelector(object):
 class Interpreter(object):
     def __init__(self):
         # Assuming SAYC for all sides.
-        self.system = StandardAmericanYellowCard
+        self.system = rules.StandardAmericanYellowCard
 
     def create_history(self, call_history):
         history = History()
@@ -281,7 +281,7 @@ class Interpreter(object):
             call = partial_history.last_call()
             rule = selector.rule_for_call(call)
             # We can interpret bids we know how to make.
-            constraints = NO_CONSTRAINTS
+            constraints = model.NO_CONSTRAINTS
             annotations = []
             if rule:
                 annotations = rule.annotations
