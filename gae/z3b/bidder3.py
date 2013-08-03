@@ -361,7 +361,7 @@ class Rule(object):
 
     def _possible_calls_over(self, history):
         # If this Rule has explicit call restrictions, we only need to consider those.
-        # FIXME: We should probably standardize this on some sort of call_preconditions instead.        
+        # FIXME: We should probably standardize this on some sort of call_preconditions instead.
         if self.call_name:
             return [Call.from_string(self.call_name)]
         elif self.call_names:
@@ -502,7 +502,7 @@ class NoTrumpOpening(Opening):
 
 # class OneNoTrumpOpening(Opening):
 #     call_name = '1N'
-#     shared_constraints = 
+#     shared_constraints =
 
 
 # class TwoNoTrumpOpening(Opening):
@@ -1164,8 +1164,8 @@ class Bidder(object):
         maximal_calls = possible_calls.calls_of_maximal_priority()
         # Currently we have no tie-breaking priorities (no planner), so we just select the first call we found.
         maximal_calls = filter(lambda call: not rule_selector.rule_for_call(call).requires_planning, maximal_calls)
-        if not maximal_calls:
-            # If we failed to find any rule able to bid, this is an error.
+        if not maximal_calls or len(maximal_calls) != 1:
+            # If we failed to find a single maximal bid, this is an error.
             return None
         return maximal_calls[0]
 
