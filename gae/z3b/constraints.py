@@ -2,7 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-from .model import *
+from z3b.model import expr_for_suit
+import z3b.model as model
 
 
 class Constraint(object):
@@ -26,7 +27,7 @@ class MinimumCombinedPoints(Constraint):
         self.min_points = min_points
 
     def expr(self, history, call):
-        return points >= max(0, self.min_points - history.partner.min_points)
+        return model.points >= max(0, self.min_points - history.partner.min_points)
 
 
 class MinLength(Constraint):
@@ -39,4 +40,9 @@ class MinLength(Constraint):
 
 class ThreeOfTheTopFive(Constraint):
     def expr(self, history, call):
-        return (three_of_the_top_five_clubs, three_of_the_top_five_diamonds, three_of_the_top_five_hearts, three_of_the_top_five_spades)[call.strain]
+        return (
+            model.three_of_the_top_five_clubs,
+            model.three_of_the_top_five_diamonds,
+            model.three_of_the_top_five_hearts,
+            model.three_of_the_top_five_spades,
+        )[call.strain]

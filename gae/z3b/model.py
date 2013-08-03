@@ -2,9 +2,9 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import z3
-import core.suit as suit
 from third_party import enum
+import core.suit as suit
+import z3
 
 
 spades, hearts, diamonds, clubs, points = z3.Ints('spades hearts diamonds clubs points')
