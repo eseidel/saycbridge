@@ -30,43 +30,6 @@ solver_pool = SolverPool()
 # Inter-bid priorities, "which do you look at first" -- these order preference between "1H, vs. 1S"
 # Tie-breaker-priorities -- planner stage, when 2 bids match which we make.
 
-class PartialOrdering(object):
-    def __init__(self):
-        self._values_greater_than = {}
-
-    def make_less_than(self, lesser, greater):
-        greater_values = self._values_greater_than.get(greater, set()).union(set([greater]))
-        self._values_greater_than.setdefault(lesser, set()).update(greater_values)
-
-    def less_than(self, left, right):
-        # FIXME: enum.py should be asserting when comparing different types
-        # but it seems to be silently succeeding in python 2.7.
-        if left.enumtype != right.enumtype:
-            return right.enumtype in self._values_greater_than.get(left.enumtype, set())
-        # Our enums are written highest to lowest, so we use > for less_than. :)
-        return left > right
-
-
-# FIXME: This is wrong as soon as we try to support more than one system.
-def _get_subclasses(base_class):
-    subclasses = base_class.__subclasses__()
-    for subclass in list(subclasses):
-        subclasses.extend(_get_subclasses(subclass))
-    return subclasses
-
-def _concrete_rule_classes():
-    return filter(lambda rule: not rule.__subclasses__(), _get_subclasses(Rule))
-
-
-class StandardAmericanYellowCard(object):
-    # Rule ordering does not matter.  We could have python crawl the files to generate this list instead.
-    rules = [rule() for rule in _concrete_rule_classes()]
-    priority_ordering = PartialOrdering()
-
-    priority_ordering.make_less_than(response_priorities, nt_response_priorities)
-    priority_ordering.make_less_than(preempt_priorities, opening_priorities)
-
-
 
 # The dream:
 # history.my.solver
