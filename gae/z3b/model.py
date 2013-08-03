@@ -60,21 +60,18 @@ axioms = [
     4 * ace_of_clubs    + 3 * king_of_clubs    + 2 * queen_of_clubs    + 1 * jack_of_clubs    == points
 ]
 
-rule_of_twenty = z3.Or(
-    spades + hearts + points >= 20,
-    spades + diamonds + points >= 20,
-    spades + clubs + points >= 20,
-    hearts + diamonds + points >= 20,
-    hearts + clubs + points >= 20,
-    diamonds + clubs + points >= 20)
+def _expr_for_point_rule(count):
+    return z3.Or(
+        spades + hearts + points >= count,
+        spades + diamonds + points >= count,
+        spades + clubs + points >= count,
+        hearts + diamonds + points >= count,
+        hearts + clubs + points >= count,
+        diamonds + clubs + points >= count,
+    )
 
-rule_of_nineteen = z3.Or(
-    spades + hearts + points >= 19,
-    spades + diamonds + points >= 19,
-    spades + clubs + points >= 19,
-    hearts + diamonds + points >= 19,
-    hearts + clubs + points >= 19,
-    diamonds + clubs + points >= 19)
+rule_of_twenty = _expr_for_point_rule(20)
+rule_of_nineteen = _expr_for_point_rule(19)
 
 rule_of_fifteen = spades + points >= 15
 
