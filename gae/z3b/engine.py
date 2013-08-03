@@ -23,7 +23,7 @@ class SolverPool(object):
         return solver
 
 
-solver_pool = SolverPool()
+_solver_pool = SolverPool()
 
 
 # Intra-bid priorities, first phase, "interpretation priorities", like "natural, conventional" (possibly should be called types?) These select which "1N" meaning is correct.
@@ -291,7 +291,7 @@ class RuleSelector(object):
 
     def possible_calls_for_hand(self, hand):
         possible_calls = PossibleCalls(self.system.priority_ordering)
-        solver = solver_pool.solver_for_hand(hand)
+        solver = _solver_pool.solver_for_hand(hand)
         for call in CallExplorer().possible_calls_over(self.history.call_history):
             rule = self.rule_for_call(call)
             if not rule:
