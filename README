@@ -11,7 +11,7 @@ DEVELOPMENT
 
 The typical development cycle:
 
-# Make changes to the bidder (gae/z3b/bidder3.py)
+# Make changes to the bidder (gae/z3b)
 make check
 # Validate that your changes are good.
 make accept

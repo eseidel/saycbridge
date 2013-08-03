@@ -15,7 +15,7 @@ from kbb import KnowledgeBasedBidder
 from core.callhistory import CallHistory, Vulnerability
 from core.hand import Hand
 from gib import Gib
-import z3b.bidder3 as z3b
+import z3b.engine as z3b
 
 
 _log = logging.getLogger(__name__)

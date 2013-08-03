@@ -15,7 +15,7 @@ from kbb.handconstraints_unittest import *
 from kbb.semanticbids_unittest import *
 from kbb.interpreter_unittest import *
 import gib
-import z3b.bidder3 as z3b
+import z3b.engine as z3b
 
 import logging
 import unittest2
