@@ -105,22 +105,6 @@ class PositionView(object):
         return self.history.min_points_for_position(self.position)
 
 
-def is_certain(solver, expr):
-    solver.push()
-    solver.add(z3.Not(expr))
-    result = solver.check() == z3.unsat
-    solver.pop()
-    return result
-
-
-def is_possible(solver, expr):
-    solver.push()
-    solver.add(expr)
-    result = solver.check() == z3.sat
-    solver.pop()
-    return result
-
-
 # This class is immutable.
 class History(object):
     def __init__(self, previous_history=None):

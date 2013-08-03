@@ -146,3 +146,19 @@ positions = enum.Enum(
     "LHO",
     "Me",
 )
+
+
+def is_certain(solver, expr):
+    solver.push()
+    solver.add(z3.Not(expr))
+    result = solver.check() == z3.unsat
+    solver.pop()
+    return result
+
+
+def is_possible(solver, expr):
+    solver.push()
+    solver.add(expr)
+    result = solver.check() == z3.sat
+    solver.pop()
+    return result

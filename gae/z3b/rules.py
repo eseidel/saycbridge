@@ -8,6 +8,7 @@ from .constraints import *
 from third_party import enum
 from core.call import Call
 from third_party.memoized import memoized
+from itertools import chain
 
 
 categories = enum.Enum(
