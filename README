@@ -6,40 +6,61 @@ http://www.saycbridge.com/
 https://play.google.com/store/apps/details?id=com.saycbridge.bridge
 http://saycbot.appspot.com/
 
-Setup
 
-Development of SAYC Bridge (both the site and the core bidding logic)
-requires the Google App Engine SDK:
+DEVELOPMENT
+
+The typical development cycle:
+
+# Make changes to the bidder (gae/z3b/bidder3.py)
+make check
+# Validate that your changes are good.
+make accept
+git commit
+
+You can also test the site (saycbridge.com) locally using:
+make serve
+
+
+SETUP
+
+Before the above will work, you probably need:
+Google App Engine SDK:
 https://developers.google.com/appengine/
 
-Development of the Android wrapper requires Eclipse and the Android SDK:
-http://developer.android.com/sdk/
+Running the unittests requires unittest2:
+sudo easy_install unittest2
 
-Development of the iOS wrapper requires Apple's Xcode:
-https://developer.apple.com/xcode/
+You will also need a copy of MSR's z3:
+http://z3.codeplex.com/
+
+I recommend cloning their git repository and building directly from there,
+however you can also use one of their pre-built binaries.
+Their repository requires Git version 1.7 or greater.
+
+I recommend installing z3py directly, but you can also just set PYTHON_PATH in your environment.
+Follow their README for instructions on how to build & install z3.
 
 
-Make Rules
+MAKE RULES
 
 make serve -- run a local copy of saycbridge.com for testing
-make check -- check your latest changes against your kbb_baseline.txt
+make check -- check your latest changes against your baseline.txt
 make accept -- replace the current baseline file with your last make check results
 make clean -- remove stray *.pyc files
-make baseline -- create a new local kbb_baseline.txt file
+make baseline -- create a new local baseline.txt file
 
 
-Testing Scripts
+TESTING SCRIPTS
 
 ./test-hand HAND_STRING [HISTORY_STRING] -- Bids a single hand.
 ./test-sayc -- Runs the unit tests.
 ./saycbot.py [-a] -- Command-line interactive bidder.  -a auto-bids all hands (for finding crashes).
 
 
-Code Layout
+CODE LAYOUT
 
 dist -- All the code for the various "App" versions of SAYCBridge, incuding iOS, Android and Chrome App
 gae -- The Google App Engine (GAE) Python back-end for SAYCBridge
-old -- Old planning documents
 pr -- Images, logos, screenshots, etc needed for submisison to the various App stores
 
 gae/core -- Basic Python objects for dealing with bridge hands/boards
@@ -49,18 +70,19 @@ gae/models -- GAE models (storage class for GAE)
 gae/scripts -- CoffeeScript files supporting the web-front-end for the bidder
 gae/templates -- GAE templates (generate the HTML and JSON served at www.saycbridge.com)
 gae/third_party -- External code goes here
-gae/z3b -- Z3 Bidder (experimental new bidder on top of MSR's Z3 Theorem Prover)
+gae/z3b -- Z3 Bidder (new bidder on top of MSR's Z3 Theorem Prover)
 
 
-The Z3 Bidder
+WRAPPERS / MOBILE APPS
 
-Development is now focused on a new bidding engine to replace the previous
-Knowledge Based Bidder.
+There are Chrome OS, iOS, and Android wrappers / apps for SAYC Bridge:
 
-Developing for the Z3 Bidder requires installing Z3 from Microsoft Research:
-http://z3.codeplex.com/
+Development of the Android wrapper requires Eclipse and the Android SDK:
+http://developer.android.com/sdk/
 
-I recommend cloning their git repository and building directly from there,
-however you can also use one of their pre-built binaries.
+Development of the iOS wrapper requires Apple's Xcode:
+https://developer.apple.com/xcode/
 
-I installed z3py directly, but you can also just set PYTHON_PATH in your environment.
+The code for these can all be found in the "dist" directory.
+
+
