@@ -41,13 +41,31 @@ I recommend installing z3py directly, but you can also just set PYTHON_PATH in y
 Follow their README for instructions on how to build & install z3.
 
 
+WARNING
+
+The SAYC Bridge code is currently undergoing an re-write.
+
+The code at saycbridge.com runs on Google App Engine
+and uses the Knolwedge Based Bidder (gae/kbb).
+
+However, the Knowledge Based Bidder is deprecated, and
+development is continuing on the new z3 bidder (gae/z3b).
+
+The z3 bidder is also not nearly complete enough to replace
+the Knowledge Based Bidder, but is rapily improving.
+
+z3 is also not python code, and thus not possible
+to deploy to saycbridge.com with our current hosting strategy.
+Once we have the z3 bidder working well enough, we'll come
+up with an alternate hosting strategy.
+
+
 MAKE RULES
 
 make serve -- run a local copy of saycbridge.com for testing
 make check -- check your latest changes against your baseline.txt
 make accept -- replace the current baseline file with your last make check results
-make clean -- remove stray *.pyc files
-make baseline -- create a new local baseline.txt file
+make clean -- remove all *.pyc files
 
 
 TESTING SCRIPTS
@@ -65,7 +83,7 @@ pr -- Images, logos, screenshots, etc needed for submisison to the various App s
 
 gae/core -- Basic Python objects for dealing with bridge hands/boards
 gae/handlers -- GAE handlers (code to respond to requests at www.saycbridge.com)
-gae/kbb -- Knowledge Based Bidder (current "stable" bidder)
+gae/kbb -- Knowledge Based Bidder (deprecated, but "stable" bidder)
 gae/models -- GAE models (storage class for GAE)
 gae/scripts -- CoffeeScript files supporting the web-front-end for the bidder
 gae/templates -- GAE templates (generate the HTML and JSON served at www.saycbridge.com)

@@ -25,9 +25,6 @@ all:
 clean:
 	@find . -name "*.pyc" | xargs rm
 
-baseline:
-	@$(appengine_dir)/test-sayc -z > $(appengine_dir)/z3b_baseline.txt ; true
-
 accept:
 	@mv $(appengine_dir)/z3b_actual.txt $(appengine_dir)/z3b_baseline.txt
 
@@ -37,9 +34,6 @@ check: clean
 
 
 # Support for the old Knowledge Based Bidder:
-
-baseline-kbb:
-	@$(appengine_dir)/test-sayc > $(appengine_dir)/kbb_baseline.txt ; true
 
 accept-kbb:
 	@mv $(appengine_dir)/kbb_actual.txt $(appengine_dir)/kbb_baseline.txt
