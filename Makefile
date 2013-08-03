@@ -25,25 +25,23 @@ all:
 clean:
 	@find . -name "*.pyc" | xargs rm
 
-baseline:
-	@$(appengine_dir)/test-sayc > $(appengine_dir)/kbb_baseline.txt ; true
-
-baseline-z3:
-	@$(appengine_dir)/test-sayc -z > $(appengine_dir)/z3b_baseline.txt ; true
-
 accept:
-	@mv $(appengine_dir)/kbb_actual.txt $(appengine_dir)/kbb_baseline.txt
-
-accept-z3:
 	@mv $(appengine_dir)/z3b_actual.txt $(appengine_dir)/z3b_baseline.txt
 
 check: clean
+	@$(appengine_dir)/test-sayc -z > $(appengine_dir)/z3b_actual.txt ; true
+	@diff -U 7 $(appengine_dir)/z3b_baseline.txt $(appengine_dir)/z3b_actual.txt ; true
+
+
+# Support for the old Knowledge Based Bidder:
+
+accept-kbb:
+	@mv $(appengine_dir)/kbb_actual.txt $(appengine_dir)/kbb_baseline.txt
+
+check-kbb: clean
 	@$(appengine_dir)/test-sayc > $(appengine_dir)/kbb_actual.txt ; true
 	@diff -U 7 $(appengine_dir)/kbb_baseline.txt $(appengine_dir)/kbb_actual.txt ; true
 
-check-z3: clean
-	@$(appengine_dir)/test-sayc -z > $(appengine_dir)/z3b_actual.txt ; true
-	@diff -U 7 $(appengine_dir)/z3b_baseline.txt $(appengine_dir)/z3b_actual.txt ; true
 
 compile:
 	coffee --compile $(scripts_dir)/*.coffee

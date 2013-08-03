@@ -30,7 +30,6 @@ solver_pool = SolverPool()
 # Inter-bid priorities, "which do you look at first" -- these order preference between "1H, vs. 1S"
 # Tie-breaker-priorities -- planner stage, when 2 bids match which we make.
 
-
 class PartialOrdering(object):
     def __init__(self):
         self._values_greater_than = {}
@@ -263,8 +262,8 @@ class Bidder(object):
         maximal_calls = possible_calls.calls_of_maximal_priority()
         # Currently we have no tie-breaking priorities (no planner), so we just select the first call we found.
         maximal_calls = filter(lambda call: not rule_selector.rule_for_call(call).requires_planning, maximal_calls)
-        if not maximal_calls:
-            # If we failed to find any rule able to bid, this is an error.
+        if not maximal_calls or len(maximal_calls) != 1:
+            # If we failed to find a single maximal bid, this is an error.
             return None
         return maximal_calls[0]
 
