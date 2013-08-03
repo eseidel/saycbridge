@@ -75,6 +75,13 @@ TESTING SCRIPTS
 ./saycbot.py [-a] -- Command-line interactive bidder.  -a auto-bids all hands (for finding crashes).
 
 
+PERFORMANCE TESTING
+
+./test-sayc -p
+will run the unittests with the python cProfile module.
+It will also print instructions on how to read the profile data.
+
+
 CODE LAYOUT
 
 dist -- All the code for the various "App" versions of SAYCBridge, incuding iOS, Android and Chrome App
