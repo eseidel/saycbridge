@@ -20,7 +20,8 @@ The typical development cycle:
     git commit
 
 You can also test the site (saycbridge.com) locally using:
-make serve
+
+    make serve-kbb # WARNING: This uses the Knowledge Based Bidder, not the z3 bidder.
 
 Setup
 -----
@@ -65,10 +66,10 @@ up with an alternate hosting strategy.
 Make Targets
 ------------
 
-    make serve  # run a local copy of saycbridge.com for testing
     make check  # check your latest changes against your baseline.txt
     make accept # replace the current baseline file with your last make check results
     make clean  # remove all *.pyc files
+    make serve-kbb # run a local copy of saycbridge.com for testing
 
 Testing Scripts
 ---------------
