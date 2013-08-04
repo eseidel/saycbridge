@@ -4,9 +4,9 @@ SAYC Bridge
 A Python library and Google App Engine instance for bidding bridge hands
 using Standard American Yellow Card conventions.
 
-- [http://www.saycbridge.com/](http://www.saycbridge.com/)
-- [https://play.google.com/store/apps/details?id=com.saycbridge.bridge](https://play.google.com/store/apps/details?id=com.saycbridge.bridge)
-- [http://saycbot.appspot.com/](http://saycbot.appspot.com/)
+- http://www.saycbridge.com/
+- https://play.google.com/store/apps/details?id=com.saycbridge.bridge
+- http://saycbot.appspot.com/](http://saycbot.appspot.com/
 
 Development
 -----------
@@ -35,7 +35,8 @@ Running the unittests requires unittest2:
     sudo easy_install unittest2
 
 You will also need a copy of MSR's z3:
-http://z3.codeplex.com/
+
+- http://z3.codeplex.com/
 
 I recommend cloning their git repository and building directly from there,
 however you can also use one of their pre-built binaries.
@@ -106,8 +107,7 @@ Wrappers and Mobile Apps
 
 There are Chrome OS, iOS, and Android wrappers / apps for SAYC Bridge:
 
-Development of the Android wrapper requires Eclipse and the [Android SDK](http://developer.android.com/sdk/).
-
-Development of the iOS wrapper requires Apple's [Xcode](https://developer.apple.com/xcode/).
+- Development of the Android wrapper requires Eclipse and the [Android SDK](http://developer.android.com/sdk/).
+- Development of the iOS wrapper requires Apple's [Xcode](https://developer.apple.com/xcode/).
 
 The code for these can all be found in the "dist" directory.
