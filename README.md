@@ -13,7 +13,7 @@ Development
 
 The typical development cycle:
 
-    # Make changes to the bidder (gae/z3b)
+    # Make changes to the bidder (src/z3b)
     make check
     # Validate that your changes are good.
     make accept
@@ -50,10 +50,10 @@ Warning
 The SAYC Bridge code is currently undergoing an re-write.
 
 The code at saycbridge.com runs on Google App Engine
-and uses the Knolwedge Based Bidder (gae/kbb).
+and uses the Knolwedge Based Bidder (src/kbb).
 
 However, the Knowledge Based Bidder is deprecated, and
-development is continuing on the new z3 bidder (gae/z3b).
+development is continuing on the new z3 bidder (src/z3b).
 
 The z3 bidder is also not nearly complete enough to replace
 the Knowledge Based Bidder, but is rapily improving.
@@ -90,16 +90,16 @@ Code Layout
 -----------
 
 - dist -- All the code for the various "App" versions of SAYCBridge, incuding iOS, Android and Chrome App
-- gae -- The Google App Engine (GAE) Python back-end for SAYCBridge
+- src -- Python back-end for SAYCBridge
 - pr -- Images, logos, screenshots, etc needed for submisison to the various App stores
-- gae/core -- Basic Python objects for dealing with bridge hands/boards
-- gae/handlers -- GAE handlers (code to respond to requests at www.saycbridge.com)
-- gae/kbb -- Knowledge Based Bidder (deprecated, but "stable" bidder)
-- gae/models -- GAE models (storage class for GAE)
-- gae/scripts -- CoffeeScript files supporting the web-front-end for the bidder
-- gae/templates -- GAE templates (generate the HTML and JSON served at www.saycbridge.com)
-- gae/third_party -- External code goes here
-- gae/z3b -- Z3 Bidder (new bidder on top of MSR's Z3 Theorem Prover)
+- src/core -- Basic Python objects for dealing with bridge hands/boards
+- src/handlers -- GAE handlers (code to respond to requests at www.saycbridge.com)
+- src/kbb -- Knowledge Based Bidder (deprecated, but "stable" bidder)
+- src/models -- GAE models (storage class for GAE)
+- src/scripts -- CoffeeScript files supporting the web-front-end for the bidder
+- src/templates -- GAE templates (generate the HTML and JSON served at www.saycbridge.com)
+- src/third_party -- External code goes here
+- src/z3b -- Z3 Bidder (new bidder on top of MSR's Z3 Theorem Prover)
 
 Wrappers and Mobile Apps
 ------------------------
