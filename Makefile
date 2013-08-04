@@ -61,7 +61,10 @@ closure:
 		--js=$(scripts_dir)/play.js \
 		--js_output_file=bidder.js
 
-serve: clean
+# FIXME: Currently there is no way to run the site with the z3 bidder.
+# AppEngine runs in a hermetic python environment which is incapable
+# of running z3.
+serve-kbb: clean
 	coffee --watch --compile $(scripts_dir)/*.coffee &
 	python2.7 `which dev_appserver.py` $(appengine_dir)
 
