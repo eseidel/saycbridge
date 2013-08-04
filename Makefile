@@ -1,6 +1,6 @@
 .PHONY: all clean baseline baseline-z3 accept accept-z3 check check-z3 compile serve publish chromeapp
 
-appengine_dir = gae
+appengine_dir = src
 scripts_dir = $(appengine_dir)/scripts
 
 THIRD_PARTY_SCRIPTS = \
