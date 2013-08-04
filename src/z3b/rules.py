@@ -17,7 +17,7 @@ categories = enum.Enum(
     "Relay",
     "Gadget",
     "Default",
-    "NoTrump",
+    "NoTrumpSystem",
     # "Natural",
 )
 
@@ -327,7 +327,7 @@ nt_response_priorities = enum.Enum(
 
 
 class NoTrumpResponse(Response):
-    category = categories.NoTrump
+    category = categories.NoTrumpSystem
     preconditions = Response.preconditions + [
         LastBidHasAnnotation(positions.Partner, annotations.Opening),
         LastBidHasAnnotation(positions.Partner, annotations.NoTrumpSystemsOn),
