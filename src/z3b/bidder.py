@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+from core.call import Call
 from core.callexplorer import CallExplorer
 from core.callhistory import CallHistory
 from itertools import chain
@@ -209,8 +210,11 @@ class Bidder(object):
         maximal_calls = possible_calls.calls_of_maximal_priority()
         # Currently we have no tie-breaking priorities (no planner), so we just select the first call we found.
         maximal_calls = filter(lambda call: not rule_selector.rule_for_call(call).requires_planning, maximal_calls)
-        if not maximal_calls or len(maximal_calls) != 1:
+        if not maximal_calls:
             # If we failed to find a single maximal bid, this is an error.
+            return None
+        if len(maximal_calls) != 1:
+            print "WARNING: Multiple bids match and have maximal tie-breaker priority"
             return None
         return maximal_calls[0]
 
@@ -227,7 +231,8 @@ class RuleSelector(object):
         for rule in self.system.rules:
             for call in rule.calls_over(self.history):
                 existing_rule = result.get(call)
-                if not existing_rule or rule.category > existing_rule.category:
+                # FIXME: It's lame that enum's < is backwards.
+                if not existing_rule or rule.category < existing_rule.category:
                     result[call] = rule
         return result
 

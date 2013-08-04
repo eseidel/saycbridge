@@ -12,6 +12,7 @@ annotations = enum.Enum(
     "Artificial",
     "Stayman",
     "Gerber",
+    "Transfer",
 )
 
 
@@ -92,6 +93,14 @@ class UnbidSuit(Precondition):
         if call.strain not in suit.SUITS:
             return False
         return history.is_unbid_suit(call.strain)
+
+
+class Strain(Precondition):
+    def __init__(self, strain):
+        self.strain = strain
+
+    def fits(self, history, call):
+        return call.strain == self.strain
 
 
 class Jump(Precondition):

@@ -3,7 +3,7 @@
 # found in the LICENSE file.
 
 import unittest2
-from position import *
+from core.position import *
 
 
 class PositionTest(unittest2.TestCase):

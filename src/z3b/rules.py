@@ -2,33 +2,31 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-from .model import *
-from .preconditions import *
-from .constraints import *
-from third_party import enum
 from core.call import Call
-from third_party.memoized import memoized
+from core.callexplorer import CallExplorer
 from itertools import chain
-from .orderings import PartialOrdering
+from third_party import enum
+from third_party.memoized import memoized
+from z3b.constraints import *
+from z3b.model import *
+from z3b.orderings import PartialOrdering
+from z3b.preconditions import *
 
 
 categories = enum.Enum(
     "Relay",
-    "FeatureAsking",
-    "NoTrump",
+    "Gadget",
+    "NoTrumpSystem",
+    "Default",
+    # "Natural",
 )
-
-
-class TransferTo(object):
-    def __init__(self, suit):
-        self.suit = suit
 
 
 class Rule(object):
     # FIXME: Consider splitting call_preconditions out from preconditions
     # for preconditions which only operate on the call?
     preconditions = []
-    category = None # Intra-bid priority
+    category = categories.Default # Intra-bid priority
     requires_planning = False
 
     call_name = None # call_name = '1C' -> preconditons = [CallName('1C')]
@@ -137,6 +135,11 @@ class Rule(object):
         return z3.And(exprs)
 
 
+relay_priorities = enum.Enum(
+    "Relay",
+)
+
+
 opening_priorities = enum.Enum(
     "StrongTwoClubs",
     "NoTrumpOpening",
@@ -147,6 +150,10 @@ opening_priorities = enum.Enum(
     "HigherMinor",
     "LowerMinor",
 )
+
+
+# class Natural(Rule):
+#     category = categories.Natural
 
 
 class Opening(Rule):
@@ -218,6 +225,7 @@ class StrongTwoClubs(Opening):
 
 
 response_priorities = enum.Enum(
+    "MajorJumpToGame",
     "MajorLimitRaise",
     "MajorMinimumRaise",
     "LongestNewMajor",
@@ -285,6 +293,12 @@ class MajorLimitRaise(RaiseResponse):
     priority = response_priorities.MajorLimitRaise
 
 
+class MajorJumpToGame(RaiseResponse):
+    call_names = ['4H', '4S']
+    shared_constraints = [MinimumCombinedLength(10), points < 10]
+    priority = response_priorities.MajorJumpToGame
+
+
 # We should bid longer suits when possible, up the line for 4 cards.
 # we don't currently bid 2D over 2C when we have longer diamonds.
 
@@ -313,7 +327,7 @@ nt_response_priorities = enum.Enum(
 
 
 class NoTrumpResponse(Response):
-    category = categories.NoTrump
+    category = categories.NoTrumpSystem
     preconditions = Response.preconditions + [
         LastBidHasAnnotation(positions.Partner, annotations.Opening),
         LastBidHasAnnotation(positions.Partner, annotations.NoTrumpSystemsOn),
@@ -345,7 +359,7 @@ class StolenThreeClubStayman(BasicStayman):
 
 
 class JacobyTransfer(NoTrumpResponse):
-    annotations = NoTrumpResponse.annotations + [annotations.Artificial, TransferTo(suit.HEARTS)]
+    annotations = NoTrumpResponse.annotations + [annotations.Artificial, annotations.Transfer]
 
 
 class JacobyTransferToHearts(JacobyTransfer):
@@ -368,13 +382,26 @@ class JacobyTransferToSpades(JacobyTransfer):
     priority = nt_response_priorities.JacobyTransferToSpades
 
 
-# FIXME: We don't support multiple call names...
-# class AcceptTransfer(Rule):
-#     category = categories.Relay
-#     preconditions = Rule.preconditions + [
-#         LastBidHasAnnotationOfClass(positions.Partner, TransferTo),
-#         NotJumpFromPartnerLastBid(),
-#     ]
+class AcceptTransferToHearts(Rule):
+    category = categories.Relay
+    preconditions = Rule.preconditions + [
+        LastBidHasAnnotation(positions.Partner, annotations.Transfer),
+        LastBidHasStrain(positions.Partner, suit.DIAMONDS),
+        Strain(suit.HEARTS),
+        NotJumpFromPartnerLastBid(),
+    ]
+    priority = relay_priorities.Relay
+
+
+class AcceptTransferToSpades(Rule):
+    category = categories.Relay
+    preconditions = Rule.preconditions + [
+        LastBidHasAnnotation(positions.Partner, annotations.Transfer),
+        LastBidHasStrain(positions.Partner, suit.HEARTS),
+        Strain(suit.SPADES),
+        NotJumpFromPartnerLastBid(),
+    ]
+    priority = relay_priorities.Relay
 
 
 stayman_response_priorities = enum.Enum(
@@ -501,7 +528,7 @@ feature_asking_priorites = enum.Enum(
 
 
 class Gerber(Rule):
-    category = categories.FeatureAsking
+    category = categories.Gadget
     requires_planning = True
     shared_constraints = NO_CONSTRAINTS
     annotations = [annotations.Gerber]
@@ -545,7 +572,7 @@ class ResponseToGerber(Rule):
 
 # Blackwood is done, just needs JumpOrHaveFit() and some testing.
 # class Blackwood(Rule):
-#     category = categories.FeatureAsking
+#     category = categories.Gadget
 #     requires_planning = True
 #     shared_constraints = NO_CONSTRAINTS
 #     annotations = [annotations.Blackwood]
