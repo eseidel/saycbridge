@@ -111,7 +111,7 @@ The KBB had two priority systems (the global ordering of Rules, as well as prior
 
 Z3 Bidder has 3 separate priority systems:
 
- 1. Intra-Bid priorities ("catagory" in the code).
+ 1. Intra-Bid priorities ("category" in the code).
     "Alert! 2N is 'Unusual' here and not a natural bid."  Allows segregating the
     bidding system w/o needing to teach each rule about the exceptions.
 
@@ -119,7 +119,7 @@ Z3 Bidder has 3 separate priority systems:
     "With 5-5 in the majors, do I open 1H or 1S?"
 
  3. Tie-Breaking priorities ("needs_planning", mostly unimplemented).
-    These apply when you legitimently have multiple possible bids and are
+    These apply when you legitimately have multiple possible bids and are
     the only priorities which are computed *with access to the hand*.  These will
     likely be used as part of eventual Slam bidding.
 
