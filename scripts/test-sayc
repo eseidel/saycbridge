@@ -14,12 +14,12 @@ from factory import BidderFactory
 # to find _unittest.py files, perhaps we should do something similar:
 # http://trac.webkit.org/browser/trunk/Tools/Scripts/webkitpy/test/finder.py
 
-from core.test_callhistory import *
-from core.test_call import *
-from core.test_board import *
-from core.test_deal import *
-from core.test_hand import *
-from core.test_position import *
+from core.tests.test_callhistory import *
+from core.tests.test_call import *
+from core.tests.test_board import *
+from core.tests.test_deal import *
+from core.tests.test_hand import *
+from core.tests.test_position import *
 from core.sayc_unittest import *
 
 from kbb.handconstraints_unittest import *

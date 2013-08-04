@@ -5,8 +5,8 @@
 import unittest2
 from core.call import Call
 from core.callhistory import CallHistory, Vulnerability
-from position import *
-from suit import *
+from core.position import *
+from core.suit import *
 
 
 class VulnerabilityTest(unittest2.TestCase):
