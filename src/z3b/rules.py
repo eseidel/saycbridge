@@ -15,8 +15,9 @@ from z3b.preconditions import *
 
 categories = enum.Enum(
     "Relay",
-    "FeatureAsking",
+    "Gadget",
     "NoTrump",
+    # "Natural",
 )
 
 
@@ -148,6 +149,10 @@ opening_priorities = enum.Enum(
     "HigherMinor",
     "LowerMinor",
 )
+
+
+# class Natural(Rule):
+#     category = categories.Natural
 
 
 class Opening(Rule):
@@ -522,7 +527,7 @@ feature_asking_priorites = enum.Enum(
 
 
 class Gerber(Rule):
-    category = categories.FeatureAsking
+    category = categories.Gadget
     requires_planning = True
     shared_constraints = NO_CONSTRAINTS
     annotations = [annotations.Gerber]
@@ -566,7 +571,7 @@ class ResponseToGerber(Rule):
 
 # Blackwood is done, just needs JumpOrHaveFit() and some testing.
 # class Blackwood(Rule):
-#     category = categories.FeatureAsking
+#     category = categories.Gadget
 #     requires_planning = True
 #     shared_constraints = NO_CONSTRAINTS
 #     annotations = [annotations.Blackwood]
