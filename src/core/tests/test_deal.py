@@ -3,7 +3,7 @@
 # found in the LICENSE file.
 
 import unittest2
-from deal import Deal
+from core.deal import Deal
 
 
 class DealTest(unittest2.TestCase):
