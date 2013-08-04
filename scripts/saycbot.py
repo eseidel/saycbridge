@@ -5,6 +5,7 @@
 
 import logging
 import sys
+import find_src
 
 from factory import BidderFactory
 from core.call import Call, Pass

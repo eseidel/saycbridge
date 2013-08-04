@@ -5,6 +5,7 @@
 
 import logging
 import sys
+import find_src
 
 from core.callhistory import CallHistory
 from core.hand import Hand

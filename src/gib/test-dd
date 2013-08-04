@@ -4,8 +4,13 @@
 # found in the LICENSE file.
 
 import logging
+import os.path
 import unittest2
 import sys
+
+gib_dir = os.path.dirname(__file__)
+src_dir = os.path.dirname(gib_dir)
+sys.path.append(src_dir)
 
 from core.board import Board
 from gib import Gib

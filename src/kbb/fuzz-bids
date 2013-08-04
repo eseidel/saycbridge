@@ -7,6 +7,11 @@ import logging
 import unittest2
 import sys
 import random
+import os.path
+
+kbb_dir = os.path.dirname(__file__)
+src_dir = os.path.dirname(kbb_dir)
+sys.path.append(src_dir)
 
 from core.callhistory import CallHistory
 from kbb.interpreter import BidInterpreter
