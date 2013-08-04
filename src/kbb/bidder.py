@@ -294,6 +294,8 @@ class KnowledgeBasedBidder(object):
 
     def find_bid_and_rule_and_hand_knowledge_for(self, hand, history):
         oracle = ConsistencyOracle(history, hand)
+        # Generate all priority/bid/rule/knowledge tuples which are consistent
+        # with the bid + history in question:
         prioritiy_bid_rule_hand_knowledge_tuples = [oracle.priority_bid_rule_hand_knowledge_tuples(bid) for bid in self.explorer.possible_calls_over(history)]
         if not prioritiy_bid_rule_hand_knowledge_tuples:
             # We've exhausted all possible bids.  This could only happen over 7NT-redoubled.

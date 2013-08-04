@@ -8,6 +8,7 @@ using Standard American Yellow Card conventions.
 - https://play.google.com/store/apps/details?id=com.saycbridge.bridge
 - http://saycbot.appspot.com/
 
+
 Development
 -----------
 
@@ -22,6 +23,7 @@ The typical development cycle:
 You can also test the site (saycbridge.com) locally using:
 
     make serve-kbb # WARNING: This uses the Knowledge Based Bidder, not the z3 bidder.
+
 
 Setup
 -----
@@ -45,6 +47,10 @@ Their repository requires Git version 1.7 or greater.
 I recommend installing z3py directly, but you can also just set PYTHON_PATH in your environment.
 Follow their README for instructions on how to build & install z3.
 
+If you wish to run the server locally (make serve-kbb) you will also need the CofeeScript compiler:
+http://coffeescript.org/
+
+
 Warning
 -------
 
@@ -60,9 +66,28 @@ The z3 bidder is also not nearly complete enough to replace
 the Knowledge Based Bidder, but is rapily improving.
 
 z3 is also not python code, and thus not possible
-to deploy to saycbridge.com with our current hosting strategy.
+to deploy to saycbridge.com with our current hosting strategy
+(or even run the site -- make serve-kbb -- locally with the z3 bidder).
 Once we have the z3 bidder working well enough, we'll come
 up with an alternate hosting strategy.
+
+
+Code Layout
+-----------
+
+- dist -- All the code for the various "App" versions of SAYCBridge, incuding iOS,
+  Android, Chrome App, and the saycbridge.com Google App Engine instance.
+- dist/gae/handlers -- GAE handlers (code to respond to requests at www.saycbridge.com)
+- dist/gae/scripts -- CoffeeScript files supporting the web-front-end for the bidder
+- dist/gae/templates -- GAE templates (generate the HTML and JSON served at www.saycbridge.com)
+- pr -- Images, logos, screenshots, etc needed for submisison to the various App stores
+- scripts -- Various scripts used for testing.
+- src -- Python back-end for SAYCBridge
+- src/core -- Basic Python objects for dealing with bridge hands/boards
+- src/kbb -- Knowledge Based Bidder (deprecated, but "stable" bidder)
+- src/third_party -- External code goes here
+- src/z3b -- Z3 Bidder (new bidder on top of MSR's Z3 Theorem Prover)
+
 
 Make Targets
 ------------
@@ -72,36 +97,23 @@ Make Targets
     make clean  # remove all *.pyc files
     make serve-kbb # run a local copy of saycbridge.com for testing
 
+
 Testing Scripts
 ---------------
 
-    ./test-hand HAND_STRING [HISTORY_STRING] #  Bids a single hand.
-    ./test-sayc # Runs the unit tests.
-    ./saycbot.py [-a] # Command-line interactive bidder.  -a auto-bids all hands (for finding crashes).
+    scripts/test-hand HAND_STRING [HISTORY_STRING] #  Bids a single hand.
+    scripts/test-sayc # Runs the unit tests.
+    scripts/saycbot.py [-a] # Command-line interactive bidder.  -a auto-bids all hands (for finding crashes).
+
 
 Performance Testing
 -------------------
 
-    ./test-sayc -p
+    scripts/test-sayc -p
 
 will run the unittests with the python cProfile module.
 It will also print instructions on how to read the profile data.
 
-Code Layout
------------
-
-- dist -- All the code for the various "App" versions of SAYCBridge, incuding iOS, Android, Chrome App, and
-  the Google App Engine server
-- dist/gae/handlers -- GAE handlers (code to respond to requests at www.saycbridge.com)
-- dist/gae/models -- GAE models (storage class for GAE)
-- dist/gae/scripts -- CoffeeScript files supporting the web-front-end for the bidder
-- dist/gae/templates -- GAE templates (generate the HTML and JSON served at www.saycbridge.com)
-- pr -- Images, logos, screenshots, etc needed for submisison to the various App stores
-- src -- Python back-end for SAYCBridge
-- src/core -- Basic Python objects for dealing with bridge hands/boards
-- src/kbb -- Knowledge Based Bidder (deprecated, but "stable" bidder)
-- src/third_party -- External code goes here
-- src/z3b -- Z3 Bidder (new bidder on top of MSR's Z3 Theorem Prover)
 
 Wrappers and Mobile Apps
 ------------------------
