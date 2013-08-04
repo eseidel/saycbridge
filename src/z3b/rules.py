@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 from core.call import Call
+from core.callexplorer import CallExplorer
 from itertools import chain
 from third_party import enum
 from third_party.memoized import memoized
@@ -17,11 +18,6 @@ categories = enum.Enum(
     "FeatureAsking",
     "NoTrump",
 )
-
-
-class TransferTo(object):
-    def __init__(self, suit):
-        self.suit = suit
 
 
 class Rule(object):
@@ -135,6 +131,11 @@ class Rule(object):
             exprs.extend(self._exprs_from_constraints(per_call_constraints, history, call))
         exprs.extend(self._exprs_from_constraints(self.shared_constraints, history, call))
         return z3.And(exprs)
+
+
+relay_priorities = enum.Enum(
+    "Relay",
+)
 
 
 opening_priorities = enum.Enum(
@@ -345,7 +346,7 @@ class StolenThreeClubStayman(BasicStayman):
 
 
 class JacobyTransfer(NoTrumpResponse):
-    annotations = NoTrumpResponse.annotations + [annotations.Artificial, TransferTo(suit.HEARTS)]
+    annotations = NoTrumpResponse.annotations + [annotations.Artificial, annotations.Transfer]
 
 
 class JacobyTransferToHearts(JacobyTransfer):
@@ -368,13 +369,26 @@ class JacobyTransferToSpades(JacobyTransfer):
     priority = nt_response_priorities.JacobyTransferToSpades
 
 
-# FIXME: We don't support multiple call names...
-# class AcceptTransfer(Rule):
-#     category = categories.Relay
-#     preconditions = Rule.preconditions + [
-#         LastBidHasAnnotationOfClass(positions.Partner, TransferTo),
-#         NotJumpFromPartnerLastBid(),
-#     ]
+class AcceptTransferToHearts(Rule):
+    call_name = '2H'
+    category = categories.Relay
+    preconditions = Rule.preconditions + [
+        LastBidHasAnnotation(positions.Partner, annotations.Transfer),
+        NotJumpFromPartnerLastBid(),
+        LastBidHasStrain(positions.Partner, suit.DIAMONDS)
+    ]
+    priority = relay_priorities.Relay
+
+
+class AcceptTransferToSpades(Rule):
+    call_name = '2S'
+    category = categories.Relay
+    preconditions = Rule.preconditions + [
+        LastBidHasAnnotation(positions.Partner, annotations.Transfer),
+        NotJumpFromPartnerLastBid(),
+        LastBidHasStrain(positions.Partner, suit.HEARTS)
+    ]
+    priority = relay_priorities.Relay
 
 
 stayman_response_priorities = enum.Enum(

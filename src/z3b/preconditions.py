@@ -12,6 +12,7 @@ annotations = enum.Enum(
     "Artificial",
     "Stayman",
     "Gerber",
+    "Transfer",
 )
 
 
