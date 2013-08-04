@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+from core.call import Call
 from core.callexplorer import CallExplorer
 from core.callhistory import CallHistory
 from itertools import chain
@@ -230,7 +231,8 @@ class RuleSelector(object):
         for rule in self.system.rules:
             for call in rule.calls_over(self.history):
                 existing_rule = result.get(call)
-                if not existing_rule or rule.category > existing_rule.category:
+                # FIXME: It's lame that enum's < is backwards.
+                if not existing_rule or rule.category < existing_rule.category:
                     result[call] = rule
         return result
 

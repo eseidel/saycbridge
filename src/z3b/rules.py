@@ -16,8 +16,8 @@ from z3b.preconditions import *
 categories = enum.Enum(
     "Relay",
     "Gadget",
-    "Default",
     "NoTrumpSystem",
+    "Default",
     # "Natural",
 )
 
