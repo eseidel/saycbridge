@@ -209,8 +209,11 @@ class Bidder(object):
         maximal_calls = possible_calls.calls_of_maximal_priority()
         # Currently we have no tie-breaking priorities (no planner), so we just select the first call we found.
         maximal_calls = filter(lambda call: not rule_selector.rule_for_call(call).requires_planning, maximal_calls)
-        if not maximal_calls or len(maximal_calls) != 1:
+        if not maximal_calls:
             # If we failed to find a single maximal bid, this is an error.
+            return None
+        if len(maximal_calls) != 1:
+            print "WARNING: Multiple bids match and have maximal tie-breaker priority"
             return None
         return maximal_calls[0]
 
