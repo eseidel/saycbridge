@@ -17,7 +17,6 @@ from factory import BidderFactory
 
 _log = logging.getLogger(__name__)
 
-
 class SAYCBidderTest(unittest2.TestCase):
     @classmethod
     def setUpClass(cls):
