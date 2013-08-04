@@ -1,2 +1,2 @@
 # Public API from this module:
-from engine import Bidder
+from bidder import Bidder
