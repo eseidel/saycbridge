@@ -228,12 +228,22 @@ class RuleSelector(object):
     @memoized
     def _call_to_rule(self):
         result = {}
+        # FIXME(abortz): This code makes me feel dirty
         for rule in self.system.rules:
             for call in rule.calls_over(self.history):
-                existing_rule = result.get(call)
-                # FIXME: It's lame that enum's < is backwards.
-                if not existing_rule or rule.category < existing_rule.category:
-                    result[call] = rule
+                existing_rule = result.get(call, [None])[0]
+                if not existing_rule:
+                    result[call] = [rule]
+                else:
+                    # FIXME: It's lame that enum's < is backwards.
+                    if rule.category < existing_rule.category:
+                        result[call] = [rule]
+                    elif rule.category == existing_rule.category:
+                        result[call].extend(rule)
+        for key in result.keys():
+            if len(result[key]) > 1:
+                print "WARNING: Multiple bids have maximal category"
+            result[key] = result[key][0]
         return result
 
     def rule_for_call(self, call):
