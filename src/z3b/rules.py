@@ -219,6 +219,7 @@ class StrongTwoClubs(Opening):
 
 
 response_priorities = enum.Enum(
+    "MajorJumpToGame",
     "MajorLimitRaise",
     "MajorMinimumRaise",
     "LongestNewMajor",
@@ -284,6 +285,12 @@ class MajorLimitRaise(RaiseResponse):
     call_names = ['3H', '3S']
     shared_constraints = [MinimumCombinedLength(8), points >= 10]
     priority = response_priorities.MajorLimitRaise
+
+
+class MajorJumpToGame(RaiseResponse):
+    call_names = ['4H', '4S']
+    shared_constraints = [MinimumCombinedLength(10), points < 10]
+    priority = response_priorities.MajorJumpToGame
 
 
 # We should bid longer suits when possible, up the line for 4 cards.
