@@ -2,14 +2,14 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-from .model import *
-from .preconditions import *
-from .constraints import *
-from third_party import enum
 from core.call import Call
-from third_party.memoized import memoized
 from itertools import chain
-from .orderings import PartialOrdering
+from third_party import enum
+from third_party.memoized import memoized
+from z3b.constraints import *
+from z3b.model import *
+from z3b.orderings import PartialOrdering
+from z3b.preconditions import *
 
 
 categories = enum.Enum(
