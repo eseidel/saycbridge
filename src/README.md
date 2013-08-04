@@ -89,9 +89,11 @@ OR-based rules are rather common in SAYC, so based on this limitiation
 The Z3 Bidder
 -------------
 
-The Z3 Bidder (z3b) is our 3rd attempt at writing a bidder for SAYC.
+The Z3 Bidder (z3b) is our 3rd attempt at writing a bidder for SAYC and uses
+Microsoft Research's [Z3 theorem prover](http://z3.codeplex.com/) to describe it's Knowlege model.
 
-Z3B uses Microsoft Research's [Z3 theorem prover](http://z3.codeplex.com/).
+Unlike the KBB, the Z3B (due to Z3) is easily capable of representing OR constraints
+(e.g. a 1S overcall may be 8+ points AND 5+ spades OR a good 4-card suit.)
 
 Unlike the KBB, the Z3B's Rules are NOT globally ordered.  Global ordering in the
 KBB caused confusion where seamingly incomprable Bids would unexpectedly have an ordering.
@@ -109,7 +111,7 @@ Priorities in the Z3B
 Before discussing the actual bidding, it's important to understand the Z3B's more
 complicated priority system.
 
-The KBB had two priority systems (the global ordering of Rules, as well as priorities for Bids).
+The KBB had two priority systems (global ordering of Rules and explicit priorities for Calls).
 
 Z3 Bidder has 3 separate priority systems:
 
@@ -143,3 +145,20 @@ To make a Call, Z3B:
  5. Applies tie-breaking priorities (able to consider the Hand).
 
 And returns the highest priority call from the above.
+
+
+The Anatomy of a Rule
+---------------------
+
+Both the KBB and the Z3B use Rule objects to represent the idea of a Convention
+in a bidding system.  Stayman might be an example rule, as is OneNoTrumpOpening.
+
+The KBB and Z3 hold differnet information on their Rule objects, but both have at least:
+
+ - Preconditions -- Given the current Knowledge/History and a Call, can this Rule apply?
+ - Constraints -- What affect on the Knowledge would making this Call have?
+ - Priority -- (Described in depth above) various information about how Calls should be compared.
+
+For Z3, most of the Constraints are written directly in Z3's nice DSL (Domain Specific Language).
+
+Some of the Constraints are more complicated and implemented in terms of Constraint objects (src/z3b/constraints.py).
