@@ -31,7 +31,7 @@ accept:
 	@mv $(src_dir)/z3b_actual.txt $(src_dir)/z3b_baseline.txt
 
 check: clean
-	@$(src_dir)/test-sayc > $(src_dir)/z3b_actual.txt ; true
+	@$(src_dir)/test-sayc -z > $(src_dir)/z3b_actual.txt ; true
 	@diff -U 7 $(src_dir)/z3b_baseline.txt $(src_dir)/z3b_actual.txt ; true
 
 
@@ -41,7 +41,7 @@ accept-kbb:
 	@mv $(src_dir)/kbb_actual.txt $(src_dir)/kbb_baseline.txt
 
 check-kbb: clean
-	@$(src_dir)/test-sayc -k > $(src_dir)/kbb_actual.txt ; true
+	@$(src_dir)/test-sayc > $(src_dir)/kbb_actual.txt ; true
 	@diff -U 7 $(src_dir)/kbb_baseline.txt $(src_dir)/kbb_actual.txt ; true
 
 compile:

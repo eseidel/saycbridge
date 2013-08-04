@@ -6,8 +6,8 @@
 import logging
 import sys
 
-from factory import BidderFactory
 from core.call import Call, Pass
+from kbb import KnowledgeBasedBidder
 from core.board import Board
 from core.suit import *
 from core.position import *
@@ -57,8 +57,7 @@ class SAYCBot(object):
 
     def main(self, args):
         self.configure_logging(True)
-        args = BidderFactory.configure_from_args(args)
-        bidder = BidderFactory.default_bidder()
+        bidder = KnowledgeBasedBidder()
 
         if "-v" in args:
             args.remove("-v")

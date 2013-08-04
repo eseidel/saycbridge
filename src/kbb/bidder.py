@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-from core import bidder
 from core.callexplorer import CallExplorer
 from core.suit import *
 from kbb.handconstraints import HonorConstraint, HandConstraints
@@ -279,7 +278,7 @@ class ConsistencyOracle(object):
         return consuming_rule.priority_for_bid(self.hand, new_bid), new_bid, consuming_rule, new_knowledge.me
 
 
-class KnowledgeBasedBidder(bidder.Bidder):
+class KnowledgeBasedBidder(object):
     def __init__(self):
         self.explorer = CallExplorer()
 

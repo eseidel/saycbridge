@@ -8,7 +8,6 @@ from itertools import chain
 from third_party import enum
 from third_party.memoized import memoized
 from z3b.model import positions, expr_for_suit, is_possible
-from core import bidder
 import copy
 import z3
 import z3b.model as model
@@ -195,7 +194,7 @@ class PossibleCalls(object):
         return [call for call, _ in maximal_calls_and_priorities]
 
 
-class Z3Bidder(bidder.Bidder):
+class Bidder(object):
     def __init__(self):
         # Assuming SAYC for all sides.
         self.system = rules.StandardAmericanYellowCard

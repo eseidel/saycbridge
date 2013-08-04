@@ -3,11 +3,13 @@
 # found in the LICENSE file.
 
 from core.call import Pass
+from kbb import KnowledgeBasedBidder
 
 
+# FIXME: Should this this be moved down and shared by saycbot.py?
 class Autobidder(object):
-    def __init__(self, bidder):
-        self.bidder = bidder
+    def __init__(self):
+        self.bidder = KnowledgeBasedBidder()
 
     def _bid_next_hand(self, board):
         position_to_call = board.call_history.position_to_call()
