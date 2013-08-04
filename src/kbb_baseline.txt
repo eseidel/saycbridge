@@ -1,5 +1,8 @@
 WARNING : Rule ThreeLevelSuitRebidByResponder() for bid 3H resulted in invalid knowledge: me: 10-13 hcp, 0-3C 0-3D 6-3H 6+S (last: 2H fsf) partner: 12-18 hcp, 4+C 4+D 0-5H 0-3S (last: 3C, opened) lho 0-16 hcp (last: P) rho: 0-16 hcp (last: P)
 WARNING : Rule ResponderReverse() for bid 2S resulted in invalid knowledge: me: 12-7 hcp, 4+S (last: 2D) partner: 22+ hcp, 5+H (last: 2H, opened) lho 0-16 hcp (last: P) rho: 0-16 hcp (last: P)
+test_3c_stayman:
+Pass 3 of 3 hands
+
 test_doubles:
 FAIL: P (expected 2H) for 7643.5.Q9843.432 (hcp: 2 lp: 3 sp: 5), history: 1N X P
 FAIL: P (expected X) for KJ76.KQ72..J9874 (hcp: 10 lp: 11 sp: 15), history: 1H
@@ -127,7 +130,7 @@ FAIL: 1S (expected 1D) for 98.KJ752.84.KT95 (hcp: 7 lp: 8 sp: 9), history: 1C P
 Pass 9 of 11 hands
 
 test_minimum_stayman:
-Pass 12 of 12 hands
+Pass 13 of 13 hands
 
 test_misc_hands_from_play:
 FAIL: P (expected 4H) for Q9754.AJ8.A9653. (hcp: 11 lp: 13 sp: 16), history: 1H P 3H P
@@ -193,7 +196,8 @@ FAIL: P (expected X) for AT6.KJ864.A4.A42 (hcp: 16 lp: 17 sp: 17), history: P 2H
 FAIL: None (expected 2N) for 962.863.KQJ7.KJ7 (hcp: 10 lp: 10 sp: 10), history: P P 1D 1S X P 2C P
 FAIL: None (expected 3N) for AKJ.T53.KQ65.KJ2 (hcp: 17 lp: 17 sp: 17), history: P 1N P 2C P 2H P 2N P
 FAIL: 1S (expected 1H) for AK.72.KT942.AQT5 (hcp: 16 lp: 17 sp: 18), history: P 1C
-Pass 319 of 368 hands
+FAIL: P (expected 1N) for AKT4.AT.A82.J876 (hcp: 16 lp: 16 sp: 17), history: 1C P P
+Pass 319 of 369 hands
 
 test_negative_double:
 FAIL: 2S (expected P) for 4.A3.KQ65.KJT865 (hcp: 13 lp: 15 sp: 17), history: 1C 1S P P X P
@@ -204,6 +208,9 @@ Pass 33 of 37 hands
 
 test_open_one_nt:
 Pass 7 of 7 hands
+
+test_open_two_nt:
+Pass 1 of 1 hands
 
 test_opener_rebid_after_a_limit_raise:
 FAIL: P (expected 4S) for 6.KJ86.KT5.AQ982 (hcp: 13 lp: 14 sp: 16), history: 1S P 3S P
@@ -264,6 +271,12 @@ FAIL: 1H (expected 4H) for 8.9873.AKQT864.4 (hcp: 9 lp: 12 sp: 15), history: P P
 FAIL: P (expected 4H) for 8.9873.AKQT864.4 (hcp: 9 lp: 12 sp: 15), history: P P P
 Pass 45 of 65 hands
 
+test_preemptive_overcalls:
+FAIL: 2S (expected 1S) for 4.Q765.83.KQJ932 (hcp: 8 lp: 10 sp: 12), history: 1H
+FAIL: 2H (expected 1H) for 9.QJ2.AQJ984.986 (hcp: 10 lp: 12 sp: 13), history: 1C
+FAIL: 2H (expected 1H) for Q9.QT82.AQJ984.2 (hcp: 11 lp: 13 sp: 13), history: 1D
+Pass 3 of 6 hands
+
 test_remaining_hands_from_book:
 FAIL: P (expected 2H) for 974.J85.AJT872.9 (hcp: 6 lp: 8 sp: 9), history: 1S P P
 FAIL: P (expected 2H) for KJ8.A74.JT874.86 (hcp: 9 lp: 10 sp: 10), history: 1D P 2D P P
@@ -303,7 +316,7 @@ test_rule_of_twenty_open:
 Pass 15 of 15 hands
 
 test_slam_invitations_over_one_nt:
-Pass 22 of 22 hands
+Pass 27 of 27 hands
 
 test_slam_zone_response_to_one_of_a_minor:
 FAIL: 1S (expected 2S) for AT98.QJ72..AKQT9 (hcp: 16 lp: 17 sp: 21), history: 1D P
@@ -340,4 +353,4 @@ Pass 2 of 3 hands
 test_weak_game_jump_over_one_nt:
 Pass 3 of 3 hands
 
-Pass 842 (80%) of 1041 total hands
+Pass 855 (80%) of 1058 total hands

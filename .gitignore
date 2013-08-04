@@ -1,5 +1,5 @@
 *.pyc
 dist/android/bin
 dist/android/gen
-src/scripts/*.js
+dist/gae/scripts/*.js
 src/z3b_actual.txt

@@ -6,7 +6,7 @@ from google.appengine.ext import db
 
 from core.board import Board
 from third_party.memoized import memoized
-from handlers.autobidder import Autobidder
+from core.autobidder import Autobidder
 
 
 class Bug(db.Model):

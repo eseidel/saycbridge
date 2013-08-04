@@ -12,7 +12,7 @@ from kbb import KnowledgeBasedBidder
 from core.callhistory import CallHistory, Vulnerability
 from core.board import Board
 from core.hand import Hand
-from handlers.autobidder import Autobidder
+from core.autobidder import Autobidder
 
 
 _log = logging.getLogger(__name__)

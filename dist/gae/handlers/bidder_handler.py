@@ -16,7 +16,7 @@ from core.callhistory import CallHistory
 from core.board import Board
 from core.deal import Deal
 from core.position import position_from_char
-from autobidder import Autobidder
+from core.autobidder import Autobidder
 
 import json
 
