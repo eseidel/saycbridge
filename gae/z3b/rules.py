@@ -9,6 +9,7 @@ from third_party import enum
 from core.call import Call
 from third_party.memoized import memoized
 from itertools import chain
+from .orderings import PartialOrdering
 
 
 categories = enum.Enum(
@@ -585,3 +586,23 @@ class ResponseToGerber(Rule):
 #     }
 #     priority = feature_asking_priorites.Blackwood
 #     annotations = [annotations.Artificial]
+
+
+# FIXME: This is wrong as soon as we try to support more than one system.
+def _get_subclasses(base_class):
+    subclasses = base_class.__subclasses__()
+    for subclass in list(subclasses):
+        subclasses.extend(_get_subclasses(subclass))
+    return subclasses
+
+def _concrete_rule_classes():
+    return filter(lambda rule: not rule.__subclasses__(), _get_subclasses(Rule))
+
+
+class StandardAmericanYellowCard(object):
+    # Rule ordering does not matter.  We could have python crawl the files to generate this list instead.
+    rules = [rule() for rule in _concrete_rule_classes()]
+    priority_ordering = PartialOrdering()
+
+    priority_ordering.make_less_than(response_priorities, nt_response_priorities)
+    priority_ordering.make_less_than(preempt_priorities, opening_priorities)

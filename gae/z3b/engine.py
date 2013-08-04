@@ -2,70 +2,33 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import z3
-from third_party import enum
-from core.callhistory import CallHistory
-from core.call import Call
-from core.hand import Hand
 from core.callexplorer import CallExplorer
+from core.callhistory import CallHistory
 from itertools import chain
-import copy
+from third_party import enum
 from third_party.memoized import memoized
-from .rules import *
+from z3b.model import positions, expr_for_suit, is_possible
+import copy
+import z3
+import z3b.model as model
+import z3b.rules as rules
 
 
 class SolverPool(object):
     @memoized
     def solver_for_hand(self, hand):
         solver = z3.SolverFor('QF_LIA')
-        solver.add(axioms)
-        solver.add(expr_for_hand(hand))
+        solver.add(model.axioms)
+        solver.add(model.expr_for_hand(hand))
         return solver
 
 
-solver_pool = SolverPool()
+_solver_pool = SolverPool()
 
 
 # Intra-bid priorities, first phase, "interpretation priorities", like "natural, conventional" (possibly should be called types?) These select which "1N" meaning is correct.
 # Inter-bid priorities, "which do you look at first" -- these order preference between "1H, vs. 1S"
 # Tie-breaker-priorities -- planner stage, when 2 bids match which we make.
-
-class PartialOrdering(object):
-    def __init__(self):
-        self._values_greater_than = {}
-
-    def make_less_than(self, lesser, greater):
-        greater_values = self._values_greater_than.get(greater, set()).union(set([greater]))
-        self._values_greater_than.setdefault(lesser, set()).update(greater_values)
-
-    def less_than(self, left, right):
-        # FIXME: enum.py should be asserting when comparing different types
-        # but it seems to be silently succeeding in python 2.7.
-        if left.enumtype != right.enumtype:
-            return right.enumtype in self._values_greater_than.get(left.enumtype, set())
-        # Our enums are written highest to lowest, so we use > for less_than. :)
-        return left > right
-
-
-# FIXME: This is wrong as soon as we try to support more than one system.
-def _get_subclasses(base_class):
-    subclasses = base_class.__subclasses__()
-    for subclass in list(subclasses):
-        subclasses.extend(_get_subclasses(subclass))
-    return subclasses
-
-def _concrete_rule_classes():
-    return filter(lambda rule: not rule.__subclasses__(), _get_subclasses(Rule))
-
-
-class StandardAmericanYellowCard(object):
-    # Rule ordering does not matter.  We could have python crawl the files to generate this list instead.
-    rules = [rule() for rule in _concrete_rule_classes()]
-    priority_ordering = PartialOrdering()
-
-    priority_ordering.make_less_than(response_priorities, nt_response_priorities)
-    priority_ordering.make_less_than(preempt_priorities, opening_priorities)
-
 
 
 # The dream:
@@ -141,7 +104,7 @@ class History(object):
     def solver_for_position(self, position):
         if not self._previous_history:
             solver = z3.SolverFor('QF_LIA')
-            solver.add(axioms)
+            solver.add(model.axioms)
             return solver
         position_in_previous_history = self._position_in_previous_history(position)
         solver_in_previous_history = self._previous_history.solver_for_position.take(position_in_previous_history)
@@ -173,7 +136,7 @@ class History(object):
     def min_points_for_position(self, position):
         solver = self.solver_for_position(position)
         for pts in range(0, 37):
-            if is_possible(solver, points == pts):
+            if is_possible(solver, model.points == pts):
                 return pts
         return 0
 
@@ -234,7 +197,7 @@ class PossibleCalls(object):
 class Bidder(object):
     def __init__(self):
         # Assuming SAYC for all sides.
-        self.system = StandardAmericanYellowCard
+        self.system = rules.StandardAmericanYellowCard
 
     def find_call_for(self, hand, call_history):
         history = Interpreter().create_history(call_history)
@@ -291,7 +254,7 @@ class RuleSelector(object):
 
     def possible_calls_for_hand(self, hand):
         possible_calls = PossibleCalls(self.system.priority_ordering)
-        solver = solver_pool.solver_for_hand(hand)
+        solver = _solver_pool.solver_for_hand(hand)
         for call in CallExplorer().possible_calls_over(self.history.call_history):
             rule = self.rule_for_call(call)
             if not rule:
@@ -306,7 +269,7 @@ class RuleSelector(object):
 class Interpreter(object):
     def __init__(self):
         # Assuming SAYC for all sides.
-        self.system = StandardAmericanYellowCard
+        self.system = rules.StandardAmericanYellowCard
 
     def create_history(self, call_history):
         history = History()
@@ -318,7 +281,7 @@ class Interpreter(object):
             call = partial_history.last_call()
             rule = selector.rule_for_call(call)
             # We can interpret bids we know how to make.
-            constraints = NO_CONSTRAINTS
+            constraints = model.NO_CONSTRAINTS
             annotations = []
             if rule:
                 annotations = rule.annotations

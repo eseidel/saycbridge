@@ -2,9 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-from .model import *
-import core.suit as suit
 from third_party import enum
+import core.suit as suit
 
 
 annotations = enum.Enum(

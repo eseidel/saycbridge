@@ -2,3 +2,4 @@
 dist/android/bin
 dist/android/gen
 gae/scripts/*.js
+gae/z3b_actual.txt
