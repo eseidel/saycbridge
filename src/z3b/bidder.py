@@ -229,7 +229,7 @@ class RuleSelector(object):
     def _call_to_rule(self):
         maximal = {}
         for rule in self.system.rules:
-            for call, category in rule.calls_over(self.history):
+            for category, call in rule.calls_over(self.history):
                 current = maximal.get(call)
                 if not current:
                     maximal[call] = (category, [rule])
@@ -261,15 +261,16 @@ class RuleSelector(object):
         # (!z3.Or(clubs > diamonds, clubs == diamonds == 3) AND !(ROT AND diamonds >=3) AND !(ROT AND hearts >= 5) AND !(ROT AND spades >= 5))
 
         situations = []
-        used_rule = self.rule_for_call(call)
-        for priority, condition in used_rule.possible_priorities_and_conditions_for_call(call):
-            situational_constraints = [condition]
+        rule = self.rule_for_call(call)
+        for priority, z3_meaning in rule.meaning_of(self.history, call):
+            situational_exprs = [z3_meaning]
             for unmade_call, unmade_rule in self._call_to_rule.iteritems():
-                for unmade_priority, unmade_condition in unmade_rule.possible_priorities_and_conditions_for_call(unmade_call):
-                    if unmade_priority < priority: # FIXME: < means > for priority compares.
-                        situational_constraints.append(z3.Not(z3.And(unmade_condition, unmade_rule.constraints_expr_for_call(self.history, unmade_call))))
-            situations.append(z3.And(situational_constraints))
-        return z3.And(used_rule.constraints_expr_for_call(self.history, call), z3.Or(situations))
+                for unmade_priority, unmade_z3_meaning in unmade_rule.meaning_of(self.history, unmade_call):
+                    # FIXME: < means > for priority compares.
+                    if unmade_priority < priority:
+                        situational_exprs.append(z3.Not(unmade_z3_meaning))
+            situations.append(z3.And(situational_exprs))
+        return z3.Or(situations)
 
     def possible_calls_for_hand(self, hand):
         possible_calls = PossibleCalls(self.system.priority_ordering)

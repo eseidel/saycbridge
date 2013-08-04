@@ -71,20 +71,21 @@ class Rule(object):
     def calls_over(self, history):
         for call in self._possible_calls_over(history):
             if self._fits_preconditions(history, call):
-                yield call, self.category
+                yield self.category, call
 
-    def possible_priorities_and_conditions_for_call(self, call):
+    def meaning_of(self, history, call):
         # conditional_priorities only work for a single call_name
+        exprs = self._constraint_exprs_for_call(history, call)
         for condition, priority in self.conditional_priorities:
-            yield priority, condition
+            yield priority, z3.And(exprs + [condition])
 
         _, priority = self._per_call_constraints_and_priority(call)
         assert priority
-        yield priority, NO_CONSTRAINTS
+        yield priority, z3.And(exprs)
 
     @memoized
     def priority_for_call_and_hand(self, solver, history, call, hand):
-        if not is_possible(solver, self.constraints_expr_for_call(history, call)):
+        if not is_possible(solver, z3.And(self._constraint_exprs_for_call(history, call))):
             return None
 
         for condition, priority in self.conditional_priorities:
@@ -126,13 +127,13 @@ class Rule(object):
         except TypeError:
             return constraints_tuple, self.priority
 
-    def constraints_expr_for_call(self, history, call):
+    def _constraint_exprs_for_call(self, history, call):
         exprs = []
         per_call_constraints, _ = self._per_call_constraints_and_priority(call)
         if per_call_constraints:
             exprs.extend(self._exprs_from_constraints(per_call_constraints, history, call))
         exprs.extend(self._exprs_from_constraints(self.shared_constraints, history, call))
-        return z3.And(exprs)
+        return exprs
 
 
 relay_priorities = enum.Enum(
