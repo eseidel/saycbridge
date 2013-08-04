@@ -58,7 +58,7 @@ class Rule(object):
 
     def _possible_calls_over(self, history):
         # If this Rule has explicit call restrictions, we only need to consider those.
-        # FIXME: We should probably standardize this on some sort of call_preconditions instead.        
+        # FIXME: We should probably standardize this on some sort of call_preconditions instead.
         if self.call_name:
             return [Call.from_string(self.call_name)]
         elif self.call_names:
@@ -71,7 +71,7 @@ class Rule(object):
     def calls_over(self, history):
         for call in self._possible_calls_over(history):
             if self._fits_preconditions(history, call):
-                yield call
+                yield call, self.category
 
     def possible_priorities_and_conditions_for_call(self, call):
         # conditional_priorities only work for a single call_name
@@ -266,7 +266,7 @@ class NoTrumpOpening(Opening):
 
 # class OneNoTrumpOpening(Opening):
 #     call_name = '1N'
-#     shared_constraints = 
+#     shared_constraints =
 
 
 # class TwoNoTrumpOpening(Opening):

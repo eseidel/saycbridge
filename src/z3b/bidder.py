@@ -227,23 +227,27 @@ class RuleSelector(object):
     @property
     @memoized
     def _call_to_rule(self):
-        result = {}
-        # FIXME(abortz): This code makes me feel dirty
+        maximal = {}
         for rule in self.system.rules:
-            for call in rule.calls_over(self.history):
-                existing_rule = result.get(call, [None])[0]
-                if not existing_rule:
-                    result[call] = [rule]
+            for call, category in rule.calls_over(self.history):
+                current = maximal.get(call)
+                if not current:
+                    maximal[call] = (category, [rule])
                 else:
+                    existing_category, existing_rules = current
+
                     # FIXME: It's lame that enum's < is backwards.
-                    if rule.category < existing_rule.category:
-                        result[call] = [rule]
-                    elif rule.category == existing_rule.category:
-                        result[call].extend(rule)
-        for key in result.keys():
-            if len(result[key]) > 1:
+                    if category < existing_category:
+                        maximal[call] = (category, [rule])
+                    elif category == existing_category:
+                        existing_rules.append(rule)
+
+        result = {}
+        for call, best in maximal.iteritems():
+            _, rules = best
+            if len(rules) > 1:
                 print "WARNING: Multiple bids have maximal category"
-            result[key] = result[key][0]
+            result[call] = rules[0]
         return result
 
     def rule_for_call(self, call):
