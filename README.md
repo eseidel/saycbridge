@@ -6,7 +6,7 @@ using Standard American Yellow Card conventions.
 
 - http://www.saycbridge.com/
 - https://play.google.com/store/apps/details?id=com.saycbridge.bridge
-- http://saycbot.appspot.com/](http://saycbot.appspot.com/
+- http://saycbot.appspot.com/
 
 Development
 -----------
@@ -90,15 +90,16 @@ It will also print instructions on how to read the profile data.
 Code Layout
 -----------
 
-- dist -- All the code for the various "App" versions of SAYCBridge, incuding iOS, Android and Chrome App
-- src -- Python back-end for SAYCBridge
+- dist -- All the code for the various "App" versions of SAYCBridge, incuding iOS, Android, Chrome App, and
+  the Google App Engine server
+- dist/gae/handlers -- GAE handlers (code to respond to requests at www.saycbridge.com)
+- dist/gae/models -- GAE models (storage class for GAE)
+- dist/gae/scripts -- CoffeeScript files supporting the web-front-end for the bidder
+- dist/gae/templates -- GAE templates (generate the HTML and JSON served at www.saycbridge.com)
 - pr -- Images, logos, screenshots, etc needed for submisison to the various App stores
+- src -- Python back-end for SAYCBridge
 - src/core -- Basic Python objects for dealing with bridge hands/boards
-- src/handlers -- GAE handlers (code to respond to requests at www.saycbridge.com)
 - src/kbb -- Knowledge Based Bidder (deprecated, but "stable" bidder)
-- src/models -- GAE models (storage class for GAE)
-- src/scripts -- CoffeeScript files supporting the web-front-end for the bidder
-- src/templates -- GAE templates (generate the HTML and JSON served at www.saycbridge.com)
 - src/third_party -- External code goes here
 - src/z3b -- Z3 Bidder (new bidder on top of MSR's Z3 Theorem Prover)
 
