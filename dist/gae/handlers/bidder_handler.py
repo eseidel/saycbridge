@@ -17,6 +17,7 @@ from core.board import Board
 from core.deal import Deal
 from core.position import position_from_char
 from core.autobidder import Autobidder
+from kbb import KnowledgeBasedBidder
 
 import json
 
@@ -56,12 +57,14 @@ class JSONAutobidHandler(webapp2.RequestHandler):
         return [self._json_tuple(bid, rule, hand_knowledge) for bid, rule, hand_knowledge in bids_and_rules_and_hand_knowledges]
 
     def get(self):
+        bidder = KnowledgeBasedBidder()
+        autobidder = Autobidder(bidder)
         board = self._board_from_request()
         until_position_string = self.request.get('until_position')
         until_position = position_from_char(until_position_string) if until_position_string else None
-        bids_and_rules_and_hand_knowledges = Autobidder().bid_all_hands(board, until_position=until_position)
+        bids_and_rules_and_hand_knowledges = autobidder.bid_all_hands(board, until_position=until_position)
         current_history = copy.deepcopy(board.call_history)
-        bids_and_rules_and_hand_knowledges += Autobidder().bid_all_hands(board)
+        bids_and_rules_and_hand_knowledges += autobidder.bid_all_hands(board)
         # Callers might want to know what the full history would look like if autobid.
         board_dict = {
             'board_number': board.number,

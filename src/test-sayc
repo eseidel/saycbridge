@@ -14,8 +14,8 @@ from core.sayc_unittest import *
 from kbb.handconstraints_unittest import *
 from kbb.semanticbids_unittest import *
 from kbb.interpreter_unittest import *
-import gib
-import z3b.engine as z3b
+
+from factory import BidderFactory
 
 import logging
 import unittest2
@@ -38,12 +38,7 @@ if __name__ == '__main__':
     is_verbose = '-v' in sys.argv
     configure_logging(is_verbose)
 
-    if '-g' in sys.argv:
-        sys.argv.remove('-g')
-        SAYCBidderTest.bidder_class = gib.Gib
-    if '-z' in sys.argv:
-        sys.argv.remove('-z')
-        SAYCBidderTest.bidder_class = z3b.Bidder
+    sys.argv = BidderFactory.configure_from_args(sys.argv)
 
     if '-p' in sys.argv:
         sys.argv.remove('-p')
