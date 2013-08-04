@@ -370,23 +370,23 @@ class JacobyTransferToSpades(JacobyTransfer):
 
 
 class AcceptTransferToHearts(Rule):
-    call_name = '2H'
     category = categories.Relay
     preconditions = Rule.preconditions + [
         LastBidHasAnnotation(positions.Partner, annotations.Transfer),
+        LastBidHasStrain(positions.Partner, suit.DIAMONDS),
+        Strain(suit.HEARTS),
         NotJumpFromPartnerLastBid(),
-        LastBidHasStrain(positions.Partner, suit.DIAMONDS)
     ]
     priority = relay_priorities.Relay
 
 
 class AcceptTransferToSpades(Rule):
-    call_name = '2S'
     category = categories.Relay
     preconditions = Rule.preconditions + [
         LastBidHasAnnotation(positions.Partner, annotations.Transfer),
+        LastBidHasStrain(positions.Partner, suit.HEARTS),
+        Strain(suit.SPADES),
         NotJumpFromPartnerLastBid(),
-        LastBidHasStrain(positions.Partner, suit.HEARTS)
     ]
     priority = relay_priorities.Relay
 
