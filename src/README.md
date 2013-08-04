@@ -65,6 +65,8 @@ again by asking the Rule what priority it would assign that call over the given 
 
 Finally the priorities are compared for all the calls, and the highest priority call is selected.
 
+If multiple bids existed with the same priority, the KBB would select the highest possible bid.
+
 
 The KBB's Limited Knowledge
 ---------------------------
