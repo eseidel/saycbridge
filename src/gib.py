@@ -8,11 +8,12 @@ import subprocess
 from core.position import *
 from core.suit import *
 from core.call import Call
+from core import bidder
 
 import tempfile
 
 
-class Gib(object):
+class Gib(bidder.Bidder):
     _startwine_path = "/Applications/Wine.app/Contents/MacOS/startwine"
     _gib_path = "/Users/eseidel/Wine Files/drive_c/Program Files/GIB/BRIDGE.EXE"
 

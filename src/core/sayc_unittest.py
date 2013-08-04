@@ -8,11 +8,11 @@ import sys
 import inspect
 
 from core.position import *
-from kbb import KnowledgeBasedBidder
 from core.callhistory import CallHistory, Vulnerability
 from core.board import Board
 from core.hand import Hand
 from core.autobidder import Autobidder
+from factory import BidderFactory
 
 
 _log = logging.getLogger(__name__)
@@ -45,7 +45,7 @@ class AutobidTest(unittest2.TestCase):
             ['3-8695851819328337104436553070122-W:EW:', 'P P 1D P 1H P 2N P 3C P 3S P 3N P P P'], # Exception due to spade length confusion.
             ['10-7470345118006940253629716986888-S:BO:', '1H P P X P P P'], # This auction makes no sense, but NotrumpRebid was incorrectly marking S as < 4 hearts due to 1N.
         ]
-        bidder = KnowledgeBasedBidder()
+        bidder = BidderFactory.default_bidder()
         for board_identifier, expected_calls_string in autobid_tests:
             board = Board.from_identifier(board_identifier)
             Autobidder().bid_all_hands(board)
@@ -53,8 +53,6 @@ class AutobidTest(unittest2.TestCase):
 
 
 class SAYCBidderTest(unittest2.TestCase):
-    bidder_class = KnowledgeBasedBidder
-
     @classmethod
     def setUpClass(cls):
         cls.total_tests = 0
@@ -1111,7 +1109,7 @@ class SAYCBidderTest(unittest2.TestCase):
 
     def _run_bidding_tests(self, expected_calls):
         fail_count = 0
-        bidder = self.bidder_class()
+        bidder = BidderFactory.default_bidder()
         tests_run = dict()
 
         for expectation in expected_calls:
