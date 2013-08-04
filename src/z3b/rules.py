@@ -14,6 +14,7 @@ from z3b.preconditions import *
 
 
 categories = enum.Enum(
+    "Default",
     "Relay",
     "Gadget",
     "NoTrump",
@@ -25,7 +26,7 @@ class Rule(object):
     # FIXME: Consider splitting call_preconditions out from preconditions
     # for preconditions which only operate on the call?
     preconditions = []
-    category = None # Intra-bid priority
+    category = categories.Default # Intra-bid priority
     requires_planning = False
 
     call_name = None # call_name = '1C' -> preconditons = [CallName('1C')]
