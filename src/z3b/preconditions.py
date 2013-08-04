@@ -88,6 +88,16 @@ class RaiseOfPartnersLastSuit(Precondition):
         return call.strain == partner_last_call.strain and history.partner.min_length(partner_last_call.strain) >= 3
 
 
+class PartnerHasAtLeastLengthInSuit(Precondition):
+    def __init__(self, length):
+        self.length = length
+
+    def fits(self, history, call):
+        if call.strain not in suit.SUITS:
+            return False
+        return history.partner.min_length(call.strain) >= self.length
+
+
 class UnbidSuit(Precondition):
     def fits(self, history, call):
         if call.strain not in suit.SUITS:
@@ -101,6 +111,14 @@ class Strain(Precondition):
 
     def fits(self, history, call):
         return call.strain == self.strain
+
+
+class MinimumCombinedPointsPrecondition(Precondition):
+    def __init__(self, min_points):
+        self.min_points = min_points
+
+    def fits(self, history, call):
+        return history.partner.min_points + history.me.min_points >= self.min_points
 
 
 class Jump(Precondition):

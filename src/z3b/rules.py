@@ -18,7 +18,7 @@ categories = enum.Enum(
     "Gadget",
     "NoTrumpSystem",
     "Default",
-    # "Natural",
+    "Natural",
 )
 
 
@@ -140,6 +140,68 @@ relay_priorities = enum.Enum(
 )
 
 
+natural_priorities = enum.Enum(
+    "SevenLevelNaturalMajor",
+    "SevenLevelNaturalMinor",
+    "SixLevelNaturalMajor",
+    "SixLevelNaturalMinor",
+
+    "FourLevelNaturalMajor",
+    "FiveLevelNaturalMinor",
+
+    "FiveLevelNaturalMajor",
+    "FourLevelNaturalMinor",
+
+    "ThreeLevelNaturalMajor",
+    "ThreeLevelNaturalMinor",
+    "TwoLevelNaturalMajor",
+    "TwoLevelNaturalMinor",
+)
+
+
+class Natural(Rule):
+    category = categories.Natural
+
+
+class SuitedToPlay(Natural):
+    preconditions = Natural.preconditions + [
+        MinimumCombinedPointsPrecondition(12),
+        PartnerHasAtLeastLengthInSuit(1)
+    ]
+    constraints = {
+        '2C': (MinimumCombinedPoints(19), natural_priorities.TwoLevelNaturalMinor),
+        '2D': (MinimumCombinedPoints(19), natural_priorities.TwoLevelNaturalMinor),
+        '2H': (MinimumCombinedPoints(19), natural_priorities.TwoLevelNaturalMajor),
+        '2S': (MinimumCombinedPoints(19), natural_priorities.TwoLevelNaturalMajor),
+
+        '3C': (MinimumCombinedPoints(22), natural_priorities.ThreeLevelNaturalMinor),
+        '3D': (MinimumCombinedPoints(22), natural_priorities.ThreeLevelNaturalMinor),
+        '3H': (MinimumCombinedPoints(22), natural_priorities.ThreeLevelNaturalMajor),
+        '3S': (MinimumCombinedPoints(22), natural_priorities.ThreeLevelNaturalMajor),
+
+        '4C': (MinimumCombinedPoints(25), natural_priorities.FourLevelNaturalMinor),
+        '4D': (MinimumCombinedPoints(25), natural_priorities.FourLevelNaturalMinor),
+        '4H': (MinimumCombinedPoints(25), natural_priorities.FourLevelNaturalMajor),
+        '4S': (MinimumCombinedPoints(25), natural_priorities.FourLevelNaturalMajor),
+
+        '5C': (MinimumCombinedPoints(28), natural_priorities.FiveLevelNaturalMinor),
+        '5D': (MinimumCombinedPoints(28), natural_priorities.FiveLevelNaturalMinor),
+        '5H': (MinimumCombinedPoints(28), natural_priorities.FiveLevelNaturalMajor),
+        '5S': (MinimumCombinedPoints(28), natural_priorities.FiveLevelNaturalMajor),
+
+        '6C': (MinimumCombinedPoints(33), natural_priorities.SixLevelNaturalMinor),
+        '6D': (MinimumCombinedPoints(33), natural_priorities.SixLevelNaturalMinor),
+        '6H': (MinimumCombinedPoints(33), natural_priorities.SixLevelNaturalMajor),
+        '6S': (MinimumCombinedPoints(33), natural_priorities.SixLevelNaturalMajor),
+
+        '7C': (MinimumCombinedPoints(37), natural_priorities.SevenLevelNaturalMinor),
+        '7D': (MinimumCombinedPoints(37), natural_priorities.SevenLevelNaturalMinor),
+        '7H': (MinimumCombinedPoints(37), natural_priorities.SevenLevelNaturalMajor),
+        '7S': (MinimumCombinedPoints(37), natural_priorities.SevenLevelNaturalMajor),
+    }
+    shared_constraints = [MinimumCombinedLength(8)]
+
+
 opening_priorities = enum.Enum(
     "StrongTwoClubs",
     "NoTrumpOpening",
@@ -150,10 +212,6 @@ opening_priorities = enum.Enum(
     "HigherMinor",
     "LowerMinor",
 )
-
-
-# class Natural(Rule):
-#     category = categories.Natural
 
 
 class Opening(Rule):
