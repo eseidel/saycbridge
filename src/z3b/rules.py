@@ -72,7 +72,8 @@ class Rule(object):
     def meaning_of(self, history, call):
         exprs = self.rule_description.constraint_exprs_for_call(history, call)
         for condition, priority in self.rule_description.conditional_priorities:
-            yield priority, z3.And(exprs + [condition])
+            condition_exprs = self.rule_description.exprs_from_constraints(condition, history, call)
+            yield priority, z3.And(exprs + condition_exprs)
 
         _, priority = self.rule_description.per_call_constraints_and_priority(call)
         assert priority
@@ -100,9 +101,9 @@ class RuleDescription(object):
 
     def __init__(self):
         assert self.priority or self.constraints, "" + self.name() + " is missing priority"
+        # conditional_priorities doesn't work with self.constraints
         assert not self.conditional_priorities or not self.constraints
-        # conditional_priorities only works with a single call_name.
-        assert not self.conditional_priorities or self.call_name
+        assert not self.conditional_priorities or self.call_name or self.call_names
 
     @property
     def name(self):
@@ -140,7 +141,7 @@ class RuleDescription(object):
         except TypeError:
             return constraints_tuple, self.priority
 
-    def _exprs_from_constraints(self, constraints, history, call):
+    def exprs_from_constraints(self, constraints, history, call):
         if not constraints:
             return [NO_CONSTRAINTS]
 
@@ -150,14 +151,14 @@ class RuleDescription(object):
         if isinstance(constraints, z3.ExprRef):
             return [constraints]
 
-        return chain.from_iterable([self._exprs_from_constraints(constraint, history, call) for constraint in constraints])
+        return chain.from_iterable([self.exprs_from_constraints(constraint, history, call) for constraint in constraints])
 
     def constraint_exprs_for_call(self, history, call):
         exprs = []
         per_call_constraints, _ = self.per_call_constraints_and_priority(call)
         if per_call_constraints:
-            exprs.extend(self._exprs_from_constraints(per_call_constraints, history, call))
-        exprs.extend(self._exprs_from_constraints(self.shared_constraints, history, call))
+            exprs.extend(self.exprs_from_constraints(per_call_constraints, history, call))
+        exprs.extend(self.exprs_from_constraints(self.shared_constraints, history, call))
         return exprs
 
 
@@ -416,8 +417,9 @@ opener_rebid_priorities = enum.Enum(
     "NewSuitDiamonds",
     "NewSuitHearts",
     "NewSuitSpades",
-    "RebidOriginalSuit",
+    "UnforcedRebidOriginalSuit",
     "RebidOneNotrump",
+    "ForcedRebidOriginalSuit",
 )
 
 
@@ -473,14 +475,17 @@ class UnforcedRebidOriginalSuitByOpener(RebidOriginalSuitByOpener):
     preconditions = RebidOriginalSuitByOpener.preconditions + [InvertedPrecondition(ForcedToBid())]
     call_names = ['2C', '2D', '2H', '2S']
     shared_constraints = [MinLength(6)]
-    priority = opener_rebid_priorities.RebidOriginalSuit
+    priority = opener_rebid_priorities.UnforcedRebidOriginalSuit
 
 
 class ForcedRebidOriginalSuitByOpener(RebidOriginalSuitByOpener):
     preconditions = RebidOriginalSuitByOpener.preconditions + [ForcedToBid()]
     call_names = ['2C', '2D', '2H', '2S']
+    conditional_priorities = [
+        (MinLength(6), opener_rebid_priorities.UnforcedRebidOriginalSuit),
+    ]
     shared_constraints = [MinLength(5)]
-    priority = opener_rebid_priorities.RebidOriginalSuit
+    priority = opener_rebid_priorities.ForcedRebidOriginalSuit
 
 
 nt_response_priorities = enum.Enum(
