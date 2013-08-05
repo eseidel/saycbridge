@@ -328,7 +328,7 @@ class Bidder(object):
                 # If we failed to find a single maximal bid, this is an error.
                 return None, None
             if len(maximal_calls) != 1:
-                print "WARNING: Multiple bids match and have maximal tie-breaker priority"
+                print "WARNING: Multiple calls match and have maximal tie-breaker priority: %s" % map(lambda call: call.name, maximal_calls)
                 return None, None
             # print rule_selector.rule_for_call(maximal_calls[0])
             call = maximal_calls[0]
@@ -364,9 +364,9 @@ class RuleSelector(object):
 
         result = {}
         for call, best in maximal.iteritems():
-            _, rules = best
+            category, rules = best
             if len(rules) > 1:
-                print "WARNING: Multiple bids have maximal category"
+                print "WARNING: Multiple rules have maximal category: %s, %s" % (category, rules)
             result[call] = rules[0]
         return result
 
