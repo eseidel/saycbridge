@@ -42,16 +42,35 @@ class BidderProxy(object):
 class InterpreterProxy(object):
     def __init__(self):
         if use_z3:
-            self.interpreter = None
+            from z3b.bidder import Interpreter
+            self.interpreter = Interpreter()
         else:
             self.interpreter = BidInterpreter()
+
+    def _pretty_string_for_history(self, history, position):
+        from z3b.model import positions
+        constraints = history.constraints_for_last_call(positions.RHO)
+        # FIXME: We should do some mix/max solving on the constraints
+        # to produce a nice "1-5hcp, 5+ Spades" string.
+        # Note, we may need to get a Solver from the pool.
+        annotations = history.annotations_for_last_call(positions.RHO)
+        return ", ".join(map(str, annotations))
+
+    def knowledge_string_and_rule_for_last_call(self, call_history):
+        knowledge_string = None
+        rule = None
+        if use_z3:
+            from z3b.model import positions
+            history = self.interpreter.create_history(call_history)
+            return self._pretty_string_for_history(history, positions.RHO), history.rule_for_last_call(positions.RHO)
+        else:
+            existing_knowledge, knowledge_builder = self.interpreter.knowledge_from_history(call_history)
+            matched_rules = knowledge_builder.matched_rules()
+            knowledge_string = existing_knowledge.rho.pretty_one_line(include_last_call_name=False) if existing_knowledge else None,
+            return knowledge_string, matched_rules[-1]
 
     def knowledge_from_history(self, call_history, loose_constraints=None):
         if use_z3:
             return (None, None)
         return self.interpreter.knowledge_from_history(call_history, loose_constraints)
 
-    def knowledge_including_new_bid(self, knowledge_builder, new_bid, convention_card=None, loose_constraints=None):
-        if use_z3:
-            return (None, None)
-        return self.interpreter.knowledge_including_new_bid(knowledge_builder, new_bid, convention_card, loose_constraints)

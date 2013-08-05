@@ -93,20 +93,23 @@ class PositionView(object):
 
 # This class is immutable.
 class History(object):
-    def __init__(self, previous_history=None, call=None, annotations=None, constraints=None):
+    # FIXME: Unclear if Rule should be stored on History at all.
+    def __init__(self, previous_history=None, call=None, annotations=None, constraints=None, rule=None):
         self._previous_history = previous_history
         self._annotations_for_last_call = annotations if annotations else []
         self._constraints_for_last_call = constraints if constraints else []
+        self._rule_for_last_call = rule
         self.call_history = copy.deepcopy(self._previous_history.call_history) if self._previous_history else CallHistory()
         if call:
             self.call_history.calls.append(call)
 
-    def extend_with(self, call, annotations, constraints):
+    def extend_with(self, call, annotations, constraints, rule):
         return History(
             previous_history=self,
             call=call,
             annotations=annotations,
             constraints=constraints,
+            rule=rule,
         )
 
     @property
@@ -186,6 +189,18 @@ class History(object):
         if not history:
             return None
         return history.call_history.last_call()
+
+    def rule_for_last_call(self, position):
+        history = self._history_after_last_call_for(position)
+        if not history:
+            return None
+        return history._rule_for_last_call
+
+    def constraints_for_last_call(self, position):
+        history = self._history_after_last_call_for(position)
+        if not history:
+            return None
+        return history._constraints_for_last_call
 
     def annotations_for_position(self, position):
         return chain.from_iterable(self._walk_annotations_for(position))
@@ -434,7 +449,7 @@ class Interpreter(object):
                 annotations = rule.annotations(history)
                 constraints = selector.constraints_for_call(call)
                 # FIXME: We should validate the new constraints before saving them in the knowledge.
-            history = history.extend_with(call, annotations, constraints)
+            history = history.extend_with(call, annotations, constraints, rule)
 
         return history
 

@@ -48,7 +48,7 @@ class JSONExploreHandler(webapp2.RequestHandler):
 
         return {
             'rule_name': rule.name(),
-            'priority': rule.priority.index if rule.priority else None,
+            'priority': rule.priority.index if hasattr(rule, 'priority') and rule.priority else None,
             'explanation': rule.explanation_for_bid(bid),
             'sayc_page': rule.sayc_page_for_bid(bid),
         }
@@ -58,14 +58,13 @@ class JSONExploreHandler(webapp2.RequestHandler):
         calls_string = self.request.get('calls_string') or ''
         dealer_char = self.request.get('dealer') or ''
         vulnerability_string = self.request.get('vulnerability') or ''
-        history = CallHistory.from_string(calls_string, dealer_char, vulnerability_string)
+        call_history = CallHistory.from_string(calls_string, dealer_char, vulnerability_string)
 
-        existing_knowledge, knowledge_builder = interpreter.knowledge_from_history(history)
-        matched_rules = knowledge_builder.matched_rules()
+        knowledge_string, rule = interpreter.knowledge_string_and_rule_for_last_call(call_history)
         explore_dict = {
-            'knowledge_string': existing_knowledge.rho.pretty_one_line(include_last_call_name=False) if existing_knowledge else None,
+            'knowledge_string': knowledge_string,
         }
-        explore_dict.update(self._json_from_rule(matched_rules[-1], history.calls[-1]))
+        explore_dict.update(self._json_from_rule(rule, call_history.calls[-1]))
         self.response.headers["Content-Type"] = "application/json"
         self.response.headers["Cache-Control"] = "public"
 
