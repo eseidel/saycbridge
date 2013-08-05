@@ -51,6 +51,33 @@ class Opened(Precondition):
         return annotations.Opening in history.annotations_for_position(self.position)
 
 
+class ForcedToBid(Precondition):
+    def _rho_bid(self, history):
+        return history.rho.last_call and not history.rho.last_call.is_pass()
+
+    def _partner_last_bid_was_pass(self, history):
+        return history.partner.last_call and history.partner.last_call.is_pass()
+
+    def _partner_last_call_was_artificial(self, history):
+        return annotations.Artificial in history.partner.annotations_for_last_call
+
+    def _is_forced_to_bid(self, history):
+        if self._partner_last_bid_was_pass(history):
+            return False
+        # FIXME: Understand penalty doubles.
+        if self._rho_bid(history):
+            return False
+        # Artificial bids are always forcing. We use explicit pass rules to convert them into natural bids.
+        if self._partner_last_call_was_artificial(history):
+            return True
+        # FIXME: We're attempting to express that partner is unbounded but
+        # partner is never truly unbounded if other players have bid.
+        return history.partner.could_have_more_points_than(25)
+
+    def fits(self, history, call):
+        return self._is_forced_to_bid(history)
+
+
 class LastBidHasAnnotation(Precondition):
     def __init__(self, position, annotation):
         self.position = position
@@ -68,6 +95,16 @@ class LastBidHasStrain(Precondition):
     def fits(self, history, call):
         last_call = history.view_for(self.position).last_call
         return last_call and last_call.strain == self.strain
+
+
+class LastBidHasLevel(Precondition):
+    def __init__(self, position, level):
+        self.position = position
+        self.level = level
+
+    def fits(self, history, call):
+        last_call = history.view_for(self.position).last_call
+        return last_call and last_call.level() == self.level
 
 
 class LastBidWas(Precondition):
@@ -96,6 +133,13 @@ class SuitLowerThanMyLastSuit(Precondition):
         if last_call.strain not in suit.SUITS:
             return False
         return call.strain < last_call.strain
+
+
+class RebidSameSuit(Precondition):
+    def fits(self, history, call):
+        if call.strain not in suit.SUITS:
+            return False
+        return history.me.last_call and call.strain == history.me.last_call.strain
 
 
 class PartnerHasAtLeastLengthInSuit(Precondition):

@@ -84,6 +84,9 @@ class PositionView(object):
     def min_points(self):
         return self.history.min_points_for_position(self.position)
 
+    def could_have_more_points_than(self, points):
+        return self.history.could_have_more_points_than(self.position, points)
+
     def min_length(self, suit):
         return self.history.min_length_for_position(self.position, suit)
 
@@ -238,6 +241,16 @@ class History(object):
         if history:
             return history._solve_for_min_points()
         return 0
+
+    @memoized
+    def _solve_for_more_points_than(self, points):
+        return is_possible(self._solver, model.points >= points)
+
+    def could_have_more_points_than(self, position, points):
+        history = self._history_after_last_call_for(position)
+        if history:
+            return history._solve_for_more_points_than(points)
+        return True
 
     @memoized
     def is_unbid_suit(self, suit):

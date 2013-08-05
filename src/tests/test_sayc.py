@@ -341,6 +341,8 @@ class SAYCBidderTest(unittest2.TestCase):
 
             ["86.T4.AKJ753.A98", "2H", "1H P 1S P"],  # p52, h4
             ["QJ87.J6.AKJ75.K8", "2C", "1H P 1S P"],  # p52, h5
+
+            ["K92.34.K4.AKQT87", "2S", "1S P 1N P"],
         ])  # FIXME: Need new-suit bidding logic in the fallback bidder.
 
     def test_invitational_rebid_by_opener(self):
