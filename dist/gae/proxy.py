@@ -28,11 +28,12 @@ class BidderProxy(object):
     def find_call_for(self, hand, call_history):
         return self.bidder.find_call_for(hand, call_history)
 
-    def find_bid_and_rule_and_hand_knowledge_for(self, hand, call_history):
+    def find_call_and_rule_and_hand_knowledge_for(self, hand, call_history):
         # FIXME: This is a hack to make the GAE front-end work with the Z3 Bidder.
         if use_z3:
-            return [self.find_call_for(hand, call_history), None, None]
-        return self.bidder.find_bid_and_rule_and_hand_knowledge_for(hand, call_history)
+            call_and_rule = self.bidder.find_call_and_rule_for(hand, call_history)
+            return [call_and_rule[0], call_and_rule[1], None]
+        return self.bidder.find_call_and_rule_and_hand_knowledge_for(hand, call_history)
 
 
 # This is used by the explorer (explorer_handler.py)
