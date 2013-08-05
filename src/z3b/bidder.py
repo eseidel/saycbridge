@@ -279,24 +279,27 @@ class RuleSelector(object):
     @property
     @memoized
     def _call_to_rule(self):
-        result = {}
-        # FIXME(abortz): This code makes me feel dirty
+        maximal = {}
         for rule in self.system.rules:
-            for call in rule.calls_over(self.history):
-                existing_rule = result.get(call, [None])[0]
-                if not existing_rule:
-                    result[call] = [rule]
+            for category, call in rule.calls_over(self.history):
+                current = maximal.get(call)
+                if not current:
+                    maximal[call] = (category, [rule])
                 else:
+                    existing_category, existing_rules = current
+
                     # FIXME: It's lame that enum's < is backwards.
-                    if rule.category < existing_rule.category:
-                        result[call] = [rule]
-                    elif rule.category == existing_rule.category:
-                        result[call].append(rule)
-        for key in result.keys():
-            if len(result[key]) > 1:
-                print key, result[key]
+                    if category < existing_category:
+                        maximal[call] = (category, [rule])
+                    elif category == existing_category:
+                        existing_rules.append(rule)
+
+        result = {}
+        for call, best in maximal.iteritems():
+            _, rules = best
+            if len(rules) > 1:
                 print "WARNING: Multiple bids have maximal category"
-            result[key] = result[key][0]
+            result[call] = rules[0]
         return result
 
     def rule_for_call(self, call):
@@ -310,15 +313,16 @@ class RuleSelector(object):
         # (!z3.Or(clubs > diamonds, clubs == diamonds == 3) AND !(ROT AND diamonds >=3) AND !(ROT AND hearts >= 5) AND !(ROT AND spades >= 5))
 
         situations = []
-        used_rule = self.rule_for_call(call)
-        for priority, condition in used_rule.possible_priorities_and_conditions_for_call(call):
-            situational_constraints = [condition]
+        rule = self.rule_for_call(call)
+        for priority, z3_meaning in rule.meaning_of(self.history, call):
+            situational_exprs = [z3_meaning]
             for unmade_call, unmade_rule in self._call_to_rule.iteritems():
-                for unmade_priority, unmade_condition in unmade_rule.possible_priorities_and_conditions_for_call(unmade_call):
-                    if unmade_priority < priority: # FIXME: < means > for priority compares.
-                        situational_constraints.append(z3.Not(z3.And(unmade_condition, unmade_rule.constraints_expr_for_call(self.history, unmade_call))))
-            situations.append(z3.And(situational_constraints))
-        return z3.And(used_rule.constraints_expr_for_call(self.history, call), z3.Or(situations))
+                for unmade_priority, unmade_z3_meaning in unmade_rule.meaning_of(self.history, unmade_call):
+                    # FIXME: < means > for priority compares.
+                    if unmade_priority < priority:
+                        situational_exprs.append(z3.Not(unmade_z3_meaning))
+            situations.append(z3.And(situational_exprs))
+        return z3.Or(situations)
 
     def possible_calls_for_hand(self, hand):
         possible_calls = PossibleCalls(self.system.priority_ordering)
