@@ -159,20 +159,16 @@ FAIL: None (expected P) for 983.7.T843.KQ765 (hcp: 5 lp: 6 sp: 8), history: 1N P
 FAIL: None (expected P) for 83.8.KT843.97652 (hcp: 3 lp: 5 sp: 7), history: 1N P 2D P 2H P
 FAIL: None (expected 2N) for J9.532.K32.KJ865 (hcp: 8 lp: 9 sp: 8), history: 1N P 2H P 2S P
 FAIL: None (expected 2S) for 9.32.KJ832.QJ765 (hcp: 7 lp: 9 sp: 11), history: 1N P 2D P 2H P
-WARNING: Multiple calls match and have maximal priority: ['2D', '3H'] from rules: [Rule(JacobyTransferToHearts()), Rule(SuitedToPlay())]
-FAIL: None (expected 2D) for J97.Q2.KJ9832.65 (hcp: 7 lp: 9 sp: 7), history: 1N P (subtest of 1N P 2D P 2H P)
 FAIL: None (expected 3N) for A9.532.K32.KJ865 (hcp: 11 lp: 12 sp: 12), history: 1N P 2H P 2S P
 FAIL: None (expected 4H) for A.32.KJ832.QT765 (hcp: 10 lp: 12 sp: 14), history: 1N P 2H P 2S P
 FAIL: 3H (expected 4H) for 97.A2.KJ9832.J76 (hcp: 9 lp: 11 sp: 11), history: 1N P 2D P 2H P
-WARNING: Multiple calls match and have maximal priority: ['2D', '3H'] from rules: [Rule(JacobyTransferToHearts()), Rule(SuitedToPlay())]
-FAIL: None (expected 2D) for 97.A2.KJ9832.J76 (hcp: 9 lp: 11 sp: 11), history: 1N P (subtest of 1N P 2D P 2H P)
 FAIL: None (expected 3D) for 97.AQ982.2.KJT76 (hcp: 10 lp: 12 sp: 14), history: 1N P 2H P 2S P
 FAIL: 2H (expected 3H) for A9.AQ5.AQT4.J865 (hcp: 17 lp: 17 sp: 18), history: 1N P 2D P
 FAIL: None (expected P) for JT98765.2.75.543 (hcp: 1 lp: 4 sp: 5), history: 1N P 2S P 3C P
 FAIL: None (expected 2S) for JT98765.2.75.543 (hcp: 1 lp: 4 sp: 5), history: 1N P (subtest of 1N P 2S P 3C P)
 FAIL: None (expected 3D) for 5.QT87542.75.543 (hcp: 2 lp: 5 sp: 6), history: 1N P 2S P 3C P
 FAIL: None (expected 2S) for 5.QT87542.75.543 (hcp: 2 lp: 5 sp: 6), history: 1N P (subtest of 1N P 2S P 3C P)
-Pass 10 of 26 hands
+Pass 12 of 26 hands
 
 test_jacoby_two_nt_response_to_one_of_a_major:
 FAIL: 3S (expected 2N) for QJ5.A75.KT8.AT42 (hcp: 14 lp: 14 sp: 14), history: 1S P
@@ -255,8 +251,7 @@ test_misc_hands_from_play:
 FAIL: 3H (expected 2C) for AKJ52.J.J9743.54 (hcp: 10 lp: 12 sp: 13), history: 1H P
 FAIL: None (expected 4H) for T3.A7.KQT86.KJ63 (hcp: 13 lp: 14 sp: 15), history: 1H P 2N P
 FAIL: 2S (expected 3S) for AQJ5.QT42.74.T52 (hcp: 9 lp: 9 sp: 10), history: 1S P
-WARNING: Multiple calls match and have maximal priority: ['3H', '5H'] from rules: [Rule(MajorLimitRaise()), Rule(SuitedToPlay())]
-FAIL: None (expected 1S) for A2.T752.KQJ.AQ72 (hcp: 16 lp: 16 sp: 17), history: 1H P
+FAIL: 3H (expected 1S) for A2.T752.KQJ.AQ72 (hcp: 16 lp: 16 sp: 17), history: 1H P
 FAIL: None (expected 4H) for KQ94.J976.KQ7.A2 (hcp: 15 lp: 15 sp: 16), history: 1N P 2D P 2H P 3N P
 FAIL: None (expected 3N) for A53.A8.J9854.J64 (hcp: 10 lp: 11 sp: 11), history: 1N P 2D P 2H P
 FAIL: None (expected 3N) for AKQT5.Q865.875.K (hcp: 14 lp: 15 sp: 14), history: 1N P
@@ -406,8 +401,7 @@ FAIL: None (expected 2H) for 732.A62.KQ964.J7 (hcp: 10 lp: 11 sp: 10), history: 
 FAIL: None (expected P) for 732.A62.KQ964.J7 (hcp: 10 lp: 11 sp: 10), history: P (subtest of P P 1D 1S P)
 FAIL: None (expected P) for 5.9643.K7542.QJ5 (hcp: 6 lp: 7 sp: 9), history: 1N P 2D P 2H P
 FAIL: None (expected 4S) for AKQ852.K8.T.KJ93 (hcp: 16 lp: 18 sp: 20), history: 1S P 2N P 3H P
-WARNING: Multiple calls match and have maximal priority: ['3S', '5S'] from rules: [Rule(MajorLimitRaise()), Rule(SuitedToPlay())]
-FAIL: None (expected 2N) for AKQ852.K8.T.KJ93 (hcp: 16 lp: 18 sp: 20), history: 1S P (subtest of 1S P 2N P 3H P)
+FAIL: 3S (expected 2N) for AKQ852.K8.T.KJ93 (hcp: 16 lp: 18 sp: 20), history: 1S P (subtest of 1S P 2N P 3H P)
 FAIL: None (expected 4H) for J5.KJ7.AKQ74.963 (hcp: 14 lp: 15 sp: 14), history: 1H X 2N P
 FAIL: None (expected 3H) for AT8.J965.K85.Q97 (hcp: 10 lp: 10 sp: 10), history: 1D 2N P
 FAIL: None (expected 2C) for A96432.5.KJ8.AQJ (hcp: 15 lp: 17 sp: 18), history: P 1D
@@ -419,8 +413,7 @@ FAIL: None (expected P) for Q62.T7.KT982.A75 (hcp: 9 lp: 10 sp: 10), history:  (
 FAIL: None (expected 2N) for T973.AKQ3.Q.KQ43 (hcp: 16 lp: 16 sp: 17), history: P P 1D P 1H P 1S P 1N P
 FAIL: 2C (expected 1S) for T973.AKQ3.Q.KQ43 (hcp: 16 lp: 16 sp: 17), history: P P 1D P 1H P (subtest of P P 1D P 1H P 1S P 1N P)
 FAIL: None (expected 3N) for K7.Q76.AJT84.K98 (hcp: 13 lp: 14 sp: 14), history: P 1C P 1H P 1S P
-WARNING: Multiple calls match and have maximal priority: ['3S', '5S'] from rules: [Rule(MajorLimitRaise()), Rule(SuitedToPlay())]
-FAIL: None (expected 3N) for KQ8.K62.Q432.AK8 (hcp: 17 lp: 17 sp: 17), history: P 1S P
+FAIL: 3S (expected 3N) for KQ8.K62.Q432.AK8 (hcp: 17 lp: 17 sp: 17), history: P 1S P
 FAIL: None (expected 5D) for AKT964.975.7.965 (hcp: 7 lp: 9 sp: 10), history: 2C P 3C P 4N P
 FAIL: None (expected 3C) for AKT964.975.7.965 (hcp: 7 lp: 9 sp: 10), history: 2C P (subtest of 2C P 3C P 4N P)
 FAIL: 3H (expected 2N) for AK.AK54.98.KQJ76 (hcp: 20 lp: 21 sp: 22), history: 2H P
@@ -708,10 +701,8 @@ FAIL: None (expected P) for K95.AJ765.Q76.J8 (hcp: 11 lp: 12 sp: 11), history:
 Pass 13 of 15 hands
 
 test_slam_invitations_over_one_nt:
-WARNING: Multiple calls match and have maximal priority: ['4S', '2H'] from rules: [Rule(SuitedToPlay()), Rule(JacobyTransferToSpades())]
-FAIL: None (expected 3S) for K7.J85.A2.KQJ743 (hcp: 14 lp: 16 sp: 16), history: 1N P
-WARNING: Multiple calls match and have maximal priority: ['4H', '2D'] from rules: [Rule(SuitedToPlay()), Rule(JacobyTransferToHearts())]
-FAIL: None (expected 3H) for KQ9.5.KQT652.AT8 (hcp: 14 lp: 16 sp: 17), history: 1N P
+FAIL: 2H (expected 3S) for K7.J85.A2.KQJ743 (hcp: 14 lp: 16 sp: 16), history: 1N P
+FAIL: 2D (expected 3H) for KQ9.5.KQT652.AT8 (hcp: 14 lp: 16 sp: 17), history: 1N P
 FAIL: 5C (expected 3C) for AK8743.K2.K52.J8 (hcp: 14 lp: 16 sp: 15), history: 1N P 2C P 2H P
 FAIL: 5C (expected 2C) for AK8743.K2.K52.J8 (hcp: 14 lp: 16 sp: 15), history: 1N P (subtest of 1N P 2C P 2H P)
 FAIL: 5D (expected 3D) for A3.KJT976.KQ2.76 (hcp: 13 lp: 15 sp: 15), history: 1N P 2C P 2H P
@@ -728,10 +719,8 @@ FAIL: 1H (expected 2H) for K985.3.AKQ987.K2 (hcp: 15 lp: 17 sp: 19), history: 1C
 Pass 0 of 3 hands
 
 test_slam_zone_responses_to_one_of_a_major:
-WARNING: Multiple calls match and have maximal priority: ['3S', '6S'] from rules: [Rule(MajorLimitRaise()), Rule(SuitedToPlay())]
-FAIL: None (expected 3C) for AKJ95.65.KQ3.AKJ (hcp: 21 lp: 22 sp: 22), history: 1S P
-WARNING: Multiple calls match and have maximal priority: ['3S', '6S'] from rules: [Rule(MajorLimitRaise()), Rule(SuitedToPlay())]
-FAIL: None (expected 3D) for AQ.AKJ76.A32.KQJ (hcp: 24 lp: 25 sp: 23), history: 1S P
+FAIL: 3S (expected 3C) for AKJ95.65.KQ3.AKJ (hcp: 21 lp: 22 sp: 22), history: 1S P
+FAIL: 3S (expected 3D) for AQ.AKJ76.A32.KQJ (hcp: 24 lp: 25 sp: 23), history: 1S P
 Pass 0 of 2 hands
 
 test_strong_two_club:
@@ -774,15 +763,13 @@ FAIL: None (expected 3D) for K54.KQJ87.KQT97. (hcp: 14 lp: 16 sp: 19), history: 
 FAIL: None (expected 3N) for KJ64.JT.KQT9.KJ9 (hcp: 14 lp: 14 sp: 14), history: 1D P 1H P 1N P
 FAIL: 3S (expected 4S) for 2.KQ43.KQT8.QT98 (hcp: 12 lp: 12 sp: 15), history: 1D P 1H P 1S P
 FAIL: 4D (expected 5D) for 3.AQT743.AK95.65 (hcp: 13 lp: 15 sp: 17), history: 1D P 1H P 1N P
-WARNING: Multiple calls match and have maximal priority: ['1H', '4D'] from rules: [Rule(OneHeartResponse()), Rule(SuitedToPlay())]
-FAIL: None (expected 1H) for 3.AQT743.AK95.65 (hcp: 13 lp: 15 sp: 17), history: 1D P (subtest of 1D P 1H P 1N P)
 FAIL: None (expected 2S) for KJ643.9863.A9.K9 (hcp: 11 lp: 12 sp: 13), history: 1S P 2C P 2H P
 FAIL: None (expected 3C) for KJT432.K74.KT8.7 (hcp: 10 lp: 12 sp: 13), history: 1S P 2C P 2H P
 FAIL: 3S (expected 2C) for KJ643.A874.T.K97 (hcp: 11 lp: 12 sp: 14), history: 1S P (subtest of 1S P 2C P 2H P)
 FAIL: 3S (expected 4S) for KJ643.A874.T.K97 (hcp: 11 lp: 12 sp: 14), history: 1S P 2C P 3C P
 FAIL: None (expected 3D) for AJ432.J85.QT7.AQ (hcp: 14 lp: 15 sp: 13), history: 1S P 2C P 2H P
 FAIL: None (expected 2N) for KJ643.K3.K975.65 (hcp: 10 lp: 11 sp: 12), history: 1S P 2C P 2D P
-Pass 24 of 47 hands
+Pass 25 of 47 hands
 
 test_third_and_fourth_seat_opens:
 FAIL: None (expected 1C) for AKT9.T87.QJ8.J32 (hcp: 11 lp: 11 sp: 11), history: P P
@@ -800,9 +787,7 @@ Pass 0 of 3 hands
 
 test_weak_game_jump_over_one_nt:
 FAIL: 3S (expected 4S) for K74.9.J98.KJT742 (hcp: 8 lp: 10 sp: 11), history: 1N P 2H P 2S P
-WARNING: Multiple calls match and have maximal priority: ['3S', '2H'] from rules: [Rule(SuitedToPlay()), Rule(JacobyTransferToSpades())]
-FAIL: None (expected 2H) for K74.9.J98.KJT742 (hcp: 8 lp: 10 sp: 11), history: 1N P (subtest of 1N P 2H P 2S P)
 FAIL: None (expected P) for Q87.J843.K65.Q93 (hcp: 8 lp: 8 sp: 8), history: 1N P
-Pass 0 of 3 hands
+Pass 1 of 3 hands
 
-Pass 401 (37%) of 1060 total hands
+Pass 405 (38%) of 1060 total hands
