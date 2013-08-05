@@ -869,7 +869,7 @@ class CallHistoryTable extends HTMLTableElement
                 interpretation = controller.BidInterpreter.cachedInterpretationForLastCallInCallsFromBoard(partialHistory, @board)
                 if interpretation and not interpretation.ruleName
                     # FIXME: This should be a class on the ExploreLink?
-                    currentCell.style.backgroundColor = 'red'
+                    currentCell.style.backgroundColor = 'orange'
 
         if not biddingComplete
             if @callHistory.lastToCall() and @callHistory.lastToCall().index() == model.Position.WEST.index()
