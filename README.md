@@ -20,17 +20,33 @@ The typical development cycle:
     make accept
     git commit
 
-You can also test the site (saycbridge.com) locally using:
+
+Running SAYCBridge.com Locally
+------------------------------
+
+You can test the site (saycbridge.com) locally using:
 
     make serve-kbb # WARNING: This uses the Knowledge Based Bidder, not the z3 bidder.
 
 
-Setup
------
-
 Before the above will work, you probably need:
 Google App Engine SDK:
 https://developers.google.com/appengine/
+
+
+Running Z3-Based SAYCBridge.com Locally
+---------------------------------------
+
+(DOES NOT WORK YET)
+
+sudo easy_install webapp2
+sudo easy_install webob
+sudo easy_install jinja2
+sudo easy_install Werkzeug
+
+
+Setup
+-----
 
 Running the unittests requires unittest2:
 
