@@ -16,10 +16,14 @@ import z3b.rules as rules
 
 
 class SolverPool(object):
-    @memoized
-    def solver_for_hand(self, hand):
+    def create_solver(self):
         solver = z3.SolverFor('QF_LIA')
         solver.add(model.axioms)
+        return solver
+
+    @memoized
+    def solver_for_hand(self, hand):
+        solver = self.create_solver()
         solver.add(model.expr_for_hand(hand))
         return solver
 
@@ -51,6 +55,10 @@ class PositionView(object):
     def annotations(self):
         return self.history.annotations_for_position(self.position)
 
+    @property
+    def last_call(self):
+        return self.history.last_call_for_position(self.position)
+
     # FIXME: We could hang annotations off of the Call object, but currently
     # Call is from the old system.
     @property
@@ -58,94 +66,138 @@ class PositionView(object):
         return self.history.annotations_for_last_call(self.position)
 
     @property
-    def last_call(self):
-        return self.history.call_history.last_call_by(self.history._offset_from_dealer(self.position))
+    def min_points(self):
+        return self.history.min_points_for_position(self.position)
 
     def min_length(self, suit):
         return self.history.min_length_for_position(self.position, suit)
 
-    @property
-    def min_points(self):
-        return self.history.min_points_for_position(self.position)
-
 
 # This class is immutable.
 class History(object):
-    def __init__(self, previous_history=None):
-        self.call_history = CallHistory()
-        self._annotation_history = []
-        self._constraint_history = []
+    def __init__(self, previous_history=None, call=None, annotations=None, constraints=None):
         self._previous_history = previous_history
+        self._annotations_for_last_call = annotations if annotations else []
+        self._constraints_for_last_call = constraints if constraints else []
+        self.call_history = copy.deepcopy(self._previous_history.call_history) if self._previous_history else CallHistory()
+        if call:
+            self.call_history.calls.append(call)
+
+    def extend_with(self, call, annotations, constraints):
+        return History(
+            previous_history=self,
+            call=call,
+            annotations=annotations,
+            constraints=constraints,
+        )
+
+    def _previous_position(self, position):
+        return positions[(position.index - 1) % 4]
+
+    def _history_after_last_call_for(self, position):
+        if position == positions.RHO:
+            return self
+        if not self._previous_history:
+            return None
+        return self._previous_history._history_after_last_call_for(self._previous_position(position))
+
+    @memoized
+    def _solver_for_position(self, position):
+        if not self._previous_history:
+            return _solver_pool.create_solver()
+        if position == positions.RHO:
+            # The RHO just made a call, so we need to add the constraints from
+            # that caller to that player's solver.
+            previous_position = self._previous_position(position)
+            solver = self._previous_history._solver_for_position.take(previous_position)
+            solver.add(self._constraints_for_last_call)
+            return solver
+        history = self._history_after_last_call_for(position)
+        if not history:
+            return _solver_pool.create_solver()
+        return history._solver
+
+    @property
+    def _solver(self):
+        return self._solver_for_position(positions.RHO)
+
+    @property
+    def _four_calls_ago(self):
+        history = (
+            self._previous_history and
+            self._previous_history._previous_history and
+            self._previous_history._previous_history._previous_history and
+            self._previous_history._previous_history._previous_history._previous_history
+        )
+        if not history:
+            return None
+        return history
+
+    def _walk_history_for(self, position):
+        history = self._history_after_last_call_for(position)
+        while history:
+            yield history
+            history = history._four_calls_ago
+
+    def _walk_annotations_for(self, position):
+        for history in self._walk_history_for(position):
+            yield history._annotations_for_last_call
+
+    def annotations_for_last_call(self, position):
+        history = self._history_after_last_call_for(position)
+        if not history:
+            return []
+        return history.annotations
+
+    def last_call_for_position(self, position):
+        history = self._history_after_last_call_for(position)
+        if not history:
+            return None
+        return history.call_history.last_call()
+
+    def annotations_for_position(self, position):
+        return chain.from_iterable(self._walk_annotations_for(position))
+
+    def _walk_history(self):
+        history = self
+        while history:
+            yield history
+            history = history._previous_history
+
+    def _walk_annotations(self):
+        for history in self._walk_history():
+            yield history._annotations_for_last_call
 
     @property
     def annotations(self):
-        return chain.from_iterable(self._annotation_history)
-
-    def extend_with(self, call, annotations, constraints):
-        history = History(self)
-        history.call_history = copy.copy(self.call_history)
-        history.call_history.calls.append(call)
-        history._annotation_history = self._annotation_history + [annotations]
-        history._constraint_history = self._constraint_history + [constraints]
-        return history
-
-    def _offset_from_dealer(self, position):
-        return (len(self.call_history) - 1 - position.index) % 4
-
-    def _project_for_position(self, items, position):
-        end = -1 - position.index
-        start = (len(items) + end) % 4
-        return items[start::4]
-
-    def _position_in_previous_history(self, position):
-        return positions[(position.index - 1) % 4]
-
-
-    @memoized
-    def solver_for_position(self, position):
-        if not self._previous_history:
-            solver = z3.SolverFor('QF_LIA')
-            solver.add(model.axioms)
-            return solver
-        position_in_previous_history = self._position_in_previous_history(position)
-        solver_in_previous_history = self._previous_history.solver_for_position.take(position_in_previous_history)
-        if position_in_previous_history != positions.Me:
-            return solver_in_previous_history
-        solver = solver_in_previous_history
-        solver.add(self._constraint_history[-1])
-        return solver
-
-    def annotations_for_position(self, position):
-        return chain.from_iterable(self._project_for_position(self._annotation_history, position))
-
-    def annotations_for_last_call(self, position):
-        projection = self._project_for_position(self._annotation_history, position)
-        if not projection:
-            return []
-        return projection[-1]
+        return chain.from_iterable(self._walk_annotations())
 
     @memoized
     def min_length_for_position(self, position, suit):
-        solver = self.solver_for_position(position)
-        suit_expr = expr_for_suit(suit)
-        for length in range(0, 13):
-            if is_possible(solver, suit_expr == length):
-                return length
+        history = self._history_after_last_call_for(position)
+        if history:
+            solver = history._solver
+            suit_expr = expr_for_suit(suit)
+            for length in range(0, 13):
+                if is_possible(solver, suit_expr == length):
+                    return length
         return 0
 
     @memoized
     def min_points_for_position(self, position):
-        solver = self.solver_for_position(position)
-        for pts in range(0, 37):
-            if is_possible(solver, model.points == pts):
-                return pts
+        history = self._history_after_last_call_for(position)
+        if history:
+            solver = history._solver
+            for pts in range(0, 37):
+                if is_possible(solver, model.points == pts):
+                    return pts
         return 0
 
     @memoized
     def is_unbid_suit(self, suit):
         suit_expr = expr_for_suit(suit)
         for position in positions:
-            solver = self.solver_for_position(position)
+            solver = self._solver_for_position(position)
             if not is_possible(solver, suit_expr < 3):
                 return False
         return True
@@ -239,9 +291,10 @@ class RuleSelector(object):
                     if rule.category < existing_rule.category:
                         result[call] = [rule]
                     elif rule.category == existing_rule.category:
-                        result[call].extend(rule)
+                        result[call].append(rule)
         for key in result.keys():
             if len(result[key]) > 1:
+                print key, result[key]
                 print "WARNING: Multiple bids have maximal category"
             result[key] = result[key][0]
         return result

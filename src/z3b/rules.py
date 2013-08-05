@@ -59,14 +59,17 @@ class Rule(object):
     def _possible_calls_over(self, history):
         # If this Rule has explicit call restrictions, we only need to consider those.
         # FIXME: We should probably standardize this on some sort of call_preconditions instead.        
+        possible_calls = []
         if self.call_name:
-            return [Call.from_string(self.call_name)]
+            possible_calls = [Call.from_string(self.call_name)]
         elif self.call_names:
-            return map(Call.from_string, self.call_names)
+            possible_calls = map(Call.from_string, self.call_names)
         elif self.constraints:
-            return map(Call.from_string, self.constraints.keys())
-        # Otherwise we need to run all possible calls through the preconditions.
-        return CallExplorer().possible_calls_over(history.call_history)
+            possible_calls = map(Call.from_string, self.constraints.keys())
+        else:
+            # Otherwise we need to run all possible calls through the preconditions.
+            return CallExplorer().possible_calls_over(history.call_history)
+        return filter(history.call_history.is_legal_call, possible_calls)
 
     def calls_over(self, history):
         for call in self._possible_calls_over(history):
