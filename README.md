@@ -46,7 +46,8 @@ You will also need a copy of MSR's z3:
 http://z3.codeplex.com/
 
 I recommend cloning their git repository and building directly from there.
-Their repository requires Git version 1.7 or greater.
+Their repository requires Git version 1.7 or greater. You can also install
+using a Homebrew tap (FIXME).
 
 Follow their README for instructions on how to build & install z3.
 
