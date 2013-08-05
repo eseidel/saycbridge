@@ -8,6 +8,19 @@ using Standard American Yellow Card conventions.
 - https://play.google.com/store/apps/details?id=com.saycbridge.bridge
 - http://saycbot.appspot.com/
 
+Warning
+-------
+
+The SAYC Bridge code is currently undergoing an re-write.
+
+The code at saycbridge.com runs on Google App Engine
+and uses the (deprecated) Knolwedge Based Bidder (src/kbb).
+
+However, all active development is focused on the new z3 bidder (src/z3b).
+
+The z3 bidder is also not nearly complete enough to replace
+the Knowledge Based Bidder, but is rapily improving.
+
 
 Development
 -----------
@@ -21,26 +34,39 @@ The typical development cycle:
     git commit
 
 
+Testing Setup
+-------------
+
+Running the unittests requires unittest2:
+
+    sudo easy_install unittest2
+
+You will also need a copy of MSR's z3:
+http://z3.codeplex.com/
+
+I recommend cloning their git repository and building directly from there.
+Their repository requires Git version 1.7 or greater.
+
+Follow their README for instructions on how to build & install z3.
+
+
 Running SAYCBridge.com Locally
 ------------------------------
 
-You can run SAYCBridge in a local development server using
+You can run the SAYCBridge web-interface in a local development server using
 
     make serve # A very experimental version of the site using the z3 Bidder
-
-OR
-
+or
     make serve-kbb # The stable Knowledge Based Bidder
-
 
 Both versions of the site depend on CoffeeScript:
 
     sudo npm install -g coffee-script
 
-Which of course depends on Node.js
+If you don't already have npm, you can get it from Node.js
 http://nodejs.org/
 
-The z3 version additionally depends on:
+The Z3 Bidder (make serve) site additionally depends on:
 
     sudo easy_install webapp2 webob jinja2 Werkzeug
 
@@ -48,47 +74,24 @@ The Knowledge Based Bidder version depends on Google App Engine:
 https://developers.google.com/appengine/
 
 
-Setup
------
+Where To Start
+--------------
 
-Running the unittests requires unittest2:
+The Z3 Bidder does not know how to make many Calls.
+When it doesn't know what to bid, it returns None (an error).
+An example None from the Unittests:
+FAIL: None (expected 2C) for T874.876.86.J843 (hcp: 1 lp: 1 sp: 2), history: 1S X P
 
-    sudo easy_install unittest2
+Similarly, when you run the site locally, all None bids will
+show as "Pass" with an orange background to highlight the error.
 
-You will also need a copy of MSR's z3:
+Either browsing around the site (make serve), or running the unittests
+is a great way to find bids which are wrong or missing rules.
 
-- http://z3.codeplex.com/
+New rules can be added to src/z3b/rules.py
 
-I recommend cloning their git repository and building directly from there,
-however you can also use one of their pre-built binaries.
-Their repository requires Git version 1.7 or greater.
-
-I recommend installing z3py directly, but you can also just set PYTHON_PATH in your environment.
-Follow their README for instructions on how to build & install z3.
-
-If you wish to run the server locally (make serve-kbb) you will also need the CofeeScript compiler:
-http://coffeescript.org/
-
-
-Warning
--------
-
-The SAYC Bridge code is currently undergoing an re-write.
-
-The code at saycbridge.com runs on Google App Engine
-and uses the Knolwedge Based Bidder (src/kbb).
-
-However, the Knowledge Based Bidder is deprecated, and
-development is continuing on the new z3 bidder (src/z3b).
-
-The z3 bidder is also not nearly complete enough to replace
-the Knowledge Based Bidder, but is rapily improving.
-
-z3 is also not python code, and thus not possible
-to deploy to saycbridge.com with our current hosting strategy
-(or even run the site -- make serve-kbb -- locally with the z3 bidder).
-Once we have the z3 bidder working well enough, we'll come
-up with an alternate hosting strategy.
+The KBB's (much more complete) rules can be found at src/z3b/rules/
+and are often helpful examples of rules to add to the Z3 Bidder.
 
 
 Code Layout
