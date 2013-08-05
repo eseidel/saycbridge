@@ -30,10 +30,10 @@ Warning, the z3-based saycbridge.com is very experimental, and very broken.
 
 Before the above will work, you'll likely need to install a bunch of python dependencies:
 
-sudo easy_install webapp2
-sudo easy_install webob
-sudo easy_install jinja2
-sudo easy_install Werkzeug
+    sudo easy_install webapp2
+    sudo easy_install webob
+    sudo easy_install jinja2
+    sudo easy_install Werkzeug
 
 
 Running (the stable kbb based) SAYCBridge.com Locally
