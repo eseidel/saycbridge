@@ -2,21 +2,18 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-from __future__ import with_statement
-
-import urllib
 import re
 
 import webapp2
 import jinja2
-import os
 
 jinja_environment = jinja2.Environment(loader=jinja2.FileSystemLoader("templates"))
 
 
 class UnittestHandler(webapp2.RequestHandler):
-    unittest_file_path = "core/sayc_unittest.py"
-    baseline_file_path = "z3b_baseline.txt"
+    # This is only ever used locally (not on appengine) so relative paths are OK.
+    unittest_file_path = "../../src/tests/test_sayc.py"
+    baseline_file_path = "../../src/z3b_baseline.txt"
 
     test_method_regexp = re.compile(r"\s+def (test_\w*)\(")
 
