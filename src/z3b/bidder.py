@@ -96,9 +96,11 @@ class History(object):
     def legal_calls(self):
         return set(CallExplorer().possible_calls_over(self.call_history))
 
+    @memoized
     def _previous_position(self, position):
         return positions[(position.index - 1) % 4]
 
+    @memoized
     def _history_after_last_call_for(self, position):
         if position.index == positions.RHO.index:
             return self

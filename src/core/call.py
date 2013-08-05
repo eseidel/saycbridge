@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 from suit import *
+from third_party.memoized import memoized
 
 
 class Call(object):
@@ -29,6 +30,7 @@ class Call(object):
     # We may want to split this into different methods for different
     # input sources.
     @classmethod
+    @memoized
     def from_string(self, string):
         string = string.upper()
         string = string.replace("NT", "N")
