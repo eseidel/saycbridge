@@ -33,19 +33,6 @@ class Rule(object):
     def annotations(self, history):
         return self.rule_description.annotations
 
-    # FIXME: This is not @property for compatibility with the KBB's Rule interface which
-    # dist/gae/handlers/bidder_handler.py depends on.
-    def name(self):
-        return self.rule_description.name
-
-    # FIXME: This exists for compatiblity with KBB's Rule interface and is used by bidder_handler.py
-    def explanation_for_bid(self, call):
-        return None
-
-    # FIXME: This exists for compatiblity with KBB's Rule interface and is used by bidder_handler.py
-    def sayc_page_for_bid(self, call):
-        return None
-
     def _fits_preconditions(self, history, call):
         for precondition in self.rule_description.preconditions:
             if not precondition.fits(history, call):
@@ -101,7 +88,6 @@ class RuleDescription(object):
         # conditional_priorities only works with a single call_name.
         assert not self.conditional_priorities or self.call_name
 
-    @property
     def name(self):
         return self.__class__.__name__
 

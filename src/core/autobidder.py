@@ -12,7 +12,7 @@ class Autobidder(object):
     def _bid_next_hand(self, board):
         position_to_call = board.call_history.position_to_call()
         hand = board.deal.hands[position_to_call]
-        bid, rule, hand_knowledge = self.bidder.find_call_and_rule_and_hand_knowledge_for(hand, board.call_history)
+        bid, rule, hand_knowledge = self.bidder.find_bid_and_rule_and_hand_knowledge_for(hand, board.call_history)
         board.call_history.calls.append(bid or Pass())
         return [bid, rule, hand_knowledge]
 
