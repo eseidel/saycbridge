@@ -408,17 +408,18 @@ class NewSuitAtTheTwoLevel(Response):
     shared_constraints = MinimumCombinedPoints(22)
 
 
-class OpenerRebid(RuleDescription):
-    preconditions = [LastBidHasAnnotation(positions.Me, annotations.Opening)]
-
-
 opener_rebid_priorities = enum.Enum(
     "NewSuitClubs",
     "NewSuitDiamonds",
     "NewSuitHearts",
     "NewSuitSpades",
+    "RebidOriginalSuit",
     "RebidOneNotrump",
 )
+
+
+class OpenerRebid(RuleDescription):
+    preconditions = [LastBidHasAnnotation(positions.Me, annotations.Opening)]
 
 
 class RebidOneNotrumpByOpener(OpenerRebid):
@@ -455,6 +456,21 @@ class NewSuitByOpener(OpenerRebid):
         # 3S would necessarily be a reverse, or a jump shift, and is not covered by this rule.
     }
     shared_constraints = [MinLength(4)]
+
+
+class RebidOriginalSuitByOpener(OpenerRebid):
+    preconditions = OpenerRebid.preconditions + [
+        LastBidHasLevel(positions.Me, 1),
+        RebidSameSuit(),
+        NotJumpFromLastContract(),
+    ]
+
+
+class UnforcedRebidOriginalSuitByOpener(RebidOriginalSuitByOpener):
+    preconditions = RebidOriginalSuitByOpener.preconditions + [InvertedPrecondition(ForcedToBid())]
+    call_names = ['2C', '2D', '2H', '2S']
+    shared_constraints = [MinLength(6)]
+    priority = opener_rebid_priorities.RebidOriginalSuit
 
 
 nt_response_priorities = enum.Enum(
