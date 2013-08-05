@@ -282,6 +282,7 @@ class Bidder(object):
         if len(maximal_calls) != 1:
             print "WARNING: Multiple bids match and have maximal tie-breaker priority"
             return None
+        # print rule_selector.rule_for_call(maximal_calls[0])
         return maximal_calls[0]
 
 

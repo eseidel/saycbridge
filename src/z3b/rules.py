@@ -330,13 +330,13 @@ class RaiseResponse(Response):
 
 class MajorMinimumRaise(RaiseResponse):
     call_names = ['2H', '2S']
-    shared_constraints = [MinimumCombinedLength(8), points >= 6]
+    shared_constraints = [MinimumCombinedLength(8), MinimumCombinedPoints(min_hcp_for_open + 6)]
     priority = response_priorities.MajorMinimumRaise
 
 
 class MajorLimitRaise(RaiseResponse):
     call_names = ['3H', '3S']
-    shared_constraints = [MinimumCombinedLength(8), points >= 10]
+    shared_constraints = [MinimumCombinedLength(8), MinimumCombinedPoints(min_hcp_for_open + 10)]
     priority = response_priorities.MajorLimitRaise
 
 
@@ -348,13 +348,13 @@ class MajorJumpToGame(RaiseResponse):
 
 class MinorMinimumRaise(RaiseResponse):
     call_names = ['2C', '2D']
-    shared_constraints = [MinimumCombinedLength(8), points >= 6]
+    shared_constraints = [MinimumCombinedLength(8), MinimumCombinedPoints(min_hcp_for_open + 6)]
     priority = response_priorities.MinorMinimumRaise
 
 
 class MinorLimitRaise(RaiseResponse):
     call_names = ['3C', '3D']
-    shared_constraints = [MinimumCombinedLength(8), points >= 10]
+    shared_constraints = [MinimumCombinedLength(8), MinimumCombinedPoints(min_hcp_for_open + 10)]
     priority = response_priorities.MinorLimitRaise
 
 
@@ -369,7 +369,7 @@ class NewSuitAtTheTwoLevel(Response):
         '2H' : (hearts >= 5, response_priorities.TwoHeartNewSuitResponse),
         '2S' : (spades >= 5, response_priorities.TwoSpadeNewSuitResponse),
     }
-    shared_constraints = points >= 10
+    shared_constraints = MinimumCombinedPoints(min_hcp_for_open + 10)
 
 
 nt_response_priorities = enum.Enum(

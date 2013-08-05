@@ -6,8 +6,7 @@ from third_party import enum
 import core.suit as suit
 import z3
 
-
-spades, hearts, diamonds, clubs, points = z3.Ints('spades hearts diamonds clubs points')
+spades, hearts, diamonds, clubs = z3.Ints('spades hearts diamonds clubs')
 
 ace_of_spades, king_of_spades, queen_of_spades, jack_of_spades, ten_of_spades = z3.Ints(
     'ace_of_spades king_of_spades queen_of_spades jack_of_spades ten_of_spades')
@@ -18,13 +17,16 @@ ace_of_diamonds, king_of_diamonds, queen_of_diamonds, jack_of_diamonds, ten_of_d
 ace_of_clubs, king_of_clubs, queen_of_clubs, jack_of_clubs, ten_of_clubs = z3.Ints(
     'ace_of_clubs king_of_clubs queen_of_clubs jack_of_clubs ten_of_clubs')
 
+high_card_points, points = z3.Ints('high_card_points points')
+
 axioms = [
     spades + hearts + diamonds + clubs == 13,
     spades >= 0,
     hearts >= 0,
     diamonds >= 0,
     clubs >= 0,
-    0 <= points <= 37,
+    0 <= high_card_points <= 37,
+    points == high_card_points,
 
     0 <= ace_of_spades <= 1,
     0 <= king_of_spades <= 1,
@@ -57,23 +59,29 @@ axioms = [
     4 * ace_of_spades   + 3 * king_of_spades   + 2 * queen_of_spades   + 1 * jack_of_spades   +
     4 * ace_of_hearts   + 3 * king_of_hearts   + 2 * queen_of_hearts   + 1 * jack_of_hearts   +
     4 * ace_of_diamonds + 3 * king_of_diamonds + 2 * queen_of_diamonds + 1 * jack_of_diamonds +
-    4 * ace_of_clubs    + 3 * king_of_clubs    + 2 * queen_of_clubs    + 1 * jack_of_clubs    == points
+    4 * ace_of_clubs    + 3 * king_of_clubs    + 2 * queen_of_clubs    + 1 * jack_of_clubs    == high_card_points
 ]
 
+min_hcp_for_open = 8
+
 def _expr_for_point_rule(count):
-    return z3.Or(
-        spades + hearts + points >= count,
-        spades + diamonds + points >= count,
-        spades + clubs + points >= count,
-        hearts + diamonds + points >= count,
-        hearts + clubs + points >= count,
-        diamonds + clubs + points >= count,
+    return z3.And(
+        high_card_points >= min_hcp_for_open,
+        z3.Or(
+            spades + hearts + high_card_points >= count,
+            spades + diamonds + high_card_points >= count,
+            spades + clubs + high_card_points >= count,
+            hearts + diamonds + high_card_points >= count,
+            hearts + clubs + high_card_points >= count,
+            diamonds + clubs + high_card_points >= count,
+        )
     )
 
 rule_of_twenty = _expr_for_point_rule(20)
 rule_of_nineteen = _expr_for_point_rule(19)
 
-rule_of_fifteen = spades + points >= 15
+# FIXME: This rule probably needs to consider min_hcp_for_open
+rule_of_fifteen = spades + high_card_points >= 15
 
 three_of_the_top_five_spades = ace_of_spades + king_of_spades + queen_of_spades + jack_of_spades + ten_of_spades >= 3
 three_of_the_top_five_hearts = ace_of_hearts + king_of_hearts + queen_of_hearts + jack_of_hearts + ten_of_hearts >= 3
