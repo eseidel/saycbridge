@@ -24,25 +24,28 @@ The typical development cycle:
 Running SAYCBridge.com Locally
 ------------------------------
 
-You can test the site (saycbridge.com) locally using:
+You can run SAYCBridge in a local development server using
 
-    make serve-kbb # WARNING: This uses the Knowledge Based Bidder, not the z3 bidder.
+    make serve # A very experimental version of the site using the z3 Bidder
+
+OR
+
+    make serve-kbb # The stable Knowledge Based Bidder
 
 
-Before the above will work, you probably need:
-Google App Engine SDK:
+Both versions of the site depend on CoffeeScript:
+
+    sudo npm install -g coffee-script
+
+Which of course depends on Node.js
+http://nodejs.org/
+
+The z3 version additionally depends on:
+
+    sudo easy_install webapp2 webob jinja2 Werkzeug
+
+The Knowledge Based Bidder version depends on Google App Engine:
 https://developers.google.com/appengine/
-
-
-Running Z3-Based SAYCBridge.com Locally
----------------------------------------
-
-(DOES NOT WORK YET)
-
-sudo easy_install webapp2
-sudo easy_install webob
-sudo easy_install jinja2
-sudo easy_install Werkzeug
 
 
 Setup

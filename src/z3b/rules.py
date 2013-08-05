@@ -283,6 +283,8 @@ response_priorities = enum.Enum(
     "TwoSpadeNewSuitResponse",
     "TwoClubNewSuitResponse",
     "TwoDiamondNewSuitResponse",
+    "MinorLimitRaise",
+    "MinorMinimumRaise",
     "OneNotrumpResponse",
 )
 
@@ -342,6 +344,18 @@ class MajorJumpToGame(RaiseResponse):
     call_names = ['4H', '4S']
     shared_constraints = [MinimumCombinedLength(10), points < 10]
     priority = response_priorities.MajorJumpToGame
+
+
+class MinorMinimumRaise(RaiseResponse):
+    call_names = ['2C', '2D']
+    shared_constraints = [MinimumCombinedLength(8), points >= 6]
+    priority = response_priorities.MinorMinimumRaise
+
+
+class MinorLimitRaise(RaiseResponse):
+    call_names = ['3C', '3D']
+    shared_constraints = [MinimumCombinedLength(8), points >= 10]
+    priority = response_priorities.MinorLimitRaise
 
 
 # We should bid longer suits when possible, up the line for 4 cards.
