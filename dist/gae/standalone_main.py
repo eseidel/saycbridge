@@ -13,4 +13,4 @@ app = werkzeug.SharedDataMiddleware(appengine_main.app, {
     '/static': os.path.join(gae_dir, 'static'),
 })
 
-werkzeug.serving.run_simple('localhost', 8080, app)
+werkzeug.serving.run_simple('localhost', 8080, app, use_reloader=True)
