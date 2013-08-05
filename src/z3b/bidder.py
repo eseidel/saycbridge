@@ -16,14 +16,29 @@ import z3b.rules as rules
 
 
 class SolverPool(object):
-    def create_solver(self):
+    def __init__(self):
+        self._pool = []
+
+    def _ensure_solver(self):
+        if self._pool:
+            return
         solver = z3.SolverFor('QF_LIA')
         solver.add(model.axioms)
+        self._pool.append(solver)
+
+    def restore(self, solver):
+        solver.pop()
+        self._pool.append(solver)
+
+    def borrow(self):
+        self._ensure_solver()
+        solver = self._pool.pop()
+        solver.push()
         return solver
 
     @memoized
     def solver_for_hand(self, hand):
-        solver = self.create_solver()
+        solver = self.borrow()
         solver.add(model.expr_for_hand(hand))
         return solver
 
@@ -111,7 +126,7 @@ class History(object):
     @memoized
     def _solver_for_position(self, position):
         if not self._previous_history:
-            return _solver_pool.create_solver()
+            return _solver_pool.borrow()
         if position == positions.RHO:
             # The RHO just made a call, so we need to add the constraints from
             # that caller to that player's solver.
@@ -121,8 +136,15 @@ class History(object):
             return solver
         history = self._history_after_last_call_for(position)
         if not history:
-            return _solver_pool.create_solver()
+            return _solver_pool.borrow()
         return history._solver
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        for position in positions:
+            _solver_pool.restore(self._solver_for_position.take(position))
 
     @property
     def _solver(self):
@@ -277,23 +299,23 @@ class Bidder(object):
         self.system = rules.StandardAmericanYellowCard
 
     def find_call_for(self, hand, call_history):
-        history = Interpreter().create_history(call_history)
-        # Select highest-intra-bid-priority (category) rules for all possible bids
-        rule_selector = RuleSelector(self.system, history)
-        # Compute inter-bid priorities (priority) for each using the hand.
-        maximal_calls = rule_selector.possible_calls_for_hand(hand)
-        # We don't currently support tie-breaking priorities, but we do have some bids that
-        # we don't make without a planner
-        maximal_calls = filter(
-                lambda call: not rule_selector.rule_for_call(call).requires_planning(history), maximal_calls)
-        if not maximal_calls:
-            # If we failed to find a single maximal bid, this is an error.
-            return None
-        if len(maximal_calls) != 1:
-            print "WARNING: Multiple bids match and have maximal tie-breaker priority"
-            return None
-        # print rule_selector.rule_for_call(maximal_calls[0])
-        return maximal_calls[0]
+        with Interpreter().create_history(call_history) as history:
+            # Select highest-intra-bid-priority (category) rules for all possible bids
+            rule_selector = RuleSelector(self.system, history)
+            # Compute inter-bid priorities (priority) for each using the hand.
+            maximal_calls = rule_selector.possible_calls_for_hand(hand)
+            # We don't currently support tie-breaking priorities, but we do have some bids that
+            # we don't make without a planner
+            maximal_calls = filter(
+                    lambda call: not rule_selector.rule_for_call(call).requires_planning(history), maximal_calls)
+            if not maximal_calls:
+                # If we failed to find a single maximal bid, this is an error.
+                return None
+            if len(maximal_calls) != 1:
+                print "WARNING: Multiple bids match and have maximal tie-breaker priority"
+                return None
+            # print rule_selector.rule_for_call(maximal_calls[0])
+            return maximal_calls[0]
 
 
 class RuleSelector(object):
