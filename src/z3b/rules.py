@@ -21,8 +21,54 @@ categories = enum.Enum(
     "Natural",
 )
 
-
+# This is a public interface from RuleGenerators to the rest of the system.
+# This class knows nothing about the DSL.
 class Rule(object):
+    def __init__(self, rule_description):
+        self.rule_description = rule_description
+
+    @property
+    def requires_planning(self):
+        return self.rule_description.requires_planning
+
+    @property
+    def annotations(self):
+        return self.rule_description.annotations
+
+    def _fits_preconditions(self, history, call):
+        for precondition in self.rule_description.preconditions:
+            if not precondition.fits(history, call):
+                return False
+        return True
+
+    def _possible_calls_over(self, history):
+        # If the RuleDescription applies to an a priori known set of calls, we only need to consider those.
+        # FIXME: We could standardize this on some sort of call_preconditions instead?
+        known_calls = self.rule_description.known_calls()
+        if known_calls:
+            return history.legal_calls.intersection(known_calls)
+        # Otherwise we ask it about each legal call (which is slow).
+        return history.legal_calls
+
+    def calls_over(self, history):
+        for call in self._possible_calls_over(history):
+            if self._fits_preconditions(history, call):
+                yield self.rule_description.category, call
+
+    def meaning_of(self, history, call):
+        exprs = self.rule_description.constraint_exprs_for_call(history, call)
+        for condition, priority in self.rule_description.conditional_priorities:
+            yield priority, z3.And(exprs + [condition])
+
+        _, priority = self.rule_description.per_call_constraints_and_priority(call)
+        assert priority
+        yield priority, z3.And(exprs)
+
+
+# The rules of SAYC are all described in terms of RuleDescription.
+# These classes exist to support the DSL and make it easy to concisely express
+# the conventions of SAYC.
+class RuleDescription(object):
     # FIXME: Consider splitting call_preconditions out from preconditions
     # for preconditions which only operate on the call?
     preconditions = []
@@ -50,39 +96,34 @@ class Rule(object):
     def __repr__(self):
         return "%s()" % self.name()
 
-    def _fits_preconditions(self, history, call):
-        for precondition in self.preconditions:
-            if not precondition.fits(history, call):
-                return False
-        return True
-
-    def _possible_calls_over(self, history):
-        # If this Rule has explicit call restrictions, we only need to consider those.
-        # FIXME: We should probably standardize this on some sort of call_preconditions instead.
-        possible_calls = []
+    def _known_call_names(self):
         if self.call_name:
-            possible_calls = [Call.from_string(self.call_name)]
+            return [self.call_name]
         elif self.call_names:
-            possible_calls = map(Call.from_string, self.call_names)
+            return self.call_names
         elif self.constraints:
-            possible_calls = map(Call.from_string, self.constraints.keys())
-        else:
-            return history.legal_calls
-        return history.legal_calls.intersection(possible_calls)
+            return self.constraints.keys()
+        return []
 
-    def calls_over(self, history):
-        for call in self._possible_calls_over(history):
-            if self._fits_preconditions(history, call):
-                yield self.category, call
+    def known_calls(self):
+        return map(Call.from_string, self._known_call_names())
 
-    def meaning_of(self, history, call):
-        exprs = self._constraint_exprs_for_call(history, call)
-        for condition, priority in self.conditional_priorities:
-            yield priority, z3.And(exprs + [condition])
+    # constraints accepts various forms including:
+    # constraints = { '1H': hearts > 5 }
+    # constraints = { '1H': (hearts > 5, priority) }
 
-        _, priority = self._per_call_constraints_and_priority(call)
-        assert priority
-        yield priority, z3.And(exprs)
+    # FIXME: Should we split this into two methods? on for priority and one for constraints?
+    def per_call_constraints_and_priority(self, call):
+        constraints_tuple = self.constraints.get(call.name)
+        if not constraints_tuple:
+            return None, self.priority
+
+        try:
+            if isinstance(list(constraints_tuple)[-1], enum.EnumValue):
+                assert len(constraints_tuple) == 2
+                return constraints_tuple
+        except TypeError:
+            return constraints_tuple, self.priority
 
     def _exprs_from_constraints(self, constraints, history, call):
         if not constraints:
@@ -96,26 +137,9 @@ class Rule(object):
 
         return chain.from_iterable([self._exprs_from_constraints(constraint, history, call) for constraint in constraints])
 
-    # constraints accepts various forms including:
-    # constraints = { '1H': hearts > 5 }
-    # constraints = { '1H': (hearts > 5, priority) }
-
-    # FIXME: Should we split this into two methods? on for priority and one for constraints?
-    def _per_call_constraints_and_priority(self, call):
-        constraints_tuple = self.constraints.get(call.name)
-        if not constraints_tuple:
-            return None, self.priority
-
-        try:
-            if isinstance(list(constraints_tuple)[-1], enum.EnumValue):
-                assert len(constraints_tuple) == 2
-                return constraints_tuple
-        except TypeError:
-            return constraints_tuple, self.priority
-
-    def _constraint_exprs_for_call(self, history, call):
+    def constraint_exprs_for_call(self, history, call):
         exprs = []
-        per_call_constraints, _ = self._per_call_constraints_and_priority(call)
+        per_call_constraints, _ = self.per_call_constraints_and_priority(call)
         if per_call_constraints:
             exprs.extend(self._exprs_from_constraints(per_call_constraints, history, call))
         exprs.extend(self._exprs_from_constraints(self.shared_constraints, history, call))
@@ -146,7 +170,7 @@ natural_priorities = enum.Enum(
 )
 
 
-class Natural(Rule):
+class Natural(RuleDescription):
     category = categories.Natural
 
 
@@ -201,7 +225,7 @@ opening_priorities = enum.Enum(
 )
 
 
-class Opening(Rule):
+class Opening(RuleDescription):
     annotations = [annotations.Opening]
     preconditions = [NoOpening()]
 
@@ -289,7 +313,7 @@ response_priorities = enum.Enum(
 )
 
 
-class Response(Rule):
+class Response(RuleDescription):
     preconditions = [LastBidHasAnnotation(positions.Partner, annotations.Opening)]
 
 
@@ -441,9 +465,9 @@ class JacobyTransferToSpades(JacobyTransfer):
     priority = nt_response_priorities.JacobyTransferToSpades
 
 
-class AcceptTransferToHearts(Rule):
+class AcceptTransferToHearts(RuleDescription):
     category = categories.Relay
-    preconditions = Rule.preconditions + [
+    preconditions = RuleDescription.preconditions + [
         LastBidHasAnnotation(positions.Partner, annotations.Transfer),
         LastBidHasStrain(positions.Partner, suit.DIAMONDS),
         Strain(suit.HEARTS),
@@ -452,9 +476,9 @@ class AcceptTransferToHearts(Rule):
     priority = relay_priorities.Relay
 
 
-class AcceptTransferToSpades(Rule):
+class AcceptTransferToSpades(RuleDescription):
     category = categories.Relay
-    preconditions = Rule.preconditions + [
+    preconditions = RuleDescription.preconditions + [
         LastBidHasAnnotation(positions.Partner, annotations.Transfer),
         LastBidHasStrain(positions.Partner, suit.HEARTS),
         Strain(suit.SPADES),
@@ -471,8 +495,8 @@ stayman_response_priorities = enum.Enum(
 )
 
 
-class StaymanResponse(Rule):
-    preconditions = Rule.preconditions + [LastBidHasAnnotation(positions.Partner, annotations.Stayman)]
+class StaymanResponse(RuleDescription):
+    preconditions = RuleDescription.preconditions + [LastBidHasAnnotation(positions.Partner, annotations.Stayman)]
 
 
 class NaturalStaymanResponse(StaymanResponse):
@@ -523,8 +547,8 @@ overcall_priorities = enum.Enum(
 )
 
 
-class DirectOvercall(Rule):
-    preconditions = Rule.preconditions + [LastBidHasAnnotation(positions.RHO, annotations.Opening)]
+class DirectOvercall(RuleDescription):
+    preconditions = RuleDescription.preconditions + [LastBidHasAnnotation(positions.RHO, annotations.Opening)]
     priority = overcall_priorities.DirectOvercall
 
 
@@ -586,7 +610,7 @@ feature_asking_priorites = enum.Enum(
 )
 
 
-class Gerber(Rule):
+class Gerber(RuleDescription):
     category = categories.Gadget
     requires_planning = True
     shared_constraints = NO_CONSTRAINTS
@@ -609,9 +633,9 @@ class GerberForKings(Gerber):
     ]
 
 
-class ResponseToGerber(Rule):
+class ResponseToGerber(RuleDescription):
     category = categories.Relay
-    preconditions = Rule.preconditions + [
+    preconditions = RuleDescription.preconditions + [
         LastBidHasAnnotation(positions.Partner, annotations.Gerber),
         NotJumpFromPartnerLastBid(),
     ]
@@ -630,7 +654,7 @@ class ResponseToGerber(Rule):
 
 
 # Blackwood is done, just needs JumpOrHaveFit() and some testing.
-# class Blackwood(Rule):
+# class Blackwood(RuleDescription):
 #     category = categories.Gadget
 #     requires_planning = True
 #     shared_constraints = NO_CONSTRAINTS
@@ -654,9 +678,9 @@ class ResponseToGerber(Rule):
 #     ]
 
 
-# class ResponseToBlackwood(Rule):
+# class ResponseToBlackwood(RuleDescription):
 #     category = categories.Relay
-#     preconditions = Rule.preconditions + [
+#     preconditions = RuleDescription.preconditions + [
 #         LastBidHasAnnotation(positions.Partner, annotations.Blackwood),
 #         NotJumpFromPartnerLastBid(),
 #     ]
@@ -681,13 +705,13 @@ def _get_subclasses(base_class):
         subclasses.extend(_get_subclasses(subclass))
     return subclasses
 
-def _concrete_rule_classes():
-    return filter(lambda rule: not rule.__subclasses__(), _get_subclasses(Rule))
+def _concrete_rule_description_classes():
+    return filter(lambda cls: not cls.__subclasses__(), _get_subclasses(RuleDescription))
 
 
 class StandardAmericanYellowCard(object):
     # Rule ordering does not matter.  We could have python crawl the files to generate this list instead.
-    rules = [rule() for rule in _concrete_rule_classes()]
+    rules = [Rule(description_class()) for description_class in _concrete_rule_description_classes()]
     priority_ordering = PartialOrdering()
 
     priority_ordering.make_less_than(response_priorities, nt_response_priorities)

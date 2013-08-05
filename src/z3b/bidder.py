@@ -289,6 +289,7 @@ class Bidder(object):
 class RuleSelector(object):
     def __init__(self, system, history):
         self.system = system
+        assert system.rules
         self.history = history
 
     @property
