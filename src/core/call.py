@@ -3,12 +3,14 @@
 # found in the LICENSE file.
 
 from suit import *
+from third_party.memoized import memoized
 
 
 class Call(object):
     def __init__(self, name):
         self.name = name.upper()
         self.strain = None if self.name in ('P', 'X', 'XX') else strain_from_char(self.name[1])
+        self._level = int(self.name[0]) if self.is_contract() else None
         self._validate()
 
     def __str__(self):
@@ -28,6 +30,7 @@ class Call(object):
     # We may want to split this into different methods for different
     # input sources.
     @classmethod
+    @memoized
     def from_string(self, string):
         string = string.upper()
         string = string.replace("NT", "N")
@@ -45,9 +48,7 @@ class Call(object):
         return self.name == "P"
 
     def level(self):
-        if not self.is_contract():
-            return None
-        return int(self.name[0])
+        return self._level
 
     def suit(self):
         if not self.is_contract():
