@@ -75,6 +75,13 @@ The Knowledge Based Bidder version depends on Google App Engine:
 https://developers.google.com/appengine/
 
 
+Useful URLs
+-----------
+
+ - /unittests -- Shows you an html-colorized view of the current z3b_baseline.txt file
+ - /explore -- Lets you walk around in the Bidder's little brain (not very functional for the Z3B yet)
+
+
 Where To Start
 --------------
 
