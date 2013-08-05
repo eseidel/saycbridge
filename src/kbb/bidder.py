@@ -283,7 +283,7 @@ class KnowledgeBasedBidder(object):
         self.explorer = CallExplorer()
 
     def find_call_for(self, hand, history):
-        bid, rule, hand_knowledge = self.find_bid_and_rule_and_hand_knowledge_for(hand, history)
+        bid, rule, hand_knowledge = self.find_call_and_rule_and_hand_knowledge_for(hand, history)
         return bid
 
     def reasons_for_not_calling(self, call, hand, history):
@@ -292,7 +292,7 @@ class KnowledgeBasedBidder(object):
         # - Your bid was invalid (for N reasons) and there are other generators for that bid which would fit.
         pass
 
-    def find_bid_and_rule_and_hand_knowledge_for(self, hand, history):
+    def find_call_and_rule_and_hand_knowledge_for(self, hand, history):
         oracle = ConsistencyOracle(history, hand)
         # Generate all priority/bid/rule/knowledge tuples which are consistent
         # with the bid + history in question:
