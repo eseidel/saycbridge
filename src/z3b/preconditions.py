@@ -88,6 +88,16 @@ class RaiseOfPartnersLastSuit(Precondition):
         return call.strain == partner_last_call.strain and history.partner.min_length(partner_last_call.strain) >= 3
 
 
+class SuitLowerThanMyLastSuit(Precondition):
+    def fits(self, history, call):
+        if call.strain not in suit.SUITS:
+            return False
+        last_call = history.me.last_call
+        if last_call.strain not in suit.SUITS:
+            return False
+        return call.strain < last_call.strain
+
+
 class PartnerHasAtLeastLengthInSuit(Precondition):
     def __init__(self, length):
         self.length = length
