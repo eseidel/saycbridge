@@ -100,7 +100,7 @@ class History(object):
         return positions[(position.index - 1) % 4]
 
     def _history_after_last_call_for(self, position):
-        if position == positions.RHO:
+        if position.index == positions.RHO.index:
             return self
         if not self._previous_history:
             return None
