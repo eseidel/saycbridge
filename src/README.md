@@ -90,16 +90,14 @@ The Z3 Bidder
 -------------
 
 The Z3 Bidder (z3b) is our 3rd attempt at writing a bidder for SAYC and uses
-Microsoft Research's [Z3 theorem prover](http://z3.codeplex.com/) to describe it's Knowlege model.
+Microsoft Research's [Z3 theorem prover](http://z3.codeplex.com/) to describe it's Knowledge model.
 
 Unlike the KBB, the Z3B (due to Z3) is easily capable of representing OR constraints
 (e.g. a 1S overcall may be 8+ points AND 5+ spades OR a good 4-card suit.)
 
 Unlike the KBB, the Z3B's Rules are NOT globally ordered.  Global ordering in the
-KBB caused confusion where seamingly incomprable Bids would unexpectedly have an ordering.
-
-Instead the KBB uses a PartialOrdering (z3b/orderings.py) any two Rules which
-have not be explicitly ordered raise an Exception when compared.
+KBB caused confusion where seamingly incomprable Bids would unexpectedly have an ordering. Instead
+the KBB uses a PartialOrdering (z3b/orderings.py).
 
 Unlike the KBB, the Z3B does not consider all possible calls over a History.
 Instead, the Z3B asks each Rule for all Calls it knows how to make over a given History.
@@ -122,8 +120,8 @@ Z3 Bidder has 3 separate priority systems:
  2. Inter-Bid priorities ("priority" in the code) used for comparing possible bids
     "With 5-5 in the majors, do I open 1H or 1S?"
 
- 3. Tie-Breaking priorities ("needs_planning", mostly unimplemented).
-    These apply when you legitimately have multiple possible bids and are
+ 3. Tie-Breaking priorities ("requires_planning", mostly unimplemented).
+    These apply when you legitimately have multiple possible bids, and are
     the only priorities which are computed *with access to the hand*.  These will
     likely be used as part of eventual Slam bidding.
 
@@ -153,7 +151,7 @@ The Anatomy of a Rule
 Both the KBB and the Z3B use Rule objects to represent the idea of a Convention
 in a bidding system.  Stayman might be an example rule, as is OneNoTrumpOpening.
 
-The KBB and Z3 hold differnet information on their Rule objects, but both have at least:
+The KBB and Z3 hold different information on their Rule objects, but both have at least:
 
  - Preconditions -- Given the current Knowledge/History and a Call, can this Rule apply?
  - Constraints -- What affect on the Knowledge would making this Call have?
@@ -161,4 +159,5 @@ The KBB and Z3 hold differnet information on their Rule objects, but both have a
 
 For Z3, most of the Constraints are written directly in Z3's nice DSL (Domain Specific Language).
 
-Some of the Constraints are more complicated and implemented in terms of Constraint objects (src/z3b/constraints.py).
+Some of the Constraints are more complicated and implemented in terms of Constraint objects
+(src/z3b/constraints.py), which encapsulate complex Z3 expressions.
