@@ -147,7 +147,7 @@ class History(object):
         history = self._history_after_last_call_for(position)
         if not history:
             return []
-        return history.annotations
+        return history._annotations_for_last_call
 
     def last_call_for_position(self, position):
         history = self._history_after_last_call_for(position)
