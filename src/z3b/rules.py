@@ -413,9 +413,13 @@ class OpenerRebid(RuleDescription):
 
 
 opener_rebid_priorities = enum.Enum(
-    "NewSuit",
+    "NewSuitClubs",
+    "NewSuitDiamonds",
+    "NewSuitHearts",
+    "NewSuitSpades",
     "RebidOneNotrump",
 )
+
 
 class RebidOneNotrumpByOpener(OpenerRebid):
     preconditions = OpenerRebid.preconditions + [InvertedPrecondition(LastBidWas(positions.Partner, 'P'))]
@@ -425,8 +429,31 @@ class RebidOneNotrumpByOpener(OpenerRebid):
 
 class NewOneLevelMajorByOpener(OpenerRebid):
     preconditions = OpenerRebid.preconditions + [UnbidSuit()]
-    call_names = ["1H", "1S"]
-    priority = opener_rebid_priorities.NewSuit
+    constraints = {
+        '1H': (NO_CONSTRAINTS, opener_rebid_priorities.NewSuitHearts),
+        '1S': (NO_CONSTRAINTS, opener_rebid_priorities.NewSuitSpades),
+    }
+    shared_constraints = [MinLength(4)]
+
+
+class NewSuitByOpener(OpenerRebid):
+    preconditions = OpenerRebid.preconditions + [
+        # FIXME: MyLastBidWasOneOfASuit(),
+        SuitLowerThanMyLastSuit(),
+        NotJumpFromLastContract(),
+        UnbidSuit(),
+    ]
+    constraints = {
+        '2C': (NO_CONSTRAINTS, opener_rebid_priorities.NewSuitClubs),
+        '2D': (NO_CONSTRAINTS, opener_rebid_priorities.NewSuitDiamonds),
+        '2H': (NO_CONSTRAINTS, opener_rebid_priorities.NewSuitHearts),
+        # 2S would necessarily be a reverse, or a jump shift, and is not covered by this rule.
+
+        '3C': (MinimumCombinedPoints(25), opener_rebid_priorities.NewSuitClubs),
+        '3D': (MinimumCombinedPoints(25), opener_rebid_priorities.NewSuitDiamonds),
+        '3H': (MinimumCombinedPoints(25), opener_rebid_priorities.NewSuitHearts),
+        # 3S would necessarily be a reverse, or a jump shift, and is not covered by this rule.
+    }
     shared_constraints = [MinLength(4)]
 
 
