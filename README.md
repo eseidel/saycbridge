@@ -21,28 +21,30 @@ The typical development cycle:
     git commit
 
 
-Running SAYCBridge.com Locally
-------------------------------
-
-You can test the site (saycbridge.com) locally using:
-
-    make serve-kbb # WARNING: This uses the Knowledge Based Bidder, not the z3 bidder.
-
-
-Before the above will work, you probably need:
-Google App Engine SDK:
-https://developers.google.com/appengine/
-
-
 Running Z3-Based SAYCBridge.com Locally
 ---------------------------------------
 
-(DOES NOT WORK YET)
+Warning, the z3-based saycbridge.com is very experimental, and very broken.
+
+    make serve
+
+Before the above will work, you'll likely need to install a bunch of python dependencies:
 
 sudo easy_install webapp2
 sudo easy_install webob
 sudo easy_install jinja2
 sudo easy_install Werkzeug
+
+
+Running (the stable kbb based) SAYCBridge.com Locally
+-----------------------------------------------------
+
+    make serve-kbb
+
+
+Before the above will work, you probably need:
+Google App Engine SDK:
+https://developers.google.com/appengine/
 
 
 Setup
