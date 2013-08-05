@@ -277,7 +277,7 @@ class Bidder(object):
         self.system = rules.StandardAmericanYellowCard
 
     def find_call_for(self, hand, call_history):
-        return find_call_and_rule_for(hand, call_history)[0]
+        return self.find_call_and_rule_for(hand, call_history)[0]
 
     def find_call_and_rule_for(self, hand, call_history):
         history = Interpreter().create_history(call_history)
