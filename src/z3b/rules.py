@@ -634,8 +634,10 @@ class StolenSpadeStaymanResponse(StaymanResponse):
 
 
 overcall_priorities = enum.Enum(
-    # FIXME: This needs the prefer the longer suit pattern.
-    "DirectOvercall",
+    "DirectOvercallLongestMajor",
+    "DirectOvercallMajor",
+    "DirectOvercallLongestMinor",
+    "DirectOvercallMinor",
     "FourLevelPremptive",
     "ThreeLevelPremptive",
     "TwoLevelPremptive",
@@ -644,13 +646,39 @@ overcall_priorities = enum.Enum(
 
 class DirectOvercall(RuleDescription):
     preconditions = RuleDescription.preconditions + [LastBidHasAnnotation(positions.RHO, annotations.Opening)]
-    priority = overcall_priorities.DirectOvercall
 
 
-class OneLevelOvercall(DirectOvercall):
-    call_names = ['1D', '1H', '1S']
+class OneLevelClubOvercall(DirectOvercall):
+    call_name = '1C'
     shared_constraints = [MinLength(5), points >= 8]
+    conditional_priorities = [
+        (clubs > diamonds, overcall_priorities.DirectOvercallLongestMinor),
+    ]
+    priority = overcall_priorities.DirectOvercallMinor
 
+class OneLevelDiamondOvercall(DirectOvercall):
+    call_name = '1D'
+    shared_constraints = [MinLength(5), points >= 8]
+    conditional_priorities = [
+        (diamonds >= clubs, overcall_priorities.DirectOvercallLongestMinor),
+    ]
+    priority = overcall_priorities.DirectOvercallMinor
+
+class OneLevelHeartOvercall(DirectOvercall):
+    call_name = '1H'
+    shared_constraints = [MinLength(5), points >= 8]
+    conditional_priorities = [
+        (hearts > spades, overcall_priorities.DirectOvercallLongestMajor),
+    ]
+    priority = overcall_priorities.DirectOvercallMajor
+
+class OneLevelSpadeOvercall(DirectOvercall):
+    call_name = '1S'
+    shared_constraints = [MinLength(5), points >= 8]
+    conditional_priorities = [
+        (spades >= hearts, overcall_priorities.DirectOvercallLongestMajor),
+    ]
+    priority = overcall_priorities.DirectOvercallMajor
 
 preempt_priorities = enum.Enum(
     "FourLevelPremptive",
