@@ -49,9 +49,11 @@ class Rule(object):
     def sayc_page_for_bid(self, call):
         return None
 
-    def _fits_preconditions(self, history, call):
+    def _fits_preconditions(self, history, call, expected_call=None):
         for precondition in self.rule_description.preconditions:
             if not precondition.fits(history, call):
+                if call == expected_call and expected_call in self.rule_description.known_calls():
+                    print "WARNING: %s might be bid by %s but failed precondition: %s" % (expected_call, self, precondition)
                 return False
         return True
 
@@ -64,9 +66,9 @@ class Rule(object):
         # Otherwise we ask it about each legal call (which is slow).
         return history.legal_calls
 
-    def calls_over(self, history):
+    def calls_over(self, history, expected_call=None):
         for call in self._possible_calls_over(history):
-            if self._fits_preconditions(history, call):
+            if self._fits_preconditions(history, call, expected_call):
                 yield self.rule_description.category, call
 
     def meaning_of(self, history, call):
@@ -121,6 +123,7 @@ class RuleDescription(object):
             return self.constraints.keys()
         return []
 
+    @memoized
     def known_calls(self):
         return map(Call.from_string, self._known_call_names())
 

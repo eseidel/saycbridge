@@ -9,6 +9,7 @@ import find_src
 
 from core.callhistory import CallHistory
 from core.hand import Hand
+from core.call import Call
 from factory import BidderFactory
 
 
@@ -31,6 +32,14 @@ def _convert_shdc_to_cdhs(hand_string):
     return ".".join(reversed(shdc_ordered_suits))
 
 
+def _print_usage_and_exit():
+    print "USAGE: test-hand [EXPECTED_CALL] HAND [HISTORY]"
+    print " EXPECTED_CALL enables debug logging"
+    print " HAND is either C.D.H.S"
+    print " HISTORY is space separated"
+    print
+    sys.exit(1)
+
 if __name__ == '__main__':
     # Logging is a big hack.
     args = sys.argv[1:]
@@ -43,18 +52,21 @@ if __name__ == '__main__':
     bidder = BidderFactory.default_bidder()
 
     if not args:
-        print "USAGE: test-hand HAND [HISTORY]"
-        print " HAND is either C.D.H.S or S H D C"
-        print " HISTORY is space separated"
-        print
-        sys.exit(0)
+        _print_usage_and_exit()
 
-    hand_string = args[0]
-    if " " in hand_string:
-        hand_string = _convert_shdc_to_cdhs(hand_string)
+    first_arg = args.pop(0)
+    if '.' in first_arg:
+        expected_call_name = None
+        hand_string = first_arg
+    elif args:
+        expected_call_name = first_arg
+        hand_string = args.pop(0)
+    else:
+        _print_usage_and_exit()
 
-    history_string = args[1] if len(args) > 1 else ""
+    history_string = args.pop(0) if len(args) > 1 else ""
     hand = Hand.from_cdhs_string(hand_string)
     print hand.pretty_one_line()
     call_history = CallHistory.from_string(history_string)
-    print bidder.find_call_for(hand, call_history)
+    expected_call = Call.from_string(expected_call_name) if expected_call_name else None
+    print bidder.find_call_for(hand, call_history, expected_call)

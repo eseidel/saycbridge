@@ -311,15 +311,17 @@ class Bidder(object):
         # Assuming SAYC for all sides.
         self.system = rules.StandardAmericanYellowCard
 
-    def find_call_for(self, hand, call_history):
-        return self.find_call_and_rule_for(hand, call_history)[0]
+    def find_call_for(self, hand, call_history, expected_call=None):
+        return self.find_call_and_rule_for(hand, call_history, expected_call)[0]
 
-    def find_call_and_rule_for(self, hand, call_history):
+    def find_call_and_rule_for(self, hand, call_history, expected_call=None):
         with Interpreter().create_history(call_history) as history:
             # Select highest-intra-bid-priority (category) rules for all possible bids
-            rule_selector = RuleSelector(self.system, history)
+            rule_selector = RuleSelector(self.system, history, expected_call)
+
             # Compute inter-bid priorities (priority) for each using the hand.
-            maximal_calls = rule_selector.possible_calls_for_hand(hand)
+            maximal_calls = rule_selector.possible_calls_for_hand(hand, expected_call)
+
             # We don't currently support tie-breaking priorities, but we do have some bids that
             # we don't make without a planner
             maximal_calls = filter(
@@ -338,17 +340,26 @@ class Bidder(object):
 
 
 class RuleSelector(object):
-    def __init__(self, system, history):
+    def __init__(self, system, history, expected_call=None):
         self.system = system
         assert system.rules
         self.history = history
+        self.expected_call = expected_call
+        self._check_for_missing_rule()
+
+    def _check_for_missing_rule(self):
+        if not self.expected_call:
+            return
+        if self.rule_for_call(self.expected_call):
+            return
+        print "WARNING: No rule can make: %s" % self.expected_call
 
     @property
     @memoized
     def _call_to_rule(self):
         maximal = {}
         for rule in self.system.rules:
-            for category, call in rule.calls_over(self.history):
+            for category, call in rule.calls_over(self.history, self.expected_call):
                 if not self.history.call_history.is_legal_call(call):
                     continue
 
@@ -388,7 +399,7 @@ class RuleSelector(object):
             situations.append(z3.And(situational_exprs))
         return z3.Or(situations)
 
-    def possible_calls_for_hand(self, hand):
+    def possible_calls_for_hand(self, hand, expected_call):
         possible_calls = PossibleCalls(self.system.priority_ordering)
         solver = _solver_pool.solver_for_hand(hand)
         for call in self.history.legal_calls:
