@@ -27,12 +27,10 @@ class Rule(object):
     def __init__(self, rule_description):
         self.rule_description = rule_description
 
-    @property
-    def requires_planning(self):
+    def requires_planning(self, history):
         return self.rule_description.requires_planning
 
-    @property
-    def annotations(self):
+    def annotations(self, history):
         return self.rule_description.annotations
 
     # FIXME: This is not @property for compatibility with the KBB's Rule interface which
