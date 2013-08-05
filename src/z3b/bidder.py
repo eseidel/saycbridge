@@ -277,6 +277,9 @@ class Bidder(object):
         self.system = rules.StandardAmericanYellowCard
 
     def find_call_for(self, hand, call_history):
+        return find_call_and_rule_for(hand, call_history)[0]
+
+    def find_call_and_rule_for(self, hand, call_history):
         history = Interpreter().create_history(call_history)
         # Select highest-intra-bid-priority (category) rules for all possible bids
         rule_selector = RuleSelector(self.system, history)
@@ -284,20 +287,23 @@ class Bidder(object):
         maximal_calls = rule_selector.possible_calls_for_hand(hand)
         # We don't currently support tie-breaking priorities, but we do have some bids that
         # we don't make without a planner
-        maximal_calls = filter(lambda call: not rule_selector.rule_for_call(call).requires_planning, maximal_calls)
+        maximal_calls = filter(
+                lambda call: not rule_selector.rule_for_call(call).requires_planning(history), maximal_calls)
         if not maximal_calls:
             # If we failed to find a single maximal bid, this is an error.
-            return None
+            return None, None
         if len(maximal_calls) != 1:
             print "WARNING: Multiple bids match and have maximal tie-breaker priority"
-            return None
+            return None, None
         # print rule_selector.rule_for_call(maximal_calls[0])
-        return maximal_calls[0]
+        call = maximal_calls[0]
+        return call, rule_selector.rule_for_call(call)
 
 
 class RuleSelector(object):
     def __init__(self, system, history):
         self.system = system
+        assert system.rules
         self.history = history
 
     @property
@@ -348,7 +354,7 @@ class RuleSelector(object):
     def possible_calls_for_hand(self, hand):
         possible_calls = PossibleCalls(self.system.priority_ordering)
         solver = _solver_pool.solver_for_hand(hand)
-        for call in CallExplorer().possible_calls_over(self.history.call_history):
+        for call in self.history.legal_calls:
             rule = self.rule_for_call(call)
             if not rule:
                 continue
@@ -367,7 +373,6 @@ class Interpreter(object):
 
     def create_history(self, call_history):
         history = History()
-        viewer = call_history.position_to_call()
 
         for partial_history in call_history.ascending_partial_histories(step=1):
             selector = RuleSelector(self.system, history)
@@ -378,7 +383,7 @@ class Interpreter(object):
             constraints = model.NO_CONSTRAINTS
             annotations = []
             if rule:
-                annotations = rule.annotations
+                annotations = rule.annotations(history)
                 constraints = selector.constraints_for_call(call)
                 # FIXME: We should validate the new constraints before saving them in the knowledge.
             history = history.extend_with(call, annotations, constraints)

@@ -23,7 +23,7 @@ SCRIPTS = \
 	recap.js \
 
 all:
-	@echo "Run 'make baseline' to create baselines and 'make check' to diff the current results."
+	@echo "Run 'make check' to check against the current baseline and 'make accept' to set a new baseline from the last results."
 
 clean:
 	@find . -name "*.pyc" | xargs rm
