@@ -21,29 +21,30 @@ The typical development cycle:
     git commit
 
 
-Running Z3-Based SAYCBridge.com Locally
----------------------------------------
+Running SAYCBridge.com Locally
+------------------------------
 
-Warning, the z3-based saycbridge.com is very experimental, and very broken.
+You can run SAYCBridge in a local development server using
 
-    make serve
+    make serve # A very experimental version of the site using the z3 Bidder
 
-Before the above will work, you'll likely need to install a bunch of python dependencies:
+OR
 
-sudo easy_install webapp2
-sudo easy_install webob
-sudo easy_install jinja2
-sudo easy_install Werkzeug
+    make serve-kbb # The stable Knowledge Based Bidder
 
 
-Running (the stable kbb based) SAYCBridge.com Locally
------------------------------------------------------
+Both versions of the site depend on CoffeeScript:
 
-    make serve-kbb
+    sudo npm install -g coffee-script
 
+Which of course depends on Node.js
+http://nodejs.org/
 
-Before the above will work, you probably need:
-Google App Engine SDK:
+The z3 version additionally depends on:
+
+    sudo easy_install webapp2 webob jinja2 Werkzeug
+
+The Knowledge Based Bidder version depends on Google App Engine:
 https://developers.google.com/appengine/
 
 
