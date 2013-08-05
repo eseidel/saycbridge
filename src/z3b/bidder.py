@@ -194,13 +194,22 @@ class History(object):
             return history._solve_for_min_length(suit)
         return 0
 
+    def _lower_bound(self, predicate, lo, hi):
+        if lo == hi:
+            return hi
+        assert lo < hi
+        pos = int((lo + hi) / 2)
+        if predicate(pos):
+            return self._lower_bound(predicate, lo, pos)
+        return self._lower_bound(predicate, pos + 1, hi)
+
     @memoized
     def _solve_for_min_points(self):
         solver = self._solver
-        for points in range(0, 37):
-            if is_possible(solver, model.fake_points == points):
-                return points
-        return 0
+        predicate = lambda points: is_possible(solver, model.fake_points == points)
+        if predicate(0):
+            return 0
+        return self._lower_bound(predicate, 1, 37)
 
     def min_points_for_position(self, position):
         history = self._history_after_last_call_for(position)
