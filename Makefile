@@ -32,8 +32,7 @@ accept:
 	@mv $(src_dir)/z3b_actual.txt $(src_dir)/z3b_baseline.txt
 
 check: clean
-	@$(scripts_dir)/test-sayc > $(src_dir)/z3b_actual.txt ; true
-	@diff -U 7 $(src_dir)/z3b_baseline.txt $(src_dir)/z3b_actual.txt ; true
+	@$(scripts_dir)/test-sayc > $(src_dir)/z3b_actual.txt && diff -U 7 $(src_dir)/z3b_baseline.txt $(src_dir)/z3b_actual.txt ; true
 
 serve: clean
 	coffee --watch --compile $(appengine_scripts_dir)/*.coffee &
