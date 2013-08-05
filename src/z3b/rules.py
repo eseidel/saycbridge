@@ -408,6 +408,28 @@ class NewSuitAtTheTwoLevel(Response):
     shared_constraints = MinimumCombinedPoints(22)
 
 
+class OpenerRebid(RuleDescription):
+    preconditions = [LastBidHasAnnotation(positions.Me, annotations.Opening)]
+
+
+opener_rebid_priorities = enum.Enum(
+    "NewSuit",
+    "RebidOneNotrump",
+)
+
+class RebidOneNotrumpByOpener(OpenerRebid):
+    preconditions = OpenerRebid.preconditions + [InvertedPrecondition(LastBidWas(positions.Partner, 'P'))]
+    call_name = '1N'
+    priority = opener_rebid_priorities.RebidOneNotrump
+
+
+class NewOneLevelMajorByOpener(OpenerRebid):
+    preconditions = OpenerRebid.preconditions + [UnbidSuit()]
+    call_names = ["1H", "1S"]
+    priority = opener_rebid_priorities.NewSuit
+    shared_constraints = [MinLength(4)]
+
+
 nt_response_priorities = enum.Enum(
     "NoTrumpJumpRaise",
     "NoTrumpMinimumRaise",
