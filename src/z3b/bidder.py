@@ -91,6 +91,11 @@ class History(object):
             constraints=constraints,
         )
 
+    @property
+    @memoized
+    def legal_calls(self):
+        return set(CallExplorer().possible_calls_over(self.call_history))
+
     def _previous_position(self, position):
         return positions[(position.index - 1) % 4]
 
