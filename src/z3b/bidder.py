@@ -265,10 +265,9 @@ class Bidder(object):
         # Select highest-intra-bid-priority (category) rules for all possible bids
         rule_selector = RuleSelector(self.system, history)
         # Compute inter-bid priorities (priority) for each using the hand.
-        possible_calls = rule_selector.possible_calls_for_hand(hand)
-        # The resulting priorities are only partially ordered, so have to be walked in a tree.
-        maximal_calls = possible_calls.calls_of_maximal_priority()
-        # Currently we have no tie-breaking priorities (no planner), so we just select the first call we found.
+        maximal_calls = rule_selector.possible_calls_for_hand(hand)
+        # Currently we have no tie-breaking priorities (no planner), but we do have bids that we won't make
+        # because they require planning
         maximal_calls = filter(lambda call: not rule_selector.rule_for_call(call).requires_planning, maximal_calls)
         if not maximal_calls:
             # If we failed to find a single maximal bid, this is an error.
@@ -290,6 +289,9 @@ class RuleSelector(object):
         maximal = {}
         for rule in self.system.rules:
             for category, call in rule.calls_over(self.history):
+                if not self.history.call_history.is_legal_call(call):
+                    continue
+
                 current = maximal.get(call)
                 if not current:
                     maximal[call] = (category, [rule])
@@ -315,34 +317,28 @@ class RuleSelector(object):
 
     @memoized
     def constraints_for_call(self, call):
-        # Example:
-        # (z3.Or(clubs > diamonds, clubs == diamonds == 3) AND !(ROT AND hearts >= 5) AND !(ROT AND spades >= 5))
-        # OR
-        # (!z3.Or(clubs > diamonds, clubs == diamonds == 3) AND !(ROT AND diamonds >=3) AND !(ROT AND hearts >= 5) AND !(ROT AND spades >= 5))
-
         situations = []
         rule = self.rule_for_call(call)
         for priority, z3_meaning in rule.meaning_of(self.history, call):
             situational_exprs = [z3_meaning]
             for unmade_call, unmade_rule in self._call_to_rule.iteritems():
                 for unmade_priority, unmade_z3_meaning in unmade_rule.meaning_of(self.history, unmade_call):
-                    # FIXME: < means > for priority compares.
-                    if unmade_priority < priority:
+                    if self.system.priority_ordering.less_than(priority, unmade_priority):
                         situational_exprs.append(z3.Not(unmade_z3_meaning))
             situations.append(z3.And(situational_exprs))
         return z3.Or(situations)
 
     def possible_calls_for_hand(self, hand):
-        possible_calls = PossibleCalls(self.system.priority_ordering)
+        possible_calls = []
         solver = _solver_pool.solver_for_hand(hand)
         for call in CallExplorer().possible_calls_over(self.history.call_history):
             rule = self.rule_for_call(call)
             if not rule:
                 continue
-            priority = rule.priority_for_call_and_hand(solver, self.history, call, hand)
-            if not priority:
-                continue
-            possible_calls.add_call_with_priority(call, priority)
+
+            if is_possible(solver, self.constraints_for_call(call)):
+                possible_calls.append(call)
+
         return possible_calls
 
 
