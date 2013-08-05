@@ -80,16 +80,13 @@ FAIL: None (expected 2D) for J5.Q2.K874.QJ943 (hcp: 9 lp: 10 sp: 8), history: 1D
 Pass 18 of 37 hands
 
 test_game_forcing_rebid_by_opener:
-WARNING: Multiple calls match and have maximal priority: ['3S', '1N'] from rules: [Rule(SuitedToPlay()), Rule(RebidOneNotrumpByOpener())]
-FAIL: None (expected 4S) for KQ9.AJ98.A4.A987 (hcp: 18 lp: 18 sp: 19), history: 1D P 1S P
+FAIL: 1N (expected 4S) for KQ9.AJ98.A4.A987 (hcp: 18 lp: 18 sp: 19), history: 1D P 1S P
 FAIL: 1S (expected 2S) for K7.AK875.K4.AK87 (hcp: 20 lp: 21 sp: 22), history: 1D P 1H P
-WARNING: Multiple calls match and have maximal priority: ['2S', '4H'] from rules: [Rule(ForcedRebidOriginalSuitByOpener()), Rule(SuitedToPlay())]
-FAIL: None (expected 4H) for KQ.AJT.K87.A9876 (hcp: 17 lp: 18 sp: 16), history: 1S P 2H P
 FAIL: 1N (expected 1S) for KQ.AJT.K87.A9876 (hcp: 17 lp: 18 sp: 16), history:  (subtest of 1S P 2H P)
 FAIL: 2H (expected 4H) for K5.AJ9.AKJ984.A9 (hcp: 20 lp: 22 sp: 22), history: 1H P 1N P
 FAIL: 2C (expected 2N) for K765.AK87.KQ.A98 (hcp: 19 lp: 19 sp: 18), history: 1D P 1H P
 FAIL: 2D (expected 3N) for K4.AKQJ94.87.A96 (hcp: 17 lp: 19 sp: 19), history: 1D P 1H P
-Pass 5 of 12 hands
+Pass 6 of 12 hands
 
 test_game_forcing_resonse_to_one_of_a_major:
 FAIL: 3H (expected 2D) for 42.KJ653.KJ5.KJ7 (hcp: 12 lp: 13 sp: 13), history: 1H P
@@ -123,8 +120,7 @@ FAIL: 3H (expected 2N) for K98.A97.AQ765.A9 (hcp: 17 lp: 18 sp: 18), history: 1H
 FAIL: 1N (expected 1H) for K98.A97.AQ765.A9 (hcp: 17 lp: 18 sp: 18), history:  (subtest of 1H P 2H P)
 FAIL: 3H (expected 3D) for K9.A976.AQ765.A9 (hcp: 17 lp: 18 sp: 19), history: 1H P 2H P
 FAIL: 1N (expected 2H) for K7.AJ843.KQ74.A9 (hcp: 17 lp: 18 sp: 19), history: 1D P 1S P
-WARNING: Multiple calls match and have maximal priority: ['2S', '2C'] from rules: [Rule(SuitedToPlay()), Rule(NewSuitByOpener())]
-FAIL: None (expected 3S) for KQ87.AJT4.9.A987 (hcp: 14 lp: 14 sp: 17), history: 1D P 1S P
+FAIL: 2C (expected 3S) for KQ87.AJT4.9.A987 (hcp: 14 lp: 14 sp: 17), history: 1D P 1S P
 FAIL: None (expected 2N) for KQ8.AJT.A8.AT987 (hcp: 18 lp: 19 sp: 19), history: 1S P 1N P
 FAIL: 3S (expected 3C) for KJ86.K4.A8.KQ632 (hcp: 16 lp: 17 sp: 18), history: 1S P 2S P
 Pass 10 of 22 hands
@@ -214,8 +210,7 @@ FAIL: None (expected 2N) for KQ4.AQ8.KQ873.K2 (hcp: 19 lp: 20 sp: 20), history: 
 Pass 3 of 34 hands
 
 test_minimum_rebid_by_opener:
-WARNING: Multiple calls match and have maximal priority: ['1S', '2H'] from rules: [Rule(NewOneLevelMajorByOpener()), Rule(SuitedToPlay())]
-FAIL: None (expected 2H) for KQ8.AJ.9765.A987 (hcp: 14 lp: 14 sp: 14), history: 1C P 1H P
+FAIL: 1S (expected 2H) for KQ8.AJ.9765.A987 (hcp: 14 lp: 14 sp: 14), history: 1C P 1H P
 Pass 11 of 12 hands
 
 test_minimum_response_to_one_of_a_major:
@@ -268,7 +263,7 @@ FAIL: None (expected 1S) for 432.AT.T95.AKT87 (hcp: 11 lp: 12 sp: 12), history: 
 FAIL: None (expected P) for 432.AT.T95.AKT87 (hcp: 11 lp: 12 sp: 12), history: P (subtest of P P 1D P P)
 FAIL: None (expected 3N) for AK532.T63.86.AT9 (hcp: 11 lp: 12 sp: 12), history: P 1N P
 FAIL: 1N (expected 2S) for Q98.KQT2.75.AJ92 (hcp: 12 lp: 12 sp: 13), history: P P 1D P 1S P
-FAIL: 3S (expected P) for KJT7.764.32.KQT8 (hcp: 9 lp: 9 sp: 10), history: P P 1D P 1S P 2S P
+FAIL: None (expected P) for KJT7.764.32.KQT8 (hcp: 9 lp: 9 sp: 10), history: P P 1D P 1S P 2S P
 FAIL: None (expected P) for KJT7.764.32.KQT8 (hcp: 9 lp: 9 sp: 10), history:  (subtest of P P 1D P 1S P 2S P)
 FAIL: None (expected 3S) for Q76.Q92.7.AKQT64 (hcp: 13 lp: 15 sp: 16), history: P P 1D 1S 2C 2S 3C
 FAIL: None (expected 2S) for 54.AJ4.T8652.J97 (hcp: 6 lp: 7 sp: 7), history: P P 1D 1S 1N
@@ -334,11 +329,10 @@ FAIL: None (expected P) for K83.Q.K75432.QJ6 (hcp: 11 lp: 13 sp: 12), history: 1
 FAIL: None (expected 3H) for K83.Q.K75432.QJ6 (hcp: 11 lp: 13 sp: 12), history: 1D P 1H P 1S P (subtest of 1D P 1H P 1S P 3H P 3N P)
 FAIL: None (expected 6N) for KQ4.KJ.K84.KQ973 (hcp: 17 lp: 18 sp: 17), history: P 1N P 2C P 2S P 5N P
 FAIL: None (expected 6N) for QJT4.AQJ.765.AQJ (hcp: 17 lp: 17 sp: 17), history: 1N P 4N P
+FAIL: None (expected 4S) for AQ6.K643.65.KQ96 (hcp: 14 lp: 14 sp: 15), history: 1C 1D 1S P 2S P
 FAIL: None (expected P) for AJT8.J8.K52.KJ83 (hcp: 13 lp: 13 sp: 13), history: P 1C 1D 3C 3D
 FAIL: None (expected P) for A8763.432.K6.763 (hcp: 7 lp: 8 sp: 8), history: 1S 2S P 2N P 3D P
 FAIL: None (expected 2N) for A8763.432.K6.763 (hcp: 7 lp: 8 sp: 8), history: 1S 2S P (subtest of 1S 2S P 2N P 3D P)
-WARNING: Multiple calls match and have maximal priority: ['3D', '2S'] from rules: [Rule(SuitedToPlay()), Rule(ForcedRebidOriginalSuitByOpener())]
-FAIL: None (expected 3D) for 5.AJT9.Q85.AQ875 (hcp: 13 lp: 14 sp: 16), history: P P 1S P 2D P
 FAIL: None (expected P) for AT9.Q97652..AJ64 (hcp: 11 lp: 13 sp: 16), history: 1D P 1S P 2S P 4S P
 FAIL: 2D (expected 2S) for AT9.Q97652..AJ64 (hcp: 11 lp: 13 sp: 16), history: 1D P 1S P (subtest of 1D P 1S P 2S P 4S P)
 FAIL: None (expected P) for A742.QJ765.Q4.Q4 (hcp: 11 lp: 12 sp: 9), history: P 1D P 2C P 3C P 3N P
@@ -778,4 +772,4 @@ FAIL: 3S (expected 4S) for K74.9.J98.KJT742 (hcp: 8 lp: 10 sp: 11), history: 1N 
 FAIL: None (expected P) for Q87.J843.K65.Q93 (hcp: 8 lp: 8 sp: 8), history: 1N P
 Pass 1 of 3 hands
 
-Pass 408 (38%) of 1060 total hands
+Pass 409 (38%) of 1060 total hands
