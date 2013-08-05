@@ -38,21 +38,7 @@ class ExploreHandler(webapp2.RequestHandler):
             self._redirect_to_history(history)
             return
 
-        interpreter = InterpreterProxy()
-        possible_calls = []
-        history_for_next_to_bid = history.copy_with_history_until_after_last_call_from_position(history.position_to_call())
-        existing_knowledge, knowledge_builder = interpreter.knowledge_from_history(history)
-
-        for future in CallExplorer().possible_futures(history):
-            knowledge, consuming_rule = interpreter.knowledge_including_new_bid(knowledge_builder, future.last_call(), loose_constraints=True)
-            possible_calls.append([future.last_call(), consuming_rule, knowledge])
-
-        template_values = {
-            'call_history': history,
-            'possible_calls': possible_calls,
-            'knowledge_positions': existing_knowledge.absolute_positions(history.position_to_call()),
-        }
-        self.response.out.write(jinja_environment.get_template('bid_explorer.html').render(template_values))
+        self.response.out.write(jinja_environment.get_template('bid_explorer.html').render({}))
 
 
 class JSONExploreHandler(webapp2.RequestHandler):
