@@ -38,6 +38,9 @@ class Rule(object):
     def name(self):
         return self.rule_description.name
 
+    def __repr__(self):
+        return "Rule(%s)" % repr(self.rule_description)
+
     # FIXME: This exists for compatiblity with KBB's Rule interface and is used by bidder_handler.py
     def explanation_for_bid(self, call):
         return None
@@ -106,7 +109,7 @@ class RuleDescription(object):
         return self.__class__.__name__
 
     def __repr__(self):
-        return "%s()" % self.name()
+        return "%s()" % self.name
 
     def _known_call_names(self):
         if self.call_name:
