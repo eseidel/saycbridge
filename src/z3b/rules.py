@@ -425,6 +425,9 @@ opener_rebid_priorities = enum.Enum(
     "ForcedRebidOriginalSuit",
 )
 
+forced_rebid_priorities = enum.Enum(
+    "ForcedRebidOriginalSuit",
+)
 
 class OpenerRebid(RuleDescription):
     preconditions = [LastBidHasAnnotation(positions.Me, annotations.Opening)]
@@ -488,7 +491,7 @@ class ForcedRebidOriginalSuitByOpener(RebidOriginalSuitByOpener):
         (MinLength(6), opener_rebid_priorities.UnforcedRebidOriginalSuit),
     ]
     shared_constraints = [MinLength(5)]
-    priority = opener_rebid_priorities.ForcedRebidOriginalSuit
+    priority = forced_rebid_priorities.ForcedRebidOriginalSuit
 
 
 nt_response_priorities = enum.Enum(
@@ -636,7 +639,6 @@ class StolenSpadeStaymanResponse(StaymanResponse):
 overcall_priorities = enum.Enum(
     "DirectOvercallLongestMajor",
     "DirectOvercallMajor",
-    "DirectOvercallLongestMinor",
     "DirectOvercallMinor",
     "FourLevelPremptive",
     "ThreeLevelPremptive",
@@ -648,20 +650,9 @@ class DirectOvercall(RuleDescription):
     preconditions = RuleDescription.preconditions + [LastBidHasAnnotation(positions.RHO, annotations.Opening)]
 
 
-class OneLevelClubOvercall(DirectOvercall):
-    call_name = '1C'
-    shared_constraints = [MinLength(5), points >= 8]
-    conditional_priorities = [
-        (clubs > diamonds, overcall_priorities.DirectOvercallLongestMinor),
-    ]
-    priority = overcall_priorities.DirectOvercallMinor
-
 class OneLevelDiamondOvercall(DirectOvercall):
     call_name = '1D'
     shared_constraints = [MinLength(5), points >= 8]
-    conditional_priorities = [
-        (diamonds >= clubs, overcall_priorities.DirectOvercallLongestMinor),
-    ]
     priority = overcall_priorities.DirectOvercallMinor
 
 class OneLevelHeartOvercall(DirectOvercall):
@@ -840,3 +831,5 @@ class StandardAmericanYellowCard(object):
     priority_ordering.make_less_than(response_priorities, nt_response_priorities)
     priority_ordering.make_less_than(preempt_priorities, opening_priorities)
     priority_ordering.make_less_than(natural_priorities, response_priorities)
+    priority_ordering.make_less_than(natural_priorities, opener_rebid_priorities)
+    priority_ordering.make_less_than(forced_rebid_priorities, natural_priorities)
