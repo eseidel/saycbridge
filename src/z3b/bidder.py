@@ -197,9 +197,9 @@ class History(object):
     @memoized
     def _solve_for_min_points(self):
         solver = self._solver
-        for pts in range(0, 37):
-            if is_possible(solver, model.points == pts):
-                return pts
+        for points in range(0, 37):
+            if is_possible(solver, model.fake_points == points):
+                return points
         return 0
 
     def min_points_for_position(self, position):

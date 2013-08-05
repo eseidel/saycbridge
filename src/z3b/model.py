@@ -17,7 +17,7 @@ ace_of_diamonds, king_of_diamonds, queen_of_diamonds, jack_of_diamonds, ten_of_d
 ace_of_clubs, king_of_clubs, queen_of_clubs, jack_of_clubs, ten_of_clubs = z3.Ints(
     'ace_of_clubs king_of_clubs queen_of_clubs jack_of_clubs ten_of_clubs')
 
-high_card_points, points = z3.Ints('high_card_points points')
+high_card_points, points, fake_points = z3.Ints('high_card_points points fake_points')
 
 axioms = [
     spades + hearts + diamonds + clubs == 13,
@@ -27,6 +27,8 @@ axioms = [
     clubs >= 0,
     0 <= high_card_points <= 37,
     points == high_card_points,
+    high_card_points <= fake_points,
+    fake_points <= 37,
 
     0 <= ace_of_spades <= 1,
     0 <= king_of_spades <= 1,
@@ -67,6 +69,7 @@ min_hcp_for_open = 8
 def _expr_for_point_rule(count):
     return z3.And(
         high_card_points >= min_hcp_for_open,
+        fake_points >= 12,
         z3.Or(
             spades + hearts + high_card_points >= count,
             spades + diamonds + high_card_points >= count,
