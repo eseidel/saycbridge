@@ -473,6 +473,13 @@ class UnforcedRebidOriginalSuitByOpener(RebidOriginalSuitByOpener):
     priority = opener_rebid_priorities.RebidOriginalSuit
 
 
+class ForcedRebidOriginalSuitByOpener(RebidOriginalSuitByOpener):
+    preconditions = RebidOriginalSuitByOpener.preconditions + [ForcedToBid()]
+    call_names = ['2C', '2D', '2H', '2S']
+    shared_constraints = [MinLength(5)]
+    priority = opener_rebid_priorities.RebidOriginalSuit
+
+
 nt_response_priorities = enum.Enum(
     "NoTrumpJumpRaise",
     "NoTrumpMinimumRaise",
