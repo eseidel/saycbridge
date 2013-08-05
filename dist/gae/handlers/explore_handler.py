@@ -15,7 +15,7 @@ jinja_environment = jinja2.Environment(loader=jinja2.FileSystemLoader("templates
 from core.callhistory import CallHistory
 from core.callexplorer import CallExplorer
 
-from kbb.interpreter import BidInterpreter
+from proxy import InterpreterProxy
 
 import json
 
@@ -38,7 +38,7 @@ class ExploreHandler(webapp2.RequestHandler):
             self._redirect_to_history(history)
             return
 
-        interpreter = BidInterpreter()
+        interpreter = InterpreterProxy()
         possible_calls = []
         history_for_next_to_bid = history.copy_with_history_until_after_last_call_from_position(history.position_to_call())
         existing_knowledge, knowledge_builder = interpreter.knowledge_from_history(history)
@@ -68,7 +68,7 @@ class JSONExploreHandler(webapp2.RequestHandler):
         }
 
     def get(self):
-        interpreter = BidInterpreter()
+        interpreter = InterpreterProxy()
         calls_string = self.request.get('calls_string') or ''
         dealer_char = self.request.get('dealer') or ''
         vulnerability_string = self.request.get('vulnerability') or ''

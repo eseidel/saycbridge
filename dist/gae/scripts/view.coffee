@@ -708,6 +708,8 @@ class ConstraintsView extends HTMLDivElement
         # FIXME: This is a huge hack because we don't have a constraint object yet.
         # FIXME: Maybe this logic belongs on the server instead?
         constraintsString = @constraintsString
+        if not constraintsString
+            return
         replacements = [
             [/2o3/g, "at least two of the top three honors"],
             [/3o5/g, "at least three of the top five honors"],
@@ -724,7 +726,6 @@ class ConstraintsView extends HTMLDivElement
         ]
         for [needle, substitution] in replacements
             constraintsString = constraintsString.replace(needle, substitution)
-
         @appendChild StrainView.fragmentReplacingStrainChars(constraintsString)
 
     @fromConstraintsString: (constraintsString) ->

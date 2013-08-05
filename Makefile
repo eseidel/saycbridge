@@ -35,6 +35,10 @@ check: clean
 	@$(scripts_dir)/test-sayc > $(src_dir)/z3b_actual.txt ; true
 	@diff -U 7 $(src_dir)/z3b_baseline.txt $(src_dir)/z3b_actual.txt ; true
 
+serve: clean
+	coffee --watch --compile $(appengine_scripts_dir)/*.coffee &
+	# FIXME: Doesn't python just have a -C to change CWD before executing?
+	cd $(appengine_dir); python2.7 standalone_main.py
 
 # Support for the old Knowledge Based Bidder:
 
@@ -45,15 +49,12 @@ check-kbb: clean
 	@$(scripts_dir)/test-sayc -k > $(src_dir)/kbb_actual.txt ; true
 	@diff -U 7 $(src_dir)/kbb_baseline.txt $(src_dir)/kbb_actual.txt ; true
 
-compile:
-	coffee --compile $(appengine_scripts_dir)/*.coffee
-
-# FIXME: Currently there is no way to run the site with the z3 bidder.
-# AppEngine runs in a hermetic python environment which is incapable
-# of running z3.
 serve-kbb: clean
 	coffee --watch --compile $(appengine_scripts_dir)/*.coffee &
 	python2.7 `which dev_appserver.py` $(appengine_dir)
+
+compile:
+	coffee --compile $(appengine_scripts_dir)/*.coffee
 
 publish: compile
 	@appcfg.py --oauth2 update $(appengine_dir)

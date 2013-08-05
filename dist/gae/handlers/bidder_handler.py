@@ -17,7 +17,8 @@ from core.board import Board
 from core.deal import Deal
 from core.position import position_from_char
 from core.autobidder import Autobidder
-from kbb import KnowledgeBasedBidder
+
+from proxy import BidderProxy
 
 import json
 
@@ -57,7 +58,7 @@ class JSONAutobidHandler(webapp2.RequestHandler):
         return [self._json_tuple(bid, rule, hand_knowledge) for bid, rule, hand_knowledge in bids_and_rules_and_hand_knowledges]
 
     def get(self):
-        bidder = KnowledgeBasedBidder()
+        bidder = BidderProxy()
         autobidder = Autobidder(bidder)
         board = self._board_from_request()
         until_position_string = self.request.get('until_position')
