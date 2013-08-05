@@ -173,24 +173,32 @@ class History(object):
         return chain.from_iterable(self._walk_annotations())
 
     @memoized
+    def _solve_for_min_length(self, suit):
+        solver = self._solver
+        suit_expr = expr_for_suit(suit)
+        for length in range(0, 13):
+            if is_possible(solver, suit_expr == length):
+                return length
+        return 0
+
     def min_length_for_position(self, position, suit):
         history = self._history_after_last_call_for(position)
         if history:
-            solver = history._solver
-            suit_expr = expr_for_suit(suit)
-            for length in range(0, 13):
-                if is_possible(solver, suit_expr == length):
-                    return length
+            return history._solve_for_min_length(suit)
         return 0
 
     @memoized
+    def _solve_for_min_points(self):
+        solver = self._solver
+        for pts in range(0, 37):
+            if is_possible(solver, model.points == pts):
+                return pts
+        return 0
+
     def min_points_for_position(self, position):
         history = self._history_after_last_call_for(position)
         if history:
-            solver = history._solver
-            for pts in range(0, 37):
-                if is_possible(solver, model.points == pts):
-                    return pts
+            return history._solve_for_min_points()
         return 0
 
     @memoized
