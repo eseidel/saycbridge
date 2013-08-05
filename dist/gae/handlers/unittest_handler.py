@@ -28,7 +28,7 @@ class UnittestHandler(webapp2.RequestHandler):
         return method_name_to_line
 
     def _link_to_file(self, file_path, line_number=None):
-        base_url = "https://github.com/eseidel/saycbot/blob/master"
+        base_url = "https://github.com/eseidel/saycbridge/blob/master"
         url_to_file = "%s/%s" % (base_url, file_path)
         if line_number:
             url_to_file += "#L%s" % line_number
