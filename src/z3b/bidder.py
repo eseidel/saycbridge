@@ -299,6 +299,9 @@ class Bidder(object):
         self.system = rules.StandardAmericanYellowCard
 
     def find_call_for(self, hand, call_history):
+        return self.find_call_and_rule_for(hand, call_history)[0]
+
+    def find_call_and_rule_for(self, hand, call_history):
         with Interpreter().create_history(call_history) as history:
             # Select highest-intra-bid-priority (category) rules for all possible bids
             rule_selector = RuleSelector(self.system, history)
@@ -310,12 +313,13 @@ class Bidder(object):
                     lambda call: not rule_selector.rule_for_call(call).requires_planning(history), maximal_calls)
             if not maximal_calls:
                 # If we failed to find a single maximal bid, this is an error.
-                return None
+                return None, None
             if len(maximal_calls) != 1:
                 print "WARNING: Multiple bids match and have maximal tie-breaker priority"
-                return None
+                return None, None
             # print rule_selector.rule_for_call(maximal_calls[0])
-            return maximal_calls[0]
+            call = maximal_calls[0]
+            return call, rule_selector.rule_for_call(call)
 
 
 class RuleSelector(object):
