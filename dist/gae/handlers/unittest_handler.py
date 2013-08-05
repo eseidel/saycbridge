@@ -2,21 +2,18 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-from __future__ import with_statement
-
-import urllib
 import re
 
 import webapp2
 import jinja2
-import os
 
 jinja_environment = jinja2.Environment(loader=jinja2.FileSystemLoader("templates"))
 
 
 class UnittestHandler(webapp2.RequestHandler):
-    unittest_file_path = "core/sayc_unittest.py"
-    baseline_file_path = "z3b_baseline.txt"
+    # This is only ever used locally (not on appengine) so relative paths are OK.
+    unittest_file_path = "../../src/tests/test_sayc.py"
+    baseline_file_path = "../../src/z3b_baseline.txt"
 
     test_method_regexp = re.compile(r"\s+def (test_\w*)\(")
 
@@ -31,7 +28,7 @@ class UnittestHandler(webapp2.RequestHandler):
         return method_name_to_line
 
     def _link_to_file(self, file_path, line_number=None):
-        base_url = "https://github.com/eseidel/saycbot/blob/master"
+        base_url = "https://github.com/eseidel/saycbridge/blob/master"
         url_to_file = "%s/%s" % (base_url, file_path)
         if line_number:
             url_to_file += "#L%s" % line_number
