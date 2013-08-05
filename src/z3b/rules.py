@@ -67,9 +67,8 @@ class Rule(object):
         elif self.constraints:
             possible_calls = map(Call.from_string, self.constraints.keys())
         else:
-            # Otherwise we need to run all possible calls through the preconditions.
-            return CallExplorer().possible_calls_over(history.call_history)
-        return filter(history.call_history.is_legal_call, possible_calls)
+            return history.legal_calls
+        return history.legal_calls.intersection(possible_calls)
 
     def calls_over(self, history):
         for call in self._possible_calls_over(history):
