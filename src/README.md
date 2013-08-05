@@ -43,6 +43,8 @@ Knowledge Based Bidder
 Knowledge Based Bidder was our second attempt at writing a bidder for SAYC.
 The core insight of the Knowledge Based Bidder is that Bidding should work
 "backwards" that bidding is a secondary effect of *interpreting* bids.
+(Our first-attempt bidder had separate bidding/interpretation code and
+had never-ending trouble understanding its partner.)
 
 The KBB accumulates the state of the world, in a (limited, see below) Knowledge
 object, which contains constraints over the hands ( < 10hcp, 4+ spades, etc.)
@@ -161,3 +163,13 @@ For Z3, most of the Constraints are written directly in Z3's nice DSL (Domain Sp
 
 Some of the Constraints are more complicated and implemented in terms of Constraint objects
 (src/z3b/constraints.py), which encapsulate complex Z3 expressions.
+
+In the KBB Rules required careful attention in both Preconditions and Constraints to
+segregate themselves from other Rules.
+
+The Z3B uses the category system to easily segment the bidding space (avoiding the need
+for many preconditions), and automatically computes the negation of all lower-priority
+bids, meaning that *no Z3B Rule needs to include negatite-constraints*.  For example, in
+the KBB, a 1N might say 6-9 hcp, and indicate no-fit for partner.  In Z3B, the 1N response
+is simply a low-priority bid which says 6+ HCP, the rest of the constraints are automatically
+built when the bidder passes over higher-priority bids (like mentioning a new suit, etc).
