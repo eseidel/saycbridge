@@ -76,7 +76,6 @@ class Rule(object):
                 yield self.category, call
 
     def meaning_of(self, history, call):
-        # conditional_priorities only work for a single call_name
         exprs = self._constraint_exprs_for_call(history, call)
         for condition, priority in self.conditional_priorities:
             yield priority, z3.And(exprs + [condition])
@@ -84,21 +83,6 @@ class Rule(object):
         _, priority = self._per_call_constraints_and_priority(call)
         assert priority
         yield priority, z3.And(exprs)
-
-    @memoized
-    def priority_for_call_and_hand(self, solver, history, call, hand):
-        if not is_possible(solver, z3.And(self._constraint_exprs_for_call(history, call))):
-            return None
-
-        for condition, priority in self.conditional_priorities:
-            if is_possible(solver, condition):
-                return priority
-
-        _, priority = self._per_call_constraints_and_priority(call)
-        if priority:
-            return priority
-
-        return self.priority
 
     def _exprs_from_constraints(self, constraints, history, call):
         if not constraints:
