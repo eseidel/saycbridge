@@ -4,13 +4,13 @@
 
 import gib
 import kbb
-import z3b
+import z3b.bidder
 
 
 # FIXME: This probably should be a shared instance instead of
 # having global state on the class (for easier unit testing).
 class BidderFactory(object):
-    default_bidder_class = z3b.Bidder
+    default_bidder_class = z3b.bidder.Bidder
 
     @classmethod
     def default_bidder(cls):
@@ -21,7 +21,7 @@ class BidderFactory(object):
         bidders_by_flag = {
             '-k' : kbb.KnowledgeBasedBidder,
             '-g' : gib.Gib,
-            '-z' : z3b.Bidder,
+            '-z' : z3b.bidder.Bidder,
         }
         for flag in args:
             if flag in bidders_by_flag:

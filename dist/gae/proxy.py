@@ -14,6 +14,8 @@ use_z3 = not os.environ.get('SERVER_SOFTWARE')
 
 from kbb.bidder import KnowledgeBasedBidder
 from kbb.interpreter import BidInterpreter
+from kbb.handconstraints import HandConstraints
+from core.suit import SUITS
 
 
 class BidderProxy(object):
@@ -49,20 +51,27 @@ class InterpreterProxy(object):
 
     def _pretty_string_for_history(self, history, position):
         from z3b.model import positions
-        constraints = history.constraints_for_last_call(positions.RHO)
-        # FIXME: We should do some mix/max solving on the constraints
-        # to produce a nice "1-5hcp, 5+ Spades" string.
-        # Note, we may need to get a Solver from the pool.
+        # FIXME: This is a horrible hack where we map z3 knowledge into
+        # kbb HandConstraints just so we can use it's pretty_print function.
+        kbb_constraints = HandConstraints()
+        kbb_constraints.set_min_hcp(history.rho.min_points)
+        # FIXME: What about max_hcp?
+        for suit in SUITS:
+            kbb_constraints.set_min_length(suit, history.rho.min_length(suit))
+        # FIXME: What about max_length?
+        # FIXME: What about honor concentration?
+
+        kbb_oneline = kbb_constraints.pretty_one_line()
         annotations = history.annotations_for_last_call(positions.RHO)
-        return ", ".join(map(str, annotations))
+        return kbb_oneline + " " + ", ".join(map(str, annotations))
 
     def knowledge_string_and_rule_for_last_call(self, call_history):
         knowledge_string = None
         rule = None
         if use_z3:
             from z3b.model import positions
-            history = self.interpreter.create_history(call_history)
-            return self._pretty_string_for_history(history, positions.RHO), history.rule_for_last_call(positions.RHO)
+            with self.interpreter.create_history(call_history) as history:
+                return self._pretty_string_for_history(history, positions.RHO), history.rule_for_last_call(positions.RHO)
         else:
             existing_knowledge, knowledge_builder = self.interpreter.knowledge_from_history(call_history)
             matched_rules = knowledge_builder.matched_rules()
