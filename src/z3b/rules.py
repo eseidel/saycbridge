@@ -780,6 +780,7 @@ class OneLevelDiamondOvercall(DirectOvercall):
     shared_constraints = [MinLength(5), points >= 8]
     priority = overcall_priorities.DirectOvercallMinor
 
+
 class OneLevelHeartOvercall(DirectOvercall):
     call_name = '1H'
     shared_constraints = [MinLength(5), points >= 8]
@@ -788,6 +789,7 @@ class OneLevelHeartOvercall(DirectOvercall):
     ]
     priority = overcall_priorities.DirectOvercallMajor
 
+
 class OneLevelSpadeOvercall(DirectOvercall):
     call_name = '1S'
     shared_constraints = [MinLength(5), points >= 8]
@@ -795,6 +797,7 @@ class OneLevelSpadeOvercall(DirectOvercall):
         (spades >= hearts, overcall_priorities.DirectOvercallLongestMajor),
     ]
     priority = overcall_priorities.DirectOvercallMajor
+
 
 preempt_priorities = enum.Enum(
     "FourLevelPremptive",
