@@ -38,6 +38,16 @@ class MinLength(Constraint):
         return expr_for_suit(call.strain) >= self.min_length
 
 
+class TwoOfTheTopThree(Constraint):
+    def expr(self, history, call):
+        return (
+            model.two_of_the_top_three_clubs,
+            model.two_of_the_top_three_diamonds,
+            model.two_of_the_top_three_hearts,
+            model.two_of_the_top_three_spades,
+        )[call.strain]
+
+
 class ThreeOfTheTopFive(Constraint):
     def expr(self, history, call):
         return (

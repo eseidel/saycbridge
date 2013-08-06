@@ -86,6 +86,11 @@ rule_of_nineteen = _expr_for_point_rule(19)
 # FIXME: This rule probably needs to consider min_hcp_for_open
 rule_of_fifteen = spades + high_card_points >= 15
 
+two_of_the_top_three_spades = ace_of_spades + king_of_spades + queen_of_spades >= 2
+two_of_the_top_three_hearts = ace_of_hearts + king_of_hearts + queen_of_hearts >= 2
+two_of_the_top_three_diamonds = ace_of_diamonds + king_of_diamonds + queen_of_diamonds >= 2
+two_of_the_top_three_clubs = ace_of_clubs + king_of_clubs + queen_of_clubs >= 2
+
 three_of_the_top_five_spades = ace_of_spades + king_of_spades + queen_of_spades + jack_of_spades + ten_of_spades >= 3
 three_of_the_top_five_hearts = ace_of_hearts + king_of_hearts + queen_of_hearts + jack_of_hearts + ten_of_hearts >= 3
 three_of_the_top_five_diamonds = ace_of_diamonds + king_of_diamonds + queen_of_diamonds + jack_of_diamonds + ten_of_diamonds >= 3

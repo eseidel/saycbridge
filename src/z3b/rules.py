@@ -522,6 +522,7 @@ class ForcedRebidOriginalSuitByOpener(RebidOriginalSuitByOpener):
 
 
 nt_response_priorities = enum.Enum(
+    "LongMajorSlamInvitation",
     "NoTrumpJumpRaise",
     "NoTrumpMinimumRaise",
     "JacobyTransferToLongerMajor",
@@ -530,6 +531,7 @@ nt_response_priorities = enum.Enum(
     "JacobyTransferToHearts",
     "JacobyTransferToSpades",
     "Stayman",
+    "LongMinorGameInvitation",
     "TwoSpadesRelay",
 )
 
@@ -651,10 +653,8 @@ class PassStaymanResponse(StaymanResponse):
 
 class DiamondStaymanResponse(StaymanResponse):
     preconditions = StaymanResponse.preconditions + [NotJumpFromPartnerLastBid()]
-    constraints = {
-        '2D': NO_CONSTRAINTS,
-        '3D': NO_CONSTRAINTS,
-    }
+    call_names = ['2D', '3D']
+    shared_constraints = NO_CONSTRAINTS
     priority = stayman_response_priorities.DiamondStaymanResponse
     annotations = StaymanResponse.annotations + [annotations.Artificial]
 
@@ -670,6 +670,24 @@ class StolenSpadeStaymanResponse(StaymanResponse):
     constraints = { 'X': spades >= 4 }
     preconditions = StaymanResponse.preconditions + [LastBidWas(positions.RHO, '2S')]
     priority = stayman_response_priorities.SpadeStaymanResponse
+
+
+class OneNoTrumpResponse(NoTrumpResponse):
+    preconditions = NoTrumpResponse.preconditions + [LastBidWas(positions.Partner, '1N')]
+
+
+class LongMinorGameInvitation(OneNoTrumpResponse):
+    call_names = ['3C', '3D']
+    shared_constraints = [MinLength(6), TwoOfTheTopThree(), points >= 5]
+    # FIXME: Should use the longer suit preference pattern.
+    priority = nt_response_priorities.LongMinorGameInvitation
+
+
+class LongMajorSlamInvitation(OneNoTrumpResponse):
+    call_names = ['3H', '3S']
+    shared_constraints = [MinLength(6), TwoOfTheTopThree(), points >= 14]
+    # FIXME: Should use the longer suit preference pattern.
+    priority = nt_response_priorities.LongMajorSlamInvitation
 
 
 overcall_priorities = enum.Enum(

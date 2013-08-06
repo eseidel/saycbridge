@@ -646,16 +646,14 @@ FAIL: None (expected P) for K95.AJ765.Q76.J8 (hcp: 11 lp: 12 sp: 11), history:
 Pass 13 of 15 hands
 
 test_slam_invitations_over_one_nt:
-FAIL: 2H (expected 3S) for K7.J85.A2.KQJ743 (hcp: 14 lp: 16 sp: 16), history: 1N P
-FAIL: 2D (expected 3H) for KQ9.5.KQT652.AT8 (hcp: 14 lp: 16 sp: 17), history: 1N P
 FAIL: 3N (expected 3C) for AK8743.K2.K52.J8 (hcp: 14 lp: 16 sp: 15), history: 1N P 2C P 2H P
-FAIL: 3N (expected 2C) for AK8743.K2.K52.J8 (hcp: 14 lp: 16 sp: 15), history: 1N P (subtest of 1N P 2C P 2H P)
+FAIL: 3C (expected 2C) for AK8743.K2.K52.J8 (hcp: 14 lp: 16 sp: 15), history: 1N P (subtest of 1N P 2C P 2H P)
 FAIL: 3N (expected 3D) for A3.KJT976.KQ2.76 (hcp: 13 lp: 15 sp: 15), history: 1N P 2C P 2H P
 FAIL: 2S (expected 2C) for A3.KJT976.KQ2.76 (hcp: 13 lp: 15 sp: 15), history: 1N P (subtest of 1N P 2C P 2H P)
 FAIL: 7N (expected P) for AJ4.KQ8.K9873.Q2 (hcp: 15 lp: 16 sp: 14), history: 1N P 4N P
 FAIL: 7N (expected 5N) for AJ4.KQ8.K9873.K2 (hcp: 16 lp: 17 sp: 17), history: 1N P 4N P
 FAIL: 7N (expected 6N) for AJ4.KQ8.K9873.A2 (hcp: 17 lp: 18 sp: 18), history: 1N P 4N P
-Pass 18 of 27 hands
+Pass 20 of 27 hands
 
 test_slam_zone_response_to_one_of_a_minor:
 FAIL: 1S (expected 2S) for AJ3.K76.A8.AKJ75 (hcp: 20 lp: 21 sp: 21), history: 1D P
@@ -719,14 +717,12 @@ FAIL: None (expected P) for AKT75.K75.T8.742 (hcp: 10 lp: 11 sp: 11), history: P
 Pass 0 of 5 hands
 
 test_three_level_calls_over_one_nt:
-FAIL: None (expected 3C) for AQT942.984.75.43 (hcp: 6 lp: 8 sp: 8), history: 1N P
-FAIL: 2S (expected 3D) for 8.KQ98752.86.542 (hcp: 5 lp: 8 sp: 9), history: 1N P
-FAIL: 2S (expected 3N) for 8.AK98752.86.542 (hcp: 7 lp: 10 sp: 11), history: 1N P
-Pass 0 of 3 hands
+FAIL: 3D (expected 3N) for 8.AK98752.86.542 (hcp: 7 lp: 10 sp: 11), history: 1N P
+Pass 2 of 3 hands
 
 test_weak_game_jump_over_one_nt:
 FAIL: 3S (expected 4S) for K74.9.J98.KJT742 (hcp: 8 lp: 10 sp: 11), history: 1N P 2H P 2S P
 FAIL: 2N (expected P) for Q87.J843.K65.Q93 (hcp: 8 lp: 8 sp: 8), history: 1N P
 Pass 1 of 3 hands
 
-Pass 452 (42%) of 1060 total hands
+Pass 456 (43%) of 1060 total hands
