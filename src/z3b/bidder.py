@@ -395,7 +395,8 @@ class RuleSelector(object):
             category, rules = best
             if len(rules) > 1:
                 print "WARNING: Multiple rules have maximal category: %s, %s" % (category, rules)
-            result[call] = rules[0]
+            else:
+                result[call] = rules[0]
         return result
 
     def rule_for_call(self, call):
