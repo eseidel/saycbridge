@@ -136,15 +136,15 @@ class RuleDescription(object):
     # FIXME: Should we split this into two methods? on for priority and one for constraints?
     def per_call_constraints_and_priority(self, call):
         constraints_tuple = self.constraints.get(call.name)
-        if not constraints_tuple:
-            return None, self.priority
-
-        try:
-            if isinstance(list(constraints_tuple)[-1], enum.EnumValue):
-                assert len(constraints_tuple) == 2
-                return constraints_tuple
-        except TypeError:
-            return constraints_tuple, self.priority
+        if constraints_tuple:
+            try:
+                if isinstance(list(constraints_tuple)[-1], enum.EnumValue):
+                    assert len(constraints_tuple) == 2
+                    return constraints_tuple                
+            except TypeError:
+                pass
+        assert self.priority, "" + self.name + " is missing priority"
+        return constraints_tuple, self.priority
 
     def exprs_from_constraints(self, constraints, history, call):
         if not constraints:
@@ -173,21 +173,33 @@ relay_priorities = enum.Enum(
 
 
 natural_priorities = enum.Enum(
+    "SevenLevelNaturalNT",
     "SevenLevelNaturalMajor",
     "SevenLevelNaturalMinor",
+
+    "SixLevelNaturalNT",
     "SixLevelNaturalMajor",
     "SixLevelNaturalMinor",
 
     "FourLevelNaturalMajor",
+    "ThreeLevelNaturalNT", # FIXME: Where does 3N go?
     "FiveLevelNaturalMinor",
 
+    "FourLevelNaturalNT", # Should 4N be higher priority than 5N?
+    "FiveLevelNaturalNT",
+
     "FiveLevelNaturalMajor",
+
     "FourLevelNaturalMinor",
 
     "ThreeLevelNaturalMajor",
     "ThreeLevelNaturalMinor",
+
     "TwoLevelNaturalMajor",
     "TwoLevelNaturalMinor",
+    "TwoLevelNaturalNT",
+
+    "OneLevelNaturalNT",
 )
 
 
@@ -232,6 +244,18 @@ class SuitedToPlay(Natural):
         '7S': (MinimumCombinedPoints(37), natural_priorities.SevenLevelNaturalMajor),
     }
     shared_constraints = [MinimumCombinedLength(8)]
+
+
+class NotrumpToPlay(Natural):
+    constraints = {
+        '1N': [MinimumCombinedPoints(19), natural_priorities.OneLevelNaturalNT],
+        '2N': [MinimumCombinedPoints(22), natural_priorities.TwoLevelNaturalNT],
+        '3N': [MinimumCombinedPoints(25), natural_priorities.ThreeLevelNaturalNT],
+        '4N': [MinimumCombinedPoints(28), natural_priorities.FourLevelNaturalNT],
+        '5N': [MinimumCombinedPoints(31), natural_priorities.FiveLevelNaturalNT],
+        '6N': [MinimumCombinedPoints(34), natural_priorities.SixLevelNaturalNT],
+        '7N': [MinimumCombinedPoints(37), natural_priorities.SevenLevelNaturalNT],
+    }
 
 
 opening_priorities = enum.Enum(
@@ -844,4 +868,6 @@ class StandardAmericanYellowCard(object):
     priority_ordering.make_less_than(preempt_priorities, opening_priorities)
     priority_ordering.make_less_than(natural_priorities, response_priorities)
     priority_ordering.make_less_than(natural_priorities, opener_rebid_priorities)
+    priority_ordering.make_less_than(natural_priorities, nt_response_priorities)
+    priority_ordering.make_less_than(natural_priorities, stayman_response_priorities)
     priority_ordering.make_less_than(forced_rebid_priorities, natural_priorities)
