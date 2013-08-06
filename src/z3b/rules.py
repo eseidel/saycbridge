@@ -340,11 +340,8 @@ class StrongTwoClubs(Opening):
 
 
 response_priorities = enum.Enum(
-<<<<<<< HEAD
     "Jacoby2NTRaise",
-=======
     "JumpShiftResponseToOpen",
->>>>>>> upstream/master
     "MajorJumpToGame",
     "MajorLimitRaise",
     "MajorMinimumRaise",
@@ -359,6 +356,7 @@ response_priorities = enum.Enum(
     "TwoClubNewSuitResponse",
     "TwoDiamondNewSuitResponse",
     "MinorLimitRaise",
+    "TwoNotrumpLimitResponse",
     "MinorMinimumRaise",
     "OneNotrumpResponse",
 )
@@ -438,6 +436,13 @@ class MinorLimitRaise(RaiseResponse):
     call_names = ['3C', '3D']
     shared_constraints = [MinimumCombinedLength(8), MinimumCombinedPoints(22)]
     priority = response_priorities.MinorLimitRaise
+
+
+class TwoNotrumpLimitResponse(ResponseToOneLevelSuitedOpen):
+    preconditions = ResponseToOneLevelSuitedOpen.preconditions + [LastBidHasStrain(positions.Partner, [suit.CLUBS, suit.DIAMONDS])]
+    call_name = '2N'
+    shared_constraints = [balanced, MinimumCombinedPoints(22)]
+    priority = response_priorities.TwoNotrumpLimitResponse
 
 
 class Jacoby2NTRaise(Response):
@@ -571,7 +576,6 @@ class NewSuitByOpener(RebidAfterOneLevelOpen):
     shared_constraints = [MinLength(4)]
 
 
-<<<<<<< HEAD
 class SupportPartnerSuit(OpenerRebid):
     preconditions = OpenerRebid.preconditions + [
         InvertedPrecondition(RebidSameSuit()),
@@ -606,12 +610,8 @@ class MinimumSupportPartnerMinorSuit(SupportPartnerSuit):
     shared_constraints = [MinimumCombinedLength(8)]
 
 
-class RebidOriginalSuitByOpener(OpenerRebid):
-    preconditions = OpenerRebid.preconditions + [
-=======
 class RebidOriginalSuitByOpener(RebidAfterOneLevelOpen):
     preconditions = RebidAfterOneLevelOpen.preconditions + [
->>>>>>> upstream/master
         LastBidHasLevel(positions.Me, 1),
         RebidSameSuit(),
         NotJumpFromLastContract(),
