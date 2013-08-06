@@ -102,7 +102,9 @@ class RuleDescription(object):
     priority = None
 
     def __init__(self):
-        assert self.priority or self.constraints, "" + self.name() + " is missing priority"
+        assert self.priority or self.constraints, "" + self.name + " is missing priority"
+        # Rules have to apply some constraints to the hand.
+        assert self.constraints or self.shared_constraints, "" + self.name + " is missing constraints"
         # conditional_priorities doesn't work with self.constraints
         assert not self.conditional_priorities or not self.constraints
         assert not self.conditional_priorities or self.call_name or self.call_names
@@ -437,6 +439,7 @@ class RebidOneNotrumpByOpener(OpenerRebid):
     preconditions = OpenerRebid.preconditions + [InvertedPrecondition(LastBidWas(positions.Partner, 'P'))]
     call_name = '1N'
     priority = opener_rebid_priorities.RebidOneNotrump
+    shared_constraints = NO_CONSTRAINTS
 
 
 class NewOneLevelMajorByOpener(OpenerRebid):
@@ -503,7 +506,7 @@ nt_response_priorities = enum.Enum(
     "JacobyTransferToHearts",
     "JacobyTransferToSpades",
     "Stayman",
-    "ClubBust",
+    "TwoSpadesRelay",
 )
 
 
@@ -539,11 +542,11 @@ class StolenThreeClubStayman(BasicStayman):
     constraints = { 'X': MinimumCombinedPoints(25) }
 
 
-class JacobyTransfer(NoTrumpResponse):
+class NoTrumpTransferResponse(NoTrumpResponse):
     annotations = NoTrumpResponse.annotations + [annotations.Artificial, annotations.Transfer]
 
 
-class JacobyTransferToHearts(JacobyTransfer):
+class JacobyTransferToHearts(NoTrumpTransferResponse):
     call_name = '2D'
     shared_constraints = hearts >= 5
     conditional_priorities = [
@@ -553,7 +556,7 @@ class JacobyTransferToHearts(JacobyTransfer):
     priority = nt_response_priorities.JacobyTransferToHearts
 
 
-class JacobyTransferToSpades(JacobyTransfer):
+class JacobyTransferToSpades(NoTrumpTransferResponse):
     call_name = '2H'
     shared_constraints = spades >= 5
     conditional_priorities = [
@@ -561,6 +564,13 @@ class JacobyTransferToSpades(JacobyTransfer):
         (z3.And(hearts == spades, points >= 10), nt_response_priorities.JacobyTransferToSpadesWithGameForcingValues),
     ]
     priority = nt_response_priorities.JacobyTransferToSpades
+
+
+class TwoSpadesRelay(NoTrumpTransferResponse):
+    constraints = {
+        '2S': diamonds >= 6 or clubs >= 6,
+    }
+    priority = nt_response_priorities.TwoSpadesRelay
 
 
 class AcceptTransferToHearts(RuleDescription):
@@ -571,6 +581,7 @@ class AcceptTransferToHearts(RuleDescription):
         Strain(suit.HEARTS),
         NotJumpFromPartnerLastBid(),
     ]
+    shared_constraints = NO_CONSTRAINTS
     priority = relay_priorities.Relay
 
 
@@ -582,6 +593,7 @@ class AcceptTransferToSpades(RuleDescription):
         Strain(suit.SPADES),
         NotJumpFromPartnerLastBid(),
     ]
+    shared_constraints = NO_CONSTRAINTS
     priority = relay_priorities.Relay
 
 
