@@ -204,6 +204,7 @@ natural_priorities = enum.Enum(
 
 
 class Natural(RuleDescription):
+    # FIXME: This should have a SomeoneOpened() precondition.
     category = categories.Natural
 
 
@@ -339,6 +340,7 @@ class StrongTwoClubs(Opening):
 
 
 response_priorities = enum.Enum(
+    "JumpShiftResponseToOpen",
     "MajorJumpToGame",
     "MajorLimitRaise",
     "MajorMinimumRaise",
@@ -439,6 +441,29 @@ class NewSuitAtTheTwoLevel(Response):
         '2S' : (spades >= 5, response_priorities.TwoSpadeNewSuitResponse),
     }
     shared_constraints = MinimumCombinedPoints(22)
+
+
+class ResponseToOneLevelSuitedOpen(Response):
+    preconditions = Response.preconditions + [
+        LastBidHasLevel(positions.Partner, 1),
+        InvertedPrecondition(LastBidHasStrain(positions.Partner, suit.NOTRUMP))
+    ]
+
+
+class JumpShift(object):
+    preconditions = [UnbidSuit(), JumpFromLastContract(exact_size=1)]
+
+
+class JumpShiftResponseToOpen(ResponseToOneLevelSuitedOpen):
+    preconditions = ResponseToOneLevelSuitedOpen.preconditions + JumpShift.preconditions
+    # Jumpshifts must be below game and are off in competition so
+    # 1S P 3H is the highest available response jumpshift.
+    call_names = ['2D', '2H', '2S', '3C', '3D', '3H']
+    # FIXME: Shouldn't this be MinHighCardPoints?
+    shared_constraints = [points >= 19, MinLength(5)]
+    priority = response_priorities.JumpShiftResponseToOpen
+
+
 
 
 opener_rebid_priorities = enum.Enum(
