@@ -313,6 +313,7 @@ class StrongTwoClubs(Opening):
 
 
 response_priorities = enum.Enum(
+    "Jacoby2NTRaise",
     "MajorJumpToGame",
     "MajorLimitRaise",
     "MajorMinimumRaise",
@@ -401,6 +402,12 @@ class MinorLimitRaise(RaiseResponse):
     priority = response_priorities.MinorLimitRaise
 
 
+class Jacoby2NTRaise(Response):
+    call_name = '2N'
+    preconditions = Response.preconditions + [LastBidHasStrain(positions.Partner, [suit.HEARTS, suit.SPADES]), LastBidHasLevel(positions.Partner, 1)]
+    shared_constraints = [MinLengthPartnerLastSuit(4), points >= 13]
+    priority = response_priorities.Jacoby2NTRaise
+
 # We should bid longer suits when possible, up the line for 4 cards.
 # we don't currently bid 2D over 2C when we have longer diamonds.
 
@@ -416,6 +423,8 @@ class NewSuitAtTheTwoLevel(Response):
 
 
 opener_rebid_priorities = enum.Enum(
+    "SupportMajorLimit",
+    "SupportMajorMin",
     "NewSuitClubs",
     "NewSuitDiamonds",
     "NewSuitHearts",
@@ -467,6 +476,23 @@ class NewSuitByOpener(OpenerRebid):
         # 3S would necessarily be a reverse, or a jump shift, and is not covered by this rule.
     }
     shared_constraints = [MinLength(4)]
+
+
+class SupportPartnerSuit(OpenerRebid):
+    preconditions = OpenerRebid.preconditions + [
+        NotJumpFromLastContract(),
+        InvertedPrecondition(RebidSameSuit()),
+        RaiseOfPartnersLastSuit(),
+    ]
+
+
+class MinimumSupportPartnerMajorSuit(SupportPartnerSuit):
+    preconditions = SupportPartnerSuit.preconditions
+    constraints = {
+        '2H': (NO_CONSTRAINTS, opener_rebid_priorities.SupportMajorMin),
+        '2S': (NO_CONSTRAINTS, opener_rebid_priorities.SupportMajorMin),
+    }
+    shared_constraints = [MinimumCombinedLength(8)]
 
 
 class RebidOriginalSuitByOpener(OpenerRebid):
@@ -595,6 +621,7 @@ stayman_response_priorities = enum.Enum(
 
 class StaymanResponse(RuleDescription):
     preconditions = RuleDescription.preconditions + [LastBidHasAnnotation(positions.Partner, annotations.Stayman)]
+    category = categories.NoTrumpSystem
 
 
 class NaturalStaymanResponse(StaymanResponse):

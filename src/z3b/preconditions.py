@@ -13,6 +13,7 @@ annotations = enum.Enum(
     "Stayman",
     "Gerber",
     "Transfer",
+    "Jacoby2NT",
 )
 
 
@@ -94,7 +95,10 @@ class LastBidHasStrain(Precondition):
 
     def fits(self, history, call):
         last_call = history.view_for(self.position).last_call
-        return last_call and last_call.strain == self.strain
+        if isinstance(self.strain, list):
+            return last_call and last_call.strain in self.strain
+        else:
+            return last_call and last_call.strain == self.strain
 
 
 class LastBidHasLevel(Precondition):

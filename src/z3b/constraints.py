@@ -4,11 +4,29 @@
 
 from z3b.model import expr_for_suit
 import z3b.model as model
+import z3
 
 
 class Constraint(object):
     def expr(self, history, call):
         pass
+
+
+class ConstraintOr(Constraint):
+    def __init__(self, *constraints):
+        self.constraints = constraints
+
+    def expr(self, history, call):
+        return z3.Or([constraint.expr(history, call) for constraint in self.constraints])
+
+
+class MinLengthPartnerLastSuit(Constraint):
+    def __init__(self, min_length):
+        self.min_length = min_length
+
+    def expr(self, history, call):
+        suit = history.last_call_for_position(model.positions.Partner).strain
+        return expr_for_suit(suit) >= self.min_length
 
 
 class MinimumCombinedLength(Constraint):

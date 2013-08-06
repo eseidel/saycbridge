@@ -64,7 +64,7 @@ if __name__ == '__main__':
     else:
         _print_usage_and_exit()
 
-    history_string = args.pop(0) if len(args) > 1 else ""
+    history_string = args.pop(0) if len(args) >= 1 else ""
     hand = Hand.from_cdhs_string(hand_string)
     print hand.pretty_one_line()
     call_history = CallHistory.from_string(history_string)
