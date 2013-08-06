@@ -592,6 +592,61 @@ class JumpShiftByOpener(RebidAfterOneLevelOpen):
     priority = opener_rebid_priorities.JumpShiftByOpener
 
 
+two_clubs_opener_rebid_priorities = enum.Enum(
+    "SuitedJumpRebid",
+    "SuitedRebid",
+)
+
+
+class OpenerRebidAfterStrongTwoClubs(OpenerRebid):
+    preconditions = OpenerRebid.preconditions + [LastBidWas(positions.Me, '2C')]
+
+
+class OpenerSuitedRebidAfterStrongTwoClubs(OpenerRebidAfterStrongTwoClubs):
+    preconditions = OpenerRebidAfterStrongTwoClubs.preconditions + [UnbidSuit(), NotJumpFromLastContract()]
+    # This maxes out at 4C -> 2C P 3D P 4C
+    # If the opponents are competing we're just gonna double them anyway.
+    call_names = ['2H', '2S', '3C', '3D', '3H', '3S', '4C']
+    # FIXME: This should either have NoMajorFit(), or have priorities separated
+    # so that we prefer to support our partner's major before bidding our own new minor.
+    shared_constraints = [MinLength(5)]
+    priority = two_clubs_opener_rebid_priorities.SuitedRebid
+
+
+class OpenerSuitedJumpRebidAfterStrongTwoClubs(OpenerRebidAfterStrongTwoClubs):
+    preconditions = OpenerRebidAfterStrongTwoClubs.preconditions + [UnbidSuit(), JumpFromLastContract(exact_size=1)]
+    # This maxes out at 4C -> 2C P 3D P 5C, but I'm not sure we need to cover that case?
+    # If we have self-supporting suit why jump all the way to 5C?  Why not Blackwood in preparation for slam?
+    call_names = ['3H', '3S', '4C', '4D', '4H', '4S', '5C']
+    shared_constraints = [MinLength(7), TwoOfTheTopThree()]
+    priority = two_clubs_opener_rebid_priorities.SuitedJumpRebid
+
+
+# FIXME: We should add an OpenerRebid of 3N over 2C P 2N P to show a minimum 22-24 HCP
+# instead of jumping to 5N which just wastes bidding space.
+# This is not covered in the book or the SAYC pdf.
+
+
+# class ResponderRebid(RuleDescription):
+#     preconditions = RuleDescription.preconditions + [
+#         # FIXME: Specifically these only apply when 2 bids ago partner opened.
+#         Opened(positions.Partner),
+#         HaveBid(),
+#         IsSuitedProtocol()
+#     ]
+
+
+# class SecondNegative(ResponderRebid):
+#     preconditions = ResponderRebid.preconditions + [
+#         LastBidWas(positions.Me, '2D'),
+#         InvertedPrecondition(ForcedToBid()), # Does not apply over 2C,2D,2N
+#     ]
+#     call_name = '3C'
+#     shared_constraints = NO_CONSTRAINTS
+#     annotations = [annotations.Artificial]
+
+
+
 nt_response_priorities = enum.Enum(
     "LongMajorSlamInvitation",
     "NoTrumpJumpRaise",
@@ -964,3 +1019,4 @@ class StandardAmericanYellowCard(object):
     priority_ordering.make_less_than(natural_priorities, nt_response_priorities)
     priority_ordering.make_less_than(natural_priorities, stayman_response_priorities)
     priority_ordering.make_less_than(forced_rebid_priorities, natural_priorities)
+    priority_ordering.make_less_than(natural_priorities, two_clubs_opener_rebid_priorities)
