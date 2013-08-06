@@ -423,12 +423,14 @@ class NewSuitAtTheTwoLevel(Response):
 
 
 opener_rebid_priorities = enum.Enum(
+    "SupportMajorMax",
     "SupportMajorLimit",
     "SupportMajorMin",
     "NewSuitClubs",
     "NewSuitDiamonds",
     "NewSuitHearts",
     "NewSuitSpades",
+    "SupportMinorMin",
     "UnforcedRebidOriginalSuit",
     "RebidOneNotrump",
     "ForcedRebidOriginalSuit",
@@ -480,17 +482,34 @@ class NewSuitByOpener(OpenerRebid):
 
 class SupportPartnerSuit(OpenerRebid):
     preconditions = OpenerRebid.preconditions + [
-        NotJumpFromLastContract(),
         InvertedPrecondition(RebidSameSuit()),
         RaiseOfPartnersLastSuit(),
     ]
 
 
-class MinimumSupportPartnerMajorSuit(SupportPartnerSuit):
+class SupportPartnerMajorSuit(SupportPartnerSuit):
     preconditions = SupportPartnerSuit.preconditions
     constraints = {
         '2H': (NO_CONSTRAINTS, opener_rebid_priorities.SupportMajorMin),
         '2S': (NO_CONSTRAINTS, opener_rebid_priorities.SupportMajorMin),
+
+        '3H': (MinimumCombinedPoints(22), opener_rebid_priorities.SupportMajorLimit),
+        '3S': (MinimumCombinedPoints(22), opener_rebid_priorities.SupportMajorLimit),
+
+        '4H': (MinimumCombinedPoints(25), opener_rebid_priorities.SupportMajorMax),
+        '4S': (MinimumCombinedPoints(25), opener_rebid_priorities.SupportMajorMax),
+    }
+    shared_constraints = [MinimumCombinedLength(8)]
+
+
+class MinimumSupportPartnerMinorSuit(SupportPartnerSuit):
+    preconditions = SupportPartnerSuit.preconditions
+    constraints = {
+        # 2C will never show support because partner cannot respond 1C
+        '2D': (NO_CONSTRAINTS, opener_rebid_priorities.SupportMinorMin),
+
+        '3C': (MinimumCombinedPoints(22), opener_rebid_priorities.SupportMinorMin),
+        '3D': (MinimumCombinedPoints(22), opener_rebid_priorities.SupportMinorMin),
     }
     shared_constraints = [MinimumCombinedLength(8)]
 
