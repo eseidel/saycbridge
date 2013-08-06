@@ -364,13 +364,20 @@ class Response(RuleDescription):
     preconditions = [LastBidHasAnnotation(positions.Partner, annotations.Opening)]
 
 
-class OneDiamondResponse(Response):
+class ResponseToOneLevelSuitedOpen(Response):
+    preconditions = Response.preconditions + [
+        LastBidHasLevel(positions.Partner, 1),
+        InvertedPrecondition(LastBidHasStrain(positions.Partner, suit.NOTRUMP))
+    ]
+
+
+class OneDiamondResponse(ResponseToOneLevelSuitedOpen):
     call_name = '1D'
     shared_constraints = [points >= 6, diamonds >= 4]
     priority = response_priorities.OneDiamondResponse
 
 
-class OneHeartResponse(Response):
+class OneHeartResponse(ResponseToOneLevelSuitedOpen):
     call_name = '1H'
     shared_constraints = [points >= 6, hearts >= 4]
     conditional_priorities = [
@@ -380,7 +387,7 @@ class OneHeartResponse(Response):
     priority = response_priorities.OneHeartWithFourResponse
 
 
-class OneSpadeResponse(Response):
+class OneSpadeResponse(ResponseToOneLevelSuitedOpen):
     call_name = '1S'
     shared_constraints = [points >= 6, spades >= 4]
     conditional_priorities = [
@@ -389,14 +396,14 @@ class OneSpadeResponse(Response):
     priority = response_priorities.OneSpadeWithFourResponse
 
 
-class OneNotrumpResponse(Response):
+class OneNotrumpResponse(ResponseToOneLevelSuitedOpen):
     call_name = '1N'
     shared_constraints = points >= 6
     priority = response_priorities.OneNotrumpResponse
 
 
-class RaiseResponse(Response):
-    preconditions = Response.preconditions + [RaiseOfPartnersLastSuit(), LastBidHasAnnotation(positions.Partner, annotations.Opening)]
+class RaiseResponse(ResponseToOneLevelSuitedOpen):
+    preconditions = ResponseToOneLevelSuitedOpen.preconditions + [RaiseOfPartnersLastSuit(), LastBidHasAnnotation(positions.Partner, annotations.Opening)]
 
 
 class MajorMinimumRaise(RaiseResponse):
@@ -432,8 +439,8 @@ class MinorLimitRaise(RaiseResponse):
 # We should bid longer suits when possible, up the line for 4 cards.
 # we don't currently bid 2D over 2C when we have longer diamonds.
 
-class NewSuitAtTheTwoLevel(Response):
-    preconditions = Response.preconditions + [UnbidSuit(), NotJumpFromLastContract()]
+class NewSuitAtTheTwoLevel(ResponseToOneLevelSuitedOpen):
+    preconditions = ResponseToOneLevelSuitedOpen.preconditions + [UnbidSuit(), NotJumpFromLastContract()]
     constraints = {
         '2C' : (clubs >= 4, response_priorities.TwoClubNewSuitResponse),
         '2D' : (diamonds >= 4, response_priorities.TwoDiamondNewSuitResponse),
@@ -441,13 +448,6 @@ class NewSuitAtTheTwoLevel(Response):
         '2S' : (spades >= 5, response_priorities.TwoSpadeNewSuitResponse),
     }
     shared_constraints = MinimumCombinedPoints(22)
-
-
-class ResponseToOneLevelSuitedOpen(Response):
-    preconditions = Response.preconditions + [
-        LastBidHasLevel(positions.Partner, 1),
-        InvertedPrecondition(LastBidHasStrain(positions.Partner, suit.NOTRUMP))
-    ]
 
 
 class JumpShift(object):
@@ -464,6 +464,35 @@ class JumpShiftResponseToOpen(ResponseToOneLevelSuitedOpen):
     priority = response_priorities.JumpShiftResponseToOpen
 
 
+two_clubs_response_priorities = enum.Enum(
+    "SuitResponse",
+    "NoBiddableSuit",
+    "WaitingResponse",
+)
+
+
+class ResponseToStrongTwoClubs(Response):
+    preconditions = Response.preconditions + [LastBidWas(positions.Partner, '2C')]
+
+
+class WaitingResponseToStrongTwoClubs(ResponseToStrongTwoClubs):
+    call_name = '2D'
+    shared_constraints = NO_CONSTRAINTS
+    annotations = [annotations.Artificial]
+    priority = two_clubs_response_priorities.WaitingResponse
+
+
+class SuitResponseToStrongTwoClubs(ResponseToStrongTwoClubs):
+    call_names = ['2H', '2S', '3C', '3D']
+    shared_constraints = [MinLength(5), TwoOfTheTopThree(), points >= 8]
+    # FIXME: These should have ordered conditional priorites, no?
+    priority = two_clubs_response_priorities.SuitResponse
+
+
+class NotrumpResponseToStrongTwoClubs(ResponseToStrongTwoClubs):
+    call_name = '2N'
+    shared_constraints = points >= 8
+    priority = two_clubs_response_priorities.NoBiddableSuit
 
 
 opener_rebid_priorities = enum.Enum(
@@ -478,6 +507,7 @@ opener_rebid_priorities = enum.Enum(
     "ForcedRebidOriginalSuit",
 )
 
+
 forced_rebid_priorities = enum.Enum(
     "ForcedRebidOriginalSuit",
 )
@@ -486,15 +516,19 @@ class OpenerRebid(RuleDescription):
     preconditions = [LastBidHasAnnotation(positions.Me, annotations.Opening)]
 
 
-class RebidOneNotrumpByOpener(OpenerRebid):
-    preconditions = OpenerRebid.preconditions + [InvertedPrecondition(LastBidWas(positions.Partner, 'P'))]
+class RebidAfterOneLevelOpen(OpenerRebid):
+    preconditions = OpenerRebid.preconditions + [LastBidHasLevel(positions.Me, 1)]
+
+
+class RebidOneNotrumpByOpener(RebidAfterOneLevelOpen):
+    preconditions = RebidAfterOneLevelOpen.preconditions + [InvertedPrecondition(LastBidWas(positions.Partner, 'P'))]
     call_name = '1N'
     priority = opener_rebid_priorities.RebidOneNotrump
     shared_constraints = NO_CONSTRAINTS
 
 
-class NewOneLevelMajorByOpener(OpenerRebid):
-    preconditions = OpenerRebid.preconditions + [UnbidSuit()]
+class NewOneLevelMajorByOpener(RebidAfterOneLevelOpen):
+    preconditions = RebidAfterOneLevelOpen.preconditions + [UnbidSuit()]
     constraints = {
         '1H': (NO_CONSTRAINTS, opener_rebid_priorities.NewSuitHearts),
         '1S': (NO_CONSTRAINTS, opener_rebid_priorities.NewSuitSpades),
@@ -502,8 +536,8 @@ class NewOneLevelMajorByOpener(OpenerRebid):
     shared_constraints = [MinLength(4)]
 
 
-class NewSuitByOpener(OpenerRebid):
-    preconditions = OpenerRebid.preconditions + [
+class NewSuitByOpener(RebidAfterOneLevelOpen):
+    preconditions = RebidAfterOneLevelOpen.preconditions + [
         # FIXME: MyLastBidWasOneOfASuit(),
         SuitLowerThanMyLastSuit(),
         NotJumpFromLastContract(),
@@ -523,8 +557,8 @@ class NewSuitByOpener(OpenerRebid):
     shared_constraints = [MinLength(4)]
 
 
-class RebidOriginalSuitByOpener(OpenerRebid):
-    preconditions = OpenerRebid.preconditions + [
+class RebidOriginalSuitByOpener(RebidAfterOneLevelOpen):
+    preconditions = RebidAfterOneLevelOpen.preconditions + [
         LastBidHasLevel(positions.Me, 1),
         RebidSameSuit(),
         NotJumpFromLastContract(),
@@ -548,8 +582,8 @@ class ForcedRebidOriginalSuitByOpener(RebidOriginalSuitByOpener):
     priority = forced_rebid_priorities.ForcedRebidOriginalSuit
 
 
-class JumpShiftByOpener(OpenerRebid):
-    preconditions = OpenerRebid.preconditions + JumpShift.preconditions
+class JumpShiftByOpener(RebidAfterOneLevelOpen):
+    preconditions = RebidAfterOneLevelOpen.preconditions + JumpShift.preconditions
     # The lowest possible jumpshift is 1C P 1D P 2H.
     # The highest possible jumpshift is 1S P 2H P 4D
     call_names = ['2H', '2S', '3C', '3D', '3H', '3S', '4C', '4D']
@@ -921,6 +955,7 @@ class StandardAmericanYellowCard(object):
 
     priority_ordering.make_less_than(response_priorities, nt_response_priorities)
     priority_ordering.make_less_than(preempt_priorities, opening_priorities)
+    priority_ordering.make_less_than(response_priorities, two_clubs_response_priorities)
     priority_ordering.make_less_than(natural_priorities, response_priorities)
     priority_ordering.make_less_than(natural_priorities, opener_rebid_priorities)
     priority_ordering.make_less_than(natural_priorities, nt_response_priorities)
