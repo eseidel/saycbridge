@@ -53,7 +53,7 @@ class EngineRule(object):
         return None
 
     def _fits_preconditions(self, history, call, expected_call=None):
-        for precondition in self.rule.preconditions:
+        for precondition in self.rule.collected_preconditions():
             if not precondition.fits(history, call):
                 if call == expected_call and expected_call in self.rule.known_calls():
                     print " %s failed: %s" % (self, precondition)
@@ -91,7 +91,7 @@ class EngineRule(object):
 class Rule(object):
     # FIXME: Consider splitting call_preconditions out from preconditions
     # for preconditions which only operate on the call?
-    preconditions = []
+    preconditions = [] # Auto-collects from parent classes
     category = categories.Default # Intra-bid priority
     requires_planning = False
 
@@ -161,14 +161,29 @@ class Rule(object):
 
         return chain.from_iterable([self.exprs_from_constraints(constraint, history, call) for constraint in constraints])
 
-    # FIXME: Would like to memoize this, but it doens't seem to work as expected.
+    # FIXME: This collected_ logic should just be an @collected decorator on preconditions.
+    @classmethod
+    @memoized
+    def collected_preconditions(cls):
+        super_cls = cls.__mro__[1]
+        parent_preconditions = super_cls.collected_preconditions() if hasattr(super_cls, 'collected_preconditions') else []
+        non_inherited_preconditions = cls.__dict__.get('preconditions')
+        # FIXME: Should use some sort of @always_list decorator on the preconditions attr instead.
+        if non_inherited_preconditions and not hasattr(non_inherited_preconditions, '__iter__'):
+            non_inherited_preconditions = [non_inherited_preconditions]
+        if non_inherited_preconditions:
+            # Important that we don't modify parent_preconditions lest we confuse memoize
+            return parent_preconditions + list(non_inherited_preconditions) # sometimes we use tuples, convert them to lists.
+        return parent_preconditions
+
+    # FIXME: This collected_ logic should just be an @collected decorator on constraints.
     @classmethod
     @memoized
     def collected_shared_constraints(cls):
         super_cls = cls.__mro__[1]
         parent_constraints = super_cls.collected_shared_constraints() if hasattr(super_cls, 'collected_shared_constraints') else []
         non_inherited_constraints = cls.__dict__.get('shared_constraints')
-        # print cls.__name__, non_inherited_constraints, super_cls.__name__, parent_constraints
+        # FIXME: Should use some sort of @always_list decorator on the constraints attr instead.
         if non_inherited_constraints and not hasattr(non_inherited_constraints, '__iter__'):
             non_inherited_constraints = [non_inherited_constraints]
         if non_inherited_constraints:
@@ -227,7 +242,7 @@ class Natural(Rule):
 
 
 class SuitedToPlay(Natural):
-    preconditions = Natural.preconditions + [
+    preconditions = [
         MinimumCombinedPointsPrecondition(12),
         PartnerHasAtLeastLengthInSuit(1)
     ]
@@ -291,7 +306,7 @@ opening_priorities = enum.Enum(
 
 class Opening(Rule):
     annotations = [annotations.Opening]
-    preconditions = [NoOpening()]
+    preconditions = NoOpening()
 
 
 
@@ -386,7 +401,7 @@ class Response(Rule):
 
 
 class ResponseToOneLevelSuitedOpen(Response):
-    preconditions = Response.preconditions + [
+    preconditions = [
         LastBidHasLevel(positions.Partner, 1),
         InvertedPrecondition(LastBidHasStrain(positions.Partner, suit.NOTRUMP))
     ]
@@ -424,7 +439,7 @@ class OneNotrumpResponse(ResponseToOneLevelSuitedOpen):
 
 
 class RaiseResponse(ResponseToOneLevelSuitedOpen):
-    preconditions = ResponseToOneLevelSuitedOpen.preconditions + [RaiseOfPartnersLastSuit(), LastBidHasAnnotation(positions.Partner, annotations.Opening)]
+    preconditions = [RaiseOfPartnersLastSuit(), LastBidHasAnnotation(positions.Partner, annotations.Opening)]
 
 
 class MajorMinimumRaise(RaiseResponse):
@@ -461,7 +476,7 @@ class MinorLimitRaise(RaiseResponse):
 # we don't currently bid 2D over 2C when we have longer diamonds.
 
 class NewSuitAtTheTwoLevel(ResponseToOneLevelSuitedOpen):
-    preconditions = ResponseToOneLevelSuitedOpen.preconditions + [UnbidSuit(), NotJumpFromLastContract()]
+    preconditions = [UnbidSuit(), NotJumpFromLastContract()]
     constraints = {
         '2C' : (clubs >= 4, response_priorities.TwoClubNewSuitResponse),
         '2D' : (diamonds >= 4, response_priorities.TwoDiamondNewSuitResponse),
@@ -472,14 +487,14 @@ class NewSuitAtTheTwoLevel(ResponseToOneLevelSuitedOpen):
 
 
 class ResponseToMajorOpen(ResponseToOneLevelSuitedOpen):
-    preconditions = ResponseToOneLevelSuitedOpen.preconditions + [
+    preconditions = [
         LastBidHasStrain(positions.Partner, suit.MAJORS),
         InvertedPrecondition(LastBidHasAnnotation(positions.Partner, annotations.Artificial))
     ]
 
 
 class Jacoby2N(ResponseToMajorOpen):
-    preconditions = ResponseToMajorOpen.preconditions + [LastBidWas(positions.RHO, 'P')]
+    preconditions = LastBidWas(positions.RHO, 'P')
     call_name = '2N'
     shared_constraints = [points >= 14, SupportForPartnerLastBid(4)]
     priority = response_priorities.Jacoby2N
@@ -498,12 +513,12 @@ jacoby_2n_response_priorities = enum.Enum(
 
 class ResponseToJacoby2N(Rule):
     # Bids above 4NT are either natural or covered by other conventions.
-    preconditions = Rule.preconditions + [LastBidHasAnnotation(positions.Partner, annotations.Jacoby2N)]
+    preconditions = LastBidHasAnnotation(positions.Partner, annotations.Jacoby2N)
     category = categories.Gadget
 
 
 class SingletonResponseToJacoby2N(ResponseToJacoby2N):
-    preconditions = ResponseToJacoby2N.preconditions + [InvertedPrecondition(RebidSameSuit())]
+    preconditions = InvertedPrecondition(RebidSameSuit())
     call_names = ['3C', '3D', '3H', '3S']
     shared_constraints = MaxLength(1)
     annotations = Rule.annotations + [annotations.Artificial]
@@ -511,21 +526,21 @@ class SingletonResponseToJacoby2N(ResponseToJacoby2N):
 
 
 class SolidSuitResponseToJacoby2N(ResponseToJacoby2N):
-    preconditions = ResponseToJacoby2N.preconditions + [InvertedPrecondition(RebidSameSuit())]
+    preconditions = InvertedPrecondition(RebidSameSuit())
     call_names = ['4C', '4D', '4H', '4S']
     shared_constraints = [MinLength(5), ThreeOfTheTopFive()]
     priority = jacoby_2n_response_priorities.SolidSuit
 
 
 class SlamResponseToJacoby2N(ResponseToJacoby2N):
-    preconditions = ResponseToJacoby2N.preconditions + [RebidSameSuit()]
+    preconditions = RebidSameSuit()
     call_names = ['3C', '3D', '3H', '3S']
     shared_constraints = points >= 18
     priority = jacoby_2n_response_priorities.Slam
 
 
 class MinimumResponseToJacoby2N(ResponseToJacoby2N):
-    preconditions = ResponseToJacoby2N.preconditions + [RebidSameSuit()]
+    preconditions = RebidSameSuit()
     call_names = ['4C', '4D', '4H', '4S']
     shared_constraints = NO_CONSTRAINTS
     priority = jacoby_2n_response_priorities.MinimumGame
@@ -542,7 +557,7 @@ class JumpShift(object):
 
 
 class JumpShiftResponseToOpen(ResponseToOneLevelSuitedOpen):
-    preconditions = ResponseToOneLevelSuitedOpen.preconditions + JumpShift.preconditions
+    preconditions = JumpShift.preconditions
     # Jumpshifts must be below game and are off in competition so
     # 1S P 3H is the highest available response jumpshift.
     call_names = ['2D', '2H', '2S', '3C', '3D', '3H']
@@ -553,7 +568,7 @@ class JumpShiftResponseToOpen(ResponseToOneLevelSuitedOpen):
 
 class NegativeDouble(ResponseToOneLevelSuitedOpen):
     call_name = 'X'
-    preconditions = ResponseToOneLevelSuitedOpen.preconditions + [
+    preconditions = [
         LastBidHasSuit(positions.RHO),
         MaxLevel(2),
     ]
@@ -562,7 +577,7 @@ class NegativeDouble(ResponseToOneLevelSuitedOpen):
 
 
 class NegativeDoubleOfOneDiamondOverOneClub(NegativeDouble):
-    preconditions = NegativeDouble.preconditions + [
+    preconditions = [
         LastBidWas(positions.RHO, '1D'),
         LastBidWas(positions.Partner, '1C'),
     ]
@@ -570,7 +585,7 @@ class NegativeDoubleOfOneDiamondOverOneClub(NegativeDouble):
 
 
 class NegativeDoubleOfOneHeartOverOneClub(NegativeDouble):
-    preconditions = NegativeDouble.preconditions + [
+    preconditions = [
         LastBidWas(positions.RHO, '1H'),
         LastBidWas(positions.Partner, '1C'),
     ]
@@ -578,7 +593,7 @@ class NegativeDoubleOfOneHeartOverOneClub(NegativeDouble):
 
 
 class NegativeDoubleOfOneSpadeOverOneClub(NegativeDouble):
-    preconditions = NegativeDouble.preconditions + [
+    preconditions = [
         LastBidWas(positions.RHO, '1S'),
         LastBidWas(positions.Partner, '1C'),
     ]
@@ -586,7 +601,7 @@ class NegativeDoubleOfOneSpadeOverOneClub(NegativeDouble):
 
 
 class NegativeDoubleOfTwoDiamondsOverOneClub(NegativeDouble):
-    preconditions = NegativeDouble.preconditions + [
+    preconditions = [
         LastBidWas(positions.RHO, '2D'),
         LastBidWas(positions.Partner, '1C'),
     ]
@@ -594,7 +609,7 @@ class NegativeDoubleOfTwoDiamondsOverOneClub(NegativeDouble):
 
 
 class NegativeDoubleOfTwoHeartsOverOneClub(NegativeDouble):
-    preconditions = NegativeDouble.preconditions + [
+    preconditions = [
         LastBidWas(positions.RHO, '2H'),
         LastBidWas(positions.Partner, '1C'),
     ]
@@ -602,7 +617,7 @@ class NegativeDoubleOfTwoHeartsOverOneClub(NegativeDouble):
 
 
 class NegativeDoubleOfTwoSpadesOverOneClub(NegativeDouble):
-    preconditions = NegativeDouble.preconditions + [
+    preconditions = [
         LastBidWas(positions.RHO, '2S'),
         LastBidWas(positions.Partner, '1C'),
     ]
@@ -610,7 +625,7 @@ class NegativeDoubleOfTwoSpadesOverOneClub(NegativeDouble):
 
 
 class NegativeDoubleOfOneHeartOverOneDiamond(NegativeDouble):
-    preconditions = NegativeDouble.preconditions + [
+    preconditions = [
         LastBidWas(positions.RHO, '1H'),
         LastBidWas(positions.Partner, '1D'),
     ]
@@ -618,7 +633,7 @@ class NegativeDoubleOfOneHeartOverOneDiamond(NegativeDouble):
 
 
 class NegativeDoubleOfOneSpadeOverOneDiamond(NegativeDouble):
-    preconditions = NegativeDouble.preconditions + [
+    preconditions = [
         LastBidWas(positions.RHO, '1S'),
         LastBidWas(positions.Partner, '1D'),
     ]
@@ -626,7 +641,7 @@ class NegativeDoubleOfOneSpadeOverOneDiamond(NegativeDouble):
 
 
 class NegativeDoubleOfTwoClubsOverOneDiamond(NegativeDouble):
-    preconditions = NegativeDouble.preconditions + [
+    preconditions = [
         LastBidWas(positions.RHO, '2C'),
         LastBidWas(positions.Partner, '1D'),
     ]
@@ -634,7 +649,7 @@ class NegativeDoubleOfTwoClubsOverOneDiamond(NegativeDouble):
 
 
 class NegativeDoubleOfTwoHeartsOverOneDiamond(NegativeDouble):
-    preconditions = NegativeDouble.preconditions + [
+    preconditions = [
         LastBidWas(positions.RHO, '2H'),
         LastBidWas(positions.Partner, '1D'),
     ]
@@ -642,7 +657,7 @@ class NegativeDoubleOfTwoHeartsOverOneDiamond(NegativeDouble):
 
 
 class NegativeDoubleOfTwoSpadesOverOneDiamond(NegativeDouble):
-    preconditions = NegativeDouble.preconditions + [
+    preconditions = [
         LastBidWas(positions.RHO, '2S'),
         LastBidWas(positions.Partner, '1D'),
     ]
@@ -650,7 +665,7 @@ class NegativeDoubleOfTwoSpadesOverOneDiamond(NegativeDouble):
 
 
 class NegativeDoubleOfOneSpadeOverOneHeart(NegativeDouble):
-    preconditions = NegativeDouble.preconditions + [
+    preconditions = [
         LastBidWas(positions.RHO, '1S'),
         LastBidWas(positions.Partner, '1H'),
     ]
@@ -658,7 +673,7 @@ class NegativeDoubleOfOneSpadeOverOneHeart(NegativeDouble):
 
 
 class NegativeDoubleOfTwoClubsOverOneHeart(NegativeDouble):
-    preconditions = NegativeDouble.preconditions + [
+    preconditions = [
         LastBidWas(positions.RHO, '2C'),
         LastBidWas(positions.Partner, '1H'),
     ]
@@ -666,7 +681,7 @@ class NegativeDoubleOfTwoClubsOverOneHeart(NegativeDouble):
 
 
 class NegativeDoubleOfTwoDiamondsOverOneHeart(NegativeDouble):
-    preconditions = NegativeDouble.preconditions + [
+    preconditions = [
         LastBidWas(positions.RHO, '2D'),
         LastBidWas(positions.Partner, '1H'),
     ]
@@ -674,7 +689,7 @@ class NegativeDoubleOfTwoDiamondsOverOneHeart(NegativeDouble):
 
 
 class NegativeDoubleOfTwoSpadesOverOneHeart(NegativeDouble):
-    preconditions = NegativeDouble.preconditions + [
+    preconditions = [
         LastBidWas(positions.RHO, '2S'),
         LastBidWas(positions.Partner, '1H'),
     ]
@@ -682,7 +697,7 @@ class NegativeDoubleOfTwoSpadesOverOneHeart(NegativeDouble):
 
 
 class NegativeDoubleOfTwoClubsOverOneSpade(NegativeDouble):
-    preconditions = NegativeDouble.preconditions + [
+    preconditions = [
         LastBidWas(positions.RHO, '2C'),
         LastBidWas(positions.Partner, '1S'),
     ]
@@ -690,7 +705,7 @@ class NegativeDoubleOfTwoClubsOverOneSpade(NegativeDouble):
 
 
 class NegativeDoubleOfTwoDiamondsOverOneSpades(NegativeDouble):
-    preconditions = NegativeDouble.preconditions + [
+    preconditions = [
         LastBidWas(positions.RHO, '2D'),
         LastBidWas(positions.Partner, '1S'),
     ]
@@ -698,7 +713,7 @@ class NegativeDoubleOfTwoDiamondsOverOneSpades(NegativeDouble):
 
 
 class NegativeDoubleOfTwoHeartsOverOneSpade(NegativeDouble):
-    preconditions = NegativeDouble.preconditions + [
+    preconditions = [
         LastBidWas(positions.RHO, '2H'),
         LastBidWas(positions.Partner, '1S'),
     ]
@@ -713,7 +728,7 @@ two_clubs_response_priorities = enum.Enum(
 
 
 class ResponseToStrongTwoClubs(Response):
-    preconditions = Response.preconditions + [LastBidWas(positions.Partner, '2C')]
+    preconditions = LastBidWas(positions.Partner, '2C')
 
 
 class WaitingResponseToStrongTwoClubs(ResponseToStrongTwoClubs):
@@ -754,22 +769,22 @@ forced_rebid_priorities = enum.Enum(
 )
 
 class OpenerRebid(Rule):
-    preconditions = [LastBidHasAnnotation(positions.Me, annotations.Opening)]
+    preconditions = LastBidHasAnnotation(positions.Me, annotations.Opening)
 
 
 class RebidAfterOneLevelOpen(OpenerRebid):
-    preconditions = OpenerRebid.preconditions + [LastBidHasLevel(positions.Me, 1)]
+    preconditions = LastBidHasLevel(positions.Me, 1)
 
 
 class RebidOneNotrumpByOpener(RebidAfterOneLevelOpen):
-    preconditions = RebidAfterOneLevelOpen.preconditions + [InvertedPrecondition(LastBidWas(positions.Partner, 'P'))]
+    preconditions = InvertedPrecondition(LastBidWas(positions.Partner, 'P'))
     call_name = '1N'
     priority = opener_rebid_priorities.RebidOneNotrump
     shared_constraints = NO_CONSTRAINTS
 
 
 class NewOneLevelMajorByOpener(RebidAfterOneLevelOpen):
-    preconditions = RebidAfterOneLevelOpen.preconditions + [UnbidSuit()]
+    preconditions = UnbidSuit()
     constraints = {
         '1H': (NO_CONSTRAINTS, opener_rebid_priorities.NewSuitHearts),
         '1S': (NO_CONSTRAINTS, opener_rebid_priorities.NewSuitSpades),
@@ -778,7 +793,7 @@ class NewOneLevelMajorByOpener(RebidAfterOneLevelOpen):
 
 
 class NewSuitByOpener(RebidAfterOneLevelOpen):
-    preconditions = RebidAfterOneLevelOpen.preconditions + [
+    preconditions = [
         # FIXME: MyLastBidWasOneOfASuit(),
         SuitLowerThanMyLastSuit(),
         NotJumpFromLastContract(),
@@ -799,7 +814,7 @@ class NewSuitByOpener(RebidAfterOneLevelOpen):
 
 
 class RebidOriginalSuitByOpener(RebidAfterOneLevelOpen):
-    preconditions = RebidAfterOneLevelOpen.preconditions + [
+    preconditions = [
         LastBidHasLevel(positions.Me, 1),
         RebidSameSuit(),
         NotJumpFromLastContract(),
@@ -807,14 +822,14 @@ class RebidOriginalSuitByOpener(RebidAfterOneLevelOpen):
 
 
 class UnforcedRebidOriginalSuitByOpener(RebidOriginalSuitByOpener):
-    preconditions = RebidOriginalSuitByOpener.preconditions + [InvertedPrecondition(ForcedToBid())]
+    preconditions = InvertedPrecondition(ForcedToBid())
     call_names = ['2C', '2D', '2H', '2S']
     shared_constraints = MinLength(6)
     priority = opener_rebid_priorities.UnforcedRebidOriginalSuit
 
 
 class ForcedRebidOriginalSuitByOpener(RebidOriginalSuitByOpener):
-    preconditions = RebidOriginalSuitByOpener.preconditions + [ForcedToBid()]
+    preconditions = ForcedToBid()
     call_names = ['2C', '2D', '2H', '2S']
     conditional_priorities = [
         (MinLength(6), opener_rebid_priorities.UnforcedRebidOriginalSuit),
@@ -824,7 +839,7 @@ class ForcedRebidOriginalSuitByOpener(RebidOriginalSuitByOpener):
 
 
 class JumpShiftByOpener(RebidAfterOneLevelOpen):
-    preconditions = RebidAfterOneLevelOpen.preconditions + JumpShift.preconditions
+    preconditions = JumpShift.preconditions
     # The lowest possible jumpshift is 1C P 1D P 2H.
     # The highest possible jumpshift is 1S P 2H P 4D
     call_names = ['2H', '2S', '3C', '3D', '3H', '3S', '4C', '4D']
@@ -840,11 +855,11 @@ two_clubs_opener_rebid_priorities = enum.Enum(
 
 
 class OpenerRebidAfterStrongTwoClubs(OpenerRebid):
-    preconditions = OpenerRebid.preconditions + [LastBidWas(positions.Me, '2C')]
+    preconditions = LastBidWas(positions.Me, '2C')
 
 
 class OpenerSuitedRebidAfterStrongTwoClubs(OpenerRebidAfterStrongTwoClubs):
-    preconditions = OpenerRebidAfterStrongTwoClubs.preconditions + [UnbidSuit(), NotJumpFromLastContract()]
+    preconditions = [UnbidSuit(), NotJumpFromLastContract()]
     # This maxes out at 4C -> 2C P 3D P 4C
     # If the opponents are competing we're just gonna double them anyway.
     call_names = ['2H', '2S', '3C', '3D', '3H', '3S', '4C']
@@ -855,7 +870,7 @@ class OpenerSuitedRebidAfterStrongTwoClubs(OpenerRebidAfterStrongTwoClubs):
 
 
 class OpenerSuitedJumpRebidAfterStrongTwoClubs(OpenerRebidAfterStrongTwoClubs):
-    preconditions = OpenerRebidAfterStrongTwoClubs.preconditions + [UnbidSuit(), JumpFromLastContract(exact_size=1)]
+    preconditions = [UnbidSuit(), JumpFromLastContract(exact_size=1)]
     # This maxes out at 4C -> 2C P 3D P 5C, but I'm not sure we need to cover that case?
     # If we have self-supporting suit why jump all the way to 5C?  Why not Blackwood in preparation for slam?
     call_names = ['3H', '3S', '4C', '4D', '4H', '4S', '5C']
@@ -869,7 +884,7 @@ class OpenerSuitedJumpRebidAfterStrongTwoClubs(OpenerRebidAfterStrongTwoClubs):
 
 
 # class ResponderRebid(Rule):
-#     preconditions = Rule.preconditions + [
+#     preconditions = [
 #         # FIXME: Specifically these only apply when 2 bids ago partner opened.
 #         Opened(positions.Partner),
 #         HaveBid(),
@@ -878,7 +893,7 @@ class OpenerSuitedJumpRebidAfterStrongTwoClubs(OpenerRebidAfterStrongTwoClubs):
 
 
 # class SecondNegative(ResponderRebid):
-#     preconditions = ResponderRebid.preconditions + [
+#     preconditions = [
 #         LastBidWas(positions.Me, '2D'),
 #         InvertedPrecondition(ForcedToBid()), # Does not apply over 2C,2D,2N
 #     ]
@@ -905,7 +920,7 @@ nt_response_priorities = enum.Enum(
 
 class NoTrumpResponse(Response):
     category = categories.NoTrumpSystem
-    preconditions = Response.preconditions + [
+    preconditions = [
         LastBidHasAnnotation(positions.Partner, annotations.Opening),
         LastBidHasAnnotation(positions.Partner, annotations.NoTrumpSystemsOn),
     ]
@@ -918,7 +933,7 @@ class BasicStayman(NoTrumpResponse):
 
 
 class Stayman(BasicStayman):
-    preconditions = BasicStayman.preconditions + [NotJumpFromPartnerLastBid()]
+    preconditions = NotJumpFromPartnerLastBid()
     constraints = {
         '2C': MinimumCombinedPoints(23),
         '3C': MinimumCombinedPoints(25),
@@ -926,12 +941,12 @@ class Stayman(BasicStayman):
 
 
 class StolenTwoClubStayman(BasicStayman):
-    preconditions = BasicStayman.preconditions + [LastBidWas(positions.RHO, '2C')]
+    preconditions = LastBidWas(positions.RHO, '2C')
     constraints = { 'X': MinimumCombinedPoints(23) }
 
 
 class StolenThreeClubStayman(BasicStayman):
-    preconditions = BasicStayman.preconditions + [LastBidWas(positions.RHO, '3C')]
+    preconditions = LastBidWas(positions.RHO, '3C')
     constraints = { 'X': MinimumCombinedPoints(25) }
 
 
@@ -968,7 +983,7 @@ class TwoSpadesRelay(NoTrumpTransferResponse):
 
 class AcceptTransferToHearts(Rule):
     category = categories.Relay
-    preconditions = Rule.preconditions + [
+    preconditions = [
         LastBidHasAnnotation(positions.Partner, annotations.Transfer),
         LastBidHasStrain(positions.Partner, suit.DIAMONDS),
         Strain(suit.HEARTS),
@@ -980,7 +995,7 @@ class AcceptTransferToHearts(Rule):
 
 class AcceptTransferToSpades(Rule):
     category = categories.Relay
-    preconditions = Rule.preconditions + [
+    preconditions = [
         LastBidHasAnnotation(positions.Partner, annotations.Transfer),
         LastBidHasStrain(positions.Partner, suit.HEARTS),
         Strain(suit.SPADES),
@@ -999,11 +1014,11 @@ stayman_response_priorities = enum.Enum(
 
 
 class StaymanResponse(Rule):
-    preconditions = Rule.preconditions + [LastBidHasAnnotation(positions.Partner, annotations.Stayman)]
+    preconditions = LastBidHasAnnotation(positions.Partner, annotations.Stayman)
 
 
 class NaturalStaymanResponse(StaymanResponse):
-    preconditions = StaymanResponse.preconditions + [NotJumpFromPartnerLastBid()]
+    preconditions = NotJumpFromPartnerLastBid()
     constraints = {
         '2H': (hearts >= 4, stayman_response_priorities.HeartStaymanResponse),
         '2S': (spades >= 4, stayman_response_priorities.SpadeStaymanResponse),
@@ -1019,7 +1034,7 @@ class PassStaymanResponse(StaymanResponse):
 
 
 class DiamondStaymanResponse(StaymanResponse):
-    preconditions = StaymanResponse.preconditions + [NotJumpFromPartnerLastBid()]
+    preconditions = NotJumpFromPartnerLastBid()
     call_names = ['2D', '3D']
     shared_constraints = NO_CONSTRAINTS
     priority = stayman_response_priorities.DiamondStaymanResponse
@@ -1029,18 +1044,18 @@ class DiamondStaymanResponse(StaymanResponse):
 # FIXME: Need "Stolen" variants for 3-level.
 class StolenHeartStaymanResponse(StaymanResponse):
     constraints = { 'X': hearts >= 4 }
-    preconditions = StaymanResponse.preconditions + [LastBidWas(positions.RHO, '2H')]
+    preconditions = LastBidWas(positions.RHO, '2H')
     priority = stayman_response_priorities.HeartStaymanResponse
 
 
 class StolenSpadeStaymanResponse(StaymanResponse):
     constraints = { 'X': spades >= 4 }
-    preconditions = StaymanResponse.preconditions + [LastBidWas(positions.RHO, '2S')]
+    preconditions = LastBidWas(positions.RHO, '2S')
     priority = stayman_response_priorities.SpadeStaymanResponse
 
 
 class OneNoTrumpResponse(NoTrumpResponse):
-    preconditions = NoTrumpResponse.preconditions + [LastBidWas(positions.Partner, '1N')]
+    preconditions = LastBidWas(positions.Partner, '1N')
 
 
 class LongMinorGameInvitation(OneNoTrumpResponse):
@@ -1069,7 +1084,7 @@ overcall_priorities = enum.Enum(
 
 
 class DirectOvercall(Rule):
-    preconditions = Rule.preconditions + [LastBidHasAnnotation(positions.RHO, annotations.Opening)]
+    preconditions = LastBidHasAnnotation(positions.RHO, annotations.Opening)
 
 
 class OneLevelDiamondOvercall(DirectOvercall):
@@ -1111,7 +1126,7 @@ class TakeoutDouble(Rule):
 
 
 class OneLevelTakeoutDouble(TakeoutDouble):
-    preconditions = TakeoutDouble.preconditions + [MaxLevel(1)]
+    preconditions = MaxLevel(1)
     shared_constraints = points >= 11
 
 
@@ -1140,25 +1155,29 @@ class FourLevelPremptiveOpen(Opening):
     priority = preempt_priorities.FourLevelPremptive
 
 
+class PreemptiveOvercall(DirectOvercall):
+    preconditions = JumpFromLastContract()
+    shared_constraints = [ThreeOfTheTopFive(), points >= 5]
+
+
 # FIXME: Should we use conditional priorities instead of upper bounding the points?
-class TwoLevelPremptiveOvercall(DirectOvercall):
-    preconditions = DirectOvercall.preconditions + [JumpFromLastContract()]
+class TwoLevelPremptiveOvercall(PreemptiveOvercall):
     call_names = ['2C', '2D', '2H', '2S']
-    shared_constraints = [MinLength(6), ThreeOfTheTopFive(), points >= 5]
+    shared_constraints = MinLength(6)
     priority = overcall_priorities.TwoLevelPremptive
 
 
-class ThreeLevelPremptiveOvercall(DirectOvercall):
-    preconditions = DirectOvercall.preconditions + [JumpFromLastContract()]
+class ThreeLevelPremptiveOvercall(PreemptiveOvercall):
+    preconditions = JumpFromLastContract()
     call_names = ['3C', '3D', '3H', '3S']
-    shared_constraints = [MinLength(7), ThreeOfTheTopFive(), points >= 5]
+    shared_constraints = MinLength(7)
     priority = overcall_priorities.ThreeLevelPremptive
 
 
-class FourLevelPremptiveOvercall(DirectOvercall):
-    preconditions = DirectOvercall.preconditions + [JumpFromLastContract()]
+class FourLevelPremptiveOvercall(PreemptiveOvercall):
+    preconditions = JumpFromLastContract()
     call_names = ['4C', '4D', '4H', '4S']
-    shared_constraints = [MinLength(8), ThreeOfTheTopFive(), points >= 5]
+    shared_constraints = MinLength(8)
     priority = overcall_priorities.FourLevelPremptive
 
 
@@ -1215,7 +1234,7 @@ class Gerber(Rule):
 
 class GerberForAces(Gerber):
     call_name = '4C'
-    preconditions = Gerber.preconditions + [
+    preconditions = [
         LastBidHasStrain(positions.Partner, suit.NOTRUMP),
         InvertedPrecondition(LastBidHasAnnotation(positions.Partner, annotations.Artificial))
     ]
@@ -1223,14 +1242,12 @@ class GerberForAces(Gerber):
 
 class GerberForKings(Gerber):
     call_name = '5C'
-    preconditions = Gerber.preconditions + [
-        LastBidHasAnnotation(positions.Me, annotations.Gerber)
-    ]
+    preconditions = LastBidHasAnnotation(positions.Me, annotations.Gerber)
 
 
 class ResponseToGerber(Rule):
     category = categories.Relay
-    preconditions = Rule.preconditions + [
+    preconditions = [
         LastBidHasAnnotation(positions.Partner, annotations.Gerber),
         NotJumpFromPartnerLastBid(),
     ]
@@ -1259,7 +1276,7 @@ class ResponseToGerber(Rule):
 
 # class BlackwoodForAces(Blackwood):
 #     call_name = '4N'
-#     preconditions = Blackwood.preconditions + [
+#     preconditions = [
 #         InvertedPrecondition(LastBidHasStrain(positions.Partner, suit.NOTRUMP)),
 #         InvertedPrecondition(LastBidHasAnnotation(positions.Partner, annotations.Artificial)),
 #         JumpOrHaveFit()
@@ -1268,14 +1285,12 @@ class ResponseToGerber(Rule):
 
 # class BlackwoodForKings(Blackwood):
 #     call_name = '5N'
-#     preconditions = Blackwood.preconditions + [
-#         LastBidHasAnnotation(positions.Me, annotations.Blackwood)
-#     ]
+#     preconditions = LastBidHasAnnotation(positions.Me, annotations.Blackwood)
 
 
 # class ResponseToBlackwood(Rule):
 #     category = categories.Relay
-#     preconditions = Rule.preconditions + [
+#     preconditions = [
 #         LastBidHasAnnotation(positions.Partner, annotations.Blackwood),
 #         NotJumpFromPartnerLastBid(),
 #     ]
