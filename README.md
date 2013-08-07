@@ -30,7 +30,10 @@ The typical development cycle:
 
     # Make changes to the bidder (src/z3b)
     make check
-    # Validate that your changes are good.
+    # Bah, my changes don't work as expect!
+    # Try ./scripts/test-hand and ./scripts/explain to understand why.
+    # Use http://localhost:8080/explorer to understand my changes better.
+    # Fix my changes to actually work.
     make accept
     git commit
 
@@ -132,7 +135,8 @@ Make Targets
 Testing Scripts
 ---------------
 
-    scripts/test-hand HAND_STRING [HISTORY_STRING] #  Bids a single hand.
+    scripts/test-hand [EXPECTED_CALL] HAND_STRING [HISTORY_STRING]
+    scripts/explain HISTORY_STRING
     scripts/test-sayc # Runs the unit tests.
     scripts/saycbot.py [-a] # Command-line interactive bidder.  -a auto-bids all hands (for finding crashes).
 

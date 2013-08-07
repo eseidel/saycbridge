@@ -487,6 +487,8 @@ class RuleSelector(object):
             for priority, z3_meaning in rule.meaning_of(self.history, call):
                 if is_possible(solver, z3_meaning):
                     possible_calls.add_call_with_priority(call, priority)
+                elif call == expected_call:
+                    print "%s does not fit hand: %s" % (rule, z3_meaning)
 
         return possible_calls.calls_of_maximal_priority()
 
@@ -515,6 +517,8 @@ class Interpreter(object):
                 annotations = rule.annotations(history)
                 constraints = selector.constraints_for_call(call)
                 if not history.is_consistent(positions.Me, constraints):
+                    if explain:
+                        print "WARNING: History is not consistent, ignoring %s from %s" % (call.name, rule)
                     constraints = model.NO_CONSTRAINTS
                     annotations = []
 
