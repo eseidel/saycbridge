@@ -54,11 +54,9 @@ class InterpreterProxy(object):
         # FIXME: This is a horrible hack where we map z3 knowledge into
         # kbb HandConstraints just so we can use it's pretty_print function.
         kbb_constraints = HandConstraints()
-        kbb_constraints.set_min_hcp(history.rho.min_points)
-        # FIXME: What about max_hcp?
+        kbb_constraints.set_hcp_range(history.rho.min_points, history.rho.max_points)
         for suit in SUITS:
-            kbb_constraints.set_min_length(suit, history.rho.min_length(suit))
-        # FIXME: What about max_length?
+            kbb_constraints.set_length_range(suit, history.rho.min_length(suit), history.rho.max_length(suit))
         # FIXME: What about honor concentration?
 
         kbb_oneline = kbb_constraints.pretty_one_line()

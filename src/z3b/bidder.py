@@ -84,10 +84,17 @@ class PositionView(object):
     def min_points(self):
         return self.history.min_points_for_position(self.position)
 
+    @property
+    def max_points(self):
+        return self.history.max_points_for_position(self.position)
+
     def could_have_more_points_than(self, points):
         return self.history.could_have_more_points_than(self.position, points)
 
     def min_length(self, suit):
+        return self.history.min_length_for_position(self.position, suit)
+
+    def max_length(self, suit):
         return self.history.min_length_for_position(self.position, suit)
 
 
@@ -234,6 +241,21 @@ class History(object):
             return history._solve_for_min_length(suit)
         return 0
 
+    @memoized
+    def _solve_for_max_length(self, suit):
+        solver = self._solver
+        suit_expr = expr_for_suit(suit)
+        for length in range(13, 0, -1):
+            if is_possible(solver, suit_expr == length):
+                return length
+        return 0
+
+    def max_length_for_position(self, position, suit):
+        history = self._history_after_last_call_for(position)
+        if history:
+            return history._solve_for_max_length(suit)
+        return 13
+
     def _lower_bound(self, predicate, lo, hi):
         if lo == hi:
             return hi
@@ -256,6 +278,20 @@ class History(object):
         if history:
             return history._solve_for_min_points()
         return 0
+
+    @memoized
+    def _solve_for_max_points(self):
+        solver = self._solver
+        for cap in range(37, 0, -1):
+            if is_possible(solver, cap == points):
+                return cap
+        return 0
+
+    def max_points_for_position(self, position):
+        history = self._history_after_last_call_for(position)
+        if history:
+            return history._solve_for_max_points()
+        return 37
 
     @memoized
     def _solve_for_more_points_than(self, points):
