@@ -95,7 +95,7 @@ class PositionView(object):
         return self.history.min_length_for_position(self.position, suit)
 
     def max_length(self, suit):
-        return self.history.min_length_for_position(self.position, suit)
+        return self.history.max_length_for_position(self.position, suit)
 
 
 # This class is immutable.
