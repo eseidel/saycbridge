@@ -43,19 +43,7 @@ FAIL: None (expected P) for T986542..A7.6532 (hcp: 4 lp: 7 sp: 10), history: 1H 
 Pass 5 of 43 hands
 
 test_escape_route_stayman:
-FAIL: None (expected P) for 9.8753.7652.8732 (hcp: 0 lp: 0 sp: 3), history: 1N P 2C P 2D P
-FAIL: None (expected 2C) for 9.8753.7652.8732 (hcp: 0 lp: 0 sp: 3), history: 1N P (subtest of 1N P 2C P 2D P)
-FAIL: None (expected P) for 9.8753.7652.8732 (hcp: 0 lp: 0 sp: 3), history: 1N P 2C P 2H P
-FAIL: None (expected P) for 9.8753.7652.8732 (hcp: 0 lp: 0 sp: 3), history: 1N P 2C P 2S P
-FAIL: None (expected P) for 2.J8742.652.Q732 (hcp: 3 lp: 4 sp: 6), history: 1N P 2C P 2D P
-FAIL: None (expected 2C) for 2.J8742.652.Q732 (hcp: 3 lp: 4 sp: 6), history: 1N P (subtest of 1N P 2C P 2D P)
-FAIL: None (expected P) for 2.J8742.652.Q732 (hcp: 3 lp: 4 sp: 6), history: 1N P 2C P 2H P
-FAIL: None (expected P) for 2.J8742.652.Q732 (hcp: 3 lp: 4 sp: 6), history: 1N P 2C P 2S P
-FAIL: None (expected P) for 8.T9762.Q732.J65 (hcp: 3 lp: 4 sp: 6), history: 1N P 2C P 2D P
-FAIL: None (expected 2C) for 8.T9762.Q732.J65 (hcp: 3 lp: 4 sp: 6), history: 1N P (subtest of 1N P 2C P 2D P)
-FAIL: None (expected P) for 8.T9762.Q732.J65 (hcp: 3 lp: 4 sp: 6), history: 1N P 2C P 2H P
-FAIL: None (expected P) for 8.T9762.Q732.J65 (hcp: 3 lp: 4 sp: 6), history: 1N P 2C P 2S P
-Pass 0 of 12 hands
+Pass 12 of 12 hands
 
 test_fourth_suit_forcing:
 FAIL: 3N (expected 2D) for QT72.742.A8.AK97 (hcp: 13 lp: 13 sp: 14), history: 1H P 1S P 2C P
@@ -708,4 +696,4 @@ FAIL: 3S (expected 4S) for K74.9.J98.KJT742 (hcp: 8 lp: 10 sp: 11), history: 1N 
 FAIL: 2N (expected P) for Q87.J843.K65.Q93 (hcp: 8 lp: 8 sp: 8), history: 1N P
 Pass 1 of 3 hands
 
-Pass 474 (44%) of 1060 total hands
+Pass 486 (45%) of 1060 total hands

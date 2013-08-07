@@ -712,6 +712,7 @@ nt_response_priorities = enum.Enum(
     "Stayman",
     "LongMinorGameInvitation",
     "TwoSpadesRelay",
+    "GarbageStayman",
 )
 
 
@@ -732,7 +733,7 @@ class BasicStayman(NoTrumpResponse):
 class Stayman(BasicStayman):
     preconditions = BasicStayman.preconditions + [NotJumpFromPartnerLastBid()]
     constraints = {
-        '2C': MinimumCombinedPoints(23),
+        '2C': ConstraintOr(MinimumCombinedPoints(23), ThreeSuitedHand(suit.CLUBS)),
         '3C': MinimumCombinedPoints(25),
     }
 
@@ -868,6 +869,22 @@ class LongMajorSlamInvitation(OneNoTrumpResponse):
     shared_constraints = [MinLength(6), TwoOfTheTopThree(), points >= 14]
     # FIXME: Should use the longer suit preference pattern.
     priority = nt_response_priorities.LongMajorSlamInvitation
+
+
+stayman_rebid_priorities = enum.Enum(
+    "GarbagePassStaymanRebid",
+)
+
+
+class StaymanRebid(RuleDescription):
+    preconditions = RuleDescription.preconditions + [LastBidHasAnnotation(positions.Me, annotations.Stayman)]
+    category = categories.NoTrumpSystem
+
+
+class GarbagePassStaymanRebid(StaymanRebid):
+    call_name = 'P'
+    shared_constraints = [MaximumPoints(7)]
+    priority = stayman_rebid_priorities.GarbagePassStaymanRebid
 
 
 overcall_priorities = enum.Enum(
@@ -1072,5 +1089,6 @@ class StandardAmericanYellowCard(object):
     priority_ordering.make_less_than(natural_priorities, opener_rebid_priorities)
     priority_ordering.make_less_than(natural_priorities, nt_response_priorities)
     priority_ordering.make_less_than(natural_priorities, stayman_response_priorities)
+    priority_ordering.make_less_than(natural_priorities, stayman_rebid_priorities)
     priority_ordering.make_less_than(forced_rebid_priorities, natural_priorities)
     priority_ordering.make_less_than(natural_priorities, two_clubs_opener_rebid_priorities)

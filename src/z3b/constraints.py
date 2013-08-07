@@ -48,6 +48,13 @@ class MinimumCombinedPoints(Constraint):
         return model.points >= max(0, self.min_points - history.partner.min_points)
 
 
+class MaximumPoints(Constraint):
+    def __init__(self, max_points):
+        self.max_points = max_points
+
+    def expr(self, history, call):
+        return model.points <= self.max_points
+
 class MinLength(Constraint):
     def __init__(self, min_length):
         self.min_length = min_length
@@ -74,3 +81,16 @@ class ThreeOfTheTopFive(Constraint):
             model.three_of_the_top_five_hearts,
             model.three_of_the_top_five_spades,
         )[call.strain]
+
+
+class ThreeSuitedHand(Constraint):
+    def __init__(self, short_suit):
+        self.short_suit = short_suit
+
+    def expr(self, history, call):
+        return (
+            model.three_suited_short_clubs,
+            model.three_suited_short_diamonds,
+            model.three_suited_short_hearts,
+            model.three_suited_short_spades,
+        )[self.short_suit]
