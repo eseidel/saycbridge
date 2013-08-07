@@ -19,6 +19,7 @@ categories = enum.Enum(
     "NoTrumpSystem",
     "Default",
     "Natural",
+    "LawOfTotalTricks",
 )
 
 # This is a public interface from RuleGenerators to the rest of the system.
@@ -1146,6 +1147,37 @@ class FourLevelPremptiveOvercall(DirectOvercall):
     priority = overcall_priorities.FourLevelPremptive
 
 
+the_law_priorities = enum.Enum(
+    "FourLevelLaw",
+    "ThreeLevelLaw",
+    "TwoLevelLaw",
+)
+
+
+class LawOfTotalTricks(RuleDescription):
+    preconditions = [
+        InvertedPrecondition(Opened(positions.Me)),
+        RaiseOfPartnersLastSuit()
+    ]
+    shared_constraints = [LengthSatisfiesLawOfTotalTricks()]
+    category = categories.LawOfTotalTricks
+
+
+class TwoLevelLaw(LawOfTotalTricks):
+    call_names = ['2C', '2D', '2H', '2S']
+    priority = the_law_priorities.TwoLevelLaw
+
+
+class ThreeLevelLaw(LawOfTotalTricks):
+    call_names = ['3C', '3D', '3H', '3S']
+    priority = the_law_priorities.ThreeLevelLaw
+
+
+class FourLevelLaw(LawOfTotalTricks):
+    call_names = ['4C', '4D', '4H', '4S']
+    priority = the_law_priorities.FourLevelLaw
+
+
 feature_asking_priorites = enum.Enum(
     "Gerber",
     "Blackwood",
@@ -1267,3 +1299,4 @@ class StandardAmericanYellowCard(object):
     priority_ordering.make_less_than(natural_priorities, stayman_response_priorities)
     priority_ordering.make_less_than(natural_priorities, two_clubs_opener_rebid_priorities)
     priority_ordering.make_less_than(forced_rebid_priorities, natural_priorities)
+    priority_ordering.make_less_than(the_law_priorities, natural_priorities)

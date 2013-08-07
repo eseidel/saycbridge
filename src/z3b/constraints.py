@@ -47,6 +47,13 @@ class MaxLength(Constraint):
         return expr_for_suit(call.strain) <= self.max_length
 
 
+class LengthSatisfiesLawOfTotalTricks(Constraint):
+    def expr(self, history, call):
+        # Written forward: level = partner_min + my_min - 6
+        my_count = call.level() + 6 - history.partner.min_length(call.strain)
+        return expr_for_suit(call.strain) >= my_count
+
+
 class SupportForPartnerLastBid(Constraint):
     def __init__(self, min_count):
         self._min_count = min_count
