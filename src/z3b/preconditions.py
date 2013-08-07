@@ -88,7 +88,8 @@ class ForcedToBid(Precondition):
             return True
         # FIXME: We're attempting to express that partner is unbounded but
         # partner is never truly unbounded if other players have bid.
-        return history.partner.could_have_more_points_than(25)
+        # "Game is not remote" might be better?
+        return history.partner.could_have_more_points_than(17)
 
     def fits(self, history, call):
         return self._is_forced_to_bid(history)
