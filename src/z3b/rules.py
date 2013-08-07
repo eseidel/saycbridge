@@ -24,25 +24,25 @@ categories = enum.Enum(
 
 # This is a public interface from RuleGenerators to the rest of the system.
 # This class knows nothing about the DSL.
-class Rule(object):
-    def __init__(self, rule_description):
-        self.rule_description = rule_description
+class EngineRule(object):
+    def __init__(self, rule):
+        self.rule = rule
 
     def requires_planning(self, history):
-        return self.rule_description.requires_planning
+        return self.rule.requires_planning
 
     def annotations(self, history):
-        return self.rule_description.annotations
+        return self.rule.annotations
 
     @property
     def name(self):
-        return self.rule_description.name
+        return self.rule.name
 
     def __str__(self):
         return self.name
 
     def __repr__(self):
-        return "Rule(%s)" % repr(self.rule_description)
+        return "EngineRule(%s)" % repr(self.rule)
 
     # FIXME: This exists for compatiblity with KBB's Rule interface and is used by bidder_handler.py
     def explanation_for_bid(self, call):
@@ -53,17 +53,17 @@ class Rule(object):
         return None
 
     def _fits_preconditions(self, history, call, expected_call=None):
-        for precondition in self.rule_description.preconditions:
+        for precondition in self.rule.preconditions:
             if not precondition.fits(history, call):
-                if call == expected_call and expected_call in self.rule_description.known_calls():
+                if call == expected_call and expected_call in self.rule.known_calls():
                     print " %s failed: %s" % (self, precondition)
                 return False
         return True
 
     def _possible_calls_over(self, history):
-        # If the RuleDescription applies to an a priori known set of calls, we only need to consider those.
+        # If the Rule applies to an a priori known set of calls, we only need to consider those.
         # FIXME: We could standardize this on some sort of call_preconditions instead?
-        known_calls = self.rule_description.known_calls()
+        known_calls = self.rule.known_calls()
         if known_calls:
             return history.legal_calls.intersection(known_calls)
         # Otherwise we ask it about each legal call (which is slow).
@@ -72,23 +72,23 @@ class Rule(object):
     def calls_over(self, history, expected_call=None):
         for call in self._possible_calls_over(history):
             if self._fits_preconditions(history, call, expected_call):
-                yield self.rule_description.category, call
+                yield self.rule.category, call
 
     def meaning_of(self, history, call):
-        exprs = self.rule_description.constraint_exprs_for_call(history, call)
-        for condition, priority in self.rule_description.conditional_priorities:
-            condition_exprs = self.rule_description.exprs_from_constraints(condition, history, call)
+        exprs = self.rule.constraint_exprs_for_call(history, call)
+        for condition, priority in self.rule.conditional_priorities:
+            condition_exprs = self.rule.exprs_from_constraints(condition, history, call)
             yield priority, z3.And(exprs + condition_exprs)
 
-        _, priority = self.rule_description.per_call_constraints_and_priority(call)
+        _, priority = self.rule.per_call_constraints_and_priority(call)
         assert priority
         yield priority, z3.And(exprs)
 
 
-# The rules of SAYC are all described in terms of RuleDescription.
+# The rules of SAYC are all described in terms of Rule.
 # These classes exist to support the DSL and make it easy to concisely express
 # the conventions of SAYC.
-class RuleDescription(object):
+class Rule(object):
     # FIXME: Consider splitting call_preconditions out from preconditions
     # for preconditions which only operate on the call?
     preconditions = []
@@ -206,7 +206,7 @@ natural_priorities = enum.Enum(
 )
 
 
-class Natural(RuleDescription):
+class Natural(Rule):
     # FIXME: This should have a SomeoneOpened() precondition.
     category = categories.Natural
 
@@ -274,7 +274,7 @@ opening_priorities = enum.Enum(
 )
 
 
-class Opening(RuleDescription):
+class Opening(Rule):
     annotations = [annotations.Opening]
     preconditions = [NoOpening()]
 
@@ -366,7 +366,7 @@ response_priorities = enum.Enum(
 )
 
 
-class Response(RuleDescription):
+class Response(Rule):
     preconditions = [LastBidHasAnnotation(positions.Partner, annotations.Opening)]
 
 
@@ -481,9 +481,9 @@ jacoby_2n_response_priorities = enum.Enum(
 )
 
 
-class ResponseToJacoby2N(RuleDescription):
+class ResponseToJacoby2N(Rule):
     # Bids above 4NT are either natural or covered by other conventions.
-    preconditions = RuleDescription.preconditions + [LastBidHasAnnotation(positions.Partner, annotations.Jacoby2N)]
+    preconditions = Rule.preconditions + [LastBidHasAnnotation(positions.Partner, annotations.Jacoby2N)]
     category = categories.Gadget
 
 
@@ -491,7 +491,7 @@ class SingletonResponseToJacoby2N(ResponseToJacoby2N):
     preconditions = ResponseToJacoby2N.preconditions + [InvertedPrecondition(RebidSameSuit())]
     call_names = ['3C', '3D', '3H', '3S']
     shared_constraints = [MaxLength(1)]
-    annotations = RuleDescription.annotations + [annotations.Artificial]
+    annotations = Rule.annotations + [annotations.Artificial]
     priority = jacoby_2n_response_priorities.Singleton
 
 
@@ -738,7 +738,7 @@ forced_rebid_priorities = enum.Enum(
     "ForcedRebidOriginalSuit",
 )
 
-class OpenerRebid(RuleDescription):
+class OpenerRebid(Rule):
     preconditions = [LastBidHasAnnotation(positions.Me, annotations.Opening)]
 
 
@@ -853,8 +853,8 @@ class OpenerSuitedJumpRebidAfterStrongTwoClubs(OpenerRebidAfterStrongTwoClubs):
 # This is not covered in the book or the SAYC pdf.
 
 
-# class ResponderRebid(RuleDescription):
-#     preconditions = RuleDescription.preconditions + [
+# class ResponderRebid(Rule):
+#     preconditions = Rule.preconditions + [
 #         # FIXME: Specifically these only apply when 2 bids ago partner opened.
 #         Opened(positions.Partner),
 #         HaveBid(),
@@ -951,9 +951,9 @@ class TwoSpadesRelay(NoTrumpTransferResponse):
     priority = nt_response_priorities.TwoSpadesRelay
 
 
-class AcceptTransferToHearts(RuleDescription):
+class AcceptTransferToHearts(Rule):
     category = categories.Relay
-    preconditions = RuleDescription.preconditions + [
+    preconditions = Rule.preconditions + [
         LastBidHasAnnotation(positions.Partner, annotations.Transfer),
         LastBidHasStrain(positions.Partner, suit.DIAMONDS),
         Strain(suit.HEARTS),
@@ -963,9 +963,9 @@ class AcceptTransferToHearts(RuleDescription):
     priority = relay_priorities.Relay
 
 
-class AcceptTransferToSpades(RuleDescription):
+class AcceptTransferToSpades(Rule):
     category = categories.Relay
-    preconditions = RuleDescription.preconditions + [
+    preconditions = Rule.preconditions + [
         LastBidHasAnnotation(positions.Partner, annotations.Transfer),
         LastBidHasStrain(positions.Partner, suit.HEARTS),
         Strain(suit.SPADES),
@@ -983,8 +983,8 @@ stayman_response_priorities = enum.Enum(
 )
 
 
-class StaymanResponse(RuleDescription):
-    preconditions = RuleDescription.preconditions + [LastBidHasAnnotation(positions.Partner, annotations.Stayman)]
+class StaymanResponse(Rule):
+    preconditions = Rule.preconditions + [LastBidHasAnnotation(positions.Partner, annotations.Stayman)]
 
 
 class NaturalStaymanResponse(StaymanResponse):
@@ -1053,8 +1053,8 @@ overcall_priorities = enum.Enum(
 )
 
 
-class DirectOvercall(RuleDescription):
-    preconditions = RuleDescription.preconditions + [LastBidHasAnnotation(positions.RHO, annotations.Opening)]
+class DirectOvercall(Rule):
+    preconditions = Rule.preconditions + [LastBidHasAnnotation(positions.RHO, annotations.Opening)]
 
 
 class OneLevelDiamondOvercall(DirectOvercall):
@@ -1081,7 +1081,7 @@ class OneLevelSpadeOvercall(DirectOvercall):
     priority = overcall_priorities.DirectOvercallMajor
 
 
-class TakeoutDouble(RuleDescription):
+class TakeoutDouble(Rule):
     call_name = 'X'
     preconditions = [
         LastBidHasSuit(),
@@ -1155,7 +1155,7 @@ the_law_priorities = enum.Enum(
 )
 
 
-class LawOfTotalTricks(RuleDescription):
+class LawOfTotalTricks(Rule):
     preconditions = [
         InvertedPrecondition(Opened(positions.Me)),
         RaiseOfPartnersLastSuit()
@@ -1190,7 +1190,7 @@ feature_asking_priorites = enum.Enum(
 )
 
 
-class Gerber(RuleDescription):
+class Gerber(Rule):
     category = categories.Gadget
     requires_planning = True
     shared_constraints = NO_CONSTRAINTS
@@ -1213,9 +1213,9 @@ class GerberForKings(Gerber):
     ]
 
 
-class ResponseToGerber(RuleDescription):
+class ResponseToGerber(Rule):
     category = categories.Relay
-    preconditions = RuleDescription.preconditions + [
+    preconditions = Rule.preconditions + [
         LastBidHasAnnotation(positions.Partner, annotations.Gerber),
         NotJumpFromPartnerLastBid(),
     ]
@@ -1234,7 +1234,7 @@ class ResponseToGerber(RuleDescription):
 
 
 # Blackwood is done, just needs JumpOrHaveFit() and some testing.
-# class Blackwood(RuleDescription):
+# class Blackwood(Rule):
 #     category = categories.Gadget
 #     requires_planning = True
 #     shared_constraints = NO_CONSTRAINTS
@@ -1258,9 +1258,9 @@ class ResponseToGerber(RuleDescription):
 #     ]
 
 
-# class ResponseToBlackwood(RuleDescription):
+# class ResponseToBlackwood(Rule):
 #     category = categories.Relay
-#     preconditions = RuleDescription.preconditions + [
+#     preconditions = Rule.preconditions + [
 #         LastBidHasAnnotation(positions.Partner, annotations.Blackwood),
 #         NotJumpFromPartnerLastBid(),
 #     ]
@@ -1285,13 +1285,13 @@ def _get_subclasses(base_class):
         subclasses.extend(_get_subclasses(subclass))
     return subclasses
 
-def _concrete_rule_description_classes():
-    return filter(lambda cls: not cls.__subclasses__(), _get_subclasses(RuleDescription))
+def _concrete_rule_classes():
+    return filter(lambda cls: not cls.__subclasses__(), _get_subclasses(Rule))
 
 
 class StandardAmericanYellowCard(object):
     # Rule ordering does not matter.  We could have python crawl the files to generate this list instead.
-    rules = [Rule(description_class()) for description_class in _concrete_rule_description_classes()]
+    rules = [EngineRule(description_class()) for description_class in _concrete_rule_classes()]
     priority_ordering = PartialOrdering()
 
     priority_ordering.make_less_than(preempt_priorities, opening_priorities)
