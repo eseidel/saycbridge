@@ -4,6 +4,7 @@
 
 from z3b.model import expr_for_suit
 import z3b.model as model
+import z3
 
 
 class Constraint(object):
@@ -55,6 +56,21 @@ class SupportForPartnerLastBid(Constraint):
         return expr_for_suit(partner_suit) >= self._min_count
 
 
+class SupportForUnbidSuits(Constraint):
+    def _four_in_almost_every_suit(self, missing_suit, suits):
+        return z3.And([expr_for_suit(suit) >= 4 for suit in set(suits) - set([missing_suit])])
+
+    def expr(self, history, call):
+        unbid_suits = history.unbid_suits
+        if len(unbid_suits) == 3:
+            three_card_support_expr = z3.And([expr_for_suit(suit) >= 3 for suit in unbid_suits])
+            four_card_support_expr = z3.Or([self._four_in_almost_every_suit(missing_suit, unbid_suits) for missing_suit in unbid_suits])
+            return z3.And(three_card_support_expr, four_card_support_expr)
+        if len(unbid_suits) == 2:
+            return z3.And([expr_for_suit(suit) >= 4 for suit in unbid_suits])
+        assert False, "SupportForUnbidSuits only supports 2 or 3 unbid suits."
+
+
 class TwoOfTheTopThree(Constraint):
     def expr(self, history, call):
         return (
@@ -73,3 +89,13 @@ class ThreeOfTheTopFive(Constraint):
             model.three_of_the_top_five_hearts,
             model.three_of_the_top_five_spades,
         )[call.strain]
+
+
+class OpeningRuleConstraint(Constraint):
+    def expr(self, history, call):
+        if history.rho.last_call is None or history.partner.last_call is None or history.lho.last_call is None:
+            return model.rule_of_twenty
+        # FIXME: We play rule-of-nineteen, but it's inconsistent with some test cases
+        #if history.lho.last_call is None:
+        #    return model.rule_of_nineteen
+        return model.rule_of_fifteen

@@ -142,7 +142,7 @@ class RuleDescription(object):
             try:
                 if isinstance(list(constraints_tuple)[-1], enum.EnumValue):
                     assert len(constraints_tuple) == 2
-                    return constraints_tuple                
+                    return constraints_tuple
             except TypeError:
                 pass
         assert self.priority, "" + self.name + " is missing priority"
@@ -278,9 +278,10 @@ class Opening(RuleDescription):
     preconditions = [NoOpening()]
 
 
+
 class OneClubOpening(Opening):
     call_name = '1C'
-    shared_constraints = [rule_of_twenty, clubs >= 3]
+    shared_constraints = [OpeningRuleConstraint(), clubs >= 3]
     conditional_priorities = [
         (z3.Or(clubs > diamonds, z3.And(clubs == 3, diamonds == 3)), opening_priorities.LongestMinor),
     ]
@@ -289,7 +290,7 @@ class OneClubOpening(Opening):
 
 class OneDiamondOpening(Opening):
     call_name = '1D'
-    shared_constraints = [rule_of_twenty, diamonds >= 3]
+    shared_constraints = [OpeningRuleConstraint(), diamonds >= 3]
     conditional_priorities = [
         (diamonds > clubs, opening_priorities.LongestMinor),
     ]
@@ -298,7 +299,7 @@ class OneDiamondOpening(Opening):
 
 class OneHeartOpening(Opening):
     call_name = '1H'
-    shared_constraints = [rule_of_twenty, hearts >= 5]
+    shared_constraints = [OpeningRuleConstraint(), hearts >= 5]
     conditional_priorities = [
         (hearts > spades, opening_priorities.LongestMajor),
     ]
@@ -307,7 +308,7 @@ class OneHeartOpening(Opening):
 
 class OneSpadeOpening(Opening):
     call_name = '1S'
-    shared_constraints = [rule_of_twenty, spades >= 5]
+    shared_constraints = [OpeningRuleConstraint(), spades >= 5]
     conditional_priorities = [
         (spades > hearts, opening_priorities.LongestMajor),
     ]
@@ -537,7 +538,7 @@ class JumpShiftResponseToOpen(ResponseToOneLevelSuitedOpen):
 class NegativeDouble(ResponseToOneLevelSuitedOpen):
     call_name = 'X'
     preconditions = ResponseToOneLevelSuitedOpen.preconditions + [
-        LastBidWasSuit(positions.RHO),
+        LastBidHasSuit(positions.RHO),
         MaxLevel(2),
     ]
     priority = response_priorities.NegativeDouble
@@ -1041,6 +1042,7 @@ class LongMajorSlamInvitation(OneNoTrumpResponse):
 
 
 overcall_priorities = enum.Enum(
+    "TakeoutDouble",
     "DirectOvercallLongestMajor",
     "DirectOvercallMajor",
     "DirectOvercallMinor",
@@ -1076,6 +1078,25 @@ class OneLevelSpadeOvercall(DirectOvercall):
         (spades >= hearts, overcall_priorities.DirectOvercallLongestMajor),
     ]
     priority = overcall_priorities.DirectOvercallMajor
+
+
+class TakeoutDouble(RuleDescription):
+    call_name = 'X'
+    preconditions = [
+        LastBidHasSuit(),
+        HasNotBid(positions.Partner),
+        # LastBidWasNaturalSuit(),
+        # LastBidWasBelowGame(),
+        MinUnbidSuitCount(2),
+    ]
+    annotations = [ annotations.TakeoutDouble ]
+    shared_constraints = [ SupportForUnbidSuits() ]
+    priority = overcall_priorities.TakeoutDouble
+
+
+class OneLevelTakeoutDouble(TakeoutDouble):
+    preconditions = TakeoutDouble.preconditions + [MaxLevel(1)]
+    shared_constraints = TakeoutDouble.shared_constraints + [ points >= 11 ]
 
 
 preempt_priorities = enum.Enum(
@@ -1239,6 +1260,7 @@ class StandardAmericanYellowCard(object):
     priority_ordering.make_less_than(response_priorities, nt_response_priorities)
     priority_ordering.make_less_than(response_priorities, two_clubs_response_priorities)
     priority_ordering.make_less_than(response_priorities, jacoby_2n_response_priorities)
+    priority_ordering.make_less_than(natural_priorities, overcall_priorities)
     priority_ordering.make_less_than(natural_priorities, response_priorities)
     priority_ordering.make_less_than(natural_priorities, opener_rebid_priorities)
     priority_ordering.make_less_than(natural_priorities, nt_response_priorities)
