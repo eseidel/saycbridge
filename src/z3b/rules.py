@@ -24,9 +24,11 @@ categories = enum.Enum(
 
 # This is a public interface from RuleGenerators to the rest of the system.
 # This class knows nothing about the DSL.
-class EngineRule(object):
-    def __init__(self, rule):
+class CompiledRule(object):
+    def __init__(self, rule, preconditions, shared_constraints):
         self.rule = rule
+        self.preconditions = preconditions
+        self.shared_constraints = shared_constraints
 
     def requires_planning(self, history):
         return self.rule.requires_planning
@@ -53,11 +55,15 @@ class EngineRule(object):
         return None
 
     def _fits_preconditions(self, history, call, expected_call=None):
-        for precondition in self.rule.collected_preconditions():
-            if not precondition.fits(history, call):
-                if call == expected_call and expected_call in self.rule.known_calls():
-                    print " %s failed: %s" % (self, precondition)
-                return False
+        try:
+            for precondition in self.preconditions:
+                if not precondition.fits(history, call):
+                    if call == expected_call and expected_call in self.rule.known_calls():
+                        print " %s failed: %s" % (self, precondition)
+                    return False
+        except Exception, e:
+            print "Exception evaluating preconditions for %s" % self.name
+            raise
         return True
 
     def _possible_calls_over(self, history):
@@ -74,15 +80,65 @@ class EngineRule(object):
             if self._fits_preconditions(history, call, expected_call):
                 yield self.rule.category, call
 
+    def _constraint_exprs_for_call(self, history, call):
+        exprs = []
+        per_call_constraints, _ = self.rule.per_call_constraints_and_priority(call)
+        if per_call_constraints:
+            exprs.extend(RuleCompiler.exprs_from_constraints(per_call_constraints, history, call))
+        exprs.extend(RuleCompiler.exprs_from_constraints(self.shared_constraints, history, call))
+        return exprs
+
     def meaning_of(self, history, call):
-        exprs = self.rule.constraint_exprs_for_call(history, call)
+        exprs = self._constraint_exprs_for_call(history, call)
         for condition, priority in self.rule.conditional_priorities:
-            condition_exprs = self.rule.exprs_from_constraints(condition, history, call)
+            condition_exprs = RuleCompiler.exprs_from_constraints(condition, history, call)
             yield priority, z3.And(exprs + condition_exprs)
 
         _, priority = self.rule.per_call_constraints_and_priority(call)
         assert priority
         yield priority, z3.And(exprs)
+
+
+class RuleCompiler(object):
+    @classmethod
+    def exprs_from_constraints(cls, constraints, history, call):
+        if not constraints:
+            return [NO_CONSTRAINTS]
+
+        if isinstance(constraints, Constraint):
+            return [constraints.expr(history, call)]
+
+        if isinstance(constraints, z3.ExprRef):
+            return [constraints]
+
+        return chain.from_iterable([cls.exprs_from_constraints(constraint, history, call) for constraint in constraints])
+
+    @classmethod
+    def _collect_from_ancestors(cls, dls_class, property_name):
+        getter = lambda ancestor: getattr(ancestor, property_name, [])
+        # The DSL expects that parent preconditions, etc. apply before child ones.
+        return map(getter, reversed(dls_class.__mro__))
+
+    @classmethod
+    def _ensure_list(cls, value_or_list):
+        if value_or_list and not hasattr(value_or_list, '__iter__'):
+            return [value_or_list]
+        return value_or_list
+
+    @classmethod
+    def _joined_list_from_ancestors(cls, dsl_class, property_name):
+        values_from_ancestors = cls._collect_from_ancestors(dsl_class, property_name)
+        mapped_values = map(cls._ensure_list, values_from_ancestors)
+        return list(chain.from_iterable(mapped_values))
+
+    @classmethod
+    def compile(cls, dsl_rule_class):
+        dsl_rule = dsl_rule_class()
+        # Unclear if compiled results should be memoized on the rule?
+        return CompiledRule(dsl_rule,
+            preconditions=cls._joined_list_from_ancestors(dsl_rule_class, 'preconditions'),
+            shared_constraints=cls._joined_list_from_ancestors(dsl_rule_class, 'shared_constraints')
+        )
 
 
 # The rules of SAYC are all described in terms of Rule.
@@ -148,56 +204,6 @@ class Rule(object):
                 pass
         assert self.priority, "" + self.name + " is missing priority"
         return constraints_tuple, self.priority
-
-    def exprs_from_constraints(self, constraints, history, call):
-        if not constraints:
-            return [NO_CONSTRAINTS]
-
-        if isinstance(constraints, Constraint):
-            return [constraints.expr(history, call)]
-
-        if isinstance(constraints, z3.ExprRef):
-            return [constraints]
-
-        return chain.from_iterable([self.exprs_from_constraints(constraint, history, call) for constraint in constraints])
-
-    # FIXME: This collected_ logic should just be an @collected decorator on preconditions.
-    @classmethod
-    @memoized
-    def collected_preconditions(cls):
-        super_cls = cls.__mro__[1]
-        parent_preconditions = super_cls.collected_preconditions() if hasattr(super_cls, 'collected_preconditions') else []
-        non_inherited_preconditions = cls.__dict__.get('preconditions')
-        # FIXME: Should use some sort of @always_list decorator on the preconditions attr instead.
-        if non_inherited_preconditions and not hasattr(non_inherited_preconditions, '__iter__'):
-            non_inherited_preconditions = [non_inherited_preconditions]
-        if non_inherited_preconditions:
-            # Important that we don't modify parent_preconditions lest we confuse memoize
-            return parent_preconditions + list(non_inherited_preconditions) # sometimes we use tuples, convert them to lists.
-        return parent_preconditions
-
-    # FIXME: This collected_ logic should just be an @collected decorator on constraints.
-    @classmethod
-    @memoized
-    def collected_shared_constraints(cls):
-        super_cls = cls.__mro__[1]
-        parent_constraints = super_cls.collected_shared_constraints() if hasattr(super_cls, 'collected_shared_constraints') else []
-        non_inherited_constraints = cls.__dict__.get('shared_constraints')
-        # FIXME: Should use some sort of @always_list decorator on the constraints attr instead.
-        if non_inherited_constraints and not hasattr(non_inherited_constraints, '__iter__'):
-            non_inherited_constraints = [non_inherited_constraints]
-        if non_inherited_constraints:
-            # Important that we don't modify parent_constraints lest we confuse memoize
-            return parent_constraints + list(non_inherited_constraints) # sometimes we use tuples, convert them to lists.
-        return parent_constraints
-
-    def constraint_exprs_for_call(self, history, call):
-        exprs = []
-        per_call_constraints, _ = self.per_call_constraints_and_priority(call)
-        if per_call_constraints:
-            exprs.extend(self.exprs_from_constraints(per_call_constraints, history, call))
-        exprs.extend(self.exprs_from_constraints(self.collected_shared_constraints(), history, call))
-        return exprs
 
 
 relay_priorities = enum.Enum(
@@ -1371,7 +1377,7 @@ def _concrete_rule_classes():
 
 class StandardAmericanYellowCard(object):
     # Rule ordering does not matter.  We could have python crawl the files to generate this list instead.
-    rules = [EngineRule(description_class()) for description_class in _concrete_rule_classes()]
+    rules = [RuleCompiler.compile(description_class) for description_class in _concrete_rule_classes()]
     priority_ordering = PartialOrdering()
 
     priority_ordering.make_less_than(preempt_priorities, opening_priorities)
