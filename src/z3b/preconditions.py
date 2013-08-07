@@ -13,6 +13,7 @@ annotations = enum.Enum(
     "Stayman",
     "Gerber",
     "Transfer",
+    "NegativeDouble",
 )
 
 
@@ -102,6 +103,15 @@ class LastBidHasStrain(Precondition):
         return last_call and last_call.strain == self.strain
 
 
+class LastBidWasSuit(Precondition):
+    def __init__(self, position):
+        self.position = position
+
+    def fits(self, history, call):
+        last_call = history.view_for(self.position).last_call
+        return last_call and last_call.strain in suit.SUITS
+
+
 class LastBidHasLevel(Precondition):
     def __init__(self, position, level):
         self.position = position
@@ -170,6 +180,16 @@ class Strain(Precondition):
 
     def fits(self, history, call):
         return call.strain == self.strain
+
+
+class MaxLevel(Precondition):
+    def __init__(self, max_level):
+        self.max_level = max_level
+
+    def fits(self, history, call):
+        if call.is_double():
+            return history.last_contract.level() <= self.max_level
+        return call.is_contract() and call.level() <= self.max_level
 
 
 class MinimumCombinedPointsPrecondition(Precondition):

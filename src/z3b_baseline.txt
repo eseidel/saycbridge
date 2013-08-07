@@ -232,8 +232,6 @@ FAIL: None (expected 2C) for AQ765.AQ8.J3.K83 (hcp: 16 lp: 17 sp: 16), history: 
 FAIL: None (expected 1S) for KJ87.53.94.AKJT3 (hcp: 12 lp: 13 sp: 14), history: 1C P 1D
 FAIL: 4D (expected P) for A93.Q762.K832.J3 (hcp: 10 lp: 10 sp: 10), history: 1D P 1H P 1S P 2N P 3N P
 FAIL: None (expected P) for 864.A6.QJ65.K987 (hcp: 10 lp: 10 sp: 11), history: P (subtest of P P P 1N P 2C P 2H P)
-FAIL: None (expected 3N) for A973.KJT82.J43.Q (hcp: 11 lp: 12 sp: 12), history: P 1S 2H X P 2N P
-FAIL: 2N (expected X) for A973.KJT82.J43.Q (hcp: 11 lp: 12 sp: 12), history: P 1S 2H (subtest of P 1S 2H X P 2N P)
 FAIL: None (expected P) for 6.AKJ75.KJT86.A4 (hcp: 16 lp: 18 sp: 20), history: 1H P 2N P 4D P 4H P
 FAIL: None (expected 4D) for 6.AKJ75.KJT86.A4 (hcp: 16 lp: 18 sp: 20), history: 1H P 2N P (subtest of 1H P 2N P 4D P 4H P)
 FAIL: 1N (expected 2C) for KQT4.AT96.632.T8 (hcp: 9 lp: 9 sp: 10), history: 1C P 1D P 1S P
@@ -264,7 +262,6 @@ FAIL: None (expected P) for A642.53.973.AT98 (hcp: 8 lp: 8 sp: 9), history: P 1D
 FAIL: None (expected P) for KJ52.K92.AK84.J5 (hcp: 15 lp: 15 sp: 15), history: 1D 1N P 2C P 2H P 3H P
 FAIL: None (expected 2H) for KJ52.K92.AK84.J5 (hcp: 15 lp: 15 sp: 15), history: 1D 1N P 2C P (subtest of 1D 1N P 2C P 2H P 3H P)
 FAIL: None (expected 1N) for KJ52.K92.AK84.J5 (hcp: 15 lp: 15 sp: 15), history: 1D (subtest of 1D 1N P 2C P 2H P 3H P)
-FAIL: 1S (expected X) for K76.2.J975.AT942 (hcp: 8 lp: 9 sp: 11), history: 1C 1D
 FAIL: None (expected 3S) for 75.J5.82.AKQJ753 (hcp: 11 lp: 14 sp: 13), history: 1H P 2C
 FAIL: None (expected P) for AKQ643.KQ76.9.72 (hcp: 14 lp: 16 sp: 18), history: P P 1C P 1S P 2C P 3C P
 FAIL: None (expected 3N) for AK83.8652.8.AJ73 (hcp: 12 lp: 12 sp: 15), history: 1D P 1S P 1N P 2N P 3S P
@@ -353,6 +350,7 @@ FAIL: None (expected 4H) for J42.AT9.987632.5 (hcp: 5 lp: 7 sp: 8), history: 1D 
 FAIL: None (expected 4S) for AK742.A.T972.Q63 (hcp: 13 lp: 14 sp: 16), history: 1C P 1S P 1N P 3S P
 FAIL: None (expected 2H) for 732.A62.KQ964.J7 (hcp: 10 lp: 11 sp: 10), history: P P 1D 1S P
 FAIL: None (expected P) for 732.A62.KQ964.J7 (hcp: 10 lp: 11 sp: 10), history: P (subtest of P P 1D 1S P)
+FAIL: 1N (expected 2D) for A.AQ94.KJT95.Q53 (hcp: 16 lp: 17 sp: 19), history: P P P 1H 1S X P
 FAIL: None (expected P) for 5.9643.K7542.QJ5 (hcp: 6 lp: 7 sp: 9), history: 1N P 2D P 2H P
 FAIL: 3S (expected 2N) for AKQ852.K8.T.KJ93 (hcp: 16 lp: 18 sp: 20), history: 1S P (subtest of 1S P 2N P 3H P)
 FAIL: None (expected 4H) for J5.KJ7.AKQ74.963 (hcp: 14 lp: 15 sp: 14), history: 1H X 2N P
@@ -399,7 +397,7 @@ FAIL: None (expected P) for A54.QT5.J743.QJ7 (hcp: 10 lp: 10 sp: 10), history:  
 FAIL: None (expected P) for J.AQ972.T5.JT964 (hcp: 8 lp: 10 sp: 11), history: 1H 2H 3C 4S P
 FAIL: 1S (expected 2H) for J.AQ972.T5.JT964 (hcp: 8 lp: 10 sp: 11), history: 1H (subtest of 1H 2H 3C 4S P)
 FAIL: None (expected X) for 8532.A854.A74.AK (hcp: 15 lp: 15 sp: 16), history: P 1H 2S P 3S P 4C 4H P P 5C
-FAIL: 3H (expected P) for 8532.A854.A74.AK (hcp: 15 lp: 15 sp: 16), history: P 1H 2S (subtest of P 1H 2S P 3S P 4C 4H P P 5C)
+FAIL: X (expected P) for 8532.A854.A74.AK (hcp: 15 lp: 15 sp: 16), history: P 1H 2S (subtest of P 1H 2S P 3S P 4C 4H P P 5C)
 FAIL: None (expected 2D) for 83.KQ732.Q2.AKJ9 (hcp: 15 lp: 16 sp: 15), history: P 1C 1D P P 1H 1S P P X
 FAIL: None (expected 1S) for 83.KQ732.Q2.AKJ9 (hcp: 15 lp: 16 sp: 15), history: P 1C 1D P P 1H (subtest of P 1C 1D P P 1H 1S P P X)
 FAIL: None (expected P) for 94.932.QT95.K872 (hcp: 5 lp: 5 sp: 6), history: 2C P P
@@ -428,39 +426,25 @@ FAIL: None (expected P) for K83.54.8632.A643 (hcp: 7 lp: 7 sp: 8), history: 1S (
 FAIL: None (expected P) for K5.J86532.K6.AJ8 (hcp: 12 lp: 14 sp: 14), history: P P P 1D P 1S P 2D P 3D P
 FAIL: None (expected X) for AKQ76..AT32.AT84 (hcp: 17 lp: 18 sp: 22), history: P P 1N
 FAIL: None (expected X) for AT6.KJ864.A4.A42 (hcp: 16 lp: 17 sp: 17), history: P 2H
-FAIL: 1N (expected X) for 962.863.KQJ7.KJ7 (hcp: 10 lp: 10 sp: 10), history: P P 1D 1S (subtest of P P 1D 1S X P 2C P)
 FAIL: None (expected P) for 962.863.KQJ7.KJ7 (hcp: 10 lp: 10 sp: 10), history:  (subtest of P P 1D 1S X P 2C P)
 FAIL: 3H (expected 2N) for K.K7.KJ98542.QT8 (hcp: 12 lp: 15 sp: 13), history: 1H P
 FAIL: None (expected 1N) for AKT4.AT.A82.J876 (hcp: 16 lp: 16 sp: 17), history: 1C P P
-Pass 155 of 369 hands
+Pass 158 of 369 hands
 
 test_negative_double:
-FAIL: None (expected X) for 74.876.KQ73.A863 (hcp: 9 lp: 9 sp: 10), history: 1D 2C
-FAIL: 1N (expected X) for 87.A864.K9653.76 (hcp: 7 lp: 8 sp: 9), history: 1C 1S
-FAIL: 1N (expected X) for 9872.K64.K875.63 (hcp: 6 lp: 6 sp: 7), history: 1C 1S
 FAIL: None (expected P) for 73.J986.J53.A864 (hcp: 6 lp: 6 sp: 7), history: 1C 2H
-FAIL: 1S (expected X) for 64.Q965.984.KQ75 (hcp: 7 lp: 7 sp: 8), history: 1C 1H
 FAIL: 3N (expected P) for 4.A3.KQ65.KJT865 (hcp: 13 lp: 15 sp: 17), history: 1C 1S P P X P
 FAIL: 1N (expected P) for 4.A3.KQ65.KJT865 (hcp: 13 lp: 15 sp: 17), history: 1C 1S (subtest of 1C 1S P P X P)
-FAIL: 3N (expected 3H) for KJ52.K9864..AQ64 (hcp: 13 lp: 14 sp: 18), history: 1C 2H X P 2S P
-FAIL: 3N (expected X) for KJ52.K9864..AQ64 (hcp: 13 lp: 14 sp: 18), history: 1C 2H (subtest of 1C 2H X P 2S P)
+FAIL: 4S (expected 3H) for KJ52.K9864..AQ64 (hcp: 13 lp: 14 sp: 18), history: 1C 2H X P 2S P
 FAIL: 3N (expected 3H) for KJ52.K9864..AQ64 (hcp: 13 lp: 14 sp: 18), history: 1C 2H X P 3C P
 FAIL: 3N (expected 3H) for KJ52.K9864..AQ64 (hcp: 13 lp: 14 sp: 18), history: 1C 2H X P 3D P
-FAIL: 3N (expected X) for KJ3.86.AQT7.K963 (hcp: 13 lp: 13 sp: 14), history: 1D 2C (subtest of 1D 2C X P 2D P)
-FAIL: 3N (expected 4H) for KJ3.86.AQT7.K963 (hcp: 13 lp: 13 sp: 14), history: 1D 2C X P 2H P
-FAIL: 3N (expected 4S) for KJ3.86.AQT7.K963 (hcp: 13 lp: 13 sp: 14), history: 1D 2C X P 2S P
-FAIL: 2N (expected X) for KJ4.T9.AJ74.Q875 (hcp: 11 lp: 11 sp: 12), history: 1D 2C (subtest of 1D 2C X P 2D P)
-FAIL: 2N (expected 3H) for KJ4.T9.AJ74.Q875 (hcp: 11 lp: 11 sp: 12), history: 1D 2C X P 2H P
-FAIL: 2N (expected 3S) for KJ4.T9.AJ74.Q875 (hcp: 11 lp: 11 sp: 12), history: 1D 2C X P 2S P
 FAIL: 1N (expected 2D) for J5.AQ864.A54.K76 (hcp: 14 lp: 15 sp: 14), history: 1D 1S X P
+FAIL: 1N (expected 2C) for KJ43.KQJ97.K5.87 (hcp: 13 lp: 14 sp: 15), history: 1D 1S X P
 FAIL: 1N (expected 3N) for KJ6.AQJ93.K5.AJ6 (hcp: 19 lp: 20 sp: 20), history: 1D 1S X P
 FAIL: 1N (expected 2S) for AQ6.KQJ97.AQ76.5 (hcp: 18 lp: 19 sp: 21), history: 1D 1S X P
 FAIL: 1N (expected 2H) for J43.KJ97.AQ76.Q7 (hcp: 13 lp: 13 sp: 12), history: 1D 1S X P
 FAIL: 1N (expected 2H) for 62.AQ876.KJ97.A8 (hcp: 14 lp: 15 sp: 16), history: 1D 1S X P
-FAIL: 1N (expected X) for KQ8.J9.Q8653.753 (hcp: 8 lp: 9 sp: 8), history: 1D 1S
-FAIL: None (expected 2S) for A864.863.AQ.KT32 (hcp: 13 lp: 13 sp: 12), history: 1C 1D X 2D
-FAIL: 1H (expected X) for J97.52.KJ74.QJ74 (hcp: 8 lp: 8 sp: 9), history: 1C 1D
-Pass 12 of 37 hands
+Pass 25 of 37 hands
 
 test_open_one_nt:
 Pass 7 of 7 hands
@@ -613,7 +597,7 @@ FAIL: None (expected P) for QJ3.KJ876.863.QT (hcp: 9 lp: 10 sp: 8), history: P P
 FAIL: None (expected P) for QJ3.KJ876.863.QT (hcp: 9 lp: 10 sp: 8), history: P P 1S 2D (subtest of P P 1S 2D P P X P)
 FAIL: None (expected P) for QJ3.KJ876.863.QT (hcp: 9 lp: 10 sp: 8), history:  (subtest of P P 1S 2D P P X P)
 FAIL: 2N (expected P) for 643.KT94.AKJ53.7 (hcp: 11 lp: 12 sp: 14), history: P 1S 2H P P X P
-FAIL: 2N (expected P) for 643.KT94.AKJ53.7 (hcp: 11 lp: 12 sp: 14), history: P 1S 2H (subtest of P 1S 2H P P X P)
+FAIL: X (expected P) for 643.KT94.AKJ53.7 (hcp: 11 lp: 12 sp: 14), history: P 1S 2H (subtest of P 1S 2H P P X P)
 FAIL: 2S (expected X) for KQ5.QJ3.2.AJ6543 (hcp: 13 lp: 15 sp: 16), history: P 1S 2H P P
 FAIL: 2H (expected X) for Q93.5.AT93.AKJ53 (hcp: 14 lp: 15 sp: 17), history: P 1S 2D P P
 FAIL: 2N (expected P) for KT6.AQJ74.874.T2 (hcp: 10 lp: 11 sp: 11), history: P 1S 2D P P X P
@@ -711,4 +695,4 @@ FAIL: 3S (expected 4S) for K74.9.J98.KJT742 (hcp: 8 lp: 10 sp: 11), history: 1N 
 FAIL: 2N (expected P) for Q87.J843.K65.Q93 (hcp: 8 lp: 8 sp: 8), history: 1N P
 Pass 1 of 3 hands
 
-Pass 470 (44%) of 1060 total hands
+Pass 486 (45%) of 1060 total hands

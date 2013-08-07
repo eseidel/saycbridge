@@ -339,6 +339,7 @@ class StrongTwoClubs(Opening):
 
 
 response_priorities = enum.Enum(
+    "NegativeDouble",
     "JumpShiftResponseToOpen",
     "MajorJumpToGame",
     "MajorLimitRaise",
@@ -461,6 +462,160 @@ class JumpShiftResponseToOpen(ResponseToOneLevelSuitedOpen):
     # FIXME: Shouldn't this be MinHighCardPoints?
     shared_constraints = [points >= 19, MinLength(5)]
     priority = response_priorities.JumpShiftResponseToOpen
+
+
+class NegativeDouble(ResponseToOneLevelSuitedOpen):
+    call_name = 'X'
+    preconditions = ResponseToOneLevelSuitedOpen.preconditions + [
+        LastBidWasSuit(positions.RHO),
+        MaxLevel(2),
+    ]
+    priority = response_priorities.NegativeDouble
+    annotations = [annotations.NegativeDouble]
+
+
+class NegativeDoubleOfOneDiamondOverOneClub(NegativeDouble):
+    preconditions = NegativeDouble.preconditions + [
+        LastBidWas(positions.RHO, '1D'),
+        LastBidWas(positions.Partner, '1C'),
+    ]
+    shared_constraints = [points >= 6, hearts >= 4, spades >= 4]
+
+
+class NegativeDoubleOfOneHeartOverOneClub(NegativeDouble):
+    preconditions = NegativeDouble.preconditions + [
+        LastBidWas(positions.RHO, '1H'),
+        LastBidWas(positions.Partner, '1C'),
+    ]
+    shared_constraints = [points >= 6, diamonds >= 3, spades >= 4]
+
+
+class NegativeDoubleOfOneSpadeOverOneClub(NegativeDouble):
+    preconditions = NegativeDouble.preconditions + [
+        LastBidWas(positions.RHO, '1S'),
+        LastBidWas(positions.Partner, '1C'),
+    ]
+    shared_constraints = [points >= 6, diamonds >= 3, hearts >= 4]
+
+
+class NegativeDoubleOfTwoDiamondsOverOneClub(NegativeDouble):
+    preconditions = NegativeDouble.preconditions + [
+        LastBidWas(positions.RHO, '2D'),
+        LastBidWas(positions.Partner, '1C'),
+    ]
+    shared_constraints = [points >= 8, hearts >= 4, spades >= 4]
+
+
+class NegativeDoubleOfTwoHeartsOverOneClub(NegativeDouble):
+    preconditions = NegativeDouble.preconditions + [
+        LastBidWas(positions.RHO, '2H'),
+        LastBidWas(positions.Partner, '1C'),
+    ]
+    shared_constraints = [points >= 8, diamonds >= 3, spades >= 4]
+
+
+class NegativeDoubleOfTwoSpadesOverOneClub(NegativeDouble):
+    preconditions = NegativeDouble.preconditions + [
+        LastBidWas(positions.RHO, '2S'),
+        LastBidWas(positions.Partner, '1C'),
+    ]
+    shared_constraints = [points >= 8, diamonds >= 3, hearts >= 4]
+
+
+class NegativeDoubleOfOneHeartOverOneDiamond(NegativeDouble):
+    preconditions = NegativeDouble.preconditions + [
+        LastBidWas(positions.RHO, '1H'),
+        LastBidWas(positions.Partner, '1D'),
+    ]
+    shared_constraints = [points >= 6, clubs >= 3, spades >= 4]
+
+
+class NegativeDoubleOfOneSpadeOverOneDiamond(NegativeDouble):
+    preconditions = NegativeDouble.preconditions + [
+        LastBidWas(positions.RHO, '1S'),
+        LastBidWas(positions.Partner, '1D'),
+    ]
+    shared_constraints = [points >= 6, clubs >= 3, hearts >= 4]
+
+
+class NegativeDoubleOfTwoClubsOverOneDiamond(NegativeDouble):
+    preconditions = NegativeDouble.preconditions + [
+        LastBidWas(positions.RHO, '2C'),
+        LastBidWas(positions.Partner, '1D'),
+    ]
+    shared_constraints = [points >= 8, hearts >= 4, spades >= 4]
+
+
+class NegativeDoubleOfTwoHeartsOverOneDiamond(NegativeDouble):
+    preconditions = NegativeDouble.preconditions + [
+        LastBidWas(positions.RHO, '2H'),
+        LastBidWas(positions.Partner, '1D'),
+    ]
+    shared_constraints = [points >= 8, clubs >= 3, spades >= 4]
+
+
+class NegativeDoubleOfTwoSpadesOverOneDiamond(NegativeDouble):
+    preconditions = NegativeDouble.preconditions + [
+        LastBidWas(positions.RHO, '2S'),
+        LastBidWas(positions.Partner, '1D'),
+    ]
+    shared_constraints = [points >= 8, clubs >= 3, hearts >= 4]
+
+
+class NegativeDoubleOfOneSpadeOverOneHeart(NegativeDouble):
+    preconditions = NegativeDouble.preconditions + [
+        LastBidWas(positions.RHO, '1S'),
+        LastBidWas(positions.Partner, '1H'),
+    ]
+    shared_constraints = [points >= 6, clubs >= 3, diamonds >= 3]
+
+
+class NegativeDoubleOfTwoClubsOverOneHeart(NegativeDouble):
+    preconditions = NegativeDouble.preconditions + [
+        LastBidWas(positions.RHO, '2C'),
+        LastBidWas(positions.Partner, '1H'),
+    ]
+    shared_constraints = [points >= 8, diamonds >= 3, spades >= 4]
+
+
+class NegativeDoubleOfTwoDiamondsOverOneHeart(NegativeDouble):
+    preconditions = NegativeDouble.preconditions + [
+        LastBidWas(positions.RHO, '2D'),
+        LastBidWas(positions.Partner, '1H'),
+    ]
+    shared_constraints = [points >= 8, clubs >= 3, spades >= 4]
+
+
+class NegativeDoubleOfTwoSpadesOverOneHeart(NegativeDouble):
+    preconditions = NegativeDouble.preconditions + [
+        LastBidWas(positions.RHO, '2S'),
+        LastBidWas(positions.Partner, '1H'),
+    ]
+    shared_constraints = [points >= 8, clubs >= 3, diamonds >= 3]
+
+
+class NegativeDoubleOfTwoClubsOverOneSpade(NegativeDouble):
+    preconditions = NegativeDouble.preconditions + [
+        LastBidWas(positions.RHO, '2C'),
+        LastBidWas(positions.Partner, '1S'),
+    ]
+    shared_constraints = [points >= 8, diamonds >= 3, hearts >= 4]
+
+
+class NegativeDoubleOfTwoDiamondsOverOneSpades(NegativeDouble):
+    preconditions = NegativeDouble.preconditions + [
+        LastBidWas(positions.RHO, '2D'),
+        LastBidWas(positions.Partner, '1S'),
+    ]
+    shared_constraints = [points >= 8, clubs >= 3, hearts >= 4]
+
+
+class NegativeDoubleOfTwoHeartsOverOneSpade(NegativeDouble):
+    preconditions = NegativeDouble.preconditions + [
+        LastBidWas(positions.RHO, '2H'),
+        LastBidWas(positions.Partner, '1S'),
+    ]
+    shared_constraints = [points >= 8, clubs >= 3, diamonds >= 3]
 
 
 two_clubs_response_priorities = enum.Enum(

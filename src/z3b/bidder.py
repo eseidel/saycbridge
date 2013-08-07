@@ -327,6 +327,10 @@ class History(object):
         return True
 
     @property
+    def last_contract(self):
+        return self.call_history.last_contract()
+
+    @property
     def rho(self):
         return PositionView(self, positions.RHO)
 
