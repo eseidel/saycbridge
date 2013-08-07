@@ -283,7 +283,7 @@ class History(object):
     def _solve_for_max_points(self):
         solver = self._solver
         for cap in range(37, 0, -1):
-            if is_possible(solver, cap == points):
+            if is_possible(solver, cap == model.points):
                 return cap
         return 0
 
@@ -424,7 +424,7 @@ class RuleSelector(object):
                     # FIXME: It's lame that enum's < is backwards.
                     if category < existing_category:
                         if self.explain and call == self.expected_call:
-                            print rule.name() + " is higher category than " + str(maximal[call])
+                            print rule.name + " is higher category than " + str(maximal[call])
                         maximal[call] = (category, [rule])
                     elif category == existing_category:
                         existing_rules.append(rule)
@@ -451,7 +451,7 @@ class RuleSelector(object):
                 for unmade_priority, unmade_z3_meaning in unmade_rule.meaning_of(self.history, unmade_call):
                     if self.system.priority_ordering.less_than(priority, unmade_priority):
                         if self.explain and self.expected_call == call:
-                            print "adding negation " + unmade_rule.name() + "(" + unmade_call.name + ") to " + rule.name()
+                            print "adding negation " + unmade_rule.name + "(" + unmade_call.name + ") to " + rule.name
                             print z3.Not(unmade_z3_meaning)
                         situational_exprs.append(z3.Not(unmade_z3_meaning))
             situations.append(z3.And(situational_exprs))

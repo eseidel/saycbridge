@@ -46,7 +46,7 @@ class JSONAutobidHandler(webapp2.RequestHandler):
         if bid:
             json_tuple[0] = bid.name
         if rule:
-            json_tuple[1] = rule.name()
+            json_tuple[1] = rule.name
         if hand_knowledge:
             json_tuple[2] = hand_knowledge.pretty_one_line(include_last_call_name=False)
         if rule and bid:
