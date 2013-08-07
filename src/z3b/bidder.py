@@ -355,10 +355,11 @@ class Bidder(object):
 
 
 class RuleSelector(object):
-    def __init__(self, system, history, expected_call=None):
+    def __init__(self, system, history, expected_call=None, explain=False):
         self.system = system
         assert system.rules
         self.history = history
+        self.explain = explain
         self.expected_call = expected_call
         self._check_for_missing_rule()
 
@@ -386,6 +387,8 @@ class RuleSelector(object):
 
                     # FIXME: It's lame that enum's < is backwards.
                     if category < existing_category:
+                        if self.explain and call == self.expected_call:
+                            print rule.name() + " is higher category than " + str(maximal[call])
                         maximal[call] = (category, [rule])
                     elif category == existing_category:
                         existing_rules.append(rule)
@@ -411,6 +414,9 @@ class RuleSelector(object):
             for unmade_call, unmade_rule in self._call_to_rule.iteritems():
                 for unmade_priority, unmade_z3_meaning in unmade_rule.meaning_of(self.history, unmade_call):
                     if self.system.priority_ordering.less_than(priority, unmade_priority):
+                        if self.explain and self.expected_call == call:
+                            print "adding negation " + unmade_rule.name() + "(" + unmade_call.name + ") to " + rule.name()
+                            print z3.Not(unmade_z3_meaning)
                         situational_exprs.append(z3.Not(unmade_z3_meaning))
             situations.append(z3.And(situational_exprs))
         return z3.Or(situations)
@@ -435,11 +441,15 @@ class Interpreter(object):
         # Assuming SAYC for all sides.
         self.system = rules.StandardAmericanYellowCard
 
-    def create_history(self, call_history):
+    def create_history(self, call_history, explain=False):
         history = History()
 
         for partial_history in call_history.ascending_partial_histories(step=1):
-            selector = RuleSelector(self.system, history)
+            if explain:
+                print partial_history.last_call().name
+
+            expected_call = partial_history.last_call() if explain else None
+            selector = RuleSelector(self.system, history, expected_call=expected_call, explain=explain)
 
             call = partial_history.last_call()
             rule = selector.rule_for_call(call)
