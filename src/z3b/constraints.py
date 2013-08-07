@@ -12,6 +12,14 @@ class Constraint(object):
         raise NotImplementedError
 
 
+class ConstraintOr(Constraint):
+    def __init__(self, *constraints):
+        self.constraints = constraints
+
+    def expr(self, history, call):
+        return z3.Or([constraint.expr(history, call) if isinstance(constraint, Constraint) else constraint for constraint in self.constraints])
+
+
 class MinimumCombinedLength(Constraint):
     def __init__(self, min_count):
         self.min_count = min_count

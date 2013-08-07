@@ -374,9 +374,9 @@ class StrongTwoClubs(Opening):
 
 
 response_priorities = enum.Enum(
+    "NegativeDouble",
     "Jacoby2N",
     "JumpShiftResponseToOpen",
-    "NegativeDouble",
     "MajorJumpToGame",
     "MajorLimitRaise",
     "MajorMinimumRaise",
@@ -391,6 +391,7 @@ response_priorities = enum.Enum(
     "TwoClubNewSuitResponse",
     "TwoDiamondNewSuitResponse",
     "MinorLimitRaise",
+    "TwoNotrumpLimitResponse",
     "MinorMinimumRaise",
     "OneNotrumpResponse",
 )
@@ -471,6 +472,12 @@ class MinorLimitRaise(RaiseResponse):
     shared_constraints = [MinimumCombinedLength(8), MinimumCombinedPoints(22)]
     priority = response_priorities.MinorLimitRaise
 
+
+class TwoNotrumpLimitResponse(ResponseToOneLevelSuitedOpen):
+    preconditions = LastBidHasStrain(positions.Partner, [suit.CLUBS, suit.DIAMONDS])
+    call_name = '2N'
+    shared_constraints = [balanced, MinimumCombinedPoints(22)]
+    priority = response_priorities.TwoNotrumpLimitResponse
 
 # We should bid longer suits when possible, up the line for 4 cards.
 # we don't currently bid 2D over 2C when we have longer diamonds.
@@ -752,6 +759,9 @@ class NotrumpResponseToStrongTwoClubs(ResponseToStrongTwoClubs):
 
 
 opener_rebid_priorities = enum.Enum(
+    "SupportMajorMax",
+    "SupportMajorLimit",
+    "SupportMajorMin",
     "JumpShiftByOpener",
     # FIXME: 1S P 2D looks like this will will prefer 3C over 2S!
     "NewSuitClubs",
@@ -811,6 +821,27 @@ class NewSuitByOpener(RebidAfterOneLevelOpen):
         # 3S would necessarily be a reverse, or a jump shift, and is not covered by this rule.
     }
     shared_constraints = MinLength(4)
+
+
+class SupportPartnerSuit(OpenerRebid):
+    preconditions = [
+        InvertedPrecondition(RebidSameSuit()),
+        RaiseOfPartnersLastSuit(),
+    ]
+
+
+class SupportPartnerMajorSuit(SupportPartnerSuit):
+    constraints = {
+        '2H': (NO_CONSTRAINTS, opener_rebid_priorities.SupportMajorMin),
+        '2S': (NO_CONSTRAINTS, opener_rebid_priorities.SupportMajorMin),
+
+        '3H': (MinimumCombinedPoints(22), opener_rebid_priorities.SupportMajorLimit),
+        '3S': (MinimumCombinedPoints(22), opener_rebid_priorities.SupportMajorLimit),
+
+        '4H': (MinimumCombinedPoints(25), opener_rebid_priorities.SupportMajorMax),
+        '4S': (MinimumCombinedPoints(25), opener_rebid_priorities.SupportMajorMax),
+    }
+    shared_constraints = MinimumCombinedLength(8)
 
 
 class RebidOriginalSuitByOpener(RebidAfterOneLevelOpen):
@@ -915,6 +946,7 @@ nt_response_priorities = enum.Enum(
     "Stayman",
     "LongMinorGameInvitation",
     "TwoSpadesRelay",
+    "GarbageStayman",
 )
 
 
@@ -935,7 +967,8 @@ class BasicStayman(NoTrumpResponse):
 class Stayman(BasicStayman):
     preconditions = NotJumpFromPartnerLastBid()
     constraints = {
-        '2C': MinimumCombinedPoints(23),
+        # FIXME: I think of GarbageStayman as guarenteeing support in any response.
+        '2C': ConstraintOr(MinimumCombinedPoints(23), z3.And(spades <= 4, hearts <= 4, diamonds <= 5, clubs <= 1)),
         '3C': MinimumCombinedPoints(25),
     }
 
@@ -1015,6 +1048,7 @@ stayman_response_priorities = enum.Enum(
 
 class StaymanResponse(Rule):
     preconditions = LastBidHasAnnotation(positions.Partner, annotations.Stayman)
+    category = categories.NoTrumpSystem
 
 
 class NaturalStaymanResponse(StaymanResponse):
@@ -1070,6 +1104,22 @@ class LongMajorSlamInvitation(OneNoTrumpResponse):
     shared_constraints = [MinLength(6), TwoOfTheTopThree(), points >= 14]
     # FIXME: Should use the longer suit preference pattern.
     priority = nt_response_priorities.LongMajorSlamInvitation
+
+
+stayman_rebid_priorities = enum.Enum(
+    "GarbagePassStaymanRebid",
+)
+
+
+class StaymanRebid(Rule):
+    preconditions = LastBidHasAnnotation(positions.Me, annotations.Stayman)
+    category = categories.NoTrumpSystem
+
+
+class GarbagePassStaymanRebid(StaymanRebid):
+    call_name = 'P'
+    shared_constraints = [points <= 7]
+    priority = stayman_rebid_priorities.GarbagePassStaymanRebid
 
 
 overcall_priorities = enum.Enum(
@@ -1333,6 +1383,7 @@ class StandardAmericanYellowCard(object):
     priority_ordering.make_less_than(natural_priorities, opener_rebid_priorities)
     priority_ordering.make_less_than(natural_priorities, nt_response_priorities)
     priority_ordering.make_less_than(natural_priorities, stayman_response_priorities)
+    priority_ordering.make_less_than(natural_priorities, stayman_rebid_priorities)
     priority_ordering.make_less_than(natural_priorities, two_clubs_opener_rebid_priorities)
     priority_ordering.make_less_than(forced_rebid_priorities, natural_priorities)
     priority_ordering.make_less_than(the_law_priorities, natural_priorities)
