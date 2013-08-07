@@ -71,6 +71,7 @@ class Card(object):
             return '10'
         return self.value_char
 
+    @property
     def name(self):
         return "%s%s" % (self.display_value(), suit_char(self.suit))
 

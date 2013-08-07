@@ -14,13 +14,15 @@ annotations = enum.Enum(
     "Gerber",
     "Transfer",
     "Jacoby2NT",
+    "NegativeDouble",
 )
 
 
 class Precondition(object):
     def __repr__(self):
-        return "%s()" % self.name()
+        return "%s()" % self.name
 
+    @property
     def name(self):
         return self.__class__.__name__
 
@@ -32,8 +34,9 @@ class InvertedPrecondition(Precondition):
     def __init__(self, precondition):
         self.precondition = precondition
 
+    @property
     def name(self):
-        return "not" + self.precondition.name()
+        return "not" + self.precondition.name
 
     def fits(self, history, call):
         return not self.precondition.fits(history, call)
@@ -79,6 +82,11 @@ class ForcedToBid(Precondition):
         return self._is_forced_to_bid(history)
 
 
+class NoCompetition(Precondition):
+    def fits(self, history, call):
+        return history.rho.last_call and not history.rho.last_call.is_pass()
+
+
 class LastBidHasAnnotation(Precondition):
     def __init__(self, position, annotation):
         self.position = position
@@ -102,6 +110,15 @@ class LastBidHasStrain(Precondition):
             return last_call and last_call.strain in self.strain
         else:
             return last_call and last_call.strain == self.strain
+
+
+class LastBidWasSuit(Precondition):
+    def __init__(self, position):
+        self.position = position
+
+    def fits(self, history, call):
+        last_call = history.view_for(self.position).last_call
+        return last_call and last_call.strain in suit.SUITS
 
 
 class LastBidHasLevel(Precondition):
@@ -172,6 +189,16 @@ class Strain(Precondition):
 
     def fits(self, history, call):
         return call.strain == self.strain
+
+
+class MaxLevel(Precondition):
+    def __init__(self, max_level):
+        self.max_level = max_level
+
+    def fits(self, history, call):
+        if call.is_double():
+            return history.last_contract.level() <= self.max_level
+        return call.is_contract() and call.level() <= self.max_level
 
 
 class MinimumCombinedPointsPrecondition(Precondition):

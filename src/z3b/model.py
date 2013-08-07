@@ -108,11 +108,7 @@ balanced = z3.And(clubs >= 2, diamonds >= 2, hearts >= 2, spades >= 2,
     )
 )
 
-no_long_suit = z3.And(spades <= 4, hearts <= 4, diamonds <= 5, clubs <= 5, diamonds + clubs <= 9)
-three_suited_short_clubs = z3.And(no_long_suit, clubs <= 1)
-three_suited_short_diamonds = z3.And(no_long_suit, diamonds <= 1)
-three_suited_short_hearts = z3.And(no_long_suit, hearts <= 1)
-three_suited_short_spades = z3.And(no_long_suit, spades <= 1)
+three_suited_short_clubs = z3.And(spades <= 4, hearts <= 4, diamonds <= 5, clubs <= 1)
 
 NO_CONSTRAINTS = z3.BoolVal(True)
 

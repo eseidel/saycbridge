@@ -17,7 +17,7 @@ class ConstraintOr(Constraint):
         self.constraints = constraints
 
     def expr(self, history, call):
-        return z3.Or([constraint.expr(history, call) for constraint in self.constraints])
+        return z3.Or([constraint.expr(history, call) if isinstance(constraint, Constraint) else constraint for constraint in self.constraints])
 
 
 class MinLengthPartnerLastSuit(Constraint):
@@ -48,13 +48,6 @@ class MinimumCombinedPoints(Constraint):
         return model.points >= max(0, self.min_points - history.partner.min_points)
 
 
-class MaximumPoints(Constraint):
-    def __init__(self, max_points):
-        self.max_points = max_points
-
-    def expr(self, history, call):
-        return model.points <= self.max_points
-
 class MinLength(Constraint):
     def __init__(self, min_length):
         self.min_length = min_length
@@ -83,14 +76,11 @@ class ThreeOfTheTopFive(Constraint):
         )[call.strain]
 
 
-class ThreeSuitedHand(Constraint):
-    def __init__(self, short_suit):
-        self.short_suit = short_suit
-
+class OpeningRuleConstraint(Constraint):
     def expr(self, history, call):
-        return (
-            model.three_suited_short_clubs,
-            model.three_suited_short_diamonds,
-            model.three_suited_short_hearts,
-            model.three_suited_short_spades,
-        )[self.short_suit]
+        if history.rho.last_call is None or history.partner.last_call is None or history.lho.last_call is None:
+            return model.rule_of_twenty
+        # FIXME: We play rule-of-nineteen, but it's inconsistent with some test cases
+        #if history.lho.last_call is None:
+        #    return model.rule_of_nineteen
+        return model.rule_of_fifteen

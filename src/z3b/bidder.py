@@ -84,11 +84,18 @@ class PositionView(object):
     def min_points(self):
         return self.history.min_points_for_position(self.position)
 
+    @property
+    def max_points(self):
+        return self.history.max_points_for_position(self.position)
+
     def could_have_more_points_than(self, points):
         return self.history.could_have_more_points_than(self.position, points)
 
     def min_length(self, suit):
         return self.history.min_length_for_position(self.position, suit)
+
+    def max_length(self, suit):
+        return self.history.max_length_for_position(self.position, suit)
 
 
 # This class is immutable.
@@ -219,6 +226,20 @@ class History(object):
     def annotations(self):
         return chain.from_iterable(self._walk_annotations())
 
+    def is_consistent(self, position, constraints=None):
+        constraints = constraints if constraints is not None else z3.BoolVal(True)
+        history = self._history_after_last_call_for(position)
+        if not history:
+            solver = _solver_pool.borrow()
+            result = is_possible(solver, constraints)
+            _solver_pool.restore(solver)
+            return result
+        return history._solve_for_consistency(constraints)
+
+    # can't memoize due to unhashable parameter
+    def _solve_for_consistency(self, constraints):
+        return is_possible(self._solver, constraints)
+
     @memoized
     def _solve_for_min_length(self, suit):
         solver = self._solver
@@ -233,6 +254,21 @@ class History(object):
         if history:
             return history._solve_for_min_length(suit)
         return 0
+
+    @memoized
+    def _solve_for_max_length(self, suit):
+        solver = self._solver
+        suit_expr = expr_for_suit(suit)
+        for length in range(13, 0, -1):
+            if is_possible(solver, suit_expr == length):
+                return length
+        return 0
+
+    def max_length_for_position(self, position, suit):
+        history = self._history_after_last_call_for(position)
+        if history:
+            return history._solve_for_max_length(suit)
+        return 13
 
     def _lower_bound(self, predicate, lo, hi):
         if lo == hi:
@@ -258,6 +294,20 @@ class History(object):
         return 0
 
     @memoized
+    def _solve_for_max_points(self):
+        solver = self._solver
+        for cap in range(37, 0, -1):
+            if is_possible(solver, cap == model.points):
+                return cap
+        return 0
+
+    def max_points_for_position(self, position):
+        history = self._history_after_last_call_for(position)
+        if history:
+            return history._solve_for_max_points()
+        return 37
+
+    @memoized
     def _solve_for_more_points_than(self, points):
         return is_possible(self._solver, model.points >= points)
 
@@ -275,6 +325,10 @@ class History(object):
             if not is_possible(solver, suit_expr < 3):
                 return False
         return True
+
+    @property
+    def last_contract(self):
+        return self.call_history.last_contract()
 
     @property
     def rho(self):
@@ -356,10 +410,11 @@ class Bidder(object):
 
 
 class RuleSelector(object):
-    def __init__(self, system, history, expected_call=None):
+    def __init__(self, system, history, expected_call=None, explain=False):
         self.system = system
         assert system.rules
         self.history = history
+        self.explain = explain
         self.expected_call = expected_call
         self._check_for_missing_rule()
 
@@ -387,6 +442,8 @@ class RuleSelector(object):
 
                     # FIXME: It's lame that enum's < is backwards.
                     if category < existing_category:
+                        if self.explain and call == self.expected_call:
+                            print rule.name + " is higher category than " + str(maximal[call])
                         maximal[call] = (category, [rule])
                     elif category == existing_category:
                         existing_rules.append(rule)
@@ -412,8 +469,12 @@ class RuleSelector(object):
             for unmade_call, unmade_rule in self._call_to_rule.iteritems():
                 for unmade_priority, unmade_z3_meaning in unmade_rule.meaning_of(self.history, unmade_call):
                     if self.system.priority_ordering.less_than(priority, unmade_priority):
+                        if self.explain and self.expected_call == call:
+                            print "adding negation " + unmade_rule.name + "(" + unmade_call.name + ") to " + rule.name
+                            print z3.Not(unmade_z3_meaning)
                         situational_exprs.append(z3.Not(unmade_z3_meaning))
             situations.append(z3.And(situational_exprs))
+
         return z3.Or(situations)
 
     def possible_calls_for_hand(self, hand, expected_call):
@@ -436,21 +497,28 @@ class Interpreter(object):
         # Assuming SAYC for all sides.
         self.system = rules.StandardAmericanYellowCard
 
-    def create_history(self, call_history):
+    def create_history(self, call_history, explain=False):
         history = History()
 
         for partial_history in call_history.ascending_partial_histories(step=1):
-            selector = RuleSelector(self.system, history)
+            if explain:
+                print partial_history.last_call().name
+
+            expected_call = partial_history.last_call() if explain else None
+            selector = RuleSelector(self.system, history, expected_call=expected_call, explain=explain)
 
             call = partial_history.last_call()
             rule = selector.rule_for_call(call)
-            # We can interpret bids we know how to make.
+
             constraints = model.NO_CONSTRAINTS
             annotations = []
             if rule:
                 annotations = rule.annotations(history)
                 constraints = selector.constraints_for_call(call)
-                # FIXME: We should validate the new constraints before saving them in the knowledge.
+                if not history.is_consistent(positions.Me, constraints):
+                    constraints = model.NO_CONSTRAINTS
+                    annotations = []
+
             history = history.extend_with(call, annotations, constraints, rule)
 
         return history

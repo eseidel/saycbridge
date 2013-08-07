@@ -12,7 +12,7 @@ _log = logging.getLogger(__name__)
 
 class Precondition(object):
     def __repr__(self):
-        return "%s()" % self.name()
+        return "%s()" % self.name
 
     def name(self):
         return self.__class__.__name__
