@@ -139,7 +139,7 @@ class RuleDescription(object):
             try:
                 if isinstance(list(constraints_tuple)[-1], enum.EnumValue):
                     assert len(constraints_tuple) == 2
-                    return constraints_tuple                
+                    return constraints_tuple
             except TypeError:
                 pass
         assert self.priority, "" + self.name + " is missing priority"
@@ -275,9 +275,10 @@ class Opening(RuleDescription):
     preconditions = [NoOpening()]
 
 
+
 class OneClubOpening(Opening):
     call_name = '1C'
-    shared_constraints = [rule_of_twenty, clubs >= 3]
+    shared_constraints = [OpeningRuleConstraint(), clubs >= 3]
     conditional_priorities = [
         (z3.Or(clubs > diamonds, z3.And(clubs == 3, diamonds == 3)), opening_priorities.LongestMinor),
     ]
@@ -286,7 +287,7 @@ class OneClubOpening(Opening):
 
 class OneDiamondOpening(Opening):
     call_name = '1D'
-    shared_constraints = [rule_of_twenty, diamonds >= 3]
+    shared_constraints = [OpeningRuleConstraint(), diamonds >= 3]
     conditional_priorities = [
         (diamonds > clubs, opening_priorities.LongestMinor),
     ]
@@ -295,7 +296,7 @@ class OneDiamondOpening(Opening):
 
 class OneHeartOpening(Opening):
     call_name = '1H'
-    shared_constraints = [rule_of_twenty, hearts >= 5]
+    shared_constraints = [OpeningRuleConstraint(), hearts >= 5]
     conditional_priorities = [
         (hearts > spades, opening_priorities.LongestMajor),
     ]
@@ -304,7 +305,7 @@ class OneHeartOpening(Opening):
 
 class OneSpadeOpening(Opening):
     call_name = '1S'
-    shared_constraints = [rule_of_twenty, spades >= 5]
+    shared_constraints = [OpeningRuleConstraint(), spades >= 5]
     conditional_priorities = [
         (spades > hearts, opening_priorities.LongestMajor),
     ]

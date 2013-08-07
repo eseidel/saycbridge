@@ -56,3 +56,12 @@ class ThreeOfTheTopFive(Constraint):
             model.three_of_the_top_five_hearts,
             model.three_of_the_top_five_spades,
         )[call.strain]
+
+class OpeningRuleConstraint(Constraint):
+    def expr(self, history, call):
+        if history.rho.last_call is None or history.partner.last_call is None or history.lho.last_call is None:
+            return model.rule_of_twenty
+        # FIXME: We play rule-of-nineteen, but it's inconsistent with some test cases
+        #if history.lho.last_call is None:
+        #    return model.rule_of_nineteen
+        return model.rule_of_fifteen

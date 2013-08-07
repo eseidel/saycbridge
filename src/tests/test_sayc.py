@@ -1057,6 +1057,8 @@ class SAYCBidderTest(unittest2.TestCase):
     # 5-9077042095682811940287772551687-E:NS: - Should be able to find a 6D slam.  Maybe 1D P 4N P 5D P 6D?
 
     def test_misc_hands_from_play(self):
+        # FIXME: Misc hands from play shouldn't do subtests, because the context may be one
+        # the bidder can't get into
         self._assert_hands_match_calls(self.misc_hands_from_play)
 
     def _parse_expectation(self, expectation):
