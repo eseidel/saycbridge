@@ -796,6 +796,12 @@ class SAYCBidderTest(unittest2.TestCase):
             ["KQ8.J9.Q8653.753", "X", "1D 1S"],  # p132, East
             ["A864.863.AQ.KT32", "2S", "1C 1D X 2D"],  # p132, West
             ["J97.52.KJ74.QJ74", "X", "1C 1D"],  # p132, East
+
+            # Make sure that we prefer 1S when we have 5 of them:
+            ["32.432.432.AKQJ2", "1S", "1C 1H"],
+            ["32.432.432.AKQJ2", "1S", "1D 1H"],
+            ["5432.2.5432.AKQJ", "X", "1C 1H"],
+            ["5432.2.5432.AKQJ", "X", "1D 1H"],
         ])
 
     def test_reopening_double(self): # Chap 17

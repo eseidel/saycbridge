@@ -487,7 +487,7 @@ class NegativeDoubleOfOneHeartOverOneClub(NegativeDouble):
         LastBidWas(positions.RHO, '1H'),
         LastBidWas(positions.Partner, '1C'),
     ]
-    shared_constraints = [points >= 6, diamonds >= 3, spades >= 4]
+    shared_constraints = [points >= 6, spades == 4]
 
 
 class NegativeDoubleOfOneSpadeOverOneClub(NegativeDouble):
@@ -527,7 +527,7 @@ class NegativeDoubleOfOneHeartOverOneDiamond(NegativeDouble):
         LastBidWas(positions.RHO, '1H'),
         LastBidWas(positions.Partner, '1D'),
     ]
-    shared_constraints = [points >= 6, clubs >= 3, spades >= 4]
+    shared_constraints = [points >= 6, spades == 4]
 
 
 class NegativeDoubleOfOneSpadeOverOneDiamond(NegativeDouble):
