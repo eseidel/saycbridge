@@ -33,8 +33,7 @@ class Rule(object):
     def annotations(self, history):
         return self.rule_description.annotations
 
-    # FIXME: This is not @property for compatibility with the KBB's Rule interface which
-    # dist/gae/handlers/bidder_handler.py depends on.
+    @property
     def name(self):
         return self.rule_description.name
 

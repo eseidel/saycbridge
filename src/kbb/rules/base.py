@@ -43,11 +43,12 @@ class Rule(object):
 
     ANY_OTHER_BID = '*'
 
+    @property
     def name(self):
         return self.__class__.__name__
 
     def __repr__(self):
-        return "%s()" % self.name()
+        return "%s()" % self.name
 
     # Rules map knowledge, bid pairs to knowledge, bid pairs.
     # Normally rules consume the bid, adding it to the knowledge object.

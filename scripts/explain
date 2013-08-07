@@ -10,7 +10,8 @@ import find_src
 from core.callhistory import CallHistory
 from core.hand import Hand
 from core.call import Call
-from factory import BidderFactory
+from z3b.bidder import Interpreter
+from core.suit import *
 
 
 _log = logging.getLogger(__name__)
@@ -28,9 +29,7 @@ def configure_logging(is_verbose):
 
 
 def _print_usage_and_exit():
-    print "USAGE: test-hand [EXPECTED_CALL] HAND [HISTORY]"
-    print " EXPECTED_CALL enables debug logging"
-    print " HAND is either C.D.H.S"
+    print "USAGE: explain HISTORY"
     print " HISTORY is space separated"
     print
     sys.exit(1)
@@ -43,25 +42,13 @@ if __name__ == '__main__':
         args.remove('-v')
     configure_logging(is_verbose)
 
-    args = BidderFactory.configure_from_args(args)
-    bidder = BidderFactory.default_bidder()
-
     if not args:
         _print_usage_and_exit()
 
-    first_arg = args.pop(0)
-    if '.' in first_arg:
-        expected_call_name = None
-        hand_string = first_arg
-    elif args:
-        expected_call_name = first_arg
-        hand_string = args.pop(0)
-    else:
-        _print_usage_and_exit()
-
-    history_string = " ".join(args) if args else ""
-    hand = Hand.from_cdhs_string(hand_string)
-    print hand.pretty_one_line()
+    history_string = " ".join(args)
     call_history = CallHistory.from_string(history_string)
-    expected_call = Call.from_string(expected_call_name) if expected_call_name else None
-    print bidder.find_call_for(hand, call_history, expected_call)
+    interpreter = Interpreter()
+    history = interpreter.create_history(call_history, explain=True)
+    print "Points: %s-%s" % (history.rho.min_points, history.rho.max_points)
+    for suit in SUITS:
+        print "%s: %s-%s" % (suit_name(suit), history.rho.min_length(suit), history.rho.max_length(suit))

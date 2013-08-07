@@ -47,7 +47,7 @@ class JSONExploreHandler(webapp2.RequestHandler):
             return {}
 
         return {
-            'rule_name': rule.name(),
+            'rule_name': rule.name,
             'priority': rule.priority.index if hasattr(rule, 'priority') and rule.priority else None,
             'explanation': rule.explanation_for_bid(bid),
             'sayc_page': rule.sayc_page_for_bid(bid),

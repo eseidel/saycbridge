@@ -18,8 +18,9 @@ annotations = enum.Enum(
 
 class Precondition(object):
     def __repr__(self):
-        return "%s()" % self.name()
+        return "%s()" % self.name
 
+    @property
     def name(self):
         return self.__class__.__name__
 
@@ -31,8 +32,9 @@ class InvertedPrecondition(Precondition):
     def __init__(self, precondition):
         self.precondition = precondition
 
+    @property
     def name(self):
-        return "not" + self.precondition.name()
+        return "not" + self.precondition.name
 
     def fits(self, history, call):
         return not self.precondition.fits(history, call)

@@ -37,7 +37,7 @@ class BidInterpreterTest(unittest2.TestCase):
 
     def _assert_rule_name(self, call_history_string, expected_rule_name):
         last_rule = self._rule_for_last_call(call_history_string)
-        self.assertEqual(last_rule.name(), expected_rule_name)
+        self.assertEqual(last_rule.name, expected_rule_name)
 
     def test_one_level_opening(self):
         self._assert_point_range("1C", (12, 21))
@@ -124,9 +124,9 @@ class BidInterpreterTest(unittest2.TestCase):
     def _assert_is_gerber(self, history_string, should_be_gerber):
         last_rule = self._rule_for_last_call(history_string)
         if should_be_gerber:
-            self.assertEqual(last_rule.name(), "Gerber")
+            self.assertEqual(last_rule.name, "Gerber")
         else:
-            self.assertNotEqual(last_rule.name(), "Gerber")
+            self.assertNotEqual(last_rule.name, "Gerber")
 
     def test_gerber(self):
         self._assert_is_gerber("1N P 4C", True)
