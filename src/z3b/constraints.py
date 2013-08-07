@@ -9,7 +9,7 @@ import z3
 
 class Constraint(object):
     def expr(self, history, call):
-        pass
+        raise NotImplementedError
 
 
 class ConstraintOr(Constraint):
@@ -18,15 +18,6 @@ class ConstraintOr(Constraint):
 
     def expr(self, history, call):
         return z3.Or([constraint.expr(history, call) if isinstance(constraint, Constraint) else constraint for constraint in self.constraints])
-
-
-class MinLengthPartnerLastSuit(Constraint):
-    def __init__(self, min_length):
-        self.min_length = min_length
-
-    def expr(self, history, call):
-        suit = history.last_call_for_position(model.positions.Partner).strain
-        return expr_for_suit(suit) >= self.min_length
 
 
 class MinimumCombinedLength(Constraint):
@@ -54,6 +45,45 @@ class MinLength(Constraint):
 
     def expr(self, history, call):
         return expr_for_suit(call.strain) >= self.min_length
+
+
+class MaxLength(Constraint):
+    def __init__(self, max_length):
+        self.max_length = max_length
+
+    def expr(self, history, call):
+        return expr_for_suit(call.strain) <= self.max_length
+
+
+class LengthSatisfiesLawOfTotalTricks(Constraint):
+    def expr(self, history, call):
+        # Written forward: level = partner_min + my_min - 6
+        my_count = call.level() + 6 - history.partner.min_length(call.strain)
+        return expr_for_suit(call.strain) >= my_count
+
+
+class SupportForPartnerLastBid(Constraint):
+    def __init__(self, min_count):
+        self._min_count = min_count
+
+    def expr(self, history, call):
+        partner_suit = history.partner.last_call.strain
+        return expr_for_suit(partner_suit) >= self._min_count
+
+
+class SupportForUnbidSuits(Constraint):
+    def _four_in_almost_every_suit(self, missing_suit, suits):
+        return z3.And([expr_for_suit(suit) >= 4 for suit in set(suits) - set([missing_suit])])
+
+    def expr(self, history, call):
+        unbid_suits = history.unbid_suits
+        if len(unbid_suits) == 3:
+            three_card_support_expr = z3.And([expr_for_suit(suit) >= 3 for suit in unbid_suits])
+            four_card_support_expr = z3.Or([self._four_in_almost_every_suit(missing_suit, unbid_suits) for missing_suit in unbid_suits])
+            return z3.And(three_card_support_expr, four_card_support_expr)
+        if len(unbid_suits) == 2:
+            return z3.And([expr_for_suit(suit) >= 4 for suit in unbid_suits])
+        assert False, "SupportForUnbidSuits only supports 2 or 3 unbid suits."
 
 
 class TwoOfTheTopThree(Constraint):

@@ -10,6 +10,7 @@ from third_party import enum
 from third_party.memoized import memoized
 from z3b.model import positions, expr_for_suit, is_possible
 import copy
+import core.suit as suit
 import z3
 import z3b.model as model
 import z3b.rules as rules
@@ -67,6 +68,13 @@ class PositionView(object):
         self.position = position
 
     @property
+    def walk(self):
+        history = self.history
+        while history:
+            yield PositionView(history, self.position)
+            history = history._four_calls_ago
+
+    @property
     def annotations(self):
         return self.history.annotations_for_position(self.position)
 
@@ -79,6 +87,10 @@ class PositionView(object):
     @property
     def annotations_for_last_call(self):
         return self.history.annotations_for_last_call(self.position)
+
+    @property
+    def rule_for_last_call(self):
+        return self.history.rule_for_last_call(self.position)
 
     @property
     def min_points(self):
@@ -327,6 +339,10 @@ class History(object):
         return True
 
     @property
+    def unbid_suits(self):
+        return filter(self.is_unbid_suit, suit.SUITS)
+
+    @property
     def last_contract(self):
         return self.call_history.last_contract()
 
@@ -381,9 +397,6 @@ class Bidder(object):
         self.system = rules.StandardAmericanYellowCard
 
     def find_call_for(self, hand, call_history, expected_call=None):
-        return self.find_call_and_rule_for(hand, call_history, expected_call)[0]
-
-    def find_call_and_rule_for(self, hand, call_history, expected_call=None):
         with Interpreter().create_history(call_history) as history:
             # Select highest-intra-bid-priority (category) rules for all possible bids
             rule_selector = RuleSelector(self.system, history, expected_call)
@@ -397,16 +410,14 @@ class Bidder(object):
                     lambda call: not rule_selector.rule_for_call(call).requires_planning(history), maximal_calls)
             if not maximal_calls:
                 # If we failed to find a single maximal bid, this is an error.
-                return None, None
+                return None
             if len(maximal_calls) != 1:
                 rules = map(rule_selector.rule_for_call, maximal_calls)
                 call_names = map(lambda call: call.name, maximal_calls)
                 print "WARNING: Multiple calls match and have maximal priority: %s from rules: %s" % (call_names, rules)
-                return None, None
-            if expected_call:
-                print rule_selector.rule_for_call(maximal_calls[0])
-            call = maximal_calls[0]
-            return call, rule_selector.rule_for_call(call)
+                return None
+            # print rule_selector.rule_for_call(maximal_calls[0])
+            return maximal_calls[0]
 
 
 class RuleSelector(object):
@@ -488,6 +499,8 @@ class RuleSelector(object):
             for priority, z3_meaning in rule.meaning_of(self.history, call):
                 if is_possible(solver, z3_meaning):
                     possible_calls.add_call_with_priority(call, priority)
+                elif call == expected_call:
+                    print "%s does not fit hand: %s" % (rule, z3_meaning)
 
         return possible_calls.calls_of_maximal_priority()
 
@@ -516,6 +529,8 @@ class Interpreter(object):
                 annotations = rule.annotations(history)
                 constraints = selector.constraints_for_call(call)
                 if not history.is_consistent(positions.Me, constraints):
+                    if explain:
+                        print "WARNING: History is not consistent, ignoring %s from %s" % (call.name, rule)
                     constraints = model.NO_CONSTRAINTS
                     annotations = []
 

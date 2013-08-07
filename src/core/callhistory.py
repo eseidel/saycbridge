@@ -10,6 +10,7 @@ import copy
 import math
 import operator
 
+
 # I'm not sure this needs to be its own class.
 class Vulnerability(object):
     def __init__(self, name):
@@ -149,18 +150,17 @@ class CallHistory(object):
             return False
         return True
 
+    def copy_appending_call(self, call):
+        assert call
+        assert self.is_legal_call(call)
+        new_call_history = copy.deepcopy(self)
+        new_call_history.calls.append(call)
+        return new_call_history
+
     def copy_with_partial_history(self, last_entry):
         partial_history = copy.copy(self)
         partial_history.calls = self.calls[:last_entry]
         return partial_history
-
-    def copy_with_history_until_after_last_call_from_position(self, position):
-        last_caller = self.last_to_call()
-        if last_caller is None or position == last_caller:
-            return copy.copy(self)
-        history_offset = (position - last_caller) % -4
-        assert history_offset, "A zero history offset is going to produce an empty history!"
-        return self.copy_with_partial_history(history_offset)
 
     def ascending_partial_histories(self, step):
         partial_histories = []

@@ -19,6 +19,7 @@ categories = enum.Enum(
     "NoTrumpSystem",
     "Default",
     "Natural",
+    "LawOfTotalTricks",
 )
 
 # This is a public interface from RuleGenerators to the rest of the system.
@@ -37,6 +38,9 @@ class Rule(object):
     def name(self):
         return self.rule_description.name
 
+    def __str__(self):
+        return self.name
+
     def __repr__(self):
         return "Rule(%s)" % repr(self.rule_description)
 
@@ -52,7 +56,7 @@ class Rule(object):
         for precondition in self.rule_description.preconditions:
             if not precondition.fits(history, call):
                 if call == expected_call and expected_call in self.rule_description.known_calls():
-                    print "WARNING: %s might be bid by %s but failed precondition: %s" % (expected_call, self, precondition)
+                    print " %s failed: %s" % (self, precondition)
                 return False
         return True
 
@@ -341,8 +345,9 @@ class StrongTwoClubs(Opening):
 
 response_priorities = enum.Enum(
     "NegativeDouble",
-    "Jacoby2NTRaise",
+    "Jacoby2N",
     "JumpShiftResponseToOpen",
+    "NegativeDouble",
     "MajorJumpToGame",
     "MajorLimitRaise",
     "MajorMinimumRaise",
@@ -445,13 +450,6 @@ class TwoNotrumpLimitResponse(ResponseToOneLevelSuitedOpen):
     shared_constraints = [balanced, MinimumCombinedPoints(22)]
     priority = response_priorities.TwoNotrumpLimitResponse
 
-
-class Jacoby2NTRaise(ResponseToOneLevelSuitedOpen):
-    call_name = '2N'
-    preconditions = Response.preconditions + [LastBidHasStrain(positions.Partner, [suit.HEARTS, suit.SPADES]), NoCompetition()]
-    shared_constraints = [MinLengthPartnerLastSuit(4), points >= 13]
-    priority = response_priorities.Jacoby2NTRaise
-
 # We should bid longer suits when possible, up the line for 4 cards.
 # we don't currently bid 2D over 2C when we have longer diamonds.
 
@@ -464,6 +462,72 @@ class NewSuitAtTheTwoLevel(ResponseToOneLevelSuitedOpen):
         '2S' : (spades >= 5, response_priorities.TwoSpadeNewSuitResponse),
     }
     shared_constraints = MinimumCombinedPoints(22)
+
+
+class ResponseToMajorOpen(ResponseToOneLevelSuitedOpen):
+    preconditions = ResponseToOneLevelSuitedOpen.preconditions + [
+        LastBidHasStrain(positions.Partner, suit.MAJORS),
+        InvertedPrecondition(LastBidHasAnnotation(positions.Partner, annotations.Artificial))
+    ]
+
+
+class Jacoby2N(ResponseToMajorOpen):
+    preconditions = ResponseToMajorOpen.preconditions + [LastBidWas(positions.RHO, 'P')]
+    call_name = '2N'
+    shared_constraints = [points >= 14, SupportForPartnerLastBid(4)]
+    priority = response_priorities.Jacoby2N
+    annotations = [annotations.Jacoby2N, annotations.Artificial]
+
+
+jacoby_2n_response_priorities = enum.Enum(
+    # Currently favoring features over slam interest.  Unclear if that's correct?
+    "SolidSuit",
+    "Singleton",
+    "Slam",
+    "Notrump",
+    "MinimumGame",
+)
+
+
+class ResponseToJacoby2N(RuleDescription):
+    # Bids above 4NT are either natural or covered by other conventions.
+    preconditions = RuleDescription.preconditions + [LastBidHasAnnotation(positions.Partner, annotations.Jacoby2N)]
+    category = categories.Gadget
+
+
+class SingletonResponseToJacoby2N(ResponseToJacoby2N):
+    preconditions = ResponseToJacoby2N.preconditions + [InvertedPrecondition(RebidSameSuit())]
+    call_names = ['3C', '3D', '3H', '3S']
+    shared_constraints = [MaxLength(1)]
+    annotations = RuleDescription.annotations + [annotations.Artificial]
+    priority = jacoby_2n_response_priorities.Singleton
+
+
+class SolidSuitResponseToJacoby2N(ResponseToJacoby2N):
+    preconditions = ResponseToJacoby2N.preconditions + [InvertedPrecondition(RebidSameSuit())]
+    call_names = ['4C', '4D', '4H', '4S']
+    shared_constraints = [MinLength(5), ThreeOfTheTopFive()]
+    priority = jacoby_2n_response_priorities.SolidSuit
+
+
+class SlamResponseToJacoby2N(ResponseToJacoby2N):
+    preconditions = ResponseToJacoby2N.preconditions + [RebidSameSuit()]
+    call_names = ['3C', '3D', '3H', '3S']
+    shared_constraints = [points >= 18]
+    priority = jacoby_2n_response_priorities.Slam
+
+
+class MinimumResponseToJacoby2N(ResponseToJacoby2N):
+    preconditions = ResponseToJacoby2N.preconditions + [RebidSameSuit()]
+    call_names = ['4C', '4D', '4H', '4S']
+    shared_constraints = NO_CONSTRAINTS
+    priority = jacoby_2n_response_priorities.MinimumGame
+
+
+class NotrumpResponseToJacoby2N(ResponseToJacoby2N):
+    call_names = ['3N']
+    shared_constraints = [points > 15] # It's really 15-17
+    priority = jacoby_2n_response_priorities.Notrump
 
 
 class JumpShift(object):
@@ -483,11 +547,11 @@ class JumpShiftResponseToOpen(ResponseToOneLevelSuitedOpen):
 class NegativeDouble(ResponseToOneLevelSuitedOpen):
     call_name = 'X'
     preconditions = ResponseToOneLevelSuitedOpen.preconditions + [
-        LastBidWasSuit(positions.RHO),
+        LastBidHasSuit(positions.RHO),
         MaxLevel(2),
     ]
     priority = response_priorities.NegativeDouble
-    annotations = [annotations.NegativeDouble]
+    annotations = [annotations.NegativeDouble, annotations.Artificial]
 
 
 class NegativeDoubleOfOneDiamondOverOneClub(NegativeDouble):
@@ -1031,6 +1095,7 @@ class GarbagePassStaymanRebid(StaymanRebid):
 
 
 overcall_priorities = enum.Enum(
+    "TakeoutDouble",
     "DirectOvercallLongestMajor",
     "DirectOvercallMajor",
     "DirectOvercallMinor",
@@ -1066,6 +1131,25 @@ class OneLevelSpadeOvercall(DirectOvercall):
         (spades >= hearts, overcall_priorities.DirectOvercallLongestMajor),
     ]
     priority = overcall_priorities.DirectOvercallMajor
+
+
+class TakeoutDouble(RuleDescription):
+    call_name = 'X'
+    preconditions = [
+        LastBidHasSuit(),
+        HasNotBid(positions.Partner),
+        # LastBidWasNaturalSuit(),
+        # LastBidWasBelowGame(),
+        MinUnbidSuitCount(2),
+    ]
+    annotations = [ annotations.TakeoutDouble ]
+    shared_constraints = [ SupportForUnbidSuits() ]
+    priority = overcall_priorities.TakeoutDouble
+
+
+class OneLevelTakeoutDouble(TakeoutDouble):
+    preconditions = TakeoutDouble.preconditions + [MaxLevel(1)]
+    shared_constraints = TakeoutDouble.shared_constraints + [ points >= 11 ]
 
 
 preempt_priorities = enum.Enum(
@@ -1113,6 +1197,37 @@ class FourLevelPremptiveOvercall(DirectOvercall):
     call_names = ['4C', '4D', '4H', '4S']
     shared_constraints = [MinLength(8), ThreeOfTheTopFive(), points >= 5]
     priority = overcall_priorities.FourLevelPremptive
+
+
+the_law_priorities = enum.Enum(
+    "FourLevelLaw",
+    "ThreeLevelLaw",
+    "TwoLevelLaw",
+)
+
+
+class LawOfTotalTricks(RuleDescription):
+    preconditions = [
+        InvertedPrecondition(Opened(positions.Me)),
+        RaiseOfPartnersLastSuit()
+    ]
+    shared_constraints = [LengthSatisfiesLawOfTotalTricks()]
+    category = categories.LawOfTotalTricks
+
+
+class TwoLevelLaw(LawOfTotalTricks):
+    call_names = ['2C', '2D', '2H', '2S']
+    priority = the_law_priorities.TwoLevelLaw
+
+
+class ThreeLevelLaw(LawOfTotalTricks):
+    call_names = ['3C', '3D', '3H', '3S']
+    priority = the_law_priorities.ThreeLevelLaw
+
+
+class FourLevelLaw(LawOfTotalTricks):
+    call_names = ['4C', '4D', '4H', '4S']
+    priority = the_law_priorities.FourLevelLaw
 
 
 feature_asking_priorites = enum.Enum(
@@ -1225,13 +1340,16 @@ class StandardAmericanYellowCard(object):
     rules = [Rule(description_class()) for description_class in _concrete_rule_description_classes()]
     priority_ordering = PartialOrdering()
 
-    priority_ordering.make_less_than(response_priorities, nt_response_priorities)
     priority_ordering.make_less_than(preempt_priorities, opening_priorities)
+    priority_ordering.make_less_than(response_priorities, nt_response_priorities)
     priority_ordering.make_less_than(response_priorities, two_clubs_response_priorities)
+    priority_ordering.make_less_than(response_priorities, jacoby_2n_response_priorities)
+    priority_ordering.make_less_than(natural_priorities, overcall_priorities)
     priority_ordering.make_less_than(natural_priorities, response_priorities)
     priority_ordering.make_less_than(natural_priorities, opener_rebid_priorities)
     priority_ordering.make_less_than(natural_priorities, nt_response_priorities)
     priority_ordering.make_less_than(natural_priorities, stayman_response_priorities)
     priority_ordering.make_less_than(natural_priorities, stayman_rebid_priorities)
-    priority_ordering.make_less_than(forced_rebid_priorities, natural_priorities)
     priority_ordering.make_less_than(natural_priorities, two_clubs_opener_rebid_priorities)
+    priority_ordering.make_less_than(forced_rebid_priorities, natural_priorities)
+    priority_ordering.make_less_than(the_law_priorities, natural_priorities)
