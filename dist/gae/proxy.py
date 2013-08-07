@@ -14,15 +14,28 @@ use_z3 = not os.environ.get('SERVER_SOFTWARE')
 
 from kbb.bidder import KnowledgeBasedBidder
 from kbb.interpreter import BidInterpreter
-from kbb.handconstraints import HandConstraints
+from kbb.knowledge import PositionKnowledge
 from core.suit import SUITS
+import core.call
 
+# We can't import z3 in GAE.
+if use_z3:
+    from z3b.bidder import Interpreter, Bidder
+    from z3b.model import positions
+
+
+# FIXME: This is a horrible hack.  Callers should move off of the KBB HandConstraints API.
+def _position_knowledge_from_position_view(position_view):
+    kbb_constraints = PositionKnowledge()
+    kbb_constraints.set_hcp_range(position_view.min_points, position_view.max_points)
+    for suit in SUITS:
+        kbb_constraints.set_length_range(suit, position_view.min_length(suit), position_view.max_length(suit))
+    # FIXME: What about honor concentration?
+    return kbb_constraints
 
 class BidderProxy(object):
     def __init__(self):
         if use_z3:
-            # We can't import Z3 in GAE.
-            from z3b.bidder import Bidder
             self.bidder = Bidder()
         else:
             self.bidder = KnowledgeBasedBidder()
@@ -33,8 +46,12 @@ class BidderProxy(object):
     def find_call_and_rule_and_hand_knowledge_for(self, hand, call_history):
         # FIXME: This is a hack to make the GAE front-end work with the Z3 Bidder.
         if use_z3:
-            call_and_rule = self.bidder.find_call_and_rule_for(hand, call_history)
-            return [call_and_rule[0], call_and_rule[1], None]
+            call = self.bidder.find_call_for(hand, call_history)
+            call_history.calls.append(call if call else core.call.Pass())
+            # FIXME: Figure out the clean way to have the Bidder return the updated History
+            # instead of interpreting the whole call history twice!
+            with Interpreter().create_history(call_history) as history:
+                return [call, history.rho.rule_for_last_call, _position_knowledge_from_position_view(history.rho)]
         return self.bidder.find_call_and_rule_and_hand_knowledge_for(hand, call_history)
 
 
@@ -44,32 +61,22 @@ class BidderProxy(object):
 class InterpreterProxy(object):
     def __init__(self):
         if use_z3:
-            from z3b.bidder import Interpreter
             self.interpreter = Interpreter()
         else:
             self.interpreter = BidInterpreter()
 
-    def _pretty_string_for_history(self, history, position):
-        from z3b.model import positions
-        # FIXME: This is a horrible hack where we map z3 knowledge into
+    def _pretty_string_for_position_view(self, position_view):
         # kbb HandConstraints just so we can use it's pretty_print function.
-        kbb_constraints = HandConstraints()
-        kbb_constraints.set_hcp_range(history.rho.min_points, history.rho.max_points)
-        for suit in SUITS:
-            kbb_constraints.set_length_range(suit, history.rho.min_length(suit), history.rho.max_length(suit))
-        # FIXME: What about honor concentration?
-
-        kbb_oneline = kbb_constraints.pretty_one_line()
-        annotations = history.annotations_for_last_call(positions.RHO)
-        return kbb_oneline + " " + ", ".join(map(str, annotations))
+        position_knowledge = _position_knowledge_from_position_view(position_view)
+        kbb_oneline = position_knowledge.pretty_one_line(include_last_call_name=False)
+        return kbb_oneline + " " + ", ".join(map(str, position_view.annotations_for_last_call))
 
     def knowledge_string_and_rule_for_last_call(self, call_history):
         knowledge_string = None
         rule = None
         if use_z3:
-            from z3b.model import positions
             with self.interpreter.create_history(call_history) as history:
-                return self._pretty_string_for_history(history, positions.RHO), history.rule_for_last_call(positions.RHO)
+                return self._pretty_string_for_position_view(history.rho), history.rho.rule_for_last_call
         else:
             existing_knowledge, knowledge_builder = self.interpreter.knowledge_from_history(call_history)
             matched_rules = knowledge_builder.matched_rules()

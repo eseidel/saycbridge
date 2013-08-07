@@ -89,6 +89,10 @@ class PositionView(object):
         return self.history.annotations_for_last_call(self.position)
 
     @property
+    def rule_for_last_call(self):
+        return self.history.rule_for_last_call(self.position)
+
+    @property
     def min_points(self):
         return self.history.min_points_for_position(self.position)
 
@@ -393,9 +397,6 @@ class Bidder(object):
         self.system = rules.StandardAmericanYellowCard
 
     def find_call_for(self, hand, call_history, expected_call=None):
-        return self.find_call_and_rule_for(hand, call_history, expected_call)[0]
-
-    def find_call_and_rule_for(self, hand, call_history, expected_call=None):
         with Interpreter().create_history(call_history) as history:
             # Select highest-intra-bid-priority (category) rules for all possible bids
             rule_selector = RuleSelector(self.system, history, expected_call)
@@ -409,15 +410,14 @@ class Bidder(object):
                     lambda call: not rule_selector.rule_for_call(call).requires_planning(history), maximal_calls)
             if not maximal_calls:
                 # If we failed to find a single maximal bid, this is an error.
-                return None, None
+                return None
             if len(maximal_calls) != 1:
                 rules = map(rule_selector.rule_for_call, maximal_calls)
                 call_names = map(lambda call: call.name, maximal_calls)
                 print "WARNING: Multiple calls match and have maximal priority: %s from rules: %s" % (call_names, rules)
-                return None, None
+                return None
             # print rule_selector.rule_for_call(maximal_calls[0])
-            call = maximal_calls[0]
-            return call, rule_selector.rule_for_call(call)
+            return maximal_calls[0]
 
 
 class RuleSelector(object):
