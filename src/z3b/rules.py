@@ -25,9 +25,10 @@ categories = enum.Enum(
 # This is a public interface from RuleGenerators to the rest of the system.
 # This class knows nothing about the DSL.
 class CompiledRule(object):
-    def __init__(self, rule, preconditions, shared_constraints):
+    def __init__(self, rule, preconditions, known_calls, shared_constraints):
         self.rule = rule
         self.preconditions = preconditions
+        self.known_calls = known_calls
         self.shared_constraints = shared_constraints
 
     def requires_planning(self, history):
@@ -58,7 +59,7 @@ class CompiledRule(object):
         try:
             for precondition in self.preconditions:
                 if not precondition.fits(history, call):
-                    if call == expected_call and expected_call in self.rule.known_calls():
+                    if call == expected_call and expected_call in self.known_calls:
                         print " %s failed: %s" % (self, precondition)
                     return False
         except Exception, e:
@@ -66,17 +67,8 @@ class CompiledRule(object):
             raise
         return True
 
-    def _possible_calls_over(self, history):
-        # If the Rule applies to an a priori known set of calls, we only need to consider those.
-        # FIXME: We could standardize this on some sort of call_preconditions instead?
-        known_calls = self.rule.known_calls()
-        if known_calls:
-            return history.legal_calls.intersection(known_calls)
-        # Otherwise we ask it about each legal call (which is slow).
-        return history.legal_calls
-
     def calls_over(self, history, expected_call=None):
-        for call in self._possible_calls_over(history):
+        for call in history.legal_calls.intersection(self.known_calls):
             if self._fits_preconditions(history, call, expected_call):
                 yield self.rule.category, call
 
@@ -132,10 +124,21 @@ class RuleCompiler(object):
         return list(chain.from_iterable(mapped_values))
 
     @classmethod
+    def _compile_known_calls(cls, dsl_class):
+        if dsl_class.call_names:
+            call_names = cls._ensure_list(dsl_class.call_names)
+        elif dsl_class.constraints:
+            call_names = dsl_class.constraints.keys()
+        else:
+            assert False, "%s: call_names or constraints map is required." % dsl_class.__name__
+        return map(Call.from_string, call_names)
+
+    @classmethod
     def compile(cls, dsl_rule_class):
         dsl_rule = dsl_rule_class()
         # Unclear if compiled results should be memoized on the rule?
         return CompiledRule(dsl_rule,
+            known_calls=cls._compile_known_calls(dsl_rule_class),
             preconditions=cls._joined_list_from_ancestors(dsl_rule_class, 'preconditions'),
             shared_constraints=cls._joined_list_from_ancestors(dsl_rule_class, 'shared_constraints')
         )
@@ -151,8 +154,9 @@ class Rule(object):
     category = categories.Default # Intra-bid priority
     requires_planning = False
 
-    call_name = None # call_name = '1C' -> preconditons = [CallName('1C')]
-    call_names = None # call_names = ['1C', '1D'] -> preconditons = [CallNames('1C', '1D')]
+    # All possible call names must be listed.
+    # Having an up-front list makes the bidder's rule-evaluation faster.
+    call_names = None # Required.
 
     constraints = {}
     shared_constraints = [] # Auto-collects from parent classes
@@ -166,7 +170,7 @@ class Rule(object):
         assert self.constraints or self.shared_constraints, "" + self.name + " is missing constraints"
         # conditional_priorities doesn't work with self.constraints
         assert not self.conditional_priorities or not self.constraints
-        assert not self.conditional_priorities or self.call_name or self.call_names
+        assert not self.conditional_priorities or self.call_names
 
     @property
     def name(self):
@@ -174,19 +178,6 @@ class Rule(object):
 
     def __repr__(self):
         return "%s()" % self.name
-
-    def _known_call_names(self):
-        if self.call_name:
-            return [self.call_name]
-        elif self.call_names:
-            return self.call_names
-        elif self.constraints:
-            return self.constraints.keys()
-        return []
-
-    @memoized
-    def known_calls(self):
-        return map(Call.from_string, self._known_call_names())
 
     # constraints accepts various forms including:
     # constraints = { '1H': hearts > 5 }
@@ -317,7 +308,7 @@ class Opening(Rule):
 
 
 class OneClubOpening(Opening):
-    call_name = '1C'
+    call_names = '1C'
     shared_constraints = [OpeningRuleConstraint(), clubs >= 3]
     conditional_priorities = [
         (z3.Or(clubs > diamonds, z3.And(clubs == 3, diamonds == 3)), opening_priorities.LongestMinor),
@@ -326,7 +317,7 @@ class OneClubOpening(Opening):
 
 
 class OneDiamondOpening(Opening):
-    call_name = '1D'
+    call_names = '1D'
     shared_constraints = [OpeningRuleConstraint(), diamonds >= 3]
     conditional_priorities = [
         (diamonds > clubs, opening_priorities.LongestMinor),
@@ -335,7 +326,7 @@ class OneDiamondOpening(Opening):
 
 
 class OneHeartOpening(Opening):
-    call_name = '1H'
+    call_names = '1H'
     shared_constraints = [OpeningRuleConstraint(), hearts >= 5]
     conditional_priorities = [
         (hearts > spades, opening_priorities.LongestMajor),
@@ -344,7 +335,7 @@ class OneHeartOpening(Opening):
 
 
 class OneSpadeOpening(Opening):
-    call_name = '1S'
+    call_names = '1S'
     shared_constraints = [OpeningRuleConstraint(), spades >= 5]
     conditional_priorities = [
         (spades > hearts, opening_priorities.LongestMajor),
@@ -362,19 +353,19 @@ class NoTrumpOpening(Opening):
 
 
 # class OneNoTrumpOpening(Opening):
-#     call_name = '1N'
+#     call_names = '1N'
 #     shared_constraints =
 
 
 # class TwoNoTrumpOpening(Opening):
 #     annotations = Opening.annotations + [annotations.NoTrumpSystemsOn]
-#     call_name = '2N'
+#     call_names = '2N'
 #     shared_constraints = [points >= 20, points <= 21, balanced]
 #     priority = opening_priorities.NoTrumpOpening
 
 
 class StrongTwoClubs(Opening):
-    call_name = '2C'
+    call_names = '2C'
     shared_constraints = points >= 22  # FIXME: Should support "or 9+ winners"
     priority = opening_priorities.StrongTwoClubs
 
@@ -415,13 +406,13 @@ class ResponseToOneLevelSuitedOpen(Response):
 
 
 class OneDiamondResponse(ResponseToOneLevelSuitedOpen):
-    call_name = '1D'
+    call_names = '1D'
     shared_constraints = [points >= 6, diamonds >= 4]
     priority = response_priorities.OneDiamondResponse
 
 
 class OneHeartResponse(ResponseToOneLevelSuitedOpen):
-    call_name = '1H'
+    call_names = '1H'
     shared_constraints = [points >= 6, hearts >= 4]
     conditional_priorities = [
         (z3.And(hearts >= 5, hearts > spades), response_priorities.LongestNewMajor),
@@ -431,7 +422,7 @@ class OneHeartResponse(ResponseToOneLevelSuitedOpen):
 
 
 class OneSpadeResponse(ResponseToOneLevelSuitedOpen):
-    call_name = '1S'
+    call_names = '1S'
     shared_constraints = [points >= 6, spades >= 4]
     conditional_priorities = [
         (spades >= 5, response_priorities.OneSpadeWithFiveResponse)
@@ -440,7 +431,7 @@ class OneSpadeResponse(ResponseToOneLevelSuitedOpen):
 
 
 class OneNotrumpResponse(ResponseToOneLevelSuitedOpen):
-    call_name = '1N'
+    call_names = '1N'
     shared_constraints = points >= 6
     priority = response_priorities.OneNotrumpResponse
 
@@ -481,7 +472,7 @@ class MinorLimitRaise(RaiseResponse):
 
 class TwoNotrumpLimitResponse(ResponseToOneLevelSuitedOpen):
     preconditions = LastBidHasStrain(positions.Partner, [suit.CLUBS, suit.DIAMONDS])
-    call_name = '2N'
+    call_names = '2N'
     shared_constraints = [balanced, MinimumCombinedPoints(22)]
     priority = response_priorities.TwoNotrumpLimitResponse
 
@@ -508,7 +499,7 @@ class ResponseToMajorOpen(ResponseToOneLevelSuitedOpen):
 
 class Jacoby2N(ResponseToMajorOpen):
     preconditions = LastBidWas(positions.RHO, 'P')
-    call_name = '2N'
+    call_names = '2N'
     shared_constraints = [points >= 14, SupportForPartnerLastBid(4)]
     priority = response_priorities.Jacoby2N
     annotations = [annotations.Jacoby2N, annotations.Artificial]
@@ -580,7 +571,7 @@ class JumpShiftResponseToOpen(ResponseToOneLevelSuitedOpen):
 
 
 class NegativeDouble(ResponseToOneLevelSuitedOpen):
-    call_name = 'X'
+    call_names = 'X'
     preconditions = [
         LastBidHasSuit(positions.RHO),
         MaxLevel(2),
@@ -745,7 +736,7 @@ class ResponseToStrongTwoClubs(Response):
 
 
 class WaitingResponseToStrongTwoClubs(ResponseToStrongTwoClubs):
-    call_name = '2D'
+    call_names = '2D'
     shared_constraints = NO_CONSTRAINTS
     annotations = [annotations.Artificial]
     priority = two_clubs_response_priorities.WaitingResponse
@@ -759,7 +750,7 @@ class SuitResponseToStrongTwoClubs(ResponseToStrongTwoClubs):
 
 
 class NotrumpResponseToStrongTwoClubs(ResponseToStrongTwoClubs):
-    call_name = '2N'
+    call_names = '2N'
     shared_constraints = points >= 8
     priority = two_clubs_response_priorities.NoBiddableSuit
 
@@ -794,7 +785,7 @@ class RebidAfterOneLevelOpen(OpenerRebid):
 
 class RebidOneNotrumpByOpener(RebidAfterOneLevelOpen):
     preconditions = InvertedPrecondition(LastBidWas(positions.Partner, 'P'))
-    call_name = '1N'
+    call_names = '1N'
     priority = opener_rebid_priorities.RebidOneNotrump
     shared_constraints = NO_CONSTRAINTS
 
@@ -934,7 +925,7 @@ class OpenerSuitedJumpRebidAfterStrongTwoClubs(OpenerRebidAfterStrongTwoClubs):
 #         LastBidWas(positions.Me, '2D'),
 #         InvertedPrecondition(ForcedToBid()), # Does not apply over 2C,2D,2N
 #     ]
-#     call_name = '3C'
+#     call_names = '3C'
 #     shared_constraints = NO_CONSTRAINTS
 #     annotations = [annotations.Artificial]
 
@@ -994,7 +985,7 @@ class NoTrumpTransferResponse(NoTrumpResponse):
 
 
 class JacobyTransferToHearts(NoTrumpTransferResponse):
-    call_name = '2D'
+    call_names = '2D'
     shared_constraints = hearts >= 5
     conditional_priorities = [
         (hearts > spades, nt_response_priorities.JacobyTransferToLongerMajor),
@@ -1004,7 +995,7 @@ class JacobyTransferToHearts(NoTrumpTransferResponse):
 
 
 class JacobyTransferToSpades(NoTrumpTransferResponse):
-    call_name = '2H'
+    call_names = '2H'
     shared_constraints = spades >= 5
     conditional_priorities = [
         (spades > hearts, nt_response_priorities.JacobyTransferToLongerMajor),
@@ -1025,9 +1016,9 @@ class AcceptTransferToHearts(Rule):
     preconditions = [
         LastBidHasAnnotation(positions.Partner, annotations.Transfer),
         LastBidHasStrain(positions.Partner, suit.DIAMONDS),
-        Strain(suit.HEARTS),
         NotJumpFromPartnerLastBid(),
     ]
+    call_names = ['2H', '4H']
     shared_constraints = NO_CONSTRAINTS
     priority = relay_priorities.Relay
 
@@ -1037,9 +1028,9 @@ class AcceptTransferToSpades(Rule):
     preconditions = [
         LastBidHasAnnotation(positions.Partner, annotations.Transfer),
         LastBidHasStrain(positions.Partner, suit.HEARTS),
-        Strain(suit.SPADES),
         NotJumpFromPartnerLastBid(),
     ]
+    call_names = ['2S', '4S']
     shared_constraints = NO_CONSTRAINTS
     priority = relay_priorities.Relay
 
@@ -1068,7 +1059,7 @@ class NaturalStaymanResponse(StaymanResponse):
 
 
 class PassStaymanResponse(StaymanResponse):
-    call_name = 'P'
+    call_names = 'P'
     shared_constraints = NO_CONSTRAINTS
     priority = stayman_response_priorities.PassStaymanResponse
 
@@ -1123,7 +1114,7 @@ class StaymanRebid(Rule):
 
 
 class GarbagePassStaymanRebid(StaymanRebid):
-    call_name = 'P'
+    call_names = 'P'
     shared_constraints = [points <= 7]
     priority = stayman_rebid_priorities.GarbagePassStaymanRebid
 
@@ -1144,13 +1135,13 @@ class DirectOvercall(Rule):
 
 
 class OneLevelDiamondOvercall(DirectOvercall):
-    call_name = '1D'
+    call_names = '1D'
     shared_constraints = [MinLength(5), points >= 8]
     priority = overcall_priorities.DirectOvercallMinor
 
 
 class OneLevelHeartOvercall(DirectOvercall):
-    call_name = '1H'
+    call_names = '1H'
     shared_constraints = [MinLength(5), points >= 8]
     conditional_priorities = [
         (hearts > spades, overcall_priorities.DirectOvercallLongestMajor),
@@ -1159,7 +1150,7 @@ class OneLevelHeartOvercall(DirectOvercall):
 
 
 class OneLevelSpadeOvercall(DirectOvercall):
-    call_name = '1S'
+    call_names = '1S'
     shared_constraints = [MinLength(5), points >= 8]
     conditional_priorities = [
         (spades >= hearts, overcall_priorities.DirectOvercallLongestMajor),
@@ -1168,7 +1159,7 @@ class OneLevelSpadeOvercall(DirectOvercall):
 
 
 class TakeoutDouble(Rule):
-    call_name = 'X'
+    call_names = 'X'
     preconditions = [
         LastBidHasSuit(),
         HasNotBid(positions.Partner),
@@ -1289,7 +1280,7 @@ class Gerber(Rule):
 
 
 class GerberForAces(Gerber):
-    call_name = '4C'
+    call_names = '4C'
     preconditions = [
         LastBidHasStrain(positions.Partner, suit.NOTRUMP),
         InvertedPrecondition(LastBidHasAnnotation(positions.Partner, annotations.Artificial))
@@ -1297,7 +1288,7 @@ class GerberForAces(Gerber):
 
 
 class GerberForKings(Gerber):
-    call_name = '5C'
+    call_names = '5C'
     preconditions = LastBidHasAnnotation(positions.Me, annotations.Gerber)
 
 
@@ -1331,7 +1322,7 @@ class ResponseToGerber(Rule):
 
 
 # class BlackwoodForAces(Blackwood):
-#     call_name = '4N'
+#     call_names = '4N'
 #     preconditions = [
 #         InvertedPrecondition(LastBidHasStrain(positions.Partner, suit.NOTRUMP)),
 #         InvertedPrecondition(LastBidHasAnnotation(positions.Partner, annotations.Artificial)),
@@ -1340,7 +1331,7 @@ class ResponseToGerber(Rule):
 
 
 # class BlackwoodForKings(Blackwood):
-#     call_name = '5N'
+#     call_names = '5N'
 #     preconditions = LastBidHasAnnotation(positions.Me, annotations.Blackwood)
 
 
