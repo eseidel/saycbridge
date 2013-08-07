@@ -1148,6 +1148,7 @@ class FourLevelPremptiveOvercall(DirectOvercall):
 
 
 the_law_priorities = enum.Enum(
+    "FiveLevelLaw",
     "FourLevelLaw",
     "ThreeLevelLaw",
     "TwoLevelLaw",
@@ -1176,6 +1177,11 @@ class ThreeLevelLaw(LawOfTotalTricks):
 class FourLevelLaw(LawOfTotalTricks):
     call_names = ['4C', '4D', '4H', '4S']
     priority = the_law_priorities.FourLevelLaw
+
+
+class FiveLevelLaw(LawOfTotalTricks):
+    call_names = ['5C', '5D']
+    priority = the_law_priorities.FiveLevelLaw
 
 
 feature_asking_priorites = enum.Enum(
