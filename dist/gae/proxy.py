@@ -47,10 +47,10 @@ class BidderProxy(object):
         # FIXME: This is a hack to make the GAE front-end work with the Z3 Bidder.
         if use_z3:
             call = self.bidder.find_call_for(hand, call_history)
-            call_history.calls.append(call if call else core.call.Pass())
+            new_call_history = call_history.copy_appending_call(call if call else core.call.Pass())
             # FIXME: Figure out the clean way to have the Bidder return the updated History
             # instead of interpreting the whole call history twice!
-            with Interpreter().create_history(call_history) as history:
+            with Interpreter().create_history(new_call_history) as history:
                 return [call, history.rho.rule_for_last_call, _position_knowledge_from_position_view(history.rho)]
         return self.bidder.find_call_and_rule_and_hand_knowledge_for(hand, call_history)
 

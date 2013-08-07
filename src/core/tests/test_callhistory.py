@@ -101,17 +101,6 @@ class CallHistoryTest(unittest2.TestCase):
         self.assertEquals(len(history.calls), 6)
         self.assertEquals(len(partial_history.calls), 4)
 
-    def _assert_history_until_after_last_call_from_position(self, full_history_string, position, expected_calls_string):
-        history = CallHistory.from_string(full_history_string)
-        partial_history = history.copy_with_history_until_after_last_call_from_position(position)
-        self.assertEquals(partial_history.calls_string(), expected_calls_string)
-
-    def test_history_until_last_call_from_position(self):
-        self._assert_history_until_after_last_call_from_position("1S", NORTH, "1S")
-        self._assert_history_until_after_last_call_from_position("1S", SOUTH, "")
-        self._assert_history_until_after_last_call_from_position("2C P 2D P", NORTH, "2C")
-        self._assert_history_until_after_last_call_from_position("2C P 2D P", SOUTH, "2C P 2D")
-
     def _assert_competative_auction(self, history_string, is_competative):
         self.assertEquals(CallHistory.from_string(history_string).competative_auction(), is_competative)
 
