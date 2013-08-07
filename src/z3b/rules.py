@@ -37,6 +37,9 @@ class Rule(object):
     def name(self):
         return self.rule_description.name
 
+    def __str__(self):
+        return self.name
+
     def __repr__(self):
         return "Rule(%s)" % repr(self.rule_description)
 
@@ -52,7 +55,7 @@ class Rule(object):
         for precondition in self.rule_description.preconditions:
             if not precondition.fits(history, call):
                 if call == expected_call and expected_call in self.rule_description.known_calls():
-                    print "WARNING: %s might be bid by %s but failed precondition: %s" % (expected_call, self, precondition)
+                    print " %s failed: %s" % (self, precondition)
                 return False
         return True
 
@@ -339,8 +342,9 @@ class StrongTwoClubs(Opening):
 
 
 response_priorities = enum.Enum(
-    "NegativeDouble",
+    "Jacoby2N",
     "JumpShiftResponseToOpen",
+    "NegativeDouble",
     "MajorJumpToGame",
     "MajorLimitRaise",
     "MajorMinimumRaise",
@@ -450,6 +454,72 @@ class NewSuitAtTheTwoLevel(ResponseToOneLevelSuitedOpen):
     shared_constraints = MinimumCombinedPoints(22)
 
 
+class ResponseToMajorOpen(ResponseToOneLevelSuitedOpen):
+    preconditions = ResponseToOneLevelSuitedOpen.preconditions + [
+        LastBidHasStrain(positions.Partner, suit.MAJORS),
+        InvertedPrecondition(LastBidHasAnnotation(positions.Partner, annotations.Artificial))
+    ]
+
+
+class Jacoby2N(ResponseToMajorOpen):
+    preconditions = ResponseToMajorOpen.preconditions + [LastBidWas(positions.RHO, 'P')]
+    call_name = '2N'
+    shared_constraints = [points >= 14, SupportForPartnerLastBid(4)]
+    priority = response_priorities.Jacoby2N
+    annotations = [annotations.Jacoby2N, annotations.Artificial]
+
+
+jacoby_2n_response_priorities = enum.Enum(
+    # Currently favoring features over slam interest.  Unclear if that's correct?
+    "SolidSuit",
+    "Singleton",
+    "Slam",
+    "Notrump",
+    "MinimumGame",
+)
+
+
+class ResponseToJacoby2N(RuleDescription):
+    # Bids above 4NT are either natural or covered by other conventions.
+    preconditions = RuleDescription.preconditions + [LastBidHasAnnotation(positions.Partner, annotations.Jacoby2N)]
+    category = categories.Gadget
+
+
+class SingletonResponseToJacoby2N(ResponseToJacoby2N):
+    preconditions = ResponseToJacoby2N.preconditions + [InvertedPrecondition(RebidSameSuit())]
+    call_names = ['3C', '3D', '3H', '3S']
+    shared_constraints = [MaxLength(1)]
+    annotations = RuleDescription.annotations + [annotations.Artificial]
+    priority = jacoby_2n_response_priorities.Singleton
+
+
+class SolidSuitResponseToJacoby2N(ResponseToJacoby2N):
+    preconditions = ResponseToJacoby2N.preconditions + [InvertedPrecondition(RebidSameSuit())]
+    call_names = ['4C', '4D', '4H', '4S']
+    shared_constraints = [MinLength(5), ThreeOfTheTopFive()]
+    priority = jacoby_2n_response_priorities.SolidSuit
+
+
+class SlamResponseToJacoby2N(ResponseToJacoby2N):
+    preconditions = ResponseToJacoby2N.preconditions + [RebidSameSuit()]
+    call_names = ['3C', '3D', '3H', '3S']
+    shared_constraints = [points >= 18]
+    priority = jacoby_2n_response_priorities.Slam
+
+
+class MinimumResponseToJacoby2N(ResponseToJacoby2N):
+    preconditions = ResponseToJacoby2N.preconditions + [RebidSameSuit()]
+    call_names = ['4C', '4D', '4H', '4S']
+    shared_constraints = NO_CONSTRAINTS
+    priority = jacoby_2n_response_priorities.MinimumGame
+
+
+class NotrumpResponseToJacoby2N(ResponseToJacoby2N):
+    call_names = ['3N']
+    shared_constraints = [points > 15] # It's really 15-17
+    priority = jacoby_2n_response_priorities.Notrump
+
+
 class JumpShift(object):
     preconditions = [UnbidSuit(), JumpFromLastContract(exact_size=1)]
 
@@ -471,7 +541,7 @@ class NegativeDouble(ResponseToOneLevelSuitedOpen):
         MaxLevel(2),
     ]
     priority = response_priorities.NegativeDouble
-    annotations = [annotations.NegativeDouble]
+    annotations = [annotations.NegativeDouble, annotations.Artificial]
 
 
 class NegativeDoubleOfOneDiamondOverOneClub(NegativeDouble):
@@ -1165,12 +1235,13 @@ class StandardAmericanYellowCard(object):
     rules = [Rule(description_class()) for description_class in _concrete_rule_description_classes()]
     priority_ordering = PartialOrdering()
 
-    priority_ordering.make_less_than(response_priorities, nt_response_priorities)
     priority_ordering.make_less_than(preempt_priorities, opening_priorities)
+    priority_ordering.make_less_than(response_priorities, nt_response_priorities)
     priority_ordering.make_less_than(response_priorities, two_clubs_response_priorities)
+    priority_ordering.make_less_than(response_priorities, jacoby_2n_response_priorities)
     priority_ordering.make_less_than(natural_priorities, response_priorities)
     priority_ordering.make_less_than(natural_priorities, opener_rebid_priorities)
     priority_ordering.make_less_than(natural_priorities, nt_response_priorities)
     priority_ordering.make_less_than(natural_priorities, stayman_response_priorities)
-    priority_ordering.make_less_than(forced_rebid_priorities, natural_priorities)
     priority_ordering.make_less_than(natural_priorities, two_clubs_opener_rebid_priorities)
+    priority_ordering.make_less_than(forced_rebid_priorities, natural_priorities)

@@ -14,6 +14,7 @@ annotations = enum.Enum(
     "Gerber",
     "Transfer",
     "NegativeDouble",
+    "Jacoby2N",
 )
 
 
@@ -26,7 +27,7 @@ class Precondition(object):
         return self.__class__.__name__
 
     def fits(self, history, call):
-        pass
+        raise NotImplementedError
 
 
 class InvertedPrecondition(Precondition):
@@ -35,7 +36,7 @@ class InvertedPrecondition(Precondition):
 
     @property
     def name(self):
-        return "not" + self.precondition.name
+        return "NOT_%s" % self.precondition.name
 
     def fits(self, history, call):
         return not self.precondition.fits(history, call)
@@ -87,25 +88,34 @@ class LastBidHasAnnotation(Precondition):
         self.annotation = annotation
 
     def __repr__(self):
-        return "LastBidHasAnnotation(%s, %s)" % (repr(self.position), repr(self.annotation))
+        return "%s(%s, %s)" % (self.name, repr(self.position.key), repr(self.annotation.key))
 
     def fits(self, history, call):
         return self.annotation in history.view_for(self.position).annotations_for_last_call
 
 
 class LastBidHasStrain(Precondition):
-    def __init__(self, position, strain):
+    def __init__(self, position, strain_or_strains):
         self.position = position
-        self.strain = strain
+        if strain_or_strains in suit.STRAINS:
+            self.strains = [strain_or_strains]
+        else:
+            self.strains = strain_or_strains
+
+    def __repr__(self):
+        return "%s(%s, %s)" % (self.name, repr(self.position.key), self.strains)
 
     def fits(self, history, call):
         last_call = history.view_for(self.position).last_call
-        return last_call and last_call.strain == self.strain
+        return last_call and last_call.strain in self.strains
 
 
 class LastBidWasSuit(Precondition):
     def __init__(self, position):
         self.position = position
+
+    def __repr__(self):
+        return "%s(%s)" % (self.name, repr(self.position.key))
 
     def fits(self, history, call):
         last_call = history.view_for(self.position).last_call
@@ -117,6 +127,9 @@ class LastBidHasLevel(Precondition):
         self.position = position
         self.level = level
 
+    def __repr__(self):
+        return "%s(%s, %s)" % (self.name, repr(self.position.key), self.level)
+
     def fits(self, history, call):
         last_call = history.view_for(self.position).last_call
         return last_call and last_call.level() == self.level
@@ -126,6 +139,9 @@ class LastBidWas(Precondition):
     def __init__(self, position, call_name):
         self.position = position
         self.call_name = call_name
+
+    def __repr__(self):
+        return "%s(%s, %s)" % (self.name, repr(self.position.key), self.call_name)
 
     def fits(self, history, call):
         last_call = history.view_for(self.position).last_call
@@ -161,6 +177,9 @@ class PartnerHasAtLeastLengthInSuit(Precondition):
     def __init__(self, length):
         self.length = length
 
+    def __repr__(self):
+        return "%s(%s)" % (self.name, self.length)
+
     def fits(self, history, call):
         if call.strain not in suit.SUITS:
             return False
@@ -177,6 +196,9 @@ class UnbidSuit(Precondition):
 class Strain(Precondition):
     def __init__(self, strain):
         self.strain = strain
+
+    def __repr__(self):
+        return "%s(%s)" % (self.name, self.strain)
 
     def fits(self, history, call):
         return call.strain == self.strain

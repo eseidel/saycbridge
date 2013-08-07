@@ -8,7 +8,7 @@ import z3b.model as model
 
 class Constraint(object):
     def expr(self, history, call):
-        pass
+        raise NotImplementedError
 
 
 class MinimumCombinedLength(Constraint):
@@ -36,6 +36,23 @@ class MinLength(Constraint):
 
     def expr(self, history, call):
         return expr_for_suit(call.strain) >= self.min_length
+
+
+class MaxLength(Constraint):
+    def __init__(self, max_length):
+        self.max_length = max_length
+
+    def expr(self, history, call):
+        return expr_for_suit(call.strain) <= self.max_length
+
+
+class SupportForPartnerLastBid(Constraint):
+    def __init__(self, min_count):
+        self._min_count = min_count
+
+    def expr(self, history, call):
+        partner_suit = history.partner.last_call.strain
+        return expr_for_suit(partner_suit) >= self._min_count
 
 
 class TwoOfTheTopThree(Constraint):
