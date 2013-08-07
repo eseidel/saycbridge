@@ -99,7 +99,7 @@ class Rule(object):
     call_names = None # call_names = ['1C', '1D'] -> preconditons = [CallNames('1C', '1D')]
 
     constraints = {}
-    shared_constraints = []
+    shared_constraints = [] # Auto-collects from parent classes
     annotations = []
     conditional_priorities = []
     priority = None
@@ -161,12 +161,27 @@ class Rule(object):
 
         return chain.from_iterable([self.exprs_from_constraints(constraint, history, call) for constraint in constraints])
 
+    # FIXME: Would like to memoize this, but it doens't seem to work as expected.
+    @classmethod
+    @memoized
+    def collected_shared_constraints(cls):
+        super_cls = cls.__mro__[1]
+        parent_constraints = super_cls.collected_shared_constraints() if hasattr(super_cls, 'collected_shared_constraints') else []
+        non_inherited_constraints = cls.__dict__.get('shared_constraints')
+        # print cls.__name__, non_inherited_constraints, super_cls.__name__, parent_constraints
+        if non_inherited_constraints and not hasattr(non_inherited_constraints, '__iter__'):
+            non_inherited_constraints = [non_inherited_constraints]
+        if non_inherited_constraints:
+            # Important that we don't modify parent_constraints lest we confuse memoize
+            return parent_constraints + list(non_inherited_constraints) # sometimes we use tuples, convert them to lists.
+        return parent_constraints
+
     def constraint_exprs_for_call(self, history, call):
         exprs = []
         per_call_constraints, _ = self.per_call_constraints_and_priority(call)
         if per_call_constraints:
             exprs.extend(self.exprs_from_constraints(per_call_constraints, history, call))
-        exprs.extend(self.exprs_from_constraints(self.shared_constraints, history, call))
+        exprs.extend(self.exprs_from_constraints(self.collected_shared_constraints(), history, call))
         return exprs
 
 
@@ -490,7 +505,7 @@ class ResponseToJacoby2N(Rule):
 class SingletonResponseToJacoby2N(ResponseToJacoby2N):
     preconditions = ResponseToJacoby2N.preconditions + [InvertedPrecondition(RebidSameSuit())]
     call_names = ['3C', '3D', '3H', '3S']
-    shared_constraints = [MaxLength(1)]
+    shared_constraints = MaxLength(1)
     annotations = Rule.annotations + [annotations.Artificial]
     priority = jacoby_2n_response_priorities.Singleton
 
@@ -505,7 +520,7 @@ class SolidSuitResponseToJacoby2N(ResponseToJacoby2N):
 class SlamResponseToJacoby2N(ResponseToJacoby2N):
     preconditions = ResponseToJacoby2N.preconditions + [RebidSameSuit()]
     call_names = ['3C', '3D', '3H', '3S']
-    shared_constraints = [points >= 18]
+    shared_constraints = points >= 18
     priority = jacoby_2n_response_priorities.Slam
 
 
@@ -518,7 +533,7 @@ class MinimumResponseToJacoby2N(ResponseToJacoby2N):
 
 class NotrumpResponseToJacoby2N(ResponseToJacoby2N):
     call_names = ['3N']
-    shared_constraints = [points > 15] # It's really 15-17
+    shared_constraints = points > 15 # It's really 15-17
     priority = jacoby_2n_response_priorities.Notrump
 
 
@@ -759,7 +774,7 @@ class NewOneLevelMajorByOpener(RebidAfterOneLevelOpen):
         '1H': (NO_CONSTRAINTS, opener_rebid_priorities.NewSuitHearts),
         '1S': (NO_CONSTRAINTS, opener_rebid_priorities.NewSuitSpades),
     }
-    shared_constraints = [MinLength(4)]
+    shared_constraints = MinLength(4)
 
 
 class NewSuitByOpener(RebidAfterOneLevelOpen):
@@ -780,7 +795,7 @@ class NewSuitByOpener(RebidAfterOneLevelOpen):
         '3H': (MinimumCombinedPoints(25), opener_rebid_priorities.NewSuitHearts),
         # 3S would necessarily be a reverse, or a jump shift, and is not covered by this rule.
     }
-    shared_constraints = [MinLength(4)]
+    shared_constraints = MinLength(4)
 
 
 class RebidOriginalSuitByOpener(RebidAfterOneLevelOpen):
@@ -794,7 +809,7 @@ class RebidOriginalSuitByOpener(RebidAfterOneLevelOpen):
 class UnforcedRebidOriginalSuitByOpener(RebidOriginalSuitByOpener):
     preconditions = RebidOriginalSuitByOpener.preconditions + [InvertedPrecondition(ForcedToBid())]
     call_names = ['2C', '2D', '2H', '2S']
-    shared_constraints = [MinLength(6)]
+    shared_constraints = MinLength(6)
     priority = opener_rebid_priorities.UnforcedRebidOriginalSuit
 
 
@@ -804,7 +819,7 @@ class ForcedRebidOriginalSuitByOpener(RebidOriginalSuitByOpener):
     conditional_priorities = [
         (MinLength(6), opener_rebid_priorities.UnforcedRebidOriginalSuit),
     ]
-    shared_constraints = [MinLength(5)]
+    shared_constraints = MinLength(5)
     priority = forced_rebid_priorities.ForcedRebidOriginalSuit
 
 
@@ -835,7 +850,7 @@ class OpenerSuitedRebidAfterStrongTwoClubs(OpenerRebidAfterStrongTwoClubs):
     call_names = ['2H', '2S', '3C', '3D', '3H', '3S', '4C']
     # FIXME: This should either have NoMajorFit(), or have priorities separated
     # so that we prefer to support our partner's major before bidding our own new minor.
-    shared_constraints = [MinLength(5)]
+    shared_constraints = MinLength(5)
     priority = two_clubs_opener_rebid_priorities.SuitedRebid
 
 
@@ -1091,13 +1106,13 @@ class TakeoutDouble(Rule):
         MinUnbidSuitCount(2),
     ]
     annotations = [ annotations.TakeoutDouble ]
-    shared_constraints = [ SupportForUnbidSuits() ]
+    shared_constraints = SupportForUnbidSuits()
     priority = overcall_priorities.TakeoutDouble
 
 
 class OneLevelTakeoutDouble(TakeoutDouble):
     preconditions = TakeoutDouble.preconditions + [MaxLevel(1)]
-    shared_constraints = TakeoutDouble.shared_constraints + [ points >= 11 ]
+    shared_constraints = points >= 11
 
 
 preempt_priorities = enum.Enum(
@@ -1160,7 +1175,7 @@ class LawOfTotalTricks(Rule):
         InvertedPrecondition(Opened(positions.Me)),
         RaiseOfPartnersLastSuit()
     ]
-    shared_constraints = [LengthSatisfiesLawOfTotalTricks()]
+    shared_constraints = LengthSatisfiesLawOfTotalTricks()
     category = categories.LawOfTotalTricks
 
 
