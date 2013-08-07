@@ -13,7 +13,6 @@ annotations = enum.Enum(
     "Stayman",
     "Gerber",
     "Transfer",
-    "Jacoby2NT",
     "NegativeDouble",
     "Jacoby2N",
     "TakeoutDouble",

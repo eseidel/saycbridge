@@ -347,7 +347,6 @@ response_priorities = enum.Enum(
     "NegativeDouble",
     "Jacoby2N",
     "JumpShiftResponseToOpen",
-    "NegativeDouble",
     "MajorJumpToGame",
     "MajorLimitRaise",
     "MajorMinimumRaise",
@@ -739,7 +738,6 @@ opener_rebid_priorities = enum.Enum(
     "NewSuitDiamonds",
     "NewSuitHearts",
     "NewSuitSpades",
-    "SupportMinorMin",
     "UnforcedRebidOriginalSuit",
     "RebidOneNotrump",
     "ForcedRebidOriginalSuit",
@@ -940,7 +938,7 @@ class BasicStayman(NoTrumpResponse):
 class Stayman(BasicStayman):
     preconditions = BasicStayman.preconditions + [NotJumpFromPartnerLastBid()]
     constraints = {
-        '2C': ConstraintOr(MinimumCombinedPoints(23), three_suited_short_clubs),
+        '2C': ConstraintOr(MinimumCombinedPoints(23), z3.And(spades <= 4, hearts <= 4, diamonds <= 5, clubs <= 1)),
         '3C': MinimumCombinedPoints(25),
     }
 

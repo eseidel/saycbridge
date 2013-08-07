@@ -108,8 +108,6 @@ balanced = z3.And(clubs >= 2, diamonds >= 2, hearts >= 2, spades >= 2,
     )
 )
 
-three_suited_short_clubs = z3.And(spades <= 4, hearts <= 4, diamonds <= 5, clubs <= 1)
-
 NO_CONSTRAINTS = z3.BoolVal(True)
 
 
