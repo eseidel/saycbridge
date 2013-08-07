@@ -468,7 +468,7 @@ class JumpShiftResponseToOpen(ResponseToOneLevelSuitedOpen):
 class NegativeDouble(ResponseToOneLevelSuitedOpen):
     call_name = 'X'
     preconditions = ResponseToOneLevelSuitedOpen.preconditions + [
-        LastBidWasSuit(positions.RHO),
+        LastBidHasSuit(positions.RHO),
         MaxLevel(2),
     ]
     priority = response_priorities.NegativeDouble
@@ -972,6 +972,7 @@ class LongMajorSlamInvitation(OneNoTrumpResponse):
 
 
 overcall_priorities = enum.Enum(
+    "TakeoutDouble",
     "DirectOvercallLongestMajor",
     "DirectOvercallMajor",
     "DirectOvercallMinor",
@@ -1007,6 +1008,25 @@ class OneLevelSpadeOvercall(DirectOvercall):
         (spades >= hearts, overcall_priorities.DirectOvercallLongestMajor),
     ]
     priority = overcall_priorities.DirectOvercallMajor
+
+
+class TakeoutDouble(RuleDescription):
+    call_name = 'X'
+    preconditions = [
+        LastBidHasSuit(),
+        HasNotBid(positions.Partner),
+        # LastBidWasNaturalSuit(),
+        # LastBidWasBelowGame(),
+        MinUnbidSuitCount(2),
+    ]
+    annotations = [ annotations.TakeoutDouble ]
+    shared_constraints = [ SupportForUnbidSuits() ]
+    priority = overcall_priorities.TakeoutDouble
+
+
+class OneLevelTakeoutDouble(TakeoutDouble):
+    preconditions = TakeoutDouble.preconditions + [MaxLevel(1)]
+    shared_constraints = TakeoutDouble.shared_constraints + [ points >= 11 ]
 
 
 preempt_priorities = enum.Enum(
@@ -1169,9 +1189,11 @@ class StandardAmericanYellowCard(object):
     priority_ordering.make_less_than(response_priorities, nt_response_priorities)
     priority_ordering.make_less_than(preempt_priorities, opening_priorities)
     priority_ordering.make_less_than(response_priorities, two_clubs_response_priorities)
+    priority_ordering.make_less_than(natural_priorities, overcall_priorities)
     priority_ordering.make_less_than(natural_priorities, response_priorities)
     priority_ordering.make_less_than(natural_priorities, opener_rebid_priorities)
     priority_ordering.make_less_than(natural_priorities, nt_response_priorities)
     priority_ordering.make_less_than(natural_priorities, stayman_response_priorities)
     priority_ordering.make_less_than(forced_rebid_priorities, natural_priorities)
     priority_ordering.make_less_than(natural_priorities, two_clubs_opener_rebid_priorities)
+

@@ -10,6 +10,7 @@ from third_party import enum
 from third_party.memoized import memoized
 from z3b.model import positions, expr_for_suit, is_possible
 import copy
+import core.suit as suit
 import z3
 import z3b.model as model
 import z3b.rules as rules
@@ -65,6 +66,13 @@ class PositionView(object):
     def __init__(self, history, position):
         self.history = history
         self.position = position
+
+    @property
+    def walk(self):
+        history = self.history
+        while history:
+            yield PositionView(history, self.position)
+            history = history._four_calls_ago
 
     @property
     def annotations(self):
@@ -325,6 +333,10 @@ class History(object):
             if not is_possible(solver, suit_expr < 3):
                 return False
         return True
+
+    @property
+    def unbid_suits(self):
+        return filter(self.is_unbid_suit, suit.SUITS)
 
     @property
     def last_contract(self):

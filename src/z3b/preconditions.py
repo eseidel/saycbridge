@@ -14,6 +14,7 @@ annotations = enum.Enum(
     "Gerber",
     "Transfer",
     "NegativeDouble",
+    "TakeoutDouble",
 )
 
 
@@ -52,6 +53,17 @@ class Opened(Precondition):
 
     def fits(self, history, call):
         return annotations.Opening in history.annotations_for_position(self.position)
+
+
+class HasNotBid(Precondition):
+    def __init__(self, position):
+        self.position = position
+
+    def fits(self, history, call):
+        for view in history.view_for(self.position).walk:
+            if view.last_call and not view.last_call.is_pass():
+                return False
+        return True
 
 
 class ForcedToBid(Precondition):
@@ -103,12 +115,12 @@ class LastBidHasStrain(Precondition):
         return last_call and last_call.strain == self.strain
 
 
-class LastBidWasSuit(Precondition):
-    def __init__(self, position):
+class LastBidHasSuit(Precondition):
+    def __init__(self, position=None):
         self.position = position
 
     def fits(self, history, call):
-        last_call = history.view_for(self.position).last_call
+        last_call = history.last_contract if not self.position else history.view_for(self.position).last_call
         return last_call and last_call.strain in suit.SUITS
 
 
@@ -172,6 +184,14 @@ class UnbidSuit(Precondition):
         if call.strain not in suit.SUITS:
             return False
         return history.is_unbid_suit(call.strain)
+
+
+class MinUnbidSuitCount(Precondition):
+    def __init__(self, count):
+        self.count = count
+
+    def fits(self, history, call):
+        return len(history.unbid_suits) >= self.count
 
 
 class Strain(Precondition):

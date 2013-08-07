@@ -4,6 +4,7 @@
 
 from z3b.model import expr_for_suit
 import z3b.model as model
+import z3
 
 
 class Constraint(object):
@@ -36,6 +37,21 @@ class MinLength(Constraint):
 
     def expr(self, history, call):
         return expr_for_suit(call.strain) >= self.min_length
+
+
+class SupportForUnbidSuits(Constraint):
+    def _four_in_almost_every_suit(self, missing_suit, suits):
+        return z3.And([expr_for_suit(suit) >= 4 for suit in set(suits) - set([missing_suit])])
+
+    def expr(self, history, call):
+        unbid_suits = history.unbid_suits
+        if len(unbid_suits) == 3:
+            three_card_support_expr = z3.And([expr_for_suit(suit) >= 3 for suit in unbid_suits])
+            four_card_support_expr = z3.Or([self._four_in_almost_every_suit(missing_suit, unbid_suits) for missing_suit in unbid_suits])
+            return z3.And(three_card_support_expr, four_card_support_expr)
+        if len(unbid_suits) == 2:
+            return z3.And([expr_for_suit(suit) >= 4 for suit in unbid_suits])
+        assert False, "SupportForUnbidSuits only supports 2 or 3 unbid suits."
 
 
 class TwoOfTheTopThree(Constraint):
