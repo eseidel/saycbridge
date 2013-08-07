@@ -219,6 +219,20 @@ class History(object):
     def annotations(self):
         return chain.from_iterable(self._walk_annotations())
 
+    def is_consistent(self, position, constraints=None):
+        constraints = constraints if constraints is not None else z3.BoolVal(True)
+        history = self._history_after_last_call_for(position)
+        if not history:
+            solver = _solver_pool.borrow()
+            result = is_possible(solver, constraints)
+            _solver_pool.restore(solver)
+            return result
+        return history._solve_for_consistency(constraints)
+
+    # can't memoize due to unhashable parameter
+    def _solve_for_consistency(self, constraints):
+        return is_possible(self._solver, constraints)
+
     @memoized
     def _solve_for_min_length(self, suit):
         solver = self._solver
@@ -413,6 +427,7 @@ class RuleSelector(object):
                     if self.system.priority_ordering.less_than(priority, unmade_priority):
                         situational_exprs.append(z3.Not(unmade_z3_meaning))
             situations.append(z3.And(situational_exprs))
+
         return z3.Or(situations)
 
     def possible_calls_for_hand(self, hand, expected_call):
@@ -443,13 +458,16 @@ class Interpreter(object):
 
             call = partial_history.last_call()
             rule = selector.rule_for_call(call)
-            # We can interpret bids we know how to make.
+
             constraints = model.NO_CONSTRAINTS
             annotations = []
             if rule:
                 annotations = rule.annotations(history)
                 constraints = selector.constraints_for_call(call)
-                # FIXME: We should validate the new constraints before saving them in the knowledge.
+                if not history.is_consistent(positions.Me, constraints):
+                    constraints = model.NO_CONSTRAINTS
+                    annotations = []
+
             history = history.extend_with(call, annotations, constraints, rule)
 
         return history
