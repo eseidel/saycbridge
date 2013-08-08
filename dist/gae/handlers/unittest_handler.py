@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import re
+import os.path
 
 import webapp2
 import jinja2
@@ -66,6 +67,6 @@ class UnittestHandler(webapp2.RequestHandler):
     def get(self):
         template_values = {
             "unittests_output": self._page_from_unittest_output(self.baseline_file_path),
-            "unittest_file_name": self.baseline_file_path,
+            "unittest_file_name": os.path.basename(self.baseline_file_path),
         }
         self.response.out.write(jinja_environment.get_template('unittests.html').render(template_values))
