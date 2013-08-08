@@ -1127,6 +1127,7 @@ overcall_priorities = enum.Enum(
     "TakeoutDouble",
     "DirectOvercallLongestMajor",
     "DirectOvercallMajor",
+    "DirectOvercallLongestMinor",
     "DirectOvercallMinor",
     "FourLevelPremptive",
     "ThreeLevelPremptive",
@@ -1135,16 +1136,26 @@ overcall_priorities = enum.Enum(
 
 
 class DirectOvercall(Rule):
-    preconditions = LastBidHasAnnotation(positions.RHO, annotations.Opening)
+    preconditions = [
+        LastBidHasAnnotation(positions.RHO, annotations.Opening),
+        UnbidSuit(),
+    ]
 
 
-class OneLevelDiamondOvercall(DirectOvercall):
+class StandardDirectOvercall(DirectOvercall):
+    preconditions = [
+        LastBidHasSuit(positions.RHO),
+        NotJumpFromLastContract(),
+    ]
+
+
+class OneDiamondOvercall(StandardDirectOvercall):
     call_names = '1D'
     shared_constraints = [MinLength(5), points >= 8]
     priority = overcall_priorities.DirectOvercallMinor
 
 
-class OneLevelHeartOvercall(DirectOvercall):
+class OneHeartOvercall(StandardDirectOvercall):
     call_names = '1H'
     shared_constraints = [MinLength(5), points >= 8]
     conditional_priorities = [
@@ -1153,7 +1164,7 @@ class OneLevelHeartOvercall(DirectOvercall):
     priority = overcall_priorities.DirectOvercallMajor
 
 
-class OneLevelSpadeOvercall(DirectOvercall):
+class OneSpadeOvercall(StandardDirectOvercall):
     call_names = '1S'
     shared_constraints = [MinLength(5), points >= 8]
     conditional_priorities = [
@@ -1161,6 +1172,41 @@ class OneLevelSpadeOvercall(DirectOvercall):
     ]
     priority = overcall_priorities.DirectOvercallMajor
 
+
+class TwoClubOvercall(StandardDirectOvercall):
+    call_names = '2C'
+    shared_constraints = [MinLength(5), points >= 10]
+    conditional_priorities = [
+        (clubs > diamonds, overcall_priorities.DirectOvercallLongestMinor),
+    ]
+    priority = overcall_priorities.DirectOvercallMinor
+
+
+class TwoDiamondOvercall(StandardDirectOvercall):
+    call_names = '2D'
+    shared_constraints = [MinLength(5), points >= 10]
+    conditional_priorities = [
+        (diamonds >= clubs, overcall_priorities.DirectOvercallLongestMinor),
+    ]
+    priority = overcall_priorities.DirectOvercallMinor
+
+
+class TwoHeartOvercall(StandardDirectOvercall):
+    call_names = '2H'
+    shared_constraints = [MinLength(5), points >= 10]
+    conditional_priorities = [
+        (hearts > spades, overcall_priorities.DirectOvercallLongestMajor),
+    ]
+    priority = overcall_priorities.DirectOvercallMajor
+
+
+class TwoSpadeOvercall(StandardDirectOvercall):
+    call_names = '2S'
+    shared_constraints = [MinLength(5), points >= 10]
+    conditional_priorities = [
+        (spades >= hearts, overcall_priorities.DirectOvercallLongestMajor),
+    ]
+    priority = overcall_priorities.DirectOvercallMajor
 
 class TakeoutDouble(Rule):
     call_names = 'X'
@@ -1219,14 +1265,12 @@ class TwoLevelPremptiveOvercall(PreemptiveOvercall):
 
 
 class ThreeLevelPremptiveOvercall(PreemptiveOvercall):
-    preconditions = JumpFromLastContract()
     call_names = ['3C', '3D', '3H', '3S']
     shared_constraints = MinLength(7)
     priority = overcall_priorities.ThreeLevelPremptive
 
 
 class FourLevelPremptiveOvercall(PreemptiveOvercall):
-    preconditions = JumpFromLastContract()
     call_names = ['4C', '4D', '4H', '4S']
     shared_constraints = MinLength(8)
     priority = overcall_priorities.FourLevelPremptive
