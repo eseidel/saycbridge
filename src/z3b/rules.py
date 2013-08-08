@@ -25,17 +25,18 @@ categories = enum.Enum(
 # This is a public interface from RuleGenerators to the rest of the system.
 # This class knows nothing about the DSL.
 class CompiledRule(object):
-    def __init__(self, rule, preconditions, known_calls, shared_constraints):
+    def __init__(self, rule, preconditions, known_calls, shared_constraints, annotations):
         self.rule = rule
         self.preconditions = preconditions
         self.known_calls = known_calls
         self.shared_constraints = shared_constraints
+        self._annotations = annotations
 
     def requires_planning(self, history):
         return self.rule.requires_planning
 
     def annotations(self, history):
-        return self.rule.annotations
+        return self._annotations
 
     @property
     def name(self):
@@ -139,6 +140,7 @@ class RuleCompiler(object):
         # Unclear if compiled results should be memoized on the rule?
         return CompiledRule(dsl_rule,
             known_calls=cls._compile_known_calls(dsl_rule_class),
+            annotations=cls._joined_list_from_ancestors(dsl_rule_class, 'annotations'),
             preconditions=cls._joined_list_from_ancestors(dsl_rule_class, 'preconditions'),
             shared_constraints=cls._joined_list_from_ancestors(dsl_rule_class, 'shared_constraints')
         )
@@ -302,7 +304,7 @@ opening_priorities = enum.Enum(
 
 
 class Opening(Rule):
-    annotations = [annotations.Opening]
+    annotations = annotations.Opening
     preconditions = NoOpening()
 
 
@@ -344,7 +346,7 @@ class OneSpadeOpening(Opening):
 
 
 class NoTrumpOpening(Opening):
-    annotations = Opening.annotations + [annotations.NoTrumpSystemsOn]
+    annotations = annotations.NoTrumpSystemsOn
     constraints = {
         '1N': z3.And(points >= 15, points <= 17, balanced),
         '2N': z3.And(points >= 20, points <= 21, balanced)
@@ -358,7 +360,7 @@ class NoTrumpOpening(Opening):
 
 
 # class TwoNoTrumpOpening(Opening):
-#     annotations = Opening.annotations + [annotations.NoTrumpSystemsOn]
+#     annotations = annotations.NoTrumpSystemsOn
 #     call_names = '2N'
 #     shared_constraints = [points >= 20, points <= 21, balanced]
 #     priority = opening_priorities.NoTrumpOpening
@@ -437,7 +439,10 @@ class OneNotrumpResponse(ResponseToOneLevelSuitedOpen):
 
 
 class RaiseResponse(ResponseToOneLevelSuitedOpen):
-    preconditions = [RaiseOfPartnersLastSuit(), LastBidHasAnnotation(positions.Partner, annotations.Opening)]
+    preconditions = [
+        RaiseOfPartnersLastSuit(),
+        LastBidHasAnnotation(positions.Partner, annotations.Opening)
+    ]
 
 
 class MajorMinimumRaise(RaiseResponse):
@@ -525,7 +530,7 @@ class SingletonResponseToJacoby2N(ResponseToJacoby2N):
     preconditions = InvertedPrecondition(RebidSameSuit())
     call_names = ['3C', '3D', '3H', '3S']
     shared_constraints = MaxLength(1)
-    annotations = Rule.annotations + [annotations.Artificial]
+    annotations = annotations.Artificial
     priority = jacoby_2n_response_priorities.Singleton
 
 
@@ -738,7 +743,7 @@ class ResponseToStrongTwoClubs(Response):
 class WaitingResponseToStrongTwoClubs(ResponseToStrongTwoClubs):
     call_names = '2D'
     shared_constraints = NO_CONSTRAINTS
-    annotations = [annotations.Artificial]
+    annotations = annotations.Artificial
     priority = two_clubs_response_priorities.WaitingResponse
 
 
@@ -927,8 +932,7 @@ class OpenerSuitedJumpRebidAfterStrongTwoClubs(OpenerRebidAfterStrongTwoClubs):
 #     ]
 #     call_names = '3C'
 #     shared_constraints = NO_CONSTRAINTS
-#     annotations = [annotations.Artificial]
-
+#     annotations = annotations.Artificial
 
 
 nt_response_priorities = enum.Enum(
@@ -956,7 +960,7 @@ class NoTrumpResponse(Response):
 
 
 class BasicStayman(NoTrumpResponse):
-    annotations = Response.annotations + [annotations.Artificial, annotations.Stayman]
+    annotations = [annotations.Artificial, annotations.Stayman]
     priority = nt_response_priorities.Stayman
     shared_constraints = [z3.Or(hearts >= 4, spades >= 4)]
 
@@ -981,7 +985,7 @@ class StolenThreeClubStayman(BasicStayman):
 
 
 class NoTrumpTransferResponse(NoTrumpResponse):
-    annotations = NoTrumpResponse.annotations + [annotations.Artificial, annotations.Transfer]
+    annotations = [annotations.Artificial, annotations.Transfer]
 
 
 class JacobyTransferToHearts(NoTrumpTransferResponse):
@@ -1069,7 +1073,7 @@ class DiamondStaymanResponse(StaymanResponse):
     call_names = ['2D', '3D']
     shared_constraints = NO_CONSTRAINTS
     priority = stayman_response_priorities.DiamondStaymanResponse
-    annotations = StaymanResponse.annotations + [annotations.Artificial]
+    annotations = annotations.Artificial
 
 
 # FIXME: Need "Stolen" variants for 3-level.
@@ -1167,7 +1171,7 @@ class TakeoutDouble(Rule):
         # LastBidWasBelowGame(),
         MinUnbidSuitCount(2),
     ]
-    annotations = [ annotations.TakeoutDouble ]
+    annotations = annotations.TakeoutDouble
     shared_constraints = SupportForUnbidSuits()
     priority = overcall_priorities.TakeoutDouble
 
@@ -1275,7 +1279,7 @@ class Gerber(Rule):
     category = categories.Gadget
     requires_planning = True
     shared_constraints = NO_CONSTRAINTS
-    annotations = [annotations.Gerber]
+    annotations = annotations.Gerber
     priority = feature_asking_priorites.Gerber
 
 
@@ -1309,7 +1313,7 @@ class ResponseToGerber(Rule):
         '5N': number_of_kings == 3,
     }
     priority = feature_asking_priorites.Gerber
-    annotations = [annotations.Artificial]
+    annotations = annotations.Artificial
 
 
 # Blackwood is done, just needs JumpOrHaveFit() and some testing.
@@ -1317,7 +1321,7 @@ class ResponseToGerber(Rule):
 #     category = categories.Gadget
 #     requires_planning = True
 #     shared_constraints = NO_CONSTRAINTS
-#     annotations = [annotations.Blackwood]
+#     annotations = annotations.Blackwood
 #     priority = feature_asking_priorites.Blackwood
 
 
@@ -1352,7 +1356,7 @@ class ResponseToGerber(Rule):
 #         '5S': number_of_kings == 3,
 #     }
 #     priority = feature_asking_priorites.Blackwood
-#     annotations = [annotations.Artificial]
+#     annotations = annotations.Artificial
 
 
 # FIXME: This is wrong as soon as we try to support more than one system.
