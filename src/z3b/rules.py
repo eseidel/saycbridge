@@ -26,27 +26,27 @@ categories = enum.Enum(
 # This class knows nothing about the DSL.
 class CompiledRule(object):
     def __init__(self, rule, preconditions, known_calls, shared_constraints, annotations):
-        self.rule = rule
+        self.dsl_rule = rule
         self.preconditions = preconditions
         self.known_calls = known_calls
         self.shared_constraints = shared_constraints
         self._annotations = annotations
 
     def requires_planning(self, history):
-        return self.rule.requires_planning
+        return self.dsl_rule.requires_planning
 
     def annotations(self, history):
         return self._annotations
 
     @property
     def name(self):
-        return self.rule.name
+        return self.dsl_rule.name
 
     def __str__(self):
         return self.name
 
     def __repr__(self):
-        return "CompiledRule(%s)" % repr(self.rule)
+        return "CompiledRule(%s)" % repr(self.dsl_rule)
 
     # FIXME: This exists for compatiblity with KBB's Rule interface and is used by bidder_handler.py
     def explanation_for_bid(self, call):
@@ -71,11 +71,11 @@ class CompiledRule(object):
     def calls_over(self, history, expected_call=None):
         for call in history.legal_calls.intersection(self.known_calls):
             if self._fits_preconditions(history, call, expected_call):
-                yield self.rule.category, call
+                yield self.dsl_rule.category, call
 
     def _constraint_exprs_for_call(self, history, call):
         exprs = []
-        per_call_constraints, _ = self.rule.per_call_constraints_and_priority(call)
+        per_call_constraints, _ = self.dsl_rule.per_call_constraints_and_priority(call)
         if per_call_constraints:
             exprs.extend(RuleCompiler.exprs_from_constraints(per_call_constraints, history, call))
         exprs.extend(RuleCompiler.exprs_from_constraints(self.shared_constraints, history, call))
@@ -83,11 +83,11 @@ class CompiledRule(object):
 
     def meaning_of(self, history, call):
         exprs = self._constraint_exprs_for_call(history, call)
-        for condition, priority in self.rule.conditional_priorities:
+        for condition, priority in self.dsl_rule.conditional_priorities:
             condition_exprs = RuleCompiler.exprs_from_constraints(condition, history, call)
             yield priority, z3.And(exprs + condition_exprs)
 
-        _, priority = self.rule.per_call_constraints_and_priority(call)
+        _, priority = self.dsl_rule.per_call_constraints_and_priority(call)
         assert priority
         yield priority, z3.And(exprs)
 
@@ -128,10 +128,9 @@ class RuleCompiler(object):
     def _compile_known_calls(cls, dsl_class):
         if dsl_class.call_names:
             call_names = cls._ensure_list(dsl_class.call_names)
-        elif dsl_class.constraints:
-            call_names = dsl_class.constraints.keys()
         else:
-            assert False, "%s: call_names or constraints map is required." % dsl_class.__name__
+            call_names = dsl_class.constraints.keys()
+        assert call_names, "%s: call_names or constraints map is required." % dsl_class.__name__
         return map(Call.from_string, call_names)
 
     @classmethod
