@@ -93,6 +93,18 @@ class Unusual2NShape(Constraint):
         return z3.And([expr_for_suit(suit) >= 5 for suit in unbid_suits])
 
 
+class StopperInRHOSuit(Constraint):
+    def expr(self, history, call):
+        suit = history.rho.last_call.strain
+        assert suit is not None
+        return (
+            model.stopper_clubs,
+            model.stopper_diamonds,
+            model.stopper_hearts,
+            model.stopper_spades,
+        )[suit]
+
+
 class TwoOfTheTopThree(Constraint):
     def expr(self, history, call):
         return (

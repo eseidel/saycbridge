@@ -951,10 +951,10 @@ nt_response_priorities = enum.Enum(
 )
 
 
-class NoTrumpResponse(Response):
+class NoTrumpResponse(Rule):
     category = categories.NoTrumpSystem
     preconditions = [
-        LastBidHasAnnotation(positions.Partner, annotations.Opening),
+        # 1N overcalls have systems on too, partner does not have to have opened
         LastBidHasAnnotation(positions.Partner, annotations.NoTrumpSystemsOn),
     ]
 
@@ -1126,6 +1126,7 @@ class GarbagePassStaymanRebid(StaymanRebid):
 overcall_priorities = enum.Enum(
     "MichaelsCuebid",
     "Unusual2N",
+    "DirectOvercall1N",
     "TakeoutDouble",
     "DirectOvercallLongestMajor",
     "DirectOvercallMajor",
@@ -1140,7 +1141,6 @@ overcall_priorities = enum.Enum(
 class DirectOvercall(Rule):
     preconditions = [
         LastBidHasAnnotation(positions.RHO, annotations.Opening),
-        UnbidSuit(),
     ]
 
 
@@ -1148,6 +1148,7 @@ class StandardDirectOvercall(DirectOvercall):
     preconditions = [
         LastBidHasSuit(positions.RHO),
         NotJumpFromLastContract(),
+        UnbidSuit(),
     ]
 
 
@@ -1211,9 +1212,15 @@ class TwoSpadeOvercall(StandardDirectOvercall):
     priority = overcall_priorities.DirectOvercallMajor
 
 
-class MichaelsCuebid(Rule):
+class DirectOvercall1N(DirectOvercall):
+    call_names = '1N'
+    shared_constraints = [points >= 15, points <= 17, balanced, StopperInRHOSuit()]
+    priority = overcall_priorities.DirectOvercall1N
+    annotations = annotations.NoTrumpSystemsOn
+
+
+class MichaelsCuebid(DirectOvercall):
     preconditions = [
-        LastBidHasAnnotation(positions.RHO, annotations.Opening),
         NotJumpFromLastContract(),
         InvertedPrecondition(UnbidSuit()),
     ]
@@ -1227,9 +1234,8 @@ class MichaelsCuebid(Rule):
     shared_constraints = [points >= 8]
 
 
-class Unusual2N(Rule):
+class Unusual2N(DirectOvercall):
     preconditions = [
-        LastBidHasAnnotation(positions.RHO, annotations.Opening),
         JumpFromLastContract(),
     ]
     call_names = '2N'
