@@ -20,6 +20,7 @@ categories = enum.Enum(
     "Default",
     "Natural",
     "LawOfTotalTricks",
+    "DefaultPass",
 )
 
 # This is a public interface from RuleGenerators to the rest of the system.
@@ -1170,7 +1171,7 @@ class TakeoutDouble(Rule):
         # LastBidWasBelowGame(),
         MinUnbidSuitCount(2),
     ]
-    annotations = annotations.TakeoutDouble
+    annotations = [annotations.TakeoutDouble, annotations.Artificial]
     shared_constraints = SupportForUnbidSuits()
     priority = overcall_priorities.TakeoutDouble
 
@@ -1357,6 +1358,17 @@ class ResponseToGerber(Rule):
 #     priority = feature_asking_priorites.Blackwood
 #     annotations = annotations.Artificial
 
+pass_priorities = enum.Enum(
+    "Default",
+)
+
+class DefaultPass(Rule):
+    preconditions = [InvertedPrecondition(ForcedToBid())]
+    call_names = 'P'
+    shared_constraints = NO_CONSTRAINTS
+    category = categories.DefaultPass
+    priority = pass_priorities.Default
+
 
 # FIXME: This is wrong as soon as we try to support more than one system.
 def _get_subclasses(base_class):
@@ -1374,6 +1386,7 @@ class StandardAmericanYellowCard(object):
     rules = [RuleCompiler.compile(description_class) for description_class in _concrete_rule_classes()]
     priority_ordering = PartialOrdering()
 
+    priority_ordering.make_less_than(response_priorities, relay_priorities)
     priority_ordering.make_less_than(preempt_priorities, opening_priorities)
     priority_ordering.make_less_than(response_priorities, nt_response_priorities)
     priority_ordering.make_less_than(response_priorities, two_clubs_response_priorities)
@@ -1387,3 +1400,6 @@ class StandardAmericanYellowCard(object):
     priority_ordering.make_less_than(natural_priorities, two_clubs_opener_rebid_priorities)
     priority_ordering.make_less_than(forced_rebid_priorities, natural_priorities)
     priority_ordering.make_less_than(the_law_priorities, natural_priorities)
+    priority_ordering.make_less_than(pass_priorities, the_law_priorities)
+    priority_ordering.make_less_than(pass_priorities, opening_priorities)
+
