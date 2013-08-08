@@ -46,7 +46,7 @@ class CompiledRule(object):
         return self.name
 
     def __repr__(self):
-        return "EngineRule(%s)" % repr(self.rule)
+        return "CompiledRule(%s)" % repr(self.rule)
 
     # FIXME: This exists for compatiblity with KBB's Rule interface and is used by bidder_handler.py
     def explanation_for_bid(self, call):
