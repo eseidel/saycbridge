@@ -86,6 +86,13 @@ class SupportForUnbidSuits(Constraint):
         assert False, "SupportForUnbidSuits only supports 2 or 3 unbid suits."
 
 
+class Unusual2NShape(Constraint):
+    # 5-5 in two lowest unbid suits
+    def expr(self, history, call):
+        unbid_suits = sorted(list(history.unbid_suits))[:2]
+        return z3.And([expr_for_suit(suit) >= 5 for suit in unbid_suits])
+
+
 class TwoOfTheTopThree(Constraint):
     def expr(self, history, call):
         return (

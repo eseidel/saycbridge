@@ -1124,6 +1124,8 @@ class GarbagePassStaymanRebid(StaymanRebid):
 
 
 overcall_priorities = enum.Enum(
+    "MichaelsCuebid",
+    "Unusual2N",
     "TakeoutDouble",
     "DirectOvercallLongestMajor",
     "DirectOvercallMajor",
@@ -1207,6 +1209,34 @@ class TwoSpadeOvercall(StandardDirectOvercall):
         (spades >= hearts, overcall_priorities.DirectOvercallLongestMajor),
     ]
     priority = overcall_priorities.DirectOvercallMajor
+
+
+class MichaelsCuebid(Rule):
+    preconditions = [
+        LastBidHasAnnotation(positions.RHO, annotations.Opening),
+        NotJumpFromLastContract(),
+        InvertedPrecondition(UnbidSuit()),
+    ]
+    constraints = {
+        '2C': (z3.And(hearts >= 5, spades >= 5), overcall_priorities.MichaelsCuebid),
+        '2D': (z3.And(hearts >= 5, spades >= 5), overcall_priorities.MichaelsCuebid),
+        '2H': (z3.And(spades >= 5, z3.Or(clubs >= 5, diamonds >= 5)), overcall_priorities.MichaelsCuebid),
+        '2S': (z3.And(hearts >= 5, z3.Or(clubs >= 5, diamonds >= 5)), overcall_priorities.MichaelsCuebid),
+    }
+    annotations = [annotations.MichaelsCuebid, annotations.Artificial]
+    shared_constraints = [points >= 8]
+
+
+class Unusual2N(Rule):
+    preconditions = [
+        LastBidHasAnnotation(positions.RHO, annotations.Opening),
+        JumpFromLastContract(),
+    ]
+    call_names = '2N'
+    shared_constraints = [Unusual2NShape()]
+    annotations = [annotations.Unusual2N, annotations.Artificial]
+    priority = overcall_priorities.Unusual2N
+
 
 class TakeoutDouble(Rule):
     call_names = 'X'
