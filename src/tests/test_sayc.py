@@ -13,9 +13,20 @@ from core.board import Board
 from core.hand import Hand
 from core.autobidder import Autobidder
 from factory import BidderFactory
+from multiprocessing import Pool
 
 
 _log = logging.getLogger(__name__)
+
+def _run_test(args):
+    bidder = BidderFactory.default_bidder()
+    hand, partial_history = args
+    try:
+        actual_bid = bidder.find_call_for(hand, partial_history)
+        actual_bid_name = actual_bid.name if actual_bid else None
+        return actual_bid_name
+    except Exception, e:
+        return e
 
 class SAYCBidderTest(unittest2.TestCase):
     @classmethod
@@ -1083,6 +1094,76 @@ class SAYCBidderTest(unittest2.TestCase):
         # FIXME: Our "have we run this" check would be more powerful if we used a combinatics based identifier for the hands.
         return "%s-%s" % (hand.reverse_pbn_string(), history.identifier())
 
+    def _run_bidding_tests_parallel(self, expected_calls):        
+        tests_run = dict()
+        # Args to be passed to processes
+        test_args = []
+        # Extra state for the test case for logging purposes
+        extra_args = []
+
+        # First compile a list of tests to run
+        for expectation in expected_calls:
+            expected_bid, hand, call_history = self._parse_expectation(expectation)
+            partial_history = call_history
+            subtest_string = ""
+            while True:
+                # Sanity check to make sure we're not running a test twice.
+                test_identifier = self._identifier_for_test(hand, partial_history)
+                previous_expected_bid = tests_run.get(test_identifier)
+                if previous_expected_bid:
+                    if previous_expected_bid != expected_bid:
+                        _log.error("Conflicting expectations for %s, %s != %s" % (test_identifier, previous_expected_bid, expected_bid))
+                    elif not subtest_string:
+                         _log.debug("%s is an explicit duplicate of an earlier test." % test_identifier)
+                    else:
+                        _log.debug("Ignoring dupliate subtest %s" % test_identifier)
+                    break
+                tests_run[test_identifier] = expected_bid
+
+                # Add test
+                test_args.append((hand, partial_history))
+                extra_args.append((expected_bid, subtest_string))
+
+                if len(partial_history.calls) < 4:
+                    break
+                expected_bid = partial_history.calls[-4].name
+                partial_history = partial_history.copy_with_partial_history(-4)
+                subtest_string = " (subtest of %s)" % call_history.calls_string()
+
+        # Run the tests
+        assert len(test_args) == len(extra_args)
+        pool = Pool(processes=4)
+        # Use map_async instead of map so that KeyboardInterrupts work
+        actual_bids = pool.map_async(_run_test, test_args).get(9999999)
+        pool.terminate()
+        assert len(actual_bids) == len(test_args)
+
+        # Log the results
+        fail_count = 0
+        for i in xrange(len(extra_args)):
+            # Unpack the args
+            actual_bid_name = actual_bids[i]
+            hand, partial_history = test_args[i]
+            expected_bid, subtest_string = extra_args[i]
+
+            # Log results
+            if isinstance(actual_bid_name, Exception):
+                _log.error("Exception during find_call_for %s %s: %s" % (hand.pretty_one_line(), partial_history.calls_string(), e))
+                raise
+
+            if actual_bid_name and actual_bid_name.lower() == expected_bid.lower():
+                _log.info("PASS: %s for %s, history: %s%s" % (expected_bid, hand.pretty_one_line(), partial_history.calls_string(), subtest_string))
+            else:
+                fail_count += 1
+                # FIXME: This print seems to interact badly with standard logging.
+                sys.stdout.flush()
+                sys.stderr.flush()
+                print "FAIL: %s (expected %s) for %s, history: %s%s" % (actual_bid_name, expected_bid, hand.pretty_one_line(), partial_history.calls_string(), subtest_string)
+
+        tests_count = len(actual_bids)
+        return tests_count, fail_count
+
+
     def _run_bidding_tests(self, expected_calls):
         fail_count = 0
         bidder = BidderFactory.default_bidder()
@@ -1134,5 +1215,5 @@ class SAYCBidderTest(unittest2.TestCase):
     def _assert_hands_match_calls(self, expected_calls):
         caller_method_name = inspect.stack()[1][3]  # A convenient hack.
         print "%s:" % caller_method_name
-        tests_count, fail_count = self._run_bidding_tests(expected_calls)
+        tests_count, fail_count = self._run_bidding_tests_parallel(expected_calls)
         self.record_test_results(tests_count, fail_count)
