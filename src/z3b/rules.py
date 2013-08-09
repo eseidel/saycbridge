@@ -1468,6 +1468,7 @@ class StandardAmericanYellowCard(object):
 
     priority_ordering.make_less_than(response_priorities, relay_priorities)
     priority_ordering.make_less_than(preempt_priorities, opening_priorities)
+    priority_ordering.make_less_than(natural_priorities, preempt_priorities)
     priority_ordering.make_less_than(response_priorities, nt_response_priorities)
     priority_ordering.make_less_than(response_priorities, two_clubs_response_priorities)
     priority_ordering.make_less_than(response_priorities, jacoby_2n_response_priorities)
@@ -1483,3 +1484,4 @@ class StandardAmericanYellowCard(object):
     priority_ordering.make_less_than(pass_priorities, the_law_priorities)
     priority_ordering.make_less_than(pass_priorities, opening_priorities)
 
+    priority_ordering.make_transitive()
