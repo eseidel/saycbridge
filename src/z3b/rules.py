@@ -770,6 +770,9 @@ opener_rebid_priorities = enum.Enum(
     "NewSuitDiamonds",
     "NewSuitHearts",
     "NewSuitSpades",
+    "ReverseDiamonds",
+    "ReverseHearts",
+    "ReverseSpades",
     "UnforcedRebidOriginalSuit",
     "RebidOneNotrump",
     "ForcedRebidOriginalSuit",
@@ -821,6 +824,26 @@ class NewSuitByOpener(RebidAfterOneLevelOpen):
         '3D': (MinimumCombinedPoints(25), opener_rebid_priorities.NewSuitDiamonds),
         '3H': (MinimumCombinedPoints(25), opener_rebid_priorities.NewSuitHearts),
         # 3S would necessarily be a reverse, or a jump shift, and is not covered by this rule.
+    }
+    shared_constraints = MinLength(4)
+
+
+class ReverseByOpener(RebidAfterOneLevelOpen):
+    preconditions = [
+        InvertedPrecondition(SuitLowerThanMyLastSuit()),
+        UnbidSuit(),
+        NotJumpFromLastContract(),
+    ]
+    constraints = {
+        # 2C is never a reverse
+        '2D': (MinimumCombinedPoints(22), opener_rebid_priorities.ReverseDiamonds),
+        '2H': (MinimumCombinedPoints(22), opener_rebid_priorities.ReverseHearts),
+        '2S': (MinimumCombinedPoints(22), opener_rebid_priorities.ReverseSpades),
+
+        # 3C is also never a reverse
+        '3D': (MinimumCombinedPoints(25), opener_rebid_priorities.ReverseDiamonds),
+        '3H': (MinimumCombinedPoints(25), opener_rebid_priorities.ReverseHearts),
+        '3S': (MinimumCombinedPoints(25), opener_rebid_priorities.ReverseSpades),
     }
     shared_constraints = MinLength(4)
 
