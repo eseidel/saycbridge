@@ -481,8 +481,7 @@ Pass 2 of 2 hands
 test_strong_two_club:
 FAIL: 1S (expected 2C) for .A4.2.AKQT985432 (hcp: 13 lp: 19 sp: 22), history: 
 FAIL: 5N (expected 6S) for K94.AK.AKQT2.AJ3 (hcp: 24 lp: 25 sp: 25), history: 2C P 2S P 4N P 5C P
-WARNING: Multiple calls match and have maximal priority: ['3H', '4S'] from rules: [CompiledRule(OpenerSuitedRebidAfterStrongTwoClubs()), CompiledRule(SupportPartnerMajorSuit())]
-FAIL: None (expected 4N) for K94.AK.AKQT2.AJ3 (hcp: 24 lp: 25 sp: 25), history: 2C P 2S P (subtest of 2C P 2S P 4N P 5C P)
+FAIL: 3H (expected 4N) for K94.AK.AKQT2.AJ3 (hcp: 24 lp: 25 sp: 25), history: 2C P 2S P (subtest of 2C P 2S P 4N P 5C P)
 FAIL: None (expected 5C) for QJ7.984.53.KQ652 (hcp: 8 lp: 9 sp: 9), history: 2C P 2S P 4N P
 FAIL: P (expected 3S) for K842.AK.AKQ.A974 (hcp: 23 lp: 23 sp: 24), history: 2C P 2D P 2N P 3C P
 FAIL: 3N (expected 4S) for JT65.764.72.KQ65 (hcp: 6 lp: 6 sp: 7), history: 2C P 2D P 2N P 3C P 3S P
