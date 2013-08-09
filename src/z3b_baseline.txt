@@ -79,7 +79,7 @@ Pass 5 of 6 hands
 
 test_interference_over_one_nt:
 FAIL: None (expected P) for 987654.632.5.543 (hcp: 0 lp: 2 sp: 3), history: 1N X XX P 2C P
-FAIL: P (expected XX) for 987654.632.5.543 (hcp: 0 lp: 2 sp: 3), history: 1N X (subtest of 1N X XX P 2C P)
+FAIL: 2S (expected XX) for 987654.632.5.543 (hcp: 0 lp: 2 sp: 3), history: 1N X (subtest of 1N X XX P 2C P)
 FAIL: None (expected 2D) for 982.T75432.86.32 (hcp: 0 lp: 2 sp: 2), history: 1N X XX P 2C P
 FAIL: 2S (expected XX) for 982.T75432.86.32 (hcp: 0 lp: 2 sp: 2), history: 1N X (subtest of 1N X XX P 2C P)
 FAIL: 2D (expected P) for KT82.AKT8.Q8.A62 (hcp: 16 lp: 16 sp: 15), history: 1N P 2C X
@@ -135,10 +135,7 @@ FAIL: 3N (expected 4H) for A.32.KJ832.QT765 (hcp: 10 lp: 12 sp: 14), history: 1N
 FAIL: 3H (expected 4H) for 97.A2.KJ9832.J76 (hcp: 9 lp: 11 sp: 11), history: 1N P 2D P 2H P
 FAIL: 3N (expected 3D) for 97.AQ982.2.KJT76 (hcp: 10 lp: 12 sp: 14), history: 1N P 2H P 2S P
 FAIL: 2H (expected 3H) for A9.AQ5.AQT4.J865 (hcp: 17 lp: 17 sp: 18), history: 1N P 2D P
-FAIL: None (expected P) for JT98765.2.75.543 (hcp: 1 lp: 4 sp: 5), history: 1N P 2S P 3C P
-FAIL: None (expected 2S) for JT98765.2.75.543 (hcp: 1 lp: 4 sp: 5), history: 1N P (subtest of 1N P 2S P 3C P)
-FAIL: None (expected 3D) for 5.QT87542.75.543 (hcp: 2 lp: 5 sp: 6), history: 1N P 2S P 3C P
-Pass 15 of 26 hands
+Pass 18 of 26 hands
 
 test_jacoby_two_nt_response_to_one_of_a_major:
 FAIL: 3N (expected 3H) for AJ2.K7.KQT853.A5 (hcp: 17 lp: 19 sp: 19), history: 1H P 2N P
@@ -610,4 +607,4 @@ FAIL: 3S (expected 4S) for K74.9.J98.KJT742 (hcp: 8 lp: 10 sp: 11), history: 1N 
 FAIL: 2N (expected P) for Q87.J843.K65.Q93 (hcp: 8 lp: 8 sp: 8), history: 1N P
 Pass 1 of 3 hands
 
-Pass 589 (55%) of 1066 total hands
+Pass 592 (55%) of 1066 total hands

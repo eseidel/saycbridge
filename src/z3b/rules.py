@@ -1010,7 +1010,7 @@ class JacobyTransferToSpades(NoTrumpTransferResponse):
 
 class TwoSpadesRelay(NoTrumpTransferResponse):
     constraints = {
-        '2S': diamonds >= 6 or clubs >= 6,
+        '2S': z3.Or(diamonds >= 6, clubs >= 6),
     }
     priority = nt_response_priorities.TwoSpadesRelay
 
@@ -1036,6 +1036,32 @@ class AcceptTransferToSpades(Rule):
     ]
     call_names = ['2S', '4S']
     shared_constraints = NO_CONSTRAINTS
+    priority = relay_priorities.Relay
+
+
+class AcceptTransferToClubs(Rule):
+    category = categories.Relay
+    preconditions = [
+        LastBidHasAnnotation(positions.Partner, annotations.Transfer),
+        LastBidHasStrain(positions.Partner, suit.SPADES),
+        NotJumpFromPartnerLastBid(),
+    ]
+    call_names = '3C'
+    annotations = annotations.Artificial
+    shared_constraints = NO_CONSTRAINTS
+    priority = relay_priorities.Relay
+
+
+class ResponseAfterTransferToClubs(Rule):
+    category = categories.Relay # Is this right?
+    preconditions = [
+        LastBidWas(positions.Partner, '3C'),
+        LastBidHasAnnotation(positions.Me, annotations.Transfer),
+    ]
+    constraints = {
+        'P': clubs >= 6,
+        '3D': diamonds >= 6,
+    }
     priority = relay_priorities.Relay
 
 
