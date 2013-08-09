@@ -1173,6 +1173,8 @@ class StandardDirectOvercall(DirectOvercall):
         LastBidHasSuit(positions.RHO),
         NotJumpFromLastContract(),
     ]
+    # FIXME: I'm sure we can write this constraint more efficiently!
+    shared_constraints = ConstraintOr(ThreeOfTheTopFive(), TwoOfTheTopThree())
 
 
 class OneDiamondOvercall(StandardDirectOvercall):
@@ -1233,6 +1235,7 @@ class TwoSpadeOvercall(StandardDirectOvercall):
         (spades >= hearts, overcall_priorities.DirectOvercallLongestMajor),
     ]
     priority = overcall_priorities.DirectOvercallMajor
+
 
 class TakeoutDouble(Rule):
     call_names = 'X'
