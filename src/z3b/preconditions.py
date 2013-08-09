@@ -16,6 +16,8 @@ annotations = enum.Enum(
     "NegativeDouble",
     "Jacoby2N",
     "TakeoutDouble",
+    "MichaelsCuebid",
+    "Unusual2N",
 )
 
 
@@ -78,6 +80,9 @@ class ForcedToBid(Precondition):
         return annotations.Artificial in history.partner.annotations_for_last_call
 
     def _is_forced_to_bid(self, history):
+        # If partner hasn't bid yet then cannot be forcing
+        if history.partner.last_call is None:
+            return False
         if self._partner_last_bid_was_pass(history):
             return False
         # FIXME: Understand penalty doubles.

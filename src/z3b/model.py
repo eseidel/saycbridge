@@ -108,6 +108,11 @@ balanced = z3.And(clubs >= 2, diamonds >= 2, hearts >= 2, spades >= 2,
     )
 )
 
+stopper_spades = z3.Or(ace_of_spades == 1, z3.And(king_of_spades == 1, spades >= 2), z3.And(queen_of_spades == 1, spades >= 3), z3.And(jack_of_spades == 1, ten_of_spades == 1, spades >= 4))
+stopper_hearts = z3.Or(ace_of_hearts == 1, z3.And(king_of_hearts == 1, hearts >= 2), z3.And(queen_of_hearts == 1, hearts >= 3), z3.And(jack_of_hearts == 1, ten_of_hearts == 1, hearts >= 4))
+stopper_diamonds = z3.Or(ace_of_diamonds == 1, z3.And(king_of_diamonds == 1, diamonds >= 2), z3.And(queen_of_diamonds == 1, diamonds >= 3), z3.And(jack_of_diamonds == 1, ten_of_diamonds == 1, diamonds >= 4))
+stopper_clubs = z3.Or(ace_of_clubs == 1, z3.And(king_of_clubs == 1, clubs >= 2), z3.And(queen_of_clubs == 1, clubs >= 3), z3.And(jack_of_clubs == 1, ten_of_clubs == 1, clubs >= 4))
+
 NO_CONSTRAINTS = z3.BoolVal(True)
 
 

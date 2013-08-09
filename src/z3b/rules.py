@@ -770,6 +770,9 @@ opener_rebid_priorities = enum.Enum(
     "NewSuitDiamonds",
     "NewSuitHearts",
     "NewSuitSpades",
+    "ReverseDiamonds",
+    "ReverseHearts",
+    "ReverseSpades",
     "UnforcedRebidOriginalSuit",
     "RebidOneNotrump",
     "ForcedRebidOriginalSuit",
@@ -821,6 +824,26 @@ class NewSuitByOpener(RebidAfterOneLevelOpen):
         '3D': (MinimumCombinedPoints(25), opener_rebid_priorities.NewSuitDiamonds),
         '3H': (MinimumCombinedPoints(25), opener_rebid_priorities.NewSuitHearts),
         # 3S would necessarily be a reverse, or a jump shift, and is not covered by this rule.
+    }
+    shared_constraints = MinLength(4)
+
+
+class ReverseByOpener(RebidAfterOneLevelOpen):
+    preconditions = [
+        InvertedPrecondition(SuitLowerThanMyLastSuit()),
+        UnbidSuit(),
+        NotJumpFromLastContract(),
+    ]
+    constraints = {
+        # 2C is never a reverse
+        '2D': (MinimumCombinedPoints(22), opener_rebid_priorities.ReverseDiamonds),
+        '2H': (MinimumCombinedPoints(22), opener_rebid_priorities.ReverseHearts),
+        '2S': (MinimumCombinedPoints(22), opener_rebid_priorities.ReverseSpades),
+
+        # 3C is also never a reverse
+        '3D': (MinimumCombinedPoints(25), opener_rebid_priorities.ReverseDiamonds),
+        '3H': (MinimumCombinedPoints(25), opener_rebid_priorities.ReverseHearts),
+        '3S': (MinimumCombinedPoints(25), opener_rebid_priorities.ReverseSpades),
     }
     shared_constraints = MinLength(4)
 
@@ -951,10 +974,10 @@ nt_response_priorities = enum.Enum(
 )
 
 
-class NoTrumpResponse(Response):
+class NoTrumpResponse(Rule):
     category = categories.NoTrumpSystem
     preconditions = [
-        LastBidHasAnnotation(positions.Partner, annotations.Opening),
+        # 1N overcalls have systems on too, partner does not have to have opened
         LastBidHasAnnotation(positions.Partner, annotations.NoTrumpSystemsOn),
     ]
 
@@ -1124,6 +1147,9 @@ class GarbagePassStaymanRebid(StaymanRebid):
 
 
 overcall_priorities = enum.Enum(
+    "MichaelsCuebid",
+    "Unusual2N",
+    "DirectOvercall1N",
     "TakeoutDouble",
     "DirectOvercallLongestMajor",
     "DirectOvercallMajor",
@@ -1138,7 +1164,6 @@ overcall_priorities = enum.Enum(
 class DirectOvercall(Rule):
     preconditions = [
         LastBidHasAnnotation(positions.RHO, annotations.Opening),
-        UnbidSuit(),
     ]
 
 
@@ -1146,6 +1171,7 @@ class StandardDirectOvercall(DirectOvercall):
     preconditions = [
         LastBidHasSuit(positions.RHO),
         NotJumpFromLastContract(),
+        UnbidSuit(),
     ]
 
 
@@ -1207,6 +1233,39 @@ class TwoSpadeOvercall(StandardDirectOvercall):
         (spades >= hearts, overcall_priorities.DirectOvercallLongestMajor),
     ]
     priority = overcall_priorities.DirectOvercallMajor
+
+
+class DirectOvercall1N(DirectOvercall):
+    call_names = '1N'
+    shared_constraints = [points >= 15, points <= 17, balanced, StopperInRHOSuit()]
+    priority = overcall_priorities.DirectOvercall1N
+    annotations = annotations.NoTrumpSystemsOn
+
+
+class MichaelsCuebid(DirectOvercall):
+    preconditions = [
+        NotJumpFromLastContract(),
+        InvertedPrecondition(UnbidSuit()),
+    ]
+    constraints = {
+        '2C': (z3.And(hearts >= 5, spades >= 5), overcall_priorities.MichaelsCuebid),
+        '2D': (z3.And(hearts >= 5, spades >= 5), overcall_priorities.MichaelsCuebid),
+        '2H': (z3.And(spades >= 5, z3.Or(clubs >= 5, diamonds >= 5)), overcall_priorities.MichaelsCuebid),
+        '2S': (z3.And(hearts >= 5, z3.Or(clubs >= 5, diamonds >= 5)), overcall_priorities.MichaelsCuebid),
+    }
+    annotations = [annotations.MichaelsCuebid, annotations.Artificial]
+    shared_constraints = [points >= 8]
+
+
+class Unusual2N(DirectOvercall):
+    preconditions = [
+        JumpFromLastContract(),
+    ]
+    call_names = '2N'
+    shared_constraints = [Unusual2NShape()]
+    annotations = [annotations.Unusual2N, annotations.Artificial]
+    priority = overcall_priorities.Unusual2N
+
 
 class TakeoutDouble(Rule):
     call_names = 'X'
@@ -1432,6 +1491,7 @@ class StandardAmericanYellowCard(object):
 
     priority_ordering.make_less_than(response_priorities, relay_priorities)
     priority_ordering.make_less_than(preempt_priorities, opening_priorities)
+    priority_ordering.make_less_than(natural_priorities, preempt_priorities)
     priority_ordering.make_less_than(response_priorities, nt_response_priorities)
     priority_ordering.make_less_than(response_priorities, two_clubs_response_priorities)
     priority_ordering.make_less_than(response_priorities, jacoby_2n_response_priorities)
@@ -1447,3 +1507,4 @@ class StandardAmericanYellowCard(object):
     priority_ordering.make_less_than(pass_priorities, the_law_priorities)
     priority_ordering.make_less_than(pass_priorities, opening_priorities)
 
+    priority_ordering.make_transitive()
