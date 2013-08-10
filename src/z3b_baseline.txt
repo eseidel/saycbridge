@@ -417,12 +417,11 @@ FAIL: P (expected X) for K87.AJ76.65.Q863 (hcp: 10 lp: 10 sp: 11), history: 1H P
 FAIL: P (expected X) for AKQ5.84.72.AQJ93 (hcp: 16 lp: 17 sp: 18), history: 1H P P
 FAIL: P (expected X) for K92.QJT7.KQ4.AJ7 (hcp: 16 lp: 16 sp: 16), history: 1H P P
 FAIL: None (expected 2N) for K92.QJT7.KQ4.AJ7 (hcp: 16 lp: 16 sp: 16), history: 1H P P X P 2C P
-FAIL: P (expected 2S) for QJ875.A.KT9854.9 (hcp: 10 lp: 13 sp: 16), history: 1S P P
 FAIL: 3N (expected 4N) for QT64.AK8.KT6.A62 (hcp: 16 lp: 16 sp: 16), history: 1N P
 FAIL: None (expected 6N) for KJ.QJT9.A873.KQ3 (hcp: 16 lp: 16 sp: 16), history: 1N P 4N P
 FAIL: 3N (expected 4N) for JT64.AK8.KQ6.A62 (hcp: 17 lp: 17 sp: 17), history: 1N P
 FAIL: None (expected P) for KQ.QJT9.A87.QJ73 (hcp: 15 lp: 15 sp: 14), history: 1N P 4N P
-Pass 12 of 30 hands
+Pass 13 of 30 hands
 
 test_reopening_double:
 FAIL: None (expected 2S) for 865.643.T4.87542 (hcp: 0 lp: 1 sp: 1), history: 1D 2C P P X P
@@ -516,4 +515,4 @@ FAIL: 3S (expected 4S) for K74.9.J98.KJT742 (hcp: 8 lp: 10 sp: 11), history: 1N 
 FAIL: 2N (expected P) for Q87.J843.K65.Q93 (hcp: 8 lp: 8 sp: 8), history: 1N P
 Pass 1 of 3 hands
 
-Pass 684 (63%) of 1078 total hands
+Pass 685 (63%) of 1078 total hands

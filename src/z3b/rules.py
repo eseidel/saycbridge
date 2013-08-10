@@ -1190,6 +1190,14 @@ class DirectOvercall(Rule):
     ]
 
 
+class BalancingOvercall(Rule):
+    preconditions = [
+        LastBidHasAnnotation(positions.LHO, annotations.Opening),
+        LastBidWas(positions.Partner, 'P'),
+        LastBidWas(positions.RHO, 'P'),
+    ]
+
+
 class StandardDirectOvercall(DirectOvercall):
     preconditions = [
         LastBidHasSuit(positions.RHO),
@@ -1266,7 +1274,7 @@ class DirectOvercall1N(DirectOvercall):
     annotations = annotations.NoTrumpSystemsOn
 
 
-class MichaelsCuebid(DirectOvercall):
+class MichaelsCuebid(object):
     preconditions = [
         NotJumpFromLastContract(),
         InvertedPrecondition(UnbidSuit()),
@@ -1284,6 +1292,14 @@ class MichaelsCuebid(DirectOvercall):
     }
     annotations = [annotations.MichaelsCuebid, annotations.Artificial]
     shared_constraints = [points >= 8]
+
+
+class DirectMichaelsCuebid(MichaelsCuebid, DirectOvercall):
+    pass
+
+
+class BalancingMichaelsCuebid(MichaelsCuebid, BalancingOvercall):
+    pass
 
 
 class Unusual2N(DirectOvercall):
