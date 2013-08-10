@@ -96,6 +96,11 @@ three_of_the_top_five_hearts = ace_of_hearts + king_of_hearts + queen_of_hearts 
 three_of_the_top_five_diamonds = ace_of_diamonds + king_of_diamonds + queen_of_diamonds + jack_of_diamonds + ten_of_diamonds >= 3
 three_of_the_top_five_clubs = ace_of_clubs + king_of_clubs + queen_of_clubs + jack_of_clubs + ten_of_clubs >= 3
 
+three_of_the_top_five_spades_or_better = z3.Or(two_of_the_top_three_spades, three_of_the_top_five_spades)
+three_of_the_top_five_hearts_or_better = z3.Or(two_of_the_top_three_hearts, three_of_the_top_five_hearts)
+three_of_the_top_five_diamonds_or_better = z3.Or(two_of_the_top_three_diamonds, three_of_the_top_five_diamonds)
+three_of_the_top_five_clubs_or_better = z3.Or(two_of_the_top_three_clubs, three_of_the_top_five_clubs)
+
 number_of_aces = ace_of_spades + ace_of_hearts + ace_of_diamonds + ace_of_clubs
 number_of_kings = king_of_spades + king_of_hearts + king_of_diamonds + king_of_clubs
 
@@ -118,6 +123,15 @@ NO_CONSTRAINTS = z3.BoolVal(True)
 
 def expr_for_suit(suit):
     return (clubs, diamonds, hearts, spades)[suit]
+
+
+def stopper_expr_for_suit(suit):
+    return (
+        stopper_clubs,
+        stopper_diamonds,
+        stopper_hearts,
+        stopper_spades,
+    )[suit]
 
 
 def expr_for_hand(hand):

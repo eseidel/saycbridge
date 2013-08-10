@@ -58,15 +58,15 @@ class Opened(Precondition):
         return annotations.Opening in history.annotations_for_position(self.position)
 
 
-class HasNotBid(Precondition):
+class HasBid(Precondition):
     def __init__(self, position):
         self.position = position
 
     def fits(self, history, call):
         for view in history.view_for(self.position).walk:
             if view.last_call and not view.last_call.is_pass():
-                return False
-        return True
+                return True
+        return False
 
 
 class ForcedToBid(Precondition):
@@ -202,6 +202,17 @@ class PartnerHasAtLeastLengthInSuit(Precondition):
         if call.strain not in suit.SUITS:
             return False
         return history.partner.min_length(call.strain) >= self.length
+
+
+class MaxShownLength(Precondition):
+    def __init__(self, position, max_length, suit=None):
+        self.position = position
+        self.max_length = max_length
+        self.suit = suit
+
+    def fits(self, history, call):
+        strain = call.strain if self.suit is None else self.suit
+        return strain in suit.SUITS and history.view_for(self.position).min_length(strain) <= self.max_length
 
 
 class UnbidSuit(Precondition):
