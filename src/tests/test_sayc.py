@@ -225,6 +225,9 @@ class SAYCBidderTest(unittest2.TestCase):
             ["43.765.K83.AQJ75", "1S", "P P P"],  # p32, h15 (ha, she-misnumbered the hands!)
             ["Q98.J972.KJ3.AT9", "P", "P P P"],  # p32, h16
             ["AKT75.K75.T8.742", "P", "P P P"],  # p32, h17
+
+            # Responses are normal after Rule of 15:
+            ["3.K8764.AT93.K85", "3S", "P P P 1S P"],
         ])
 
     def test_minimum_response_to_one_of_a_major(self):

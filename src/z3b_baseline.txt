@@ -255,7 +255,7 @@ FAIL: 3N (expected 2N) for AK.AK54.98.KQJ76 (hcp: 20 lp: 21 sp: 22), history: 2H
 FAIL: P (expected X) for AKQ5.KJ93.AQ97.4 (hcp: 19 lp: 19 sp: 22), history: 1S X 2S P P
 FAIL: 3S (expected 2C) for KJ64.9.K6.KT7542 (hcp: 10 lp: 12 sp: 14), history: 1S P (subtest of 1S P 2C P 3C P 3S P 4S P)
 FAIL: 4N (expected P) for AQ7.AJT9762.5.Q4 (hcp: 13 lp: 16 sp: 15), history: P 1H P 2D P 2H P 3D P 3N P
-FAIL: 1S (expected 2H) for QT62.Q8.J94.KT76 (hcp: 8 lp: 8 sp: 7), history: P P P 1H P (subtest of P P P 1H P 2H P 3D P)
+FAIL: None (expected 3H) for QT62.Q8.J94.KT76 (hcp: 8 lp: 8 sp: 7), history: P P P 1H P 2H P 3D P
 FAIL: 3D (expected 2D) for J83.AQJ8.72.Q763 (hcp: 10 lp: 10 sp: 11), history: P P 1D P 1S P 1N P
 FAIL: 2H (expected 3H) for AK.K8.AKT762.953 (hcp: 17 lp: 19 sp: 19), history: P P 1H P 2C P
 FAIL: 3H (expected 4H) for 6.A74.Q96532.K85 (hcp: 9 lp: 11 sp: 12), history: P P 1S 1N P 2D P 3D P
@@ -485,7 +485,7 @@ Pass 36 of 47 hands
 
 test_third_and_fourth_seat_opens:
 FAIL: P (expected 1C) for AKT9.T87.QJ8.J32 (hcp: 11 lp: 11 sp: 11), history: P P
-Pass 4 of 5 hands
+Pass 6 of 7 hands
 
 test_three_level_calls_over_one_nt:
 FAIL: 3D (expected 3N) for 8.AK98752.86.542 (hcp: 7 lp: 10 sp: 11), history: 1N P
@@ -496,4 +496,4 @@ FAIL: 3S (expected 4S) for K74.9.J98.KJT742 (hcp: 8 lp: 10 sp: 11), history: 1N 
 FAIL: 2N (expected P) for Q87.J843.K65.Q93 (hcp: 8 lp: 8 sp: 8), history: 1N P
 Pass 1 of 3 hands
 
-Pass 705 (65%) of 1078 total hands
+Pass 707 (65%) of 1080 total hands
