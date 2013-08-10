@@ -354,18 +354,6 @@ class NoTrumpOpening(Opening):
     priority = opening_priorities.NoTrumpOpening
 
 
-# class OneNoTrumpOpening(Opening):
-#     call_names = '1N'
-#     shared_constraints =
-
-
-# class TwoNoTrumpOpening(Opening):
-#     annotations = annotations.NoTrumpSystemsOn
-#     call_names = '2N'
-#     shared_constraints = [points >= 20, points <= 21, balanced]
-#     priority = opening_priorities.NoTrumpOpening
-
-
 class StrongTwoClubs(Opening):
     call_names = '2C'
     shared_constraints = points >= 22  # FIXME: Should support "or 9+ winners"
@@ -765,6 +753,7 @@ opener_rebid_priorities = enum.Enum(
     "SupportMajorLimit",
     "SupportMajorMin",
     "JumpShiftByOpener",
+    "TwoNoTrumpOpenerRebid",
     # FIXME: 1S P 2D looks like this will will prefer 3C over 2S!
     "NewSuitClubs",
     "NewSuitDiamonds",
@@ -789,6 +778,14 @@ class OpenerRebid(Rule):
 
 class RebidAfterOneLevelOpen(OpenerRebid):
     preconditions = LastBidHasLevel(positions.Me, 1)
+
+
+class TwoNoTrumpOpenerRebid(RebidAfterOneLevelOpen):
+    annotations = annotations.NoTrumpSystemsOn
+    constraints = {
+        '2N': z3.And(points >= 18, points <= 19, balanced)
+    }
+    priority = opener_rebid_priorities.TwoNoTrumpOpenerRebid
 
 
 class RebidOneNotrumpByOpener(RebidAfterOneLevelOpen):

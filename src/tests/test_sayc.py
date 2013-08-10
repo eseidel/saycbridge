@@ -364,6 +364,9 @@ class SAYCBidderTest(unittest2.TestCase):
             ["KQJ87.3.74.AQT98", "2S", "1S P 2H P"],  # p53, h13
             ["KQ8.AJT.A8.AT987", "2N", "1S P 1N P"],  # p53, h14
             ["KJ86.K4.A8.KQ632", "3C", "1S P 2S P"],  # p53, h15
+
+            ["A532.AK52.J4.AQ9", "2N", "P 1D P 1H P"],
+
         ])  # FIXME: Using support points in the fallback bidder would pass some of these.
 
     def test_game_forcing_rebid_by_opener(self):
