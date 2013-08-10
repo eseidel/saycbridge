@@ -204,6 +204,17 @@ class PartnerHasAtLeastLengthInSuit(Precondition):
         return history.partner.min_length(call.strain) >= self.length
 
 
+class MaxShownLength(Precondition):
+    def __init__(self, position, max_length, suit=None):
+        self.position = position
+        self.max_length = max_length
+        self.suit = suit
+
+    def fits(self, history, call):
+        strain = call.strain if self.suit is None else self.suit
+        return strain in suit.SUITS and history.view_for(self.position).min_length(strain) <= self.max_length
+
+
 class UnbidSuit(Precondition):
     def fits(self, history, call):
         if call.strain not in suit.SUITS:

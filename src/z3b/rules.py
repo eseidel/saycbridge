@@ -931,18 +931,93 @@ class OpenerSuitedJumpRebidAfterStrongTwoClubs(OpenerRebidAfterStrongTwoClubs):
     priority = two_clubs_opener_rebid_priorities.SuitedJumpRebid
 
 
+responder_rebid_priorities = enum.Enum(
+    "JumpShiftResponderRebid",
+    "ResponderReverse",
+    "ThreeLevelSuitRebidByResponder",
+    "RebidResponderSuitByResponder",
+)
+
+sign_off_priorities = enum.Enum(
+    "ResponderSignoffInMinorGame",
+    "ResponderSignoffInPartnersSuit",
+)
+
+
+class ResponderRebid(Rule):
+    preconditions = [
+        Opened(positions.Partner),
+        HasBid(positions.Me),
+    ]
+
+
+class ResponderSuitRebid(ResponderRebid):
+    preconditions = RebidSameSuit()
+
+
+class RebidResponderSuitByResponder(ResponderSuitRebid):
+    preconditions = InvertedPrecondition(RaiseOfPartnersLastSuit())
+    call_names = ['2D', '2H', '2S']
+    shared_constraints = [MinLength(6), points >= 6]
+    priority = responder_rebid_priorities.RebidResponderSuitByResponder
+
+
+class ThreeLevelSuitRebidByResponder(ResponderSuitRebid):
+    preconditions = [
+        InvertedPrecondition(RaiseOfPartnersLastSuit()),
+        MaxShownLength(positions.Partner, 0),
+        MaxShownLength(positions.Me, 5)
+    ]
+    call_names = ['3C', '3D', '3H', '3S']
+    shared_constraints = [MinLength(6), MinimumCombinedPoints(22)]
+    priority = responder_rebid_priorities.ThreeLevelSuitRebidByResponder
+
+
+class ResponderSignoffInPartnersSuit(ResponderRebid):
+    preconditions = [
+        InvertedPrecondition(RaiseOfPartnersLastSuit()),
+        PartnerHasAtLeastLengthInSuit(3)
+    ]
+    call_names = ['2C', '2D', '2H', '2S']
+    shared_constraints = MinimumCombinedLength(7)
+    priority = sign_off_priorities.ResponderSignoffInPartnersSuit
+
+
+# class ResponderSignoffInMinorGame(ResponderRebid):
+#     preconditions = [
+#         PartnerHasAtLeastLengthInSuit(3),
+#         InvertedPrecondition(RebidSameSuit())
+#     ]
+#     constraints = {
+#         '5C': MinimumCombinedPoints(25),
+#         '5D': MinimumCombinedPoints(25),
+#     }
+#     shared_constraints = [MinimumCombinedLength(8), NoMajorFit()]
+#     priority = sign_off_priorities.ResponderSignoffInMinorGame
+
+
+# class ResponderReverse(ResponderRebid):
+#     preconditions = Reverse.preconditions
+#     shared_constraints = [MinLength(4), points >= 12]
+#     priority = responder_rebid_priorities.ResponderReverse
+
+
+class JumpShiftResponderRebid(ResponderRebid):
+    preconditions = JumpShift.preconditions
+    # Smallest: 1C,1D,1H,2S
+    # Largest: 1S,2H,3C,4D (anything above 4D is game)
+    call_names = [
+                          '2S',
+        '3C', '3D', '3H', '3S',
+        '4C', '4D'
+    ]
+    shared_constraints = [MinLength(4), points >= 14]
+    priority = responder_rebid_priorities.JumpShiftResponderRebid
+
+
 # FIXME: We should add an OpenerRebid of 3N over 2C P 2N P to show a minimum 22-24 HCP
 # instead of jumping to 5N which just wastes bidding space.
 # This is not covered in the book or the SAYC pdf.
-
-
-# class ResponderRebid(Rule):
-#     preconditions = [
-#         # FIXME: Specifically these only apply when 2 bids ago partner opened.
-#         Opened(positions.Partner),
-#         HaveBid(),
-#         IsSuitedProtocol()
-#     ]
 
 
 # class SecondNegative(ResponderRebid):
@@ -953,6 +1028,7 @@ class OpenerSuitedJumpRebidAfterStrongTwoClubs(OpenerRebidAfterStrongTwoClubs):
 #     call_names = '3C'
 #     shared_constraints = NO_CONSTRAINTS
 #     annotations = annotations.Artificial
+#     priority = responder_rebid_priorities.SecondNegative
 
 
 nt_response_priorities = enum.Enum(
@@ -1552,8 +1628,11 @@ class StandardAmericanYellowCard(object):
     priority_ordering.make_less_than(natural_priorities, stayman_response_priorities)
     priority_ordering.make_less_than(natural_priorities, stayman_rebid_priorities)
     priority_ordering.make_less_than(natural_priorities, two_clubs_opener_rebid_priorities)
+    priority_ordering.make_less_than(responder_rebid_priorities, natural_priorities)
     priority_ordering.make_less_than(forced_rebid_priorities, natural_priorities)
+    priority_ordering.make_less_than(the_law_priorities, responder_rebid_priorities)
     priority_ordering.make_less_than(the_law_priorities, natural_priorities)
+    priority_ordering.make_less_than(sign_off_priorities, the_law_priorities)
     priority_ordering.make_less_than(pass_priorities, the_law_priorities)
     priority_ordering.make_less_than(pass_priorities, opening_priorities)
 
