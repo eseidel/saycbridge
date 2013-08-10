@@ -1276,6 +1276,11 @@ class MichaelsCuebid(DirectOvercall):
         '2D': (z3.And(hearts >= 5, spades >= 5), overcall_priorities.MichaelsCuebid),
         '2H': (z3.And(spades >= 5, z3.Or(clubs >= 5, diamonds >= 5)), overcall_priorities.MichaelsCuebid),
         '2S': (z3.And(hearts >= 5, z3.Or(clubs >= 5, diamonds >= 5)), overcall_priorities.MichaelsCuebid),
+
+        '3C': (z3.And(hearts >= 5, spades >= 5), overcall_priorities.MichaelsCuebid),
+        '3D': (z3.And(hearts >= 5, spades >= 5), overcall_priorities.MichaelsCuebid),
+        '3H': (z3.And(spades >= 5, z3.Or(clubs >= 5, diamonds >= 5)), overcall_priorities.MichaelsCuebid),
+        '3S': (z3.And(hearts >= 5, z3.Or(clubs >= 5, diamonds >= 5)), overcall_priorities.MichaelsCuebid),
     }
     annotations = [annotations.MichaelsCuebid, annotations.Artificial]
     shared_constraints = [points >= 8]
