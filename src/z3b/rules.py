@@ -200,7 +200,8 @@ class Rule(object):
 
 
 relay_priorities = enum.Enum(
-    "Relay",
+    "SuperAccept",
+    "Accept",
 )
 
 
@@ -773,7 +774,10 @@ forced_rebid_priorities = enum.Enum(
 )
 
 class OpenerRebid(Rule):
-    preconditions = LastBidHasAnnotation(positions.Me, annotations.Opening)
+    preconditions = [
+        LastBidHasAnnotation(positions.Me, annotations.Opening),
+        InvertedPrecondition(LastBidHasAnnotation(positions.Me, annotations.NoTrumpSystemsOn))
+    ]
 
 
 class RebidAfterOneLevelOpen(OpenerRebid):
@@ -1035,41 +1039,53 @@ class TwoSpadesRelay(NoTrumpTransferResponse):
     priority = nt_response_priorities.TwoSpadesRelay
 
 
-class AcceptTransferToHearts(Rule):
+class AcceptTransfer(Rule):
     category = categories.Relay
     preconditions = [
         LastBidHasAnnotation(positions.Partner, annotations.Transfer),
-        LastBidHasStrain(positions.Partner, suit.DIAMONDS),
         NotJumpFromPartnerLastBid(),
     ]
-    call_names = ['2H', '4H']
     shared_constraints = NO_CONSTRAINTS
-    priority = relay_priorities.Relay
-
-
-class AcceptTransferToSpades(Rule):
-    category = categories.Relay
-    preconditions = [
-        LastBidHasAnnotation(positions.Partner, annotations.Transfer),
-        LastBidHasStrain(positions.Partner, suit.HEARTS),
-        NotJumpFromPartnerLastBid(),
-    ]
-    call_names = ['2S', '4S']
-    shared_constraints = NO_CONSTRAINTS
-    priority = relay_priorities.Relay
-
-
-class AcceptTransferToClubs(Rule):
-    category = categories.Relay
-    preconditions = [
-        LastBidHasAnnotation(positions.Partner, annotations.Transfer),
-        LastBidHasStrain(positions.Partner, suit.SPADES),
-        NotJumpFromPartnerLastBid(),
-    ]
-    call_names = '3C'
     annotations = annotations.Artificial
-    shared_constraints = NO_CONSTRAINTS
-    priority = relay_priorities.Relay
+    priority = relay_priorities.Accept
+
+
+class AcceptTransferToHearts(AcceptTransfer):
+    preconditions = LastBidHasStrain(positions.Partner, suit.DIAMONDS)
+    call_names = ['2H', '3H']
+
+
+class AcceptTransferToSpades(AcceptTransfer):
+    preconditions = LastBidHasStrain(positions.Partner, suit.HEARTS)
+    call_names = ['2S', '3S']
+
+
+class AcceptTransferToClubs(AcceptTransfer):
+    preconditions = LastBidHasStrain(positions.Partner, suit.SPADES)
+    call_names = '3C'
+
+
+class SuperAcceptTransfer(Rule):
+    category = categories.Relay
+    preconditions = [
+        LastBidHasAnnotation(positions.Partner, annotations.Transfer),
+        JumpFromPartnerLastBid(exact_size=1),
+    ]
+    shared_constraints = points >= 17
+    annotations = annotations.Artificial
+    priority = relay_priorities.SuperAccept
+
+
+class SuperAcceptTransferToHearts(SuperAcceptTransfer):
+    preconditions = LastBidHasStrain(positions.Partner, suit.DIAMONDS)
+    call_names = '3H'
+    shared_constraints = hearts >=4
+
+
+class SuperAcceptTransferToSpades(SuperAcceptTransfer):
+    preconditions = LastBidHasStrain(positions.Partner, suit.HEARTS)
+    call_names = '3S'
+    shared_constraints = spades >=4
 
 
 class ResponseAfterTransferToClubs(Rule):
@@ -1082,7 +1098,7 @@ class ResponseAfterTransferToClubs(Rule):
         'P': clubs >= 6,
         '3D': diamonds >= 6,
     }
-    priority = relay_priorities.Relay
+    priority = relay_priorities.Accept # This priority is bogus.
 
 
 stayman_response_priorities = enum.Enum(
