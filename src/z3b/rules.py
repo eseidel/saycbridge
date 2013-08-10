@@ -1317,7 +1317,7 @@ class TakeoutDouble(Rule):
     call_names = 'X'
     preconditions = [
         LastBidHasSuit(),
-        HasNotBid(positions.Partner),
+        InvertedPrecondition(HasBid(positions.Partner)),
         # LastBidWasNaturalSuit(),
         # LastBidWasBelowGame(),
         MinUnbidSuitCount(2),

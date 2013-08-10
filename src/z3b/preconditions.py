@@ -58,15 +58,15 @@ class Opened(Precondition):
         return annotations.Opening in history.annotations_for_position(self.position)
 
 
-class HasNotBid(Precondition):
+class HasBid(Precondition):
     def __init__(self, position):
         self.position = position
 
     def fits(self, history, call):
         for view in history.view_for(self.position).walk:
             if view.last_call and not view.last_call.is_pass():
-                return False
-        return True
+                return True
+        return False
 
 
 class ForcedToBid(Precondition):
