@@ -273,6 +273,9 @@ class SAYCBidderTest(unittest2.TestCase):
             ["AJ2.K7.KQT853.A5", "3H", "1H P 2NT P"],  # p40, h20
             ["K3.KJ.KQT83.A754", "3N", "1H P 2NT P"],  # p40, h21
             ["8.KQJ72.AJ973.K9", "4D", "1H P 2NT P"],  # p40, h22
+
+            # 2o3 is also sufficient for a "strong 5c suit", but is it sufficient to prefer it over 3C?
+            ["2.AQ976.98.AKJT8", "4D", "1S P 2NT P"],
         ])
 
     def test_slam_zone_responses_to_one_of_a_major(self):
@@ -498,6 +501,10 @@ class SAYCBidderTest(unittest2.TestCase):
             ["Q83.K9.Q8.AQJ874", "1S", "P P"], # p83, h3
             ["Q83.K9.Q8.AQJ874", "2S", "P P P"], # p83, h3 (Could use 1S)
 
+            ['Q3.AQ7632.8.J932', '2D', 'P'], # 2o3 is also valid.
+            ['Q3.AQ97632.8.J32', '3D', 'P'], # 2o3 is also valid.
+            ['Q3.AQ987632.8.J2', '4D', 'P'], # 2o3 is also valid.
+
             # Responding to a new suit from partner after preempt
             ["9.QJ2.AQT984.986", "3S", "2H P 2S P"], # p85, h4
             ["Q9.QT82.AQT984.2", "3D", "2H P 2S P"], # p85, h5
@@ -564,6 +571,10 @@ class SAYCBidderTest(unittest2.TestCase):
             ["4.T765.83.KQJ932", "2S", "1H"],
             ["9.JT2.AQT984.986", "2H", "1C"],
             ["J9.T982.AQT984.2", "2H", "1D"],
+
+            ['73.AQ7632.8.T932', '2D', '1C'], # 2o3 is also valid.
+            ['73.AQ97632.8.T92', '3D', '1C'], # 2o3 is also valid.
+            ['73.AQ987632.8.T2', '4D', '1C'], # 2o3 is also valid.
         ])
 
     def test_strong_two_club(self): # Chap 11
@@ -604,6 +615,8 @@ class SAYCBidderTest(unittest2.TestCase):
             ["AKJ.Q84.6.AKJT73", "2S", "1H X P 2C P"], # p98, h5
             ["AKJ.Q84.6.AKJT73", "2S", "1H X P 2D P"], # p98, h5
             ["AQJ6.K96.AKJ74.3", "1H", "1C"], # p98, h6 (This is a special exception for spades).
+
+            ["JT6.T96.AK874.T3", "1H", "1C"], # 2o3 is also sufficient.
 
             # Two-Level Overcalls
             ["K8.76.AQ953.QJT2", "P", "1S"],  # p99

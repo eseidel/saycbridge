@@ -138,7 +138,7 @@ Pass 18 of 26 hands
 
 test_jacoby_two_nt_response_to_one_of_a_major:
 FAIL: 3N (expected 3H) for AJ2.K7.KQT853.A5 (hcp: 17 lp: 19 sp: 19), history: 1H P 2N P
-Pass 14 of 15 hands
+Pass 16 of 17 hands
 
 test_michaels_and_unusual_notrump:
 FAIL: 2C (expected P) for AK.J.T8753.JT432 (hcp: 9 lp: 11 sp: 12), history: 1C
@@ -374,7 +374,7 @@ FAIL: 2N (expected 3H) for K7.Q876.KJ75.KQ5 (hcp: 14 lp: 14 sp: 15), history: 1C
 FAIL: 1H (expected 2H) for J63.K43.KQT874.5 (hcp: 9 lp: 11 sp: 12), history: 1D
 FAIL: 1H (expected 3H) for 6.Q84.AQT8764.65 (hcp: 8 lp: 11 sp: 12), history: 1D
 FAIL: 1H (expected 4H) for 874..AQT87642.Q5 (hcp: 8 lp: 12 sp: 12), history: 1D
-Pass 15 of 28 hands
+Pass 16 of 29 hands
 
 test_preemption:
 FAIL: 2S (expected P) for 4.Q765.83.KQT932 (hcp: 7 lp: 9 sp: 11), history: P P P
@@ -405,10 +405,10 @@ FAIL: 1H (expected 4H) for 8.9873.AKQT864.4 (hcp: 9 lp: 12 sp: 15), history:
 FAIL: 1H (expected 4H) for 8.9873.AKQT864.4 (hcp: 9 lp: 12 sp: 15), history: P
 FAIL: 1H (expected 4H) for 8.9873.AKQT864.4 (hcp: 9 lp: 12 sp: 15), history: P P
 FAIL: 3H (expected 4H) for 8.9873.AKQT864.4 (hcp: 9 lp: 12 sp: 15), history: P P P
-Pass 37 of 65 hands
+Pass 40 of 68 hands
 
 test_preemptive_overcalls:
-Pass 6 of 6 hands
+Pass 9 of 9 hands
 
 test_remaining_hands_from_book:
 FAIL: P (expected 2H) for 974.J85.AJT872.9 (hcp: 6 lp: 8 sp: 9), history: 1S P P
@@ -524,4 +524,4 @@ FAIL: 3S (expected 4S) for K74.9.J98.KJT742 (hcp: 8 lp: 10 sp: 11), history: 1N 
 FAIL: 2N (expected P) for Q87.J843.K65.Q93 (hcp: 8 lp: 8 sp: 8), history: 1N P
 Pass 1 of 3 hands
 
-Pass 664 (62%) of 1066 total hands
+Pass 673 (62%) of 1075 total hands

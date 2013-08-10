@@ -537,7 +537,7 @@ class SingletonResponseToJacoby2N(ResponseToJacoby2N):
 class SolidSuitResponseToJacoby2N(ResponseToJacoby2N):
     preconditions = InvertedPrecondition(RebidSameSuit())
     call_names = ['4C', '4D', '4H', '4S']
-    shared_constraints = [MinLength(5), ThreeOfTheTopFive()]
+    shared_constraints = [MinLength(5), ThreeOfTheTopFiveOrBetter()]
     priority = jacoby_2n_response_priorities.SolidSuit
 
 
@@ -1199,8 +1199,7 @@ class StandardDirectOvercall(DirectOvercall):
         NotJumpFromLastContract(),
         UnbidSuit(),
     ]
-    # FIXME: I'm sure we can write this constraint more efficiently!
-    shared_constraints = ConstraintOr(ThreeOfTheTopFive(), TwoOfTheTopThree())
+    shared_constraints = ThreeOfTheTopFiveOrBetter()
 
 
 class OneDiamondOvercall(StandardDirectOvercall):
@@ -1323,25 +1322,25 @@ preempt_priorities = enum.Enum(
 
 class TwoLevelPremptiveOpen(Opening):
     call_names = ['2D', '2H', '2S']
-    shared_constraints = [MinLength(6), ThreeOfTheTopFive(), points >= 5]
+    shared_constraints = [MinLength(6), ThreeOfTheTopFiveOrBetter(), points >= 5]
     priority = preempt_priorities.TwoLevelPremptive
 
 
 class ThreeLevelPremptiveOpen(Opening):
     call_names = ['3C', '3D', '3H', '3S']
-    shared_constraints = [MinLength(7), ThreeOfTheTopFive(), points >= 5]
+    shared_constraints = [MinLength(7), ThreeOfTheTopFiveOrBetter(), points >= 5]
     priority = preempt_priorities.ThreeLevelPremptive
 
 
 class FourLevelPremptiveOpen(Opening):
     call_names = ['4C', '4D', '4H', '4S']
-    shared_constraints = [MinLength(8), ThreeOfTheTopFive(), points >= 5]
+    shared_constraints = [MinLength(8), ThreeOfTheTopFiveOrBetter(), points >= 5]
     priority = preempt_priorities.FourLevelPremptive
 
 
 class PreemptiveOvercall(DirectOvercall):
     preconditions = JumpFromLastContract()
-    shared_constraints = [ThreeOfTheTopFive(), points >= 5]
+    shared_constraints = [ThreeOfTheTopFiveOrBetter(), points >= 5]
 
 
 # FIXME: Should we use conditional priorities instead of upper bounding the points?
