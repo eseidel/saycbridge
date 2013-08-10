@@ -1333,28 +1333,32 @@ class OneLevelTakeoutDouble(TakeoutDouble):
 
 
 preempt_priorities = enum.Enum(
-    "FourLevelPremptive",
-    "ThreeLevelPremptive",
-    "TwoLevelPremptive",
+    "EightCardPreempt",
+    "SevenCardPreempt",
+    "SixCardPreempt",
 )
 
+class PreemptiveOpen(Opening):
+    # Never worth preempting in 4th seat.
+    preconditions = InvertedPrecondition(LastBidWas(positions.LHO, 'P'))
 
-class TwoLevelPremptiveOpen(Opening):
-    call_names = ['2D', '2H', '2S']
+
+class SixCardPreemptiveOpen(PreemptiveOpen):
+    call_names = ['2D', '2H', '2S', '3C']
     shared_constraints = [MinLength(6), ThreeOfTheTopFiveOrBetter(), points >= 5]
-    priority = preempt_priorities.TwoLevelPremptive
+    priority = preempt_priorities.SixCardPreempt
 
 
-class ThreeLevelPremptiveOpen(Opening):
-    call_names = ['3C', '3D', '3H', '3S']
+class SevenCardPreemptiveOpen(PreemptiveOpen):
+    call_names = ['3D', '3H', '3S']
     shared_constraints = [MinLength(7), ThreeOfTheTopFiveOrBetter(), points >= 5]
-    priority = preempt_priorities.ThreeLevelPremptive
+    priority = preempt_priorities.SevenCardPreempt
 
 
-class FourLevelPremptiveOpen(Opening):
+class EightCardPreemptiveOpen(PreemptiveOpen):
     call_names = ['4C', '4D', '4H', '4S']
     shared_constraints = [MinLength(8), ThreeOfTheTopFiveOrBetter(), points >= 5]
-    priority = preempt_priorities.FourLevelPremptive
+    priority = preempt_priorities.EightCardPreempt
 
 
 class PreemptiveOvercall(DirectOvercall):

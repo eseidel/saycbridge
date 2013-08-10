@@ -370,7 +370,6 @@ FAIL: 1H (expected 4H) for 874..AQT87642.Q5 (hcp: 8 lp: 12 sp: 12), history: 1D
 Pass 16 of 29 hands
 
 test_preemption:
-FAIL: 2S (expected P) for 4.Q765.83.KQT932 (hcp: 7 lp: 9 sp: 11), history: P P P
 FAIL: P (expected 2S) for Q98.JT8.53.AKT95 (hcp: 10 lp: 11 sp: 11), history: P P
 FAIL: 1S (expected 2S) for Q83.K9.Q8.AQJ874 (hcp: 14 lp: 16 sp: 14), history: P P P
 FAIL: None (expected 3S) for 9.QJ2.AQT984.986 (hcp: 9 lp: 11 sp: 12), history: 2H P 2S P
@@ -382,12 +381,7 @@ FAIL: 3N (expected 3D) for T9.KT2.AQT984.82 (hcp: 9 lp: 11 sp: 11), history: 2H 
 FAIL: 3N (expected 3D) for J9.QT2.KQJ984.J2 (hcp: 10 lp: 12 sp: 10), history: 2H P 2N P
 FAIL: 3S (expected P) for J4.T.QJT.AJT7653 (hcp: 9 lp: 12 sp: 12), history: 
 FAIL: 3S (expected P) for J4.T.QJT.AJT7653 (hcp: 9 lp: 12 sp: 12), history: P
-FAIL: 3H (expected P) for J64.85.KQT9852.5 (hcp: 6 lp: 9 sp: 10), history: P P P
-FAIL: 3D (expected P) for J97.AKJ9852.98.7 (hcp: 9 lp: 12 sp: 13), history: P P P
-FAIL: P (expected 3C) for AKQ985.T987.62.9 (hcp: 9 lp: 11 sp: 13), history: 
-FAIL: P (expected 3C) for AKQ985.T987.62.9 (hcp: 9 lp: 11 sp: 13), history: P
-FAIL: P (expected 3C) for AKQ985.T987.62.9 (hcp: 9 lp: 11 sp: 13), history: P P
-FAIL: 3H (expected P) for J4.QT6.KQJT872.4 (hcp: 9 lp: 12 sp: 12), history: P P P
+FAIL: 4C (expected 5C) for KJ74.JT95.9732.A (hcp: 9 lp: 9 sp: 12), history: 3C P
 FAIL: P (expected 3S) for Q4.A7.K84.AKJT74 (hcp: 17 lp: 19 sp: 17), history: 3C P
 FAIL: 4S (expected 3N) for T9842.A95.A3.AK5 (hcp: 15 lp: 16 sp: 16), history: 3S P
 FAIL: P (expected 4S) for A9432.A8652.AKQ. (hcp: 17 lp: 19 sp: 22), history: 3S P
@@ -397,8 +391,8 @@ FAIL: P (expected 6S) for 864.AKQT6.A2.K83 (hcp: 16 lp: 17 sp: 17), history: 3S 
 FAIL: 1H (expected 4H) for 8.9873.AKQT864.4 (hcp: 9 lp: 12 sp: 15), history: 
 FAIL: 1H (expected 4H) for 8.9873.AKQT864.4 (hcp: 9 lp: 12 sp: 15), history: P
 FAIL: 1H (expected 4H) for 8.9873.AKQT864.4 (hcp: 9 lp: 12 sp: 15), history: P P
-FAIL: 3H (expected 4H) for 8.9873.AKQT864.4 (hcp: 9 lp: 12 sp: 15), history: P P P
-Pass 40 of 68 hands
+FAIL: P (expected 4H) for 8.9873.AKQT864.4 (hcp: 9 lp: 12 sp: 15), history: P P P
+Pass 46 of 68 hands
 
 test_preemptive_overcalls:
 Pass 9 of 9 hands
@@ -515,4 +509,4 @@ FAIL: 3S (expected 4S) for K74.9.J98.KJT742 (hcp: 8 lp: 10 sp: 11), history: 1N 
 FAIL: 2N (expected P) for Q87.J843.K65.Q93 (hcp: 8 lp: 8 sp: 8), history: 1N P
 Pass 1 of 3 hands
 
-Pass 685 (63%) of 1078 total hands
+Pass 691 (64%) of 1078 total hands
