@@ -1265,6 +1265,7 @@ overcall_priorities = enum.Enum(
     "MichaelsCuebid",
     "Unusual2N",
     "DirectOvercall1N",
+    "DirectNotrumpDouble",
     "TakeoutDouble",
     "DirectOvercallLongestMajor",
     "DirectOvercallMajor",
@@ -1321,6 +1322,13 @@ class OneSpadeOvercall(StandardDirectOvercall):
         (spades >= hearts, overcall_priorities.DirectOvercallLongestMajor),
     ]
     priority = overcall_priorities.DirectOvercallMajor
+
+
+class DirectNotrumpDouble(DirectOvercall):
+    preconditions = LastBidWas(positions.RHO, '1N')
+    call_names = 'X'
+    shared_constraints = z3.And(points >= 15, points <= 17, balanced)
+    priority = overcall_priorities.DirectNotrumpDouble
 
 
 class TwoClubOvercall(StandardDirectOvercall):

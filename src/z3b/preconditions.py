@@ -133,7 +133,8 @@ class LastBidHasSuit(Precondition):
         self.position = position
 
     def __repr__(self):
-        return "%s(%s)" % (self.name, repr(self.position.key))
+        position_string = repr(self.position.key) if self.position else None
+        return "%s(%s)" % (self.name, position_string)
 
     def fits(self, history, call):
         last_call = history.last_contract if not self.position else history.view_for(self.position).last_call
