@@ -849,7 +849,7 @@ class ReverseByOpener(RebidAfterOneLevelOpen):
     shared_constraints = MinLength(4)
 
 
-class SupportPartnerSuit(OpenerRebid):
+class SupportPartnerSuit(RebidAfterOneLevelOpen):
     preconditions = [
         InvertedPrecondition(RebidSameSuit()),
         RaiseOfPartnersLastSuit(),
