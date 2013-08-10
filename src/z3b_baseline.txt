@@ -171,6 +171,7 @@ test_minimum_stayman:
 Pass 13 of 13 hands
 
 test_misc_hands_from_play:
+WARNING: Multiple calls match and have maximal priority: ['3S', '4D'] from rules: [CompiledRule(JumpShiftResponderRebid()), CompiledRule(JumpShiftResponderRebid())]
 FAIL: 3H (expected 2C) for AKJ52.J.J9743.54 (hcp: 10 lp: 12 sp: 13), history: 1H P
 FAIL: 2S (expected 3S) for AQJ5.QT42.74.T52 (hcp: 9 lp: 9 sp: 10), history: 1S P
 FAIL: 3H (expected 1S) for A2.T752.KQJ.AQ72 (hcp: 16 lp: 16 sp: 17), history: 1H P
@@ -277,7 +278,6 @@ FAIL: 3N (expected P) for 875.K8752.Q6.986 (hcp: 5 lp: 6 sp: 4), history: 1C X P
 FAIL: None (expected 1D) for 875.K8752.Q6.986 (hcp: 5 lp: 6 sp: 4), history: 1C X P (subtest of 1C X P 1D 1S 2N P)
 FAIL: None (expected 3D) for AJ6532.T73.J6.86 (hcp: 6 lp: 8 sp: 7), history: 1C 2N P
 FAIL: 2D (expected 2N) for .K54.A9842.Q9543 (hcp: 9 lp: 11 sp: 14), history: P P 1D P 1S P 2C P
-WARNING: Multiple calls match and have maximal priority: ['3S', '4D'] from rules: [CompiledRule(JumpShiftResponderRebid()), CompiledRule(JumpShiftResponderRebid())]
 FAIL: None (expected 3N) for A72.QJ65.AJ.K875 (hcp: 15 lp: 15 sp: 15), history: 1N P 2C P 2D P
 FAIL: None (expected 2S) for J98652.942.T.AKQ (hcp: 10 lp: 12 sp: 13), history: P 1D 2D P
 FAIL: P (expected 4C) for K9874.3.AQ.AKQ72 (hcp: 18 lp: 20 sp: 20), history: P 1H 2H P 2N P
