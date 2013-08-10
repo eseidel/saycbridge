@@ -84,7 +84,7 @@ rule_of_twenty = _expr_for_point_rule(20)
 rule_of_nineteen = _expr_for_point_rule(19)
 
 # FIXME: This rule probably needs to consider min_hcp_for_open
-rule_of_fifteen = spades + high_card_points >= 15
+rule_of_fifteen = z3.And(spades + high_card_points >= 15, high_card_points >= min_hcp_for_open, fake_points >= 12)
 
 two_of_the_top_three_spades = ace_of_spades + king_of_spades + queen_of_spades >= 2
 two_of_the_top_three_hearts = ace_of_hearts + king_of_hearts + queen_of_hearts >= 2
