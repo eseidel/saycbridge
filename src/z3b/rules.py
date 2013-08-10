@@ -1289,7 +1289,8 @@ class Unusual2N(DirectOvercall):
         JumpFromLastContract(),
     ]
     call_names = '2N'
-    shared_constraints = [Unusual2NShape()]
+    # FIXME: We should consider doing mini-max unusual 2N now that we can!
+    shared_constraints = [Unusual2NShape(), points >= 6]
     annotations = [annotations.Unusual2N, annotations.Artificial]
     priority = overcall_priorities.Unusual2N
 

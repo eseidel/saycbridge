@@ -684,6 +684,8 @@ class SAYCBidderTest(unittest2.TestCase):
             ["AQT987.AKQT8.4.A", "4N", "1H"],  # p107, h16
             ["AQT987.AKQT8.4.A", "4N", "1S"],  # p107, h16
 
+            ['JT876.92.JT754.4', 'P', 'P 1D'], # Insufficient points.
+
             # Michaels/Unusual notrump in the balancing seat
             ["2.3.QJ8752.KT984", "2D", "1D P P"],  # p107 (BOOK_ERROR: The hand only has 12 cards in the book!)
             ["KQ4.AQ8.KQ873.K2", "2N", "1D P P"],  # (my example) p141 points out that 2N in the balancing seat is not Unusual.  Why would we ever jump to 2N instead of start with a double?
