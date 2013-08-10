@@ -125,6 +125,15 @@ def expr_for_suit(suit):
     return (clubs, diamonds, hearts, spades)[suit]
 
 
+def stopper_expr_for_suit(suit):
+    return (
+        stopper_clubs,
+        stopper_diamonds,
+        stopper_hearts,
+        stopper_spades,
+    )[suit]
+
+
 def expr_for_hand(hand):
     cards_in_spades = hand.cards_in_suit(suit.SPADES)
     cards_in_hearts = hand.cards_in_suit(suit.HEARTS)
