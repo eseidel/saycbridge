@@ -15,6 +15,7 @@ annotations = enum.Enum(
     "Gerber",
     "Transfer",
     "NegativeDouble",
+    "StandardOvercall",
     "Jacoby2N",
     "TakeoutDouble",
     "MichaelsCuebid",

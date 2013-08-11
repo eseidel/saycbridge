@@ -1339,6 +1339,7 @@ class StandardDirectOvercall(DirectOvercall):
         # FIXME: We should not bid if we have 4 cards in their suit.
     ]
     shared_constraints = [MinLength(5), ThreeOfTheTopFiveOrBetter()]
+    annotations = annotations.StandardOvercall
 
 
 class OneLevelStandardOvercall(StandardDirectOvercall):
@@ -1407,6 +1408,63 @@ class TwoSpadeOvercall(TwoLevelStandardOvercall):
         (spades >= hearts, overcall_priorities.DirectOvercallLongestMajor),
     ]
     priority = overcall_priorities.DirectOvercallMajor
+
+
+overcall_response_priorities = enum.Enum(
+    "CuebidResponseToStandardOvercall",
+    "RaiseResponseToStandardOvercall",
+    "NewSuitResponseToStandardOvercall",
+)
+
+
+class ResponseToStandardOvercall(Rule):
+    preconditions = LastBidHasAnnotation(positions.Partner, annotations.StandardOvercall)
+
+
+# This is nearly identical to TheLaw, it just notes that you have 6 points.
+# All it does is cause one test to fail.  It may not be worth having.
+class RaiseResponseToStandardOvercall(ResponseToStandardOvercall):
+    preconditions = [RaiseOfPartnersLastSuit(), NotJumpFromLastContract()]
+    call_names = [
+              '2D', '2H', '2S',
+        '3C', '3D', '3H', '3S',
+    ]
+    shared_constraints = [MinLength(3), points >= 6]
+    priority = overcall_response_priorities.RaiseResponseToStandardOvercall
+
+
+# class CuebidResponseToStandardOvercall(ResponseToStandardOvercall):
+#     preconditions = [
+#         CueBid(positions.LHO),
+#         NotJumpFromLastContract()
+#     ]
+#     call_names = [
+#         '2C', '2D', '2H', '2S',
+#         '3C', '3D', '3H',
+#     ]
+#     shared_constraints = [SupportForPartnerLastBid(3), points >= 11]
+#     priority = overcall_response_priorities.CuebidResponseToStandardOvercall
+
+
+# class NewSuitResponseToStandardOvercall(ResponseToStandardOvercall):
+#     preconditions = [
+#         TheyOpened(),
+#         InvertedPrecondition(LastBidWas(positions.Partner, 'P')),
+#         NotJumpFromLastContract(),
+#         UnbidSuit()
+#     ]
+#     call_names = [
+#                     '1H', '1S',
+#         '2C', '2D', '2H', '2S',
+#         '3C', '3D', '3H', '3S',
+#     ]
+#     shared_constraints = [
+#         MinLength(5),
+#         TwoOfTheTopThree(),
+#         # Unclear exactly how many points these should promise, but this seems reasoanble for now.
+#         MinCombinedPointsForPartnerMinimumRebid(),
+#     ]
+#     priority = overcall_response_priorities.NewSuitResponseToStandardOvercall
 
 
 class DirectOvercall1N(DirectOvercall):
@@ -1709,7 +1767,9 @@ class StandardAmericanYellowCard(object):
     priority_ordering.make_less_than(forced_rebid_priorities, natural_priorities)
     priority_ordering.make_less_than(the_law_priorities, responder_rebid_priorities)
     priority_ordering.make_less_than(the_law_priorities, natural_priorities)
+    priority_ordering.make_less_than(overcall_response_priorities, the_law_priorities)
     priority_ordering.make_less_than(sign_off_priorities, the_law_priorities)
+    priority_ordering.make_less_than(pass_priorities, overcall_response_priorities)
     priority_ordering.make_less_than(pass_priorities, the_law_priorities)
     priority_ordering.make_less_than(pass_priorities, sign_off_priorities)
     priority_ordering.make_less_than(pass_priorities, opening_priorities)
