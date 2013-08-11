@@ -22,3 +22,5 @@ apt-get install nginx
 
 cp dist/gae/deploy/z3b_nginx.conf /etc/nginx/conf.d/
 service nginx # (or reload)
+
+apt-get install screen
