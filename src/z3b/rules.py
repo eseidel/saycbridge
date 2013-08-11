@@ -755,6 +755,7 @@ opener_rebid_priorities = enum.Enum(
     "SupportMajorMin",
     "TwoNoTrumpOpenerRebid",
     "JumpShiftByOpener",
+    "HelpSuitGameTry",
     # FIXME: 1S P 2D looks like this will will prefer 3C over 2S!
     "NewSuitClubs",
     "NewSuitDiamonds",
@@ -810,13 +811,15 @@ class NewOneLevelMajorByOpener(RebidAfterOneLevelOpen):
     shared_constraints = MinLength(4)
 
 
-class NewSuitByOpener(RebidAfterOneLevelOpen):
+class SecondSuitFromOpener(RebidAfterOneLevelOpen):
     preconditions = [
-        # FIXME: MyLastBidWasOneOfASuit(),
-        SuitLowerThanMyLastSuit(),
         NotJumpFromLastContract(),
         UnbidSuit(),
+        InvertedPrecondition(HaveFit()),
     ]
+
+class NewSuitByOpener(SecondSuitFromOpener):
+    preconditions = SuitLowerThanMyLastSuit()
     constraints = {
         '2C': (NO_CONSTRAINTS, opener_rebid_priorities.NewSuitClubs),
         '2D': (NO_CONSTRAINTS, opener_rebid_priorities.NewSuitDiamonds),
@@ -831,12 +834,8 @@ class NewSuitByOpener(RebidAfterOneLevelOpen):
     shared_constraints = MinLength(4)
 
 
-class ReverseByOpener(RebidAfterOneLevelOpen):
-    preconditions = [
-        InvertedPrecondition(SuitLowerThanMyLastSuit()),
-        UnbidSuit(),
-        NotJumpFromLastContract(),
-    ]
+class ReverseByOpener(SecondSuitFromOpener):
+    preconditions = InvertedPrecondition(SuitLowerThanMyLastSuit())
     constraints = {
         # 2C is never a reverse
         '2D': (MinimumCombinedPoints(22), opener_rebid_priorities.ReverseDiamonds),
@@ -916,6 +915,19 @@ class GameForcingUnsupportedRebidByOpener(UnsupportedRebid):
     call_names = ['4C', '4D', '4H', '4S']
     shared_constraints = MinLength(6), points >= 19
     priority = opener_rebid_priorities.GameForcingUnsupportedRebidByOpener
+
+
+class HelpSuitGameTry(RebidAfterOneLevelOpen):
+    preconditions = [
+        NotJumpFromLastContract(),
+        HaveFit(),
+        UnbidSuit(),
+    ]
+    # Minimum: 1C,2C,2D, Max: 1C,3C,3S
+    call_names = ['3C', '3D', '3H', '3S']
+    # Descriptive not placement bid hence points instead of MinimumCombinedPoints.
+    shared_constraints = [MinLength(4), Stopper(), points >= 16]
+    priority = opener_rebid_priorities.HelpSuitGameTry
 
 
 class JumpShiftByOpener(RebidAfterOneLevelOpen):

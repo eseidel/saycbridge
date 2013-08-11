@@ -105,6 +105,11 @@ class StoppersInUnbidSuits(Constraint):
         return z3.And([model.stopper_expr_for_suit(suit) for suit in history.unbid_suits])
 
 
+class Stopper(Constraint):
+    def expr(self, history, call):
+        return model.stopper_expr_for_suit(call.strain)
+
+
 class TwoOfTheTopThree(Constraint):
     def expr(self, history, call):
         return (
