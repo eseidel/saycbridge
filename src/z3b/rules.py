@@ -753,8 +753,8 @@ opener_rebid_priorities = enum.Enum(
     "SupportMajorMax",
     "SupportMajorLimit",
     "SupportMajorMin",
-    "JumpShiftByOpener",
     "TwoNoTrumpOpenerRebid",
+    "JumpShiftByOpener",
     # FIXME: 1S P 2D looks like this will will prefer 3C over 2S!
     "NewSuitClubs",
     "NewSuitDiamonds",
