@@ -237,12 +237,14 @@ class UnbidSuit(Precondition):
         return history.is_unbid_suit(call.strain)
 
 
-class MinUnbidSuitCount(Precondition):
-    def __init__(self, count):
-        self.count = count
+class UnbidSuitCountRange(Precondition):
+    def __init__(self, lower, upper):
+        self.lower = lower
+        self.upper = upper
 
     def fits(self, history, call):
-        return len(history.unbid_suits) >= self.count
+        count = len(history.unbid_suits)
+        return count >= self.lower and count <= self.upper
 
 
 class Strain(Precondition):
@@ -254,6 +256,16 @@ class Strain(Precondition):
 
     def fits(self, history, call):
         return call.strain == self.strain
+
+
+class Level(Precondition):
+    def __init__(self, level):
+        self.level = level
+
+    def fits(self, history, call):
+        if call.is_double():
+            return history.last_contract.level() == self.level
+        return call.is_contract() and call.level() == self.level
 
 
 class MaxLevel(Precondition):

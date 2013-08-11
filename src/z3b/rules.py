@@ -1429,7 +1429,7 @@ class TakeoutDouble(Rule):
         InvertedPrecondition(HasBid(positions.Partner)),
         # LastBidWasNaturalSuit(),
         # LastBidWasBelowGame(),
-        MinUnbidSuitCount(2),
+        UnbidSuitCountRange(2, 3),
     ]
     annotations = [annotations.TakeoutDouble, annotations.Artificial]
     shared_constraints = SupportForUnbidSuits()
@@ -1437,8 +1437,13 @@ class TakeoutDouble(Rule):
 
 
 class OneLevelTakeoutDouble(TakeoutDouble):
-    preconditions = MaxLevel(1)
+    preconditions = Level(1)
     shared_constraints = points >= 11
+
+
+class TwoLevelTakeoutDouble(TakeoutDouble):
+    preconditions = Level(2)
+    shared_constraints = points >= 15
 
 
 preempt_priorities = enum.Enum(
