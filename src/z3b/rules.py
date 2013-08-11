@@ -26,12 +26,13 @@ categories = enum.Enum(
 # This is a public interface from RuleGenerators to the rest of the system.
 # This class knows nothing about the DSL.
 class CompiledRule(object):
-    def __init__(self, rule, preconditions, known_calls, shared_constraints, annotations):
+    def __init__(self, rule, preconditions, known_calls, shared_constraints, annotations, constraints):
         self.dsl_rule = rule
         self.preconditions = preconditions
         self.known_calls = known_calls
         self.shared_constraints = shared_constraints
         self._annotations = annotations
+        self.constraints = constraints
 
     def requires_planning(self, history):
         return self.dsl_rule.requires_planning
@@ -76,7 +77,7 @@ class CompiledRule(object):
 
     def _constraint_exprs_for_call(self, history, call):
         exprs = []
-        per_call_constraints, _ = self.dsl_rule.per_call_constraints_and_priority(call)
+        per_call_constraints, _ = self.per_call_constraints_and_priority(call)
         if per_call_constraints:
             exprs.extend(RuleCompiler.exprs_from_constraints(per_call_constraints, history, call))
         exprs.extend(RuleCompiler.exprs_from_constraints(self.shared_constraints, history, call))
@@ -88,9 +89,27 @@ class CompiledRule(object):
             condition_exprs = RuleCompiler.exprs_from_constraints(condition, history, call)
             yield priority, z3.And(exprs + condition_exprs)
 
-        _, priority = self.dsl_rule.per_call_constraints_and_priority(call)
+        _, priority = self.per_call_constraints_and_priority(call)
         assert priority
         yield priority, z3.And(exprs)
+
+    # constraints accepts various forms including:
+    # constraints = { '1H': hearts > 5 }
+    # constraints = { '1H': (hearts > 5, priority) }
+    # constraints = { ('1H', '2H'): hearts > 5 }
+
+    # FIXME: Should we split this into two methods? on for priority and one for constraints?
+    def per_call_constraints_and_priority(self, call):
+        constraints_tuple = self.constraints.get(call.name)
+        if constraints_tuple:
+            try:
+                if isinstance(list(constraints_tuple)[-1], enum.EnumValue):
+                    assert len(constraints_tuple) == 2
+                    return constraints_tuple
+            except TypeError:
+                pass
+        assert self.dsl_rule.priority, "" + self.name + " is missing priority"
+        return constraints_tuple, self.dsl_rule.priority
 
 
 class RuleCompiler(object):
@@ -126,23 +145,36 @@ class RuleCompiler(object):
         return list(chain.from_iterable(mapped_values))
 
     @classmethod
-    def _compile_known_calls(cls, dsl_class):
+    def _compile_known_calls(cls, dsl_class, constraints):
         if dsl_class.call_names:
             call_names = cls._ensure_list(dsl_class.call_names)
         else:
-            call_names = dsl_class.constraints.keys()
+            call_names = constraints.keys()
         assert call_names, "%s: call_names or constraints map is required." % dsl_class.__name__
         return map(Call.from_string, call_names)
 
     @classmethod
+    def _flatten_constraints(cls, constraints):
+        flattened_constraints  = {}
+        for key, value in constraints.iteritems():
+            if hasattr(key, '__iter__'):
+                for call_name in key:
+                    flattened_constraints[call_name] = value
+            else:
+                flattened_constraints[key] = value
+        return flattened_constraints
+
+    @classmethod
     def compile(cls, dsl_rule_class):
         dsl_rule = dsl_rule_class()
+        constraints = cls._flatten_constraints(dsl_rule_class.constraints)
         # Unclear if compiled results should be memoized on the rule?
         return CompiledRule(dsl_rule,
-            known_calls=cls._compile_known_calls(dsl_rule_class),
+            known_calls=cls._compile_known_calls(dsl_rule_class, constraints),
             annotations=cls._joined_list_from_ancestors(dsl_rule_class, 'annotations'),
             preconditions=cls._joined_list_from_ancestors(dsl_rule_class, 'preconditions'),
-            shared_constraints=cls._joined_list_from_ancestors(dsl_rule_class, 'shared_constraints')
+            shared_constraints=cls._joined_list_from_ancestors(dsl_rule_class, 'shared_constraints'),
+            constraints=constraints,
         )
 
 
@@ -180,23 +212,6 @@ class Rule(object):
 
     def __repr__(self):
         return "%s()" % self.name
-
-    # constraints accepts various forms including:
-    # constraints = { '1H': hearts > 5 }
-    # constraints = { '1H': (hearts > 5, priority) }
-
-    # FIXME: Should we split this into two methods? on for priority and one for constraints?
-    def per_call_constraints_and_priority(self, call):
-        constraints_tuple = self.constraints.get(call.name)
-        if constraints_tuple:
-            try:
-                if isinstance(list(constraints_tuple)[-1], enum.EnumValue):
-                    assert len(constraints_tuple) == 2
-                    return constraints_tuple
-            except TypeError:
-                pass
-        assert self.priority, "" + self.name + " is missing priority"
-        return constraints_tuple, self.priority
 
 
 relay_priorities = enum.Enum(
@@ -246,36 +261,15 @@ class SuitedToPlay(Natural):
         MinimumCombinedPointsPrecondition(12),
         PartnerHasAtLeastLengthInSuit(1)
     ]
+
+class TwoLevelSuitedToPlay(SuitedToPlay):
     constraints = {
-        '2C': (MinimumCombinedPoints(19), natural_priorities.TwoLevelNaturalMinor),
-        '2D': (MinimumCombinedPoints(19), natural_priorities.TwoLevelNaturalMinor),
-        '2H': (MinimumCombinedPoints(19), natural_priorities.TwoLevelNaturalMajor),
-        '2S': (MinimumCombinedPoints(19), natural_priorities.TwoLevelNaturalMajor),
-
-        '3C': (MinimumCombinedPoints(22), natural_priorities.ThreeLevelNaturalMinor),
-        '3D': (MinimumCombinedPoints(22), natural_priorities.ThreeLevelNaturalMinor),
-        '3H': (MinimumCombinedPoints(22), natural_priorities.ThreeLevelNaturalMajor),
-        '3S': (MinimumCombinedPoints(22), natural_priorities.ThreeLevelNaturalMajor),
-
-        '4C': (MinimumCombinedPoints(25), natural_priorities.FourLevelNaturalMinor),
-        '4D': (MinimumCombinedPoints(25), natural_priorities.FourLevelNaturalMinor),
-        '4H': (MinimumCombinedPoints(25), natural_priorities.FourLevelNaturalMajor),
-        '4S': (MinimumCombinedPoints(25), natural_priorities.FourLevelNaturalMajor),
-
-        '5C': (MinimumCombinedPoints(28), natural_priorities.FiveLevelNaturalMinor),
-        '5D': (MinimumCombinedPoints(28), natural_priorities.FiveLevelNaturalMinor),
-        '5H': (MinimumCombinedPoints(28), natural_priorities.FiveLevelNaturalMajor),
-        '5S': (MinimumCombinedPoints(28), natural_priorities.FiveLevelNaturalMajor),
-
-        '6C': (MinimumCombinedPoints(33), natural_priorities.SixLevelNaturalMinor),
-        '6D': (MinimumCombinedPoints(33), natural_priorities.SixLevelNaturalMinor),
-        '6H': (MinimumCombinedPoints(33), natural_priorities.SixLevelNaturalMajor),
-        '6S': (MinimumCombinedPoints(33), natural_priorities.SixLevelNaturalMajor),
-
-        '7C': (MinimumCombinedPoints(37), natural_priorities.SevenLevelNaturalMinor),
-        '7D': (MinimumCombinedPoints(37), natural_priorities.SevenLevelNaturalMinor),
-        '7H': (MinimumCombinedPoints(37), natural_priorities.SevenLevelNaturalMajor),
-        '7S': (MinimumCombinedPoints(37), natural_priorities.SevenLevelNaturalMajor),
+        ('2C', '2D', '2H', '2S'): (MinimumCombinedPoints(19), natural_priorities.TwoLevelNaturalMinor),
+        ('3C', '3D', '3H', '3S'): (MinimumCombinedPoints(22), natural_priorities.ThreeLevelNaturalMinor),
+        ('4C', '4D', '4H', '4S'): (MinimumCombinedPoints(25), natural_priorities.FourLevelNaturalMinor),
+        ('5C', '5D', '5H', '5S'): (MinimumCombinedPoints(28), natural_priorities.FiveLevelNaturalMinor),
+        ('6C', '6D', '6H', '6S'): (MinimumCombinedPoints(33), natural_priorities.SixLevelNaturalMinor),
+        ('7C', '7D', '7H', '7S'): (MinimumCombinedPoints(37), natural_priorities.SevenLevelNaturalMinor),
     }
     shared_constraints = [MinimumCombinedLength(8)]
 
@@ -859,14 +853,9 @@ class SupportPartnerSuit(RebidAfterOneLevelOpen):
 
 class SupportPartnerMajorSuit(SupportPartnerSuit):
     constraints = {
-        '2H': (NO_CONSTRAINTS, opener_rebid_priorities.SupportMajorMin),
-        '2S': (NO_CONSTRAINTS, opener_rebid_priorities.SupportMajorMin),
-
-        '3H': (MinimumCombinedPoints(22), opener_rebid_priorities.SupportMajorLimit),
-        '3S': (MinimumCombinedPoints(22), opener_rebid_priorities.SupportMajorLimit),
-
-        '4H': (MinimumCombinedPoints(25), opener_rebid_priorities.SupportMajorMax),
-        '4S': (MinimumCombinedPoints(25), opener_rebid_priorities.SupportMajorMax),
+        ('2H', '2S'): (NO_CONSTRAINTS, opener_rebid_priorities.SupportMajorMin),
+        ('3H', '3S'): (MinimumCombinedPoints(22), opener_rebid_priorities.SupportMajorLimit),
+        ('4H', '4S'): (MinimumCombinedPoints(25), opener_rebid_priorities.SupportMajorMax),
     }
     shared_constraints = MinimumCombinedLength(8)
 
@@ -1228,10 +1217,8 @@ class StaymanResponse(Rule):
 class NaturalStaymanResponse(StaymanResponse):
     preconditions = NotJumpFromPartnerLastBid()
     constraints = {
-        '2H': (hearts >= 4, stayman_response_priorities.HeartStaymanResponse),
-        '2S': (spades >= 4, stayman_response_priorities.SpadeStaymanResponse),
-        '3H': (hearts >= 4, stayman_response_priorities.HeartStaymanResponse),
-        '3S': (spades >= 4, stayman_response_priorities.SpadeStaymanResponse),
+        ('2H', '3H'): (hearts >= 4, stayman_response_priorities.HeartStaymanResponse),
+        ('2S', '3S'): (spades >= 4, stayman_response_priorities.SpadeStaymanResponse),
     }
 
 
@@ -1482,20 +1469,14 @@ class MichaelsCuebid(object):
         UnbidSuitCountRange(3, 3),
     ]
     constraints = {
-        '2C': z3.And(hearts >= 5, spades >= 5),
-        '2D': z3.And(hearts >= 5, spades >= 5),
-        '2H': z3.And(spades >= 5, z3.Or(clubs >= 5, diamonds >= 5)),
-        '2S': z3.And(hearts >= 5, z3.Or(clubs >= 5, diamonds >= 5)),
-
-        '3C': z3.And(hearts >= 5, spades >= 5),
-        '3D': z3.And(hearts >= 5, spades >= 5),
-        '3H': z3.And(spades >= 5, z3.Or(clubs >= 5, diamonds >= 5)),
-        '3S': z3.And(hearts >= 5, z3.Or(clubs >= 5, diamonds >= 5)),
+        ('2C', '2D', '3C', '3D'): z3.And(hearts >= 5, spades >= 5),
+        ('2H', '3H'): z3.And(spades >= 5, z3.Or(clubs >= 5, diamonds >= 5)),
+        ('2S', '3S'): z3.And(hearts >= 5, z3.Or(clubs >= 5, diamonds >= 5)),
     }
     priority = overcall_priorities.MichaelsCuebid
     annotations = [annotations.MichaelsCuebid, annotations.Artificial]
     # FIXME: Should the hole in this point range be generated by a higher priority bid?
-    shared_constraints = [z3.Or(6 <= points <= 12, 15 <= points)]
+    shared_constraints = z3.Or(6 <= points <= 12, 15 <= points)
 
 
 class DirectMichaelsCuebid(MichaelsCuebid, DirectOvercall):
