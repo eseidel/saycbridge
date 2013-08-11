@@ -47,16 +47,27 @@ class InvertedPrecondition(Precondition):
 
 
 class EitherPrecondition(Precondition):
-    def __init__(self, first_precondition, second_precondition):
-        self.first_precondition = first_precondition
-        self.second_precondition = second_precondition
+    def __init__(self, *preconditions):
+        self.preconditions = preconditions
 
     @property
     def name(self):
-        return "PreconditionOr(%s,%s)" % (self.first_precondition.name, self.second_precondition.name)
+        return "EitherPrecondition(%s)" % repr(preconditions)
 
     def fits(self, history, call):
-        return self.first_precondition.fits(history, call) or self.second_precondition.fits(history, call)
+        return any(precondition.fits(history, call) for precondition in self.preconditions)
+
+
+class AndPrecondition(Precondition):
+    def __init__(self, *preconditions):
+        self.preconditions = preconditions
+
+    @property
+    def name(self):
+        return "AndPrecondition(%s,%s)" % repr(preconditions)
+
+    def fits(self, history, call):
+        return all(precondition.fits(history, call) for precondition in self.preconditions)
 
 
 class NoOpening(Precondition):

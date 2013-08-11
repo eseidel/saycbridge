@@ -1278,9 +1278,14 @@ overcall_priorities = enum.Enum(
 
 
 class DirectOvercall(Rule):
-    preconditions = [
-        LastBidHasAnnotation(positions.RHO, annotations.Opening),
-    ]
+    preconditions = EitherPrecondition(
+            LastBidHasAnnotation(positions.RHO, annotations.Opening),
+            AndPrecondition(
+                LastBidHasAnnotation(positions.LHO, annotations.Opening),
+                LastBidWas(positions.Partner, 'P'),
+                InvertedPrecondition(LastBidWas(positions.RHO, 'P'))
+            )
+        )
 
 
 class BalancingOvercall(Rule):
@@ -1296,28 +1301,30 @@ class StandardDirectOvercall(DirectOvercall):
         LastBidHasSuit(positions.RHO),
         NotJumpFromLastContract(),
         UnbidSuit(),
+        # FIXME: We should not bid if we have 4 cards in their suit.
     ]
-    shared_constraints = ThreeOfTheTopFiveOrBetter()
+    shared_constraints = [MinLength(5), ThreeOfTheTopFiveOrBetter()]
 
 
-class OneDiamondOvercall(StandardDirectOvercall):
+class OneLevelStandardOvercall(StandardDirectOvercall):
+    shared_constraints = points >= 8
+
+
+class OneDiamondOvercall(OneLevelStandardOvercall):
     call_names = '1D'
-    shared_constraints = [MinLength(5), points >= 8]
     priority = overcall_priorities.DirectOvercallMinor
 
 
-class OneHeartOvercall(StandardDirectOvercall):
+class OneHeartOvercall(OneLevelStandardOvercall):
     call_names = '1H'
-    shared_constraints = [MinLength(5), points >= 8]
     conditional_priorities = [
         (hearts > spades, overcall_priorities.DirectOvercallLongestMajor),
     ]
     priority = overcall_priorities.DirectOvercallMajor
 
 
-class OneSpadeOvercall(StandardDirectOvercall):
+class OneSpadeOvercall(OneLevelStandardOvercall):
     call_names = '1S'
-    shared_constraints = [MinLength(5), points >= 8]
     conditional_priorities = [
         (spades >= hearts, overcall_priorities.DirectOvercallLongestMajor),
     ]
@@ -1331,36 +1338,36 @@ class DirectNotrumpDouble(DirectOvercall):
     priority = overcall_priorities.DirectNotrumpDouble
 
 
-class TwoClubOvercall(StandardDirectOvercall):
+class TwoLevelStandardOvercall(StandardDirectOvercall):
+    shared_constraints = points >= 10
+
+
+class TwoClubOvercall(TwoLevelStandardOvercall):
     call_names = '2C'
-    shared_constraints = [MinLength(5), points >= 10]
     conditional_priorities = [
         (clubs > diamonds, overcall_priorities.DirectOvercallLongestMinor),
     ]
     priority = overcall_priorities.DirectOvercallMinor
 
 
-class TwoDiamondOvercall(StandardDirectOvercall):
+class TwoDiamondOvercall(TwoLevelStandardOvercall):
     call_names = '2D'
-    shared_constraints = [MinLength(5), points >= 10]
     conditional_priorities = [
         (diamonds >= clubs, overcall_priorities.DirectOvercallLongestMinor),
     ]
     priority = overcall_priorities.DirectOvercallMinor
 
 
-class TwoHeartOvercall(StandardDirectOvercall):
+class TwoHeartOvercall(TwoLevelStandardOvercall):
     call_names = '2H'
-    shared_constraints = [MinLength(5), points >= 10]
     conditional_priorities = [
         (hearts > spades, overcall_priorities.DirectOvercallLongestMajor),
     ]
     priority = overcall_priorities.DirectOvercallMajor
 
 
-class TwoSpadeOvercall(StandardDirectOvercall):
+class TwoSpadeOvercall(TwoLevelStandardOvercall):
     call_names = '2S'
-    shared_constraints = [MinLength(5), points >= 10]
     conditional_priorities = [
         (spades >= hearts, overcall_priorities.DirectOvercallLongestMajor),
     ]
@@ -1378,18 +1385,21 @@ class MichaelsCuebid(object):
     preconditions = [
         NotJumpFromLastContract(),
         InvertedPrecondition(UnbidSuit()),
+        # Michaels is only on if the opponents have only bid one suit.
+        UnbidSuitCountRange(3, 3),
     ]
     constraints = {
-        '2C': (z3.And(hearts >= 5, spades >= 5), overcall_priorities.MichaelsCuebid),
-        '2D': (z3.And(hearts >= 5, spades >= 5), overcall_priorities.MichaelsCuebid),
-        '2H': (z3.And(spades >= 5, z3.Or(clubs >= 5, diamonds >= 5)), overcall_priorities.MichaelsCuebid),
-        '2S': (z3.And(hearts >= 5, z3.Or(clubs >= 5, diamonds >= 5)), overcall_priorities.MichaelsCuebid),
+        '2C': z3.And(hearts >= 5, spades >= 5),
+        '2D': z3.And(hearts >= 5, spades >= 5),
+        '2H': z3.And(spades >= 5, z3.Or(clubs >= 5, diamonds >= 5)),
+        '2S': z3.And(hearts >= 5, z3.Or(clubs >= 5, diamonds >= 5)),
 
-        '3C': (z3.And(hearts >= 5, spades >= 5), overcall_priorities.MichaelsCuebid),
-        '3D': (z3.And(hearts >= 5, spades >= 5), overcall_priorities.MichaelsCuebid),
-        '3H': (z3.And(spades >= 5, z3.Or(clubs >= 5, diamonds >= 5)), overcall_priorities.MichaelsCuebid),
-        '3S': (z3.And(hearts >= 5, z3.Or(clubs >= 5, diamonds >= 5)), overcall_priorities.MichaelsCuebid),
+        '3C': z3.And(hearts >= 5, spades >= 5),
+        '3D': z3.And(hearts >= 5, spades >= 5),
+        '3H': z3.And(spades >= 5, z3.Or(clubs >= 5, diamonds >= 5)),
+        '3S': z3.And(hearts >= 5, z3.Or(clubs >= 5, diamonds >= 5)),
     }
+    priority = overcall_priorities.MichaelsCuebid
     annotations = [annotations.MichaelsCuebid, annotations.Artificial]
     # FIXME: Should the hole in this point range be generated by a higher priority bid?
     shared_constraints = [z3.Or(6 <= points <= 12, 15 <= points)]
@@ -1403,8 +1413,10 @@ class BalancingMichaelsCuebid(MichaelsCuebid, BalancingOvercall):
     pass
 
 
-class Unusual2N(object):
+class Unusual2N(Rule):
     preconditions = [
+        # Unusual2N only exists immediately after RHO opens.
+        LastBidHasAnnotation(positions.RHO, annotations.Opening),
         JumpFromLastContract(),
     ]
     call_names = '2N'
@@ -1412,14 +1424,6 @@ class Unusual2N(object):
     shared_constraints = [Unusual2NShape(), points >= 6]
     annotations = [annotations.Unusual2N, annotations.Artificial]
     priority = overcall_priorities.Unusual2N
-
-
-class DirectUnusual2N(Unusual2N, DirectOvercall):
-    pass
-
-
-class BalancingUnusual2N(Unusual2N, BalancingOvercall):
-    pass
 
 
 class TakeoutDouble(Rule):
