@@ -1598,14 +1598,14 @@ class ResponseToBlackwood(Rule):
         NotJumpFromPartnerLastBid(),
     ]
     constraints = {
-        '4C': z3.Or(number_of_aces == 0, number_of_aces == 4),
-        '4D': number_of_aces == 1,
-        '4H': number_of_aces == 2,
-        '4S': number_of_aces == 3,
-        '5C': z3.Or(number_of_kings == 0, number_of_kings == 4),
-        '5D': number_of_kings == 1,
-        '5H': number_of_kings == 2,
-        '5S': number_of_kings == 3,
+        '5C': z3.Or(number_of_aces == 0, number_of_aces == 4),
+        '5D': number_of_aces == 1,
+        '5H': number_of_aces == 2,
+        '5S': number_of_aces == 3,
+        '6C': z3.Or(number_of_kings == 0, number_of_kings == 4),
+        '6D': number_of_kings == 1,
+        '6H': number_of_kings == 2,
+        '6S': number_of_kings == 3,
     }
     priority = feature_asking_priorites.Blackwood
     annotations = annotations.Artificial
