@@ -312,37 +312,40 @@ class Opening(Rule):
     preconditions = NoOpening()
 
 
+class OneLevelSuitOpening(Opening):
+    shared_constraints = OpeningRuleConstraint()
 
-class OneClubOpening(Opening):
+
+class OneClubOpening(OneLevelSuitOpening):
     call_names = '1C'
-    shared_constraints = [OpeningRuleConstraint(), clubs >= 3]
+    shared_constraints = clubs >= 3
     conditional_priorities = [
         (z3.Or(clubs > diamonds, z3.And(clubs == 3, diamonds == 3)), opening_priorities.LongestMinor),
     ]
     priority = opening_priorities.LowerMinor
 
 
-class OneDiamondOpening(Opening):
+class OneDiamondOpening(OneLevelSuitOpening):
     call_names = '1D'
-    shared_constraints = [OpeningRuleConstraint(), diamonds >= 3]
+    shared_constraints = diamonds >= 3
     conditional_priorities = [
         (diamonds > clubs, opening_priorities.LongestMinor),
     ]
     priority = opening_priorities.HigherMinor
 
 
-class OneHeartOpening(Opening):
+class OneHeartOpening(OneLevelSuitOpening):
     call_names = '1H'
-    shared_constraints = [OpeningRuleConstraint(), hearts >= 5]
+    shared_constraints = hearts >= 5
     conditional_priorities = [
         (hearts > spades, opening_priorities.LongestMajor),
     ]
     priority = opening_priorities.LowerMajor
 
 
-class OneSpadeOpening(Opening):
+class OneSpadeOpening(OneLevelSuitOpening):
     call_names = '1S'
-    shared_constraints = [OpeningRuleConstraint(), spades >= 5]
+    shared_constraints = spades >= 5
     conditional_priorities = [
         (spades > hearts, opening_priorities.LongestMajor),
     ]
@@ -398,16 +401,19 @@ class ResponseToOneLevelSuitedOpen(Response):
         InvertedPrecondition(LastBidHasStrain(positions.Partner, suit.NOTRUMP))
     ]
 
+class OneLevelResponse(ResponseToOneLevelSuitedOpen):
+    shared_constraints = points >= 6
 
-class OneDiamondResponse(ResponseToOneLevelSuitedOpen):
+
+class OneDiamondResponse(OneLevelResponse):
     call_names = '1D'
-    shared_constraints = [points >= 6, diamonds >= 4]
+    shared_constraints = diamonds >= 4
     priority = response_priorities.OneDiamondResponse
 
 
-class OneHeartResponse(ResponseToOneLevelSuitedOpen):
+class OneHeartResponse(OneLevelResponse):
     call_names = '1H'
-    shared_constraints = [points >= 6, hearts >= 4]
+    shared_constraints = hearts >= 4
     conditional_priorities = [
         (z3.And(hearts >= 5, hearts > spades), response_priorities.LongestNewMajor),
         (hearts >= 5, response_priorities.OneHeartWithFiveResponse),
@@ -415,18 +421,17 @@ class OneHeartResponse(ResponseToOneLevelSuitedOpen):
     priority = response_priorities.OneHeartWithFourResponse
 
 
-class OneSpadeResponse(ResponseToOneLevelSuitedOpen):
+class OneSpadeResponse(OneLevelResponse):
     call_names = '1S'
-    shared_constraints = [points >= 6, spades >= 4]
+    shared_constraints = spades >= 4
     conditional_priorities = [
         (spades >= 5, response_priorities.OneSpadeWithFiveResponse)
     ]
     priority = response_priorities.OneSpadeWithFourResponse
 
 
-class OneNotrumpResponse(ResponseToOneLevelSuitedOpen):
+class OneNotrumpResponse(OneLevelResponse):
     call_names = '1N'
-    shared_constraints = points >= 6
     priority = response_priorities.OneNotrumpResponse
 
 
