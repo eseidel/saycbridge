@@ -201,6 +201,17 @@ class RaiseOfPartnersLastSuit(Precondition):
         return call.strain == partner_last_call.strain and history.partner.min_length(partner_last_call.strain) >= 3
 
 
+class CueBid(Precondition):
+    def __init__(self, position):
+        self.position = position
+
+    def fits(self, history, call):
+        last_call = history.view_for(self.position).last_call
+        if not last_call or last_call.strain not in suit.SUITS:
+            return False
+        return call.strain == last_call.strain and history.view_for(self.position).min_length(last_call.strain) >= 3
+
+
 class SuitLowerThanMyLastSuit(Precondition):
     def fits(self, history, call):
         if call.strain not in suit.SUITS:

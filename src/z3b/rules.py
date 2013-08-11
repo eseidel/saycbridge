@@ -1433,17 +1433,17 @@ class RaiseResponseToStandardOvercall(ResponseToStandardOvercall):
     priority = overcall_response_priorities.RaiseResponseToStandardOvercall
 
 
-# class CuebidResponseToStandardOvercall(ResponseToStandardOvercall):
-#     preconditions = [
-#         CueBid(positions.LHO),
-#         NotJumpFromLastContract()
-#     ]
-#     call_names = [
-#         '2C', '2D', '2H', '2S',
-#         '3C', '3D', '3H',
-#     ]
-#     shared_constraints = [SupportForPartnerLastBid(3), points >= 11]
-#     priority = overcall_response_priorities.CuebidResponseToStandardOvercall
+class CuebidResponseToStandardOvercall(ResponseToStandardOvercall):
+    preconditions = [
+        CueBid(positions.LHO),
+        NotJumpFromLastContract()
+    ]
+    call_names = [
+        '2C', '2D', '2H', '2S',
+        '3C', '3D', '3H',
+    ]
+    shared_constraints = [SupportForPartnerLastBid(3), points >= 11]
+    priority = overcall_response_priorities.CuebidResponseToStandardOvercall
 
 
 # class NewSuitResponseToStandardOvercall(ResponseToStandardOvercall):
