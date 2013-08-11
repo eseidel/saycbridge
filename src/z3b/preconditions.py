@@ -11,6 +11,7 @@ annotations = enum.Enum(
     "NoTrumpSystemsOn",
     "Artificial",
     "Stayman",
+    "Blackwood",
     "Gerber",
     "Transfer",
     "NegativeDouble",
@@ -43,6 +44,19 @@ class InvertedPrecondition(Precondition):
 
     def fits(self, history, call):
         return not self.precondition.fits(history, call)
+
+
+class EitherPrecondition(Precondition):
+    def __init__(self, first_precondition, second_precondition):
+        self.first_precondition = first_precondition
+        self.second_precondition = second_precondition
+
+    @property
+    def name(self):
+        return "PreconditionOr(%s,%s)" % (self.first_precondition.name, self.second_precondition.name)
+
+    def fits(self, history, call):
+        return self.first_precondition.fits(history, call) or self.second_precondition.fits(history, call)
 
 
 class NoOpening(Precondition):
@@ -258,6 +272,14 @@ class MinimumCombinedPointsPrecondition(Precondition):
 
     def fits(self, history, call):
         return history.partner.min_points + history.me.min_points >= self.min_points
+
+
+class HaveFit(Precondition):
+    def fits(self, history, call):
+        for strain in suit.SUITS:
+            if history.partner.min_length(strain) + history.me.min_length(strain) >= 8:
+                return True
+        return False
 
 
 class Jump(Precondition):

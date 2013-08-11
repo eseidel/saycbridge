@@ -1569,47 +1569,47 @@ class ResponseToGerber(Rule):
     annotations = annotations.Artificial
 
 
-# Blackwood is done, just needs JumpOrHaveFit() and some testing.
-# class Blackwood(Rule):
-#     category = categories.Gadget
-#     requires_planning = True
-#     shared_constraints = NO_CONSTRAINTS
-#     annotations = annotations.Blackwood
-#     priority = feature_asking_priorites.Blackwood
+class Blackwood(Rule):
+    category = categories.Gadget
+    requires_planning = True
+    shared_constraints = NO_CONSTRAINTS
+    annotations = annotations.Blackwood
+    priority = feature_asking_priorites.Blackwood
 
 
-# class BlackwoodForAces(Blackwood):
-#     call_names = '4N'
-#     preconditions = [
-#         InvertedPrecondition(LastBidHasStrain(positions.Partner, suit.NOTRUMP)),
-#         InvertedPrecondition(LastBidHasAnnotation(positions.Partner, annotations.Artificial)),
-#         JumpOrHaveFit()
-#     ]
+class BlackwoodForAces(Blackwood):
+    call_names = '4N'
+    preconditions = [
+        InvertedPrecondition(LastBidHasStrain(positions.Partner, suit.NOTRUMP)),
+        InvertedPrecondition(LastBidHasAnnotation(positions.Partner, annotations.Artificial)),
+        EitherPrecondition(JumpFromLastContract(), HaveFit())
+    ]
 
 
-# class BlackwoodForKings(Blackwood):
-#     call_names = '5N'
-#     preconditions = LastBidHasAnnotation(positions.Me, annotations.Blackwood)
+class BlackwoodForKings(Blackwood):
+    call_names = '5N'
+    preconditions = LastBidHasAnnotation(positions.Me, annotations.Blackwood)
 
 
-# class ResponseToBlackwood(Rule):
-#     category = categories.Relay
-#     preconditions = [
-#         LastBidHasAnnotation(positions.Partner, annotations.Blackwood),
-#         NotJumpFromPartnerLastBid(),
-#     ]
-#     constraints = {
-#         '4C': z3.Or(number_of_aces == 0, number_of_aces == 4),
-#         '4D': number_of_aces == 1,
-#         '4H': number_of_aces == 2,
-#         '4S': number_of_aces == 3,
-#         '5C': z3.Or(number_of_kings == 0, number_of_kings == 4),
-#         '5D': number_of_kings == 1,
-#         '5H': number_of_kings == 2,
-#         '5S': number_of_kings == 3,
-#     }
-#     priority = feature_asking_priorites.Blackwood
-#     annotations = annotations.Artificial
+class ResponseToBlackwood(Rule):
+    category = categories.Relay
+    preconditions = [
+        LastBidHasAnnotation(positions.Partner, annotations.Blackwood),
+        NotJumpFromPartnerLastBid(),
+    ]
+    constraints = {
+        '4C': z3.Or(number_of_aces == 0, number_of_aces == 4),
+        '4D': number_of_aces == 1,
+        '4H': number_of_aces == 2,
+        '4S': number_of_aces == 3,
+        '5C': z3.Or(number_of_kings == 0, number_of_kings == 4),
+        '5D': number_of_kings == 1,
+        '5H': number_of_kings == 2,
+        '5S': number_of_kings == 3,
+    }
+    priority = feature_asking_priorites.Blackwood
+    annotations = annotations.Artificial
+
 
 pass_priorities = enum.Enum(
     "Default",
