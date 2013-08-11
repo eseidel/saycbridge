@@ -73,7 +73,7 @@ http://nodejs.org/
 
 The Z3 Bidder (make serve) site additionally depends on:
 
-    sudo easy_install webapp2 webob jinja2 Werkzeug
+    sudo pip install webapp2 webob jinja2 Werkzeug
 
 The Knowledge Based Bidder version depends on Google App Engine:
 https://developers.google.com/appengine/

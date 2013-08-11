@@ -1,0 +1,24 @@
+Steps I went through to setup z3b on our server.
+
+# created a non-root user
+apt-get install git-core
+git clone https://github.com/eseidel/saycbridge.git
+apt-get install make
+apt-get install nodejs
+apt-get update # seems to have a bad ip?
+apt-get install npm
+npm install -g coffee-script
+apt-get install python-dev # Headers for c-python modules
+apt-get install python-pip
+apt-get install vim # Generally useful
+pip install webapp2 webob jinja2 Werkzeug unittest2
+
+Install git via:
+apt-get install autoconf
+
+# Had to copy z3 directory manually, due to git failure.
+
+apt-get install nginx
+
+cp dist/gae/deploy/z3b_nginx.conf /etc/nginx/conf.d/
+service nginx # (or reload)
