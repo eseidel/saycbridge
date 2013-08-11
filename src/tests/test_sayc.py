@@ -1169,7 +1169,7 @@ class SAYCBidderTest(unittest2.TestCase):
 
             # Log results
             if isinstance(actual_bid_name, Exception):
-                _log.error("Exception during find_call_for %s %s: %s" % (hand.pretty_one_line(), partial_history.calls_string(), e))
+                _log.error("Exception during find_call_for %s %s: %s" % (hand.pretty_one_line(), partial_history.calls_string(), actual_bid_name))
                 raise
 
             if actual_bid_name and actual_bid_name.lower() == expected_bid.lower():
