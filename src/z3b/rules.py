@@ -261,15 +261,24 @@ class SuitedToPlay(Natural):
         MinimumCombinedPointsPrecondition(12),
         PartnerHasAtLeastLengthInSuit(1)
     ]
-
-class TwoLevelSuitedToPlay(SuitedToPlay):
     constraints = {
-        ('2C', '2D', '2H', '2S'): (MinimumCombinedPoints(19), natural_priorities.TwoLevelNaturalMinor),
-        ('3C', '3D', '3H', '3S'): (MinimumCombinedPoints(22), natural_priorities.ThreeLevelNaturalMinor),
-        ('4C', '4D', '4H', '4S'): (MinimumCombinedPoints(25), natural_priorities.FourLevelNaturalMinor),
-        ('5C', '5D', '5H', '5S'): (MinimumCombinedPoints(28), natural_priorities.FiveLevelNaturalMinor),
-        ('6C', '6D', '6H', '6S'): (MinimumCombinedPoints(33), natural_priorities.SixLevelNaturalMinor),
-        ('7C', '7D', '7H', '7S'): (MinimumCombinedPoints(37), natural_priorities.SevenLevelNaturalMinor),
+        ('2C', '2D'): (MinimumCombinedPoints(19), natural_priorities.TwoLevelNaturalMinor),
+        ('2H', '2S'): (MinimumCombinedPoints(19), natural_priorities.TwoLevelNaturalMajor),
+
+        ('3C', '3D'): (MinimumCombinedPoints(22), natural_priorities.ThreeLevelNaturalMinor),
+        ('3H', '3S'): (MinimumCombinedPoints(22), natural_priorities.ThreeLevelNaturalMajor),
+
+        ('4C', '4D'): (MinimumCombinedPoints(25), natural_priorities.FourLevelNaturalMinor),
+        ('4H', '4S'): (MinimumCombinedPoints(25), natural_priorities.FourLevelNaturalMajor),
+
+        ('5C', '5D'): (MinimumCombinedPoints(28), natural_priorities.FiveLevelNaturalMinor),
+        ('5H', '5S'): (MinimumCombinedPoints(28), natural_priorities.FiveLevelNaturalMajor),
+
+        ('6C', '6D'): (MinimumCombinedPoints(33), natural_priorities.SixLevelNaturalMinor),
+        ('6H', '6S'): (MinimumCombinedPoints(33), natural_priorities.SixLevelNaturalMajor),
+
+        ('7C', '7D'): (MinimumCombinedPoints(37), natural_priorities.SevenLevelNaturalMinor),
+        ('7H', '7S'): (MinimumCombinedPoints(37), natural_priorities.SevenLevelNaturalMajor),
     }
     shared_constraints = [MinimumCombinedLength(8)]
 
