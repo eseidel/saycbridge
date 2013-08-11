@@ -763,6 +763,8 @@ opener_rebid_priorities = enum.Enum(
     "ReverseDiamonds",
     "ReverseHearts",
     "ReverseSpades",
+    "GameForcingUnsupportedRebidByOpener",
+    "InvitationalUnsupportedRebidByOpener",
     "UnforcedRebidOriginalSuit",
     "RebidOneNotrump",
     "ForcedRebidOriginalSuit",
@@ -874,18 +876,21 @@ class RebidOriginalSuitByOpener(RebidAfterOneLevelOpen):
     preconditions = [
         LastBidHasLevel(positions.Me, 1),
         RebidSameSuit(),
-        NotJumpFromLastContract(),
     ]
 
 
-class UnforcedRebidOriginalSuitByOpener(RebidOriginalSuitByOpener):
+class MinimumRebidOriginalSuitByOpener(RebidOriginalSuitByOpener):
+    preconditions = NotJumpFromLastContract()
+
+
+class UnforcedRebidOriginalSuitByOpener(MinimumRebidOriginalSuitByOpener):
     preconditions = InvertedPrecondition(ForcedToBid())
     call_names = ['2C', '2D', '2H', '2S']
     shared_constraints = MinLength(6)
     priority = opener_rebid_priorities.UnforcedRebidOriginalSuit
 
 
-class ForcedRebidOriginalSuitByOpener(RebidOriginalSuitByOpener):
+class ForcedRebidOriginalSuitByOpener(MinimumRebidOriginalSuitByOpener):
     preconditions = ForcedToBid()
     call_names = ['2C', '2D', '2H', '2S']
     conditional_priorities = [
@@ -893,6 +898,24 @@ class ForcedRebidOriginalSuitByOpener(RebidOriginalSuitByOpener):
     ]
     shared_constraints = MinLength(5)
     priority = forced_rebid_priorities.ForcedRebidOriginalSuit
+
+
+class UnsupportedRebid(RebidOriginalSuitByOpener):
+    preconditions = MaxShownLength(positions.Partner, 0)
+
+
+class InvitationalUnsupportedRebidByOpener(UnsupportedRebid):
+    preconditions = JumpFromLastContract()
+    call_names = ['3C', '3D', '3H', '3S']
+    shared_constraints = MinLength(6), points >= 16
+    priority = opener_rebid_priorities.InvitationalUnsupportedRebidByOpener
+
+
+class GameForcingUnsupportedRebidByOpener(UnsupportedRebid):
+    preconditions = JumpFromLastContract()
+    call_names = ['4C', '4D', '4H', '4S']
+    shared_constraints = MinLength(6), points >= 19
+    priority = opener_rebid_priorities.GameForcingUnsupportedRebidByOpener
 
 
 class JumpShiftByOpener(RebidAfterOneLevelOpen):
