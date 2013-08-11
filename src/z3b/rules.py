@@ -1391,7 +1391,7 @@ class MichaelsCuebid(object):
         '3S': (z3.And(hearts >= 5, z3.Or(clubs >= 5, diamonds >= 5)), overcall_priorities.MichaelsCuebid),
     }
     annotations = [annotations.MichaelsCuebid, annotations.Artificial]
-    shared_constraints = [points >= 8]
+    shared_constraints = [z3.Or(6 <= points <= 12, 15 <= points)]
 
 
 class DirectMichaelsCuebid(MichaelsCuebid, DirectOvercall):
