@@ -165,15 +165,36 @@ class RuleCompiler(object):
         return flattened_constraints
 
     @classmethod
-    def compile(cls, dsl_rule_class):
-        dsl_rule = dsl_rule_class()
-        constraints = cls._flatten_constraints(dsl_rule_class.constraints)
+    def _validate_rule(cls, dls_class):
+        assert dls_class.priority or dls_class.constraints, "" + dls_class.name + " is missing priority"
+        # Rules have to apply some constraints to the hand.
+        assert dls_class.constraints or dls_class.shared_constraints, "" + dls_class.name + " is missing constraints"
+        # conditional_priorities doesn't work with self.constraints
+        assert not dls_class.conditional_priorities or not dls_class.constraints
+        assert not dls_class.conditional_priorities or dls_class.call_names
+        # FIXME: We should also walk the class and assert that no unexpected properties are found.
+        allowed_keys = set([
+            "preconditions",
+            "category",
+            "requires_planning"
+            "call_names",
+            "constraints",
+            "shared_constraints",
+            "annotations",
+            "conditional_priorities",
+            "priority",
+        ])
+
+
+    @classmethod
+    def compile(cls, dsl_rule):
+        constraints = cls._flatten_constraints(dsl_rule.constraints)
         # Unclear if compiled results should be memoized on the rule?
         return CompiledRule(dsl_rule,
-            known_calls=cls._compile_known_calls(dsl_rule_class, constraints),
-            annotations=cls._joined_list_from_ancestors(dsl_rule_class, 'annotations'),
-            preconditions=cls._joined_list_from_ancestors(dsl_rule_class, 'preconditions'),
-            shared_constraints=cls._joined_list_from_ancestors(dsl_rule_class, 'shared_constraints'),
+            known_calls=cls._compile_known_calls(dsl_rule, constraints),
+            annotations=cls._joined_list_from_ancestors(dsl_rule, 'annotations'),
+            preconditions=cls._joined_list_from_ancestors(dsl_rule, 'preconditions'),
+            shared_constraints=cls._joined_list_from_ancestors(dsl_rule, 'shared_constraints'),
             constraints=constraints,
         )
 
@@ -199,16 +220,12 @@ class Rule(object):
     priority = None
 
     def __init__(self):
-        assert self.priority or self.constraints, "" + self.name + " is missing priority"
-        # Rules have to apply some constraints to the hand.
-        assert self.constraints or self.shared_constraints, "" + self.name + " is missing constraints"
-        # conditional_priorities doesn't work with self.constraints
-        assert not self.conditional_priorities or not self.constraints
-        assert not self.conditional_priorities or self.call_names
+        assert False, "Rule objects should be compiled into EngineRule objects instead of instantiating them."
 
     @property
-    def name(self):
-        return self.__class__.__name__
+    @classmethod
+    def name(cls):
+        return cls.__name__
 
     def __repr__(self):
         return "%s()" % self.name
@@ -312,12 +329,36 @@ class Opening(Rule):
     preconditions = NoOpening()
 
 
+# Inputs: call_names
+# Outputs: call_name -> priority or priority conditions, and Enum
+
+class PriorityCompiler(object):
+    @classmethod
+    def compile(cls, call_names, priority_rules):
+        # Everything starts off pointing to default.
+        # Each priority rule can chose to split a group
+        # It can also add per-call conditional priorities?
+        # After we're done compiling we need to generate an enum for each priority?
+        # and replace the place-holder priorities with those enums?
+
+
+class OneLevelOpening(Opening):
+    constraints = {
+        '1C': clubs >= 3,
+        '1D': diamonds >= 3,
+        '1H': hearts >= 5,
+        '1S': spades >= 5,
+    }
+    shared_constraints = OpeningRuleConstraint()
+    priority_rules = [PreferMajors, PreferLongest, PreferHigher, TreatClubsAsLongerWhenEqual]
+
 
 class OneClubOpening(Opening):
     call_names = '1C'
     shared_constraints = [OpeningRuleConstraint(), clubs >= 3]
     conditional_priorities = [
-        (z3.Or(clubs > diamonds, z3.And(clubs == 3, diamonds == 3)), opening_priorities.LongestMinor),
+        (clubs > diamonds, opening_priorities.LongestMinor),
+        (z3.And(clubs == 3, diamonds == 3), opening_priorities.LongestMinor),
     ]
     priority = opening_priorities.LowerMinor
 
@@ -371,12 +412,15 @@ response_priorities = enum.Enum(
     "MajorJumpToGame",
     "MajorLimitRaise",
     "MajorMinimumRaise",
+
     "LongestNewMajor",
     "OneSpadeWithFiveResponse",
     "OneHeartWithFiveResponse",
+
     "OneDiamondResponse",
     "OneHeartWithFourResponse",
     "OneSpadeWithFourResponse",
+
     "TwoHeartNewSuitResponse",
     "TwoSpadeNewSuitResponse",
     "TwoClubNewSuitResponse",
@@ -397,6 +441,12 @@ class ResponseToOneLevelSuitedOpen(Response):
         LastBidHasLevel(positions.Partner, 1),
         InvertedPrecondition(LastBidHasStrain(positions.Partner, suit.NOTRUMP))
     ]
+
+
+class NewSuitAtTheOneLevel(ResponseToOneLevelSuitedOpen):
+    call_names = ['1D', '1H', '1S']
+    shared_constraints = [MinLength(4), points >= 6]
+    priority_order = [PreferFiveCardSuits, PreferLongest, ] # FIXME
 
 
 class OneDiamondResponse(ResponseToOneLevelSuitedOpen):
@@ -759,14 +809,17 @@ opener_rebid_priorities = enum.Enum(
     "TwoNoTrumpOpenerRebid",
     "JumpShiftByOpener",
     "HelpSuitGameTry",
+
     # FIXME: 1S P 2D looks like this will will prefer 3C over 2S!
     "NewSuitClubs",
     "NewSuitDiamonds",
     "NewSuitHearts",
     "NewSuitSpades",
+
     "ReverseDiamonds",
     "ReverseHearts",
     "ReverseSpades",
+
     "GameForcingUnsupportedRebidByOpener",
     "InvitationalUnsupportedRebidByOpener",
     "UnforcedRebidOriginalSuit",
@@ -839,6 +892,7 @@ class NewSuitByOpener(SecondSuitFromOpener):
 
 class ReverseByOpener(SecondSuitFromOpener):
     preconditions = InvertedPrecondition(SuitLowerThanMyLastSuit())
+    # FIXME: Reverses shouldn't need priorities between them.  When are 2 available? 
     constraints = {
         # 2C is never a reverse
         '2D': (MinimumCombinedPoints(22), opener_rebid_priorities.ReverseDiamonds),
