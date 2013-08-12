@@ -1451,48 +1451,23 @@ preempt_priorities = enum.Enum(
 class PreemptiveOpen(Opening):
     # Never worth preempting in 4th seat.
     preconditions = InvertedPrecondition(LastBidWas(positions.LHO, 'P'))
-
-
-class SixCardPreemptiveOpen(PreemptiveOpen):
-    call_names = ['2D', '2H', '2S', '3C']
-    shared_constraints = [MinLength(6), ThreeOfTheTopFiveOrBetter(), points >= 5]
-    priority = preempt_priorities.SixCardPreempt
-
-
-class SevenCardPreemptiveOpen(PreemptiveOpen):
-    call_names = ['3D', '3H', '3S']
-    shared_constraints = [MinLength(7), ThreeOfTheTopFiveOrBetter(), points >= 5]
-    priority = preempt_priorities.SevenCardPreempt
-
-
-class EightCardPreemptiveOpen(PreemptiveOpen):
-    call_names = ['4C', '4D', '4H', '4S']
-    shared_constraints = [MinLength(8), ThreeOfTheTopFiveOrBetter(), points >= 5]
-    priority = preempt_priorities.EightCardPreempt
+    constraints = {
+        # 3C only promises 6 cards due to 2C being taken for strong bids.
+        (      '2D', '2H', '2S', '3C'): (MinLength(6), preempt_priorities.SixCardPreempt),
+        (      '3D', '3H', '3S'): (MinLength(7), preempt_priorities.SevenCardPreempt),
+        ('4C', '4D', '4H', '4S'): (MinLength(8), preempt_priorities.EightCardPreempt),
+    }
+    shared_constraints = [ThreeOfTheTopFiveOrBetter(), points >= 5]
 
 
 class PreemptiveOvercall(DirectOvercall):
     preconditions = JumpFromLastContract()
+    constraints = {
+        ('2C', '2D', '2H', '2S'): (MinLength(6), overcall_priorities.TwoLevelPremptive),
+        ('3C', '3D', '3H', '3S'): (MinLength(7), overcall_priorities.ThreeLevelPremptive),
+        ('4C', '4D', '4H', '4S'): (MinLength(8), overcall_priorities.FourLevelPremptive),
+    }
     shared_constraints = [ThreeOfTheTopFiveOrBetter(), points >= 5]
-
-
-# FIXME: Should we use conditional priorities instead of upper bounding the points?
-class TwoLevelPremptiveOvercall(PreemptiveOvercall):
-    call_names = ['2C', '2D', '2H', '2S']
-    shared_constraints = MinLength(6)
-    priority = overcall_priorities.TwoLevelPremptive
-
-
-class ThreeLevelPremptiveOvercall(PreemptiveOvercall):
-    call_names = ['3C', '3D', '3H', '3S']
-    shared_constraints = MinLength(7)
-    priority = overcall_priorities.ThreeLevelPremptive
-
-
-class FourLevelPremptiveOvercall(PreemptiveOvercall):
-    call_names = ['4C', '4D', '4H', '4S']
-    shared_constraints = MinLength(8)
-    priority = overcall_priorities.FourLevelPremptive
 
 
 the_law_priorities = enum.Enum(
@@ -1510,26 +1485,12 @@ class LawOfTotalTricks(Rule):
     ]
     shared_constraints = LengthSatisfiesLawOfTotalTricks()
     category = categories.LawOfTotalTricks
-
-
-class TwoLevelLaw(LawOfTotalTricks):
-    call_names = ['2C', '2D', '2H', '2S']
-    priority = the_law_priorities.TwoLevelLaw
-
-
-class ThreeLevelLaw(LawOfTotalTricks):
-    call_names = ['3C', '3D', '3H', '3S']
-    priority = the_law_priorities.ThreeLevelLaw
-
-
-class FourLevelLaw(LawOfTotalTricks):
-    call_names = ['4C', '4D', '4H', '4S']
-    priority = the_law_priorities.FourLevelLaw
-
-
-class FiveLevelLaw(LawOfTotalTricks):
-    call_names = ['5C', '5D']
-    priority = the_law_priorities.FiveLevelLaw
+    constraints = {
+        ('2C', '2D', '2H', '2S'): (NO_CONSTRAINTS, the_law_priorities.TwoLevelLaw),
+        ('3C', '3D', '3H', '3S'): (NO_CONSTRAINTS, the_law_priorities.ThreeLevelLaw),
+        ('4C', '4D', '4H', '4S'): (NO_CONSTRAINTS, the_law_priorities.FourLevelLaw),
+        ('5C', '5D',           ): (NO_CONSTRAINTS, the_law_priorities.FiveLevelLaw), 
+    }
 
 
 feature_asking_priorites = enum.Enum(
