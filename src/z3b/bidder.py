@@ -377,7 +377,7 @@ class PossibleCalls(object):
     def _is_dominated(self, priority, maximal_calls_and_priorities):
         # First check to see if any existing call is larger than this one.
         for max_call, max_priority in maximal_calls_and_priorities:
-            if self.ordering.less_than(priority, max_priority):
+            if self.ordering.lt(priority, max_priority):
                 return True
         return False
 
@@ -386,7 +386,7 @@ class PossibleCalls(object):
         for call, priority in self._calls_and_priorities:
             if self._is_dominated(priority, maximal_calls_and_priorities):
                 continue
-            maximal_calls_and_priorities = filter(lambda (max_call, max_priority): not self.ordering.less_than(max_priority, priority), maximal_calls_and_priorities)
+            maximal_calls_and_priorities = filter(lambda (max_call, max_priority): not self.ordering.lt(max_priority, priority), maximal_calls_and_priorities)
             maximal_calls_and_priorities.append([call, priority])
         return [call for call, _ in maximal_calls_and_priorities]
 
@@ -479,7 +479,7 @@ class RuleSelector(object):
             situational_exprs = [z3_meaning]
             for unmade_call, unmade_rule in self._call_to_rule.iteritems():
                 for unmade_priority, unmade_z3_meaning in unmade_rule.meaning_of(self.history, unmade_call):
-                    if self.system.priority_ordering.less_than(priority, unmade_priority):
+                    if self.system.priority_ordering.lt(priority, unmade_priority):
                         if self.explain and self.expected_call == call:
                             print "adding negation " + unmade_rule.name + "(" + unmade_call.name + ") to " + rule.name
                             print z3.Not(unmade_z3_meaning)
