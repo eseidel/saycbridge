@@ -380,7 +380,6 @@ class SAYCBidderTest(unittest2.TestCase):
             ["KJ86.K4.A8.KQ632", "3C", "1S P 2S P"],  # p53, h15
 
             ["A532.AK52.J4.AQ9", "2N", "P 1D P 1H P"],
-
         ])  # FIXME: Using support points in the fallback bidder would pass some of these.
 
     def test_game_forcing_rebid_by_opener(self):
@@ -1169,8 +1168,8 @@ class SAYCBidderTest(unittest2.TestCase):
 
             # Log results
             if isinstance(actual_bid_name, Exception):
-                _log.error("Exception during find_call_for %s %s: %s" % (hand.pretty_one_line(), partial_history.calls_string(), e))
-                raise
+                _log.error("Exception during find_call_for %s %s: %s" % (hand.pretty_one_line(), partial_history.calls_string(), actual_bid_name))
+                raise actual_bid_name
 
             if actual_bid_name and actual_bid_name.lower() == expected_bid.lower():
                 _log.info("PASS: %s for %s, history: %s%s" % (expected_bid, hand.pretty_one_line(), partial_history.calls_string(), subtest_string))

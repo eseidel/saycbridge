@@ -6,19 +6,30 @@ from third_party import enum
 import core.suit as suit
 
 
+# The ordering of these values does not matter.  We only use Enum so that
+# python throws an lookup error when we typo the annotation name.
 annotations = enum.Enum(
     "Opening",
     "NoTrumpSystemsOn",
+    "StandardOvercall",
+
     "Artificial",
-    "Stayman",
+    # NOTE: RuleCompiler._compile_annotations will automatically imply
+    # "Artificial" when encountering any annotations > Artificial.
+    # This is a hack to avoid "forgot to add Artifical" bugs.
+    "Blackwood",
     "Gerber",
-    "Transfer",
-    "NegativeDouble",
     "Jacoby2N",
-    "TakeoutDouble",
     "MichaelsCuebid",
+    "NegativeDouble",
+    "Stayman",
+    "TakeoutDouble",
+    "Transfer",
     "Unusual2N",
 )
+
+# Used by RuleCompiler._compile_annotations.
+implies_artificial = set([value for value in annotations if value > annotations.Artificial])
 
 
 class Precondition(object):
@@ -45,6 +56,30 @@ class InvertedPrecondition(Precondition):
         return not self.precondition.fits(history, call)
 
 
+class EitherPrecondition(Precondition):
+    def __init__(self, *preconditions):
+        self.preconditions = preconditions
+
+    @property
+    def name(self):
+        return "EitherPrecondition(%s)" % repr(self.preconditions)
+
+    def fits(self, history, call):
+        return any(precondition.fits(history, call) for precondition in self.preconditions)
+
+
+class AndPrecondition(Precondition):
+    def __init__(self, *preconditions):
+        self.preconditions = preconditions
+
+    @property
+    def name(self):
+        return "AndPrecondition(%s)" % repr(self.preconditions)
+
+    def fits(self, history, call):
+        return all(precondition.fits(history, call) for precondition in self.preconditions)
+
+
 class NoOpening(Precondition):
     def fits(self, history, call):
         return annotations.Opening not in history.annotations
@@ -54,6 +89,10 @@ class Opened(Precondition):
     def __init__(self, position):
         self.position = position
 
+    @property
+    def name(self):
+        return "Opened(%s)" % repr(self.position.key)
+
     def fits(self, history, call):
         return annotations.Opening in history.annotations_for_position(self.position)
 
@@ -61,6 +100,10 @@ class Opened(Precondition):
 class HasBid(Precondition):
     def __init__(self, position):
         self.position = position
+
+    @property
+    def name(self):
+        return "HasBid(%s)" % repr(self.position.key)
 
     def fits(self, history, call):
         for view in history.view_for(self.position).walk:
@@ -133,7 +176,8 @@ class LastBidHasSuit(Precondition):
         self.position = position
 
     def __repr__(self):
-        return "%s(%s)" % (self.name, repr(self.position.key))
+        position_string = repr(self.position.key) if self.position else None
+        return "%s(%s)" % (self.name, position_string)
 
     def fits(self, history, call):
         last_call = history.last_contract if not self.position else history.view_for(self.position).last_call
@@ -222,12 +266,14 @@ class UnbidSuit(Precondition):
         return history.is_unbid_suit(call.strain)
 
 
-class MinUnbidSuitCount(Precondition):
-    def __init__(self, count):
-        self.count = count
+class UnbidSuitCountRange(Precondition):
+    def __init__(self, lower, upper):
+        self.lower = lower
+        self.upper = upper
 
     def fits(self, history, call):
-        return len(history.unbid_suits) >= self.count
+        count = len(history.unbid_suits)
+        return count >= self.lower and count <= self.upper
 
 
 class Strain(Precondition):
@@ -239,6 +285,16 @@ class Strain(Precondition):
 
     def fits(self, history, call):
         return call.strain == self.strain
+
+
+class Level(Precondition):
+    def __init__(self, level):
+        self.level = level
+
+    def fits(self, history, call):
+        if call.is_double():
+            return history.last_contract.level() == self.level
+        return call.is_contract() and call.level() == self.level
 
 
 class MaxLevel(Precondition):
@@ -257,6 +313,14 @@ class MinimumCombinedPointsPrecondition(Precondition):
 
     def fits(self, history, call):
         return history.partner.min_points + history.me.min_points >= self.min_points
+
+
+class HaveFit(Precondition):
+    def fits(self, history, call):
+        for strain in suit.SUITS:
+            if history.partner.min_length(strain) + history.me.min_length(strain) >= 8:
+                return True
+        return False
 
 
 class Jump(Precondition):

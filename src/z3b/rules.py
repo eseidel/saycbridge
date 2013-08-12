@@ -26,12 +26,13 @@ categories = enum.Enum(
 # This is a public interface from RuleGenerators to the rest of the system.
 # This class knows nothing about the DSL.
 class CompiledRule(object):
-    def __init__(self, rule, preconditions, known_calls, shared_constraints, annotations):
+    def __init__(self, rule, preconditions, known_calls, shared_constraints, annotations, constraints):
         self.dsl_rule = rule
         self.preconditions = preconditions
         self.known_calls = known_calls
         self.shared_constraints = shared_constraints
         self._annotations = annotations
+        self.constraints = constraints
 
     def requires_planning(self, history):
         return self.dsl_rule.requires_planning
@@ -41,7 +42,7 @@ class CompiledRule(object):
 
     @property
     def name(self):
-        return self.dsl_rule.name
+        return self.dsl_rule.name()
 
     def __str__(self):
         return self.name
@@ -76,7 +77,7 @@ class CompiledRule(object):
 
     def _constraint_exprs_for_call(self, history, call):
         exprs = []
-        per_call_constraints, _ = self.dsl_rule.per_call_constraints_and_priority(call)
+        per_call_constraints, _ = self.per_call_constraints_and_priority(call)
         if per_call_constraints:
             exprs.extend(RuleCompiler.exprs_from_constraints(per_call_constraints, history, call))
         exprs.extend(RuleCompiler.exprs_from_constraints(self.shared_constraints, history, call))
@@ -88,9 +89,27 @@ class CompiledRule(object):
             condition_exprs = RuleCompiler.exprs_from_constraints(condition, history, call)
             yield priority, z3.And(exprs + condition_exprs)
 
-        _, priority = self.dsl_rule.per_call_constraints_and_priority(call)
+        _, priority = self.per_call_constraints_and_priority(call)
         assert priority
         yield priority, z3.And(exprs)
+
+    # constraints accepts various forms including:
+    # constraints = { '1H': hearts > 5 }
+    # constraints = { '1H': (hearts > 5, priority) }
+    # constraints = { ('1H', '2H'): hearts > 5 }
+
+    # FIXME: Should we split this into two methods? on for priority and one for constraints?
+    def per_call_constraints_and_priority(self, call):
+        constraints_tuple = self.constraints.get(call.name)
+        if constraints_tuple:
+            try:
+                if isinstance(list(constraints_tuple)[-1], enum.EnumValue):
+                    assert len(constraints_tuple) == 2
+                    return constraints_tuple
+            except TypeError:
+                pass
+        assert self.dsl_rule.priority, "" + self.name + " is missing priority"
+        return constraints_tuple, self.dsl_rule.priority
 
 
 class RuleCompiler(object):
@@ -108,10 +127,10 @@ class RuleCompiler(object):
         return chain.from_iterable([cls.exprs_from_constraints(constraint, history, call) for constraint in constraints])
 
     @classmethod
-    def _collect_from_ancestors(cls, dls_class, property_name):
+    def _collect_from_ancestors(cls, dsl_class, property_name):
         getter = lambda ancestor: getattr(ancestor, property_name, [])
         # The DSL expects that parent preconditions, etc. apply before child ones.
-        return map(getter, reversed(dls_class.__mro__))
+        return map(getter, reversed(dsl_class.__mro__))
 
     @classmethod
     def _ensure_list(cls, value_or_list):
@@ -126,23 +145,70 @@ class RuleCompiler(object):
         return list(chain.from_iterable(mapped_values))
 
     @classmethod
-    def _compile_known_calls(cls, dsl_class):
+    def _compile_known_calls(cls, dsl_class, constraints):
         if dsl_class.call_names:
             call_names = cls._ensure_list(dsl_class.call_names)
         else:
-            call_names = dsl_class.constraints.keys()
+            call_names = constraints.keys()
         assert call_names, "%s: call_names or constraints map is required." % dsl_class.__name__
         return map(Call.from_string, call_names)
 
     @classmethod
-    def compile(cls, dsl_rule_class):
-        dsl_rule = dsl_rule_class()
+    def _flatten_constraints(cls, constraints):
+        flattened_constraints  = {}
+        for key, value in constraints.iteritems():
+            if hasattr(key, '__iter__'):
+                for call_name in key:
+                    flattened_constraints[call_name] = value
+            else:
+                flattened_constraints[key] = value
+        return flattened_constraints
+
+    @classmethod
+    def _compile_annotations(cls, dsl_class):
+        compiled_set = set(cls._joined_list_from_ancestors(dsl_class, 'annotations'))
+        # FIXME: We should probably assert that no more than one of the "implies_artificial"
+        # annotations are in this set at once.  Those all have distinct meanings.
+        if implies_artificial.intersection(compiled_set):
+            compiled_set.add(annotations.Artificial)
+        return compiled_set
+
+    @classmethod
+    def _validate_rule(cls, dsl_class):
+        assert dsl_class.priority or dsl_class.constraints, "" + dsl_class.name + " is missing priority"
+        # Rules have to apply some constraints to the hand.
+        assert dsl_class.constraints or dsl_class.shared_constraints, "" + dsl_class.name + " is missing constraints"
+        # conditional_priorities doesn't work with self.constraints
+        assert not dsl_class.conditional_priorities or not dsl_class.constraints
+        assert not dsl_class.conditional_priorities or dsl_class.call_names
+        # FIXME: We should also walk the class and assert that no unexpected properties are found.
+        allowed_keys = set([
+            "annotations",
+            "call_names",
+            "category",
+            "conditional_priorities",
+            "constraints",
+            "preconditions",
+            "priority",
+            "requires_planning",
+            "shared_constraints",
+        ])
+        properties = dsl_class.__dict__.keys()
+        public_properties = filter(lambda p: not p.startswith("_"), properties)
+        unexpected_properties = set(public_properties) - allowed_keys
+        assert not unexpected_properties, "%s defines unexpected properties: %s" % (dsl_class, unexpected_properties)
+
+    @classmethod
+    def compile(cls, dsl_rule):
+        cls._validate_rule(dsl_rule)
+        constraints = cls._flatten_constraints(dsl_rule.constraints)
         # Unclear if compiled results should be memoized on the rule?
         return CompiledRule(dsl_rule,
-            known_calls=cls._compile_known_calls(dsl_rule_class),
-            annotations=cls._joined_list_from_ancestors(dsl_rule_class, 'annotations'),
-            preconditions=cls._joined_list_from_ancestors(dsl_rule_class, 'preconditions'),
-            shared_constraints=cls._joined_list_from_ancestors(dsl_rule_class, 'shared_constraints')
+            known_calls=cls._compile_known_calls(dsl_rule, constraints),
+            annotations=cls._compile_annotations(dsl_rule),
+            preconditions=cls._joined_list_from_ancestors(dsl_rule, 'preconditions'),
+            shared_constraints=cls._joined_list_from_ancestors(dsl_rule, 'shared_constraints'),
+            constraints=constraints,
         )
 
 
@@ -167,36 +233,14 @@ class Rule(object):
     priority = None
 
     def __init__(self):
-        assert self.priority or self.constraints, "" + self.name + " is missing priority"
-        # Rules have to apply some constraints to the hand.
-        assert self.constraints or self.shared_constraints, "" + self.name + " is missing constraints"
-        # conditional_priorities doesn't work with self.constraints
-        assert not self.conditional_priorities or not self.constraints
-        assert not self.conditional_priorities or self.call_names
+        assert False, "Rule objects should be compiled into EngineRule objects instead of instantiating them."
 
-    @property
-    def name(self):
-        return self.__class__.__name__
+    @classmethod
+    def name(cls):
+        return cls.__name__
 
     def __repr__(self):
         return "%s()" % self.name
-
-    # constraints accepts various forms including:
-    # constraints = { '1H': hearts > 5 }
-    # constraints = { '1H': (hearts > 5, priority) }
-
-    # FIXME: Should we split this into two methods? on for priority and one for constraints?
-    def per_call_constraints_and_priority(self, call):
-        constraints_tuple = self.constraints.get(call.name)
-        if constraints_tuple:
-            try:
-                if isinstance(list(constraints_tuple)[-1], enum.EnumValue):
-                    assert len(constraints_tuple) == 2
-                    return constraints_tuple
-            except TypeError:
-                pass
-        assert self.priority, "" + self.name + " is missing priority"
-        return constraints_tuple, self.priority
 
 
 relay_priorities = enum.Enum(
@@ -247,35 +291,23 @@ class SuitedToPlay(Natural):
         PartnerHasAtLeastLengthInSuit(1)
     ]
     constraints = {
-        '2C': (MinimumCombinedPoints(19), natural_priorities.TwoLevelNaturalMinor),
-        '2D': (MinimumCombinedPoints(19), natural_priorities.TwoLevelNaturalMinor),
-        '2H': (MinimumCombinedPoints(19), natural_priorities.TwoLevelNaturalMajor),
-        '2S': (MinimumCombinedPoints(19), natural_priorities.TwoLevelNaturalMajor),
+        ('2C', '2D'): (MinimumCombinedPoints(19), natural_priorities.TwoLevelNaturalMinor),
+        ('2H', '2S'): (MinimumCombinedPoints(19), natural_priorities.TwoLevelNaturalMajor),
 
-        '3C': (MinimumCombinedPoints(22), natural_priorities.ThreeLevelNaturalMinor),
-        '3D': (MinimumCombinedPoints(22), natural_priorities.ThreeLevelNaturalMinor),
-        '3H': (MinimumCombinedPoints(22), natural_priorities.ThreeLevelNaturalMajor),
-        '3S': (MinimumCombinedPoints(22), natural_priorities.ThreeLevelNaturalMajor),
+        ('3C', '3D'): (MinimumCombinedPoints(22), natural_priorities.ThreeLevelNaturalMinor),
+        ('3H', '3S'): (MinimumCombinedPoints(22), natural_priorities.ThreeLevelNaturalMajor),
 
-        '4C': (MinimumCombinedPoints(25), natural_priorities.FourLevelNaturalMinor),
-        '4D': (MinimumCombinedPoints(25), natural_priorities.FourLevelNaturalMinor),
-        '4H': (MinimumCombinedPoints(25), natural_priorities.FourLevelNaturalMajor),
-        '4S': (MinimumCombinedPoints(25), natural_priorities.FourLevelNaturalMajor),
+        ('4C', '4D'): (MinimumCombinedPoints(25), natural_priorities.FourLevelNaturalMinor),
+        ('4H', '4S'): (MinimumCombinedPoints(25), natural_priorities.FourLevelNaturalMajor),
 
-        '5C': (MinimumCombinedPoints(28), natural_priorities.FiveLevelNaturalMinor),
-        '5D': (MinimumCombinedPoints(28), natural_priorities.FiveLevelNaturalMinor),
-        '5H': (MinimumCombinedPoints(28), natural_priorities.FiveLevelNaturalMajor),
-        '5S': (MinimumCombinedPoints(28), natural_priorities.FiveLevelNaturalMajor),
+        ('5C', '5D'): (MinimumCombinedPoints(28), natural_priorities.FiveLevelNaturalMinor),
+        ('5H', '5S'): (MinimumCombinedPoints(28), natural_priorities.FiveLevelNaturalMajor),
 
-        '6C': (MinimumCombinedPoints(33), natural_priorities.SixLevelNaturalMinor),
-        '6D': (MinimumCombinedPoints(33), natural_priorities.SixLevelNaturalMinor),
-        '6H': (MinimumCombinedPoints(33), natural_priorities.SixLevelNaturalMajor),
-        '6S': (MinimumCombinedPoints(33), natural_priorities.SixLevelNaturalMajor),
+        ('6C', '6D'): (MinimumCombinedPoints(33), natural_priorities.SixLevelNaturalMinor),
+        ('6H', '6S'): (MinimumCombinedPoints(33), natural_priorities.SixLevelNaturalMajor),
 
-        '7C': (MinimumCombinedPoints(37), natural_priorities.SevenLevelNaturalMinor),
-        '7D': (MinimumCombinedPoints(37), natural_priorities.SevenLevelNaturalMinor),
-        '7H': (MinimumCombinedPoints(37), natural_priorities.SevenLevelNaturalMajor),
-        '7S': (MinimumCombinedPoints(37), natural_priorities.SevenLevelNaturalMajor),
+        ('7C', '7D'): (MinimumCombinedPoints(37), natural_priorities.SevenLevelNaturalMinor),
+        ('7H', '7S'): (MinimumCombinedPoints(37), natural_priorities.SevenLevelNaturalMajor),
     }
     shared_constraints = [MinimumCombinedLength(8)]
 
@@ -309,37 +341,40 @@ class Opening(Rule):
     preconditions = NoOpening()
 
 
+class OneLevelSuitOpening(Opening):
+    shared_constraints = OpeningRuleConstraint()
 
-class OneClubOpening(Opening):
+
+class OneClubOpening(OneLevelSuitOpening):
     call_names = '1C'
-    shared_constraints = [OpeningRuleConstraint(), clubs >= 3]
+    shared_constraints = clubs >= 3
     conditional_priorities = [
         (z3.Or(clubs > diamonds, z3.And(clubs == 3, diamonds == 3)), opening_priorities.LongestMinor),
     ]
     priority = opening_priorities.LowerMinor
 
 
-class OneDiamondOpening(Opening):
+class OneDiamondOpening(OneLevelSuitOpening):
     call_names = '1D'
-    shared_constraints = [OpeningRuleConstraint(), diamonds >= 3]
+    shared_constraints = diamonds >= 3
     conditional_priorities = [
         (diamonds > clubs, opening_priorities.LongestMinor),
     ]
     priority = opening_priorities.HigherMinor
 
 
-class OneHeartOpening(Opening):
+class OneHeartOpening(OneLevelSuitOpening):
     call_names = '1H'
-    shared_constraints = [OpeningRuleConstraint(), hearts >= 5]
+    shared_constraints = hearts >= 5
     conditional_priorities = [
         (hearts > spades, opening_priorities.LongestMajor),
     ]
     priority = opening_priorities.LowerMajor
 
 
-class OneSpadeOpening(Opening):
+class OneSpadeOpening(OneLevelSuitOpening):
     call_names = '1S'
-    shared_constraints = [OpeningRuleConstraint(), spades >= 5]
+    shared_constraints = spades >= 5
     conditional_priorities = [
         (spades > hearts, opening_priorities.LongestMajor),
     ]
@@ -395,16 +430,19 @@ class ResponseToOneLevelSuitedOpen(Response):
         InvertedPrecondition(LastBidHasStrain(positions.Partner, suit.NOTRUMP))
     ]
 
+class OneLevelResponse(ResponseToOneLevelSuitedOpen):
+    shared_constraints = points >= 6
 
-class OneDiamondResponse(ResponseToOneLevelSuitedOpen):
+
+class OneDiamondResponse(OneLevelResponse):
     call_names = '1D'
-    shared_constraints = [points >= 6, diamonds >= 4]
+    shared_constraints = diamonds >= 4
     priority = response_priorities.OneDiamondResponse
 
 
-class OneHeartResponse(ResponseToOneLevelSuitedOpen):
+class OneHeartResponse(OneLevelResponse):
     call_names = '1H'
-    shared_constraints = [points >= 6, hearts >= 4]
+    shared_constraints = hearts >= 4
     conditional_priorities = [
         (z3.And(hearts >= 5, hearts > spades), response_priorities.LongestNewMajor),
         (hearts >= 5, response_priorities.OneHeartWithFiveResponse),
@@ -412,18 +450,17 @@ class OneHeartResponse(ResponseToOneLevelSuitedOpen):
     priority = response_priorities.OneHeartWithFourResponse
 
 
-class OneSpadeResponse(ResponseToOneLevelSuitedOpen):
+class OneSpadeResponse(OneLevelResponse):
     call_names = '1S'
-    shared_constraints = [points >= 6, spades >= 4]
+    shared_constraints = spades >= 4
     conditional_priorities = [
         (spades >= 5, response_priorities.OneSpadeWithFiveResponse)
     ]
     priority = response_priorities.OneSpadeWithFourResponse
 
 
-class OneNotrumpResponse(ResponseToOneLevelSuitedOpen):
+class OneNotrumpResponse(OneLevelResponse):
     call_names = '1N'
-    shared_constraints = points >= 6
     priority = response_priorities.OneNotrumpResponse
 
 
@@ -496,7 +533,7 @@ class Jacoby2N(ResponseToMajorOpen):
     call_names = '2N'
     shared_constraints = [points >= 14, SupportForPartnerLastBid(4)]
     priority = response_priorities.Jacoby2N
-    annotations = [annotations.Jacoby2N, annotations.Artificial]
+    annotations = annotations.Jacoby2N
 
 
 jacoby_2n_response_priorities = enum.Enum(
@@ -564,158 +601,53 @@ class JumpShiftResponseToOpen(ResponseToOneLevelSuitedOpen):
     priority = response_priorities.JumpShiftResponseToOpen
 
 
+class ShapeForNegativeDouble(Constraint):
+    def expr(self, history, call):
+        call_string = '%s %s' % (history.partner.last_call.name, history.rho.last_call.name)
+        return {
+            '1C 1D': z3.And(hearts >= 4, spades >= 4),
+            '1C 1H': spades == 4,
+            '1C 1S': z3.And(diamonds >= 3, hearts >= 4),
+            '1C 2D': z3.And(hearts >= 4, spades >= 4),
+            '1C 2H': z3.And(diamonds >= 3, spades >= 4),
+            '1C 2S': z3.And(diamonds >= 3, hearts >= 4),
+            '1D 1H': spades == 4,
+            '1D 1S': z3.And(clubs >= 3, hearts >= 4),
+            '1D 2C': z3.And(hearts >= 4, spades >= 4),
+            '1D 2H': z3.And(clubs >= 3, spades >= 4),
+            '1D 2S': z3.And(clubs >= 3, hearts >= 4),
+            '1H 1S': z3.And(clubs >= 3, diamonds >= 3), # Probably promises 4+ in both minors?
+            '1H 2C': z3.And(diamonds >= 3, spades >= 4),
+            '1H 2D': z3.And(clubs >= 3, spades >= 4),
+            '1H 2S': z3.And(clubs >= 3, diamonds >= 3),
+            '1S 2C': z3.And(diamonds >= 3, hearts >= 4),
+            '1S 2D': z3.And(clubs >= 3, hearts >= 4),
+            '1S 2H': z3.And(clubs >= 3, diamonds >= 3),
+        }[call_string]
+
+
 class NegativeDouble(ResponseToOneLevelSuitedOpen):
     call_names = 'X'
     preconditions = [
+        LastBidHasAnnotation(positions.Partner, annotations.Opening),
+        LastBidHasSuit(positions.Partner),
         LastBidHasSuit(positions.RHO),
-        MaxLevel(2),
+        # A hackish way to make sure Partner and RHO did not bid the same suit.
+        InvertedPrecondition(LastBidHasAnnotation(positions.RHO, annotations.Artificial)),
     ]
+    shared_constraints = ShapeForNegativeDouble()
     priority = response_priorities.NegativeDouble
-    annotations = [annotations.NegativeDouble, annotations.Artificial]
+    annotations = annotations.NegativeDouble
 
 
-class NegativeDoubleOfOneDiamondOverOneClub(NegativeDouble):
-    preconditions = [
-        LastBidWas(positions.RHO, '1D'),
-        LastBidWas(positions.Partner, '1C'),
-    ]
-    shared_constraints = [points >= 6, hearts >= 4, spades >= 4]
+class OneLevelNegativeDouble(NegativeDouble):
+    preconditions = LastBidHasLevel(positions.RHO, 1)
+    shared_constraints = points >= 6
 
 
-class NegativeDoubleOfOneHeartOverOneClub(NegativeDouble):
-    preconditions = [
-        LastBidWas(positions.RHO, '1H'),
-        LastBidWas(positions.Partner, '1C'),
-    ]
-    shared_constraints = [points >= 6, spades == 4]
-
-
-class NegativeDoubleOfOneSpadeOverOneClub(NegativeDouble):
-    preconditions = [
-        LastBidWas(positions.RHO, '1S'),
-        LastBidWas(positions.Partner, '1C'),
-    ]
-    shared_constraints = [points >= 6, diamonds >= 3, hearts >= 4]
-
-
-class NegativeDoubleOfTwoDiamondsOverOneClub(NegativeDouble):
-    preconditions = [
-        LastBidWas(positions.RHO, '2D'),
-        LastBidWas(positions.Partner, '1C'),
-    ]
-    shared_constraints = [points >= 8, hearts >= 4, spades >= 4]
-
-
-class NegativeDoubleOfTwoHeartsOverOneClub(NegativeDouble):
-    preconditions = [
-        LastBidWas(positions.RHO, '2H'),
-        LastBidWas(positions.Partner, '1C'),
-    ]
-    shared_constraints = [points >= 8, diamonds >= 3, spades >= 4]
-
-
-class NegativeDoubleOfTwoSpadesOverOneClub(NegativeDouble):
-    preconditions = [
-        LastBidWas(positions.RHO, '2S'),
-        LastBidWas(positions.Partner, '1C'),
-    ]
-    shared_constraints = [points >= 8, diamonds >= 3, hearts >= 4]
-
-
-class NegativeDoubleOfOneHeartOverOneDiamond(NegativeDouble):
-    preconditions = [
-        LastBidWas(positions.RHO, '1H'),
-        LastBidWas(positions.Partner, '1D'),
-    ]
-    shared_constraints = [points >= 6, spades == 4]
-
-
-class NegativeDoubleOfOneSpadeOverOneDiamond(NegativeDouble):
-    preconditions = [
-        LastBidWas(positions.RHO, '1S'),
-        LastBidWas(positions.Partner, '1D'),
-    ]
-    shared_constraints = [points >= 6, clubs >= 3, hearts >= 4]
-
-
-class NegativeDoubleOfTwoClubsOverOneDiamond(NegativeDouble):
-    preconditions = [
-        LastBidWas(positions.RHO, '2C'),
-        LastBidWas(positions.Partner, '1D'),
-    ]
-    shared_constraints = [points >= 8, hearts >= 4, spades >= 4]
-
-
-class NegativeDoubleOfTwoHeartsOverOneDiamond(NegativeDouble):
-    preconditions = [
-        LastBidWas(positions.RHO, '2H'),
-        LastBidWas(positions.Partner, '1D'),
-    ]
-    shared_constraints = [points >= 8, clubs >= 3, spades >= 4]
-
-
-class NegativeDoubleOfTwoSpadesOverOneDiamond(NegativeDouble):
-    preconditions = [
-        LastBidWas(positions.RHO, '2S'),
-        LastBidWas(positions.Partner, '1D'),
-    ]
-    shared_constraints = [points >= 8, clubs >= 3, hearts >= 4]
-
-
-class NegativeDoubleOfOneSpadeOverOneHeart(NegativeDouble):
-    preconditions = [
-        LastBidWas(positions.RHO, '1S'),
-        LastBidWas(positions.Partner, '1H'),
-    ]
-    shared_constraints = [points >= 6, clubs >= 3, diamonds >= 3]
-
-
-class NegativeDoubleOfTwoClubsOverOneHeart(NegativeDouble):
-    preconditions = [
-        LastBidWas(positions.RHO, '2C'),
-        LastBidWas(positions.Partner, '1H'),
-    ]
-    shared_constraints = [points >= 8, diamonds >= 3, spades >= 4]
-
-
-class NegativeDoubleOfTwoDiamondsOverOneHeart(NegativeDouble):
-    preconditions = [
-        LastBidWas(positions.RHO, '2D'),
-        LastBidWas(positions.Partner, '1H'),
-    ]
-    shared_constraints = [points >= 8, clubs >= 3, spades >= 4]
-
-
-class NegativeDoubleOfTwoSpadesOverOneHeart(NegativeDouble):
-    preconditions = [
-        LastBidWas(positions.RHO, '2S'),
-        LastBidWas(positions.Partner, '1H'),
-    ]
-    shared_constraints = [points >= 8, clubs >= 3, diamonds >= 3]
-
-
-class NegativeDoubleOfTwoClubsOverOneSpade(NegativeDouble):
-    preconditions = [
-        LastBidWas(positions.RHO, '2C'),
-        LastBidWas(positions.Partner, '1S'),
-    ]
-    shared_constraints = [points >= 8, diamonds >= 3, hearts >= 4]
-
-
-class NegativeDoubleOfTwoDiamondsOverOneSpades(NegativeDouble):
-    preconditions = [
-        LastBidWas(positions.RHO, '2D'),
-        LastBidWas(positions.Partner, '1S'),
-    ]
-    shared_constraints = [points >= 8, clubs >= 3, hearts >= 4]
-
-
-class NegativeDoubleOfTwoHeartsOverOneSpade(NegativeDouble):
-    preconditions = [
-        LastBidWas(positions.RHO, '2H'),
-        LastBidWas(positions.Partner, '1S'),
-    ]
-    shared_constraints = [points >= 8, clubs >= 3, diamonds >= 3]
+class TwoLevelNegativeDouble(NegativeDouble):
+    preconditions = LastBidHasLevel(positions.RHO, 2)
+    shared_constraints = points >= 8
 
 
 two_clubs_response_priorities = enum.Enum(
@@ -753,8 +685,9 @@ opener_rebid_priorities = enum.Enum(
     "SupportMajorMax",
     "SupportMajorLimit",
     "SupportMajorMin",
-    "JumpShiftByOpener",
     "TwoNoTrumpOpenerRebid",
+    "JumpShiftByOpener",
+    "HelpSuitGameTry",
     # FIXME: 1S P 2D looks like this will will prefer 3C over 2S!
     "NewSuitClubs",
     "NewSuitDiamonds",
@@ -763,6 +696,8 @@ opener_rebid_priorities = enum.Enum(
     "ReverseDiamonds",
     "ReverseHearts",
     "ReverseSpades",
+    "GameForcingUnsupportedRebidByOpener",
+    "InvitationalUnsupportedRebidByOpener",
     "UnforcedRebidOriginalSuit",
     "RebidOneNotrump",
     "ForcedRebidOriginalSuit",
@@ -808,13 +743,15 @@ class NewOneLevelMajorByOpener(RebidAfterOneLevelOpen):
     shared_constraints = MinLength(4)
 
 
-class NewSuitByOpener(RebidAfterOneLevelOpen):
+class SecondSuitFromOpener(RebidAfterOneLevelOpen):
     preconditions = [
-        # FIXME: MyLastBidWasOneOfASuit(),
-        SuitLowerThanMyLastSuit(),
         NotJumpFromLastContract(),
         UnbidSuit(),
+        InvertedPrecondition(HaveFit()),
     ]
+
+class NewSuitByOpener(SecondSuitFromOpener):
+    preconditions = SuitLowerThanMyLastSuit()
     constraints = {
         '2C': (NO_CONSTRAINTS, opener_rebid_priorities.NewSuitClubs),
         '2D': (NO_CONSTRAINTS, opener_rebid_priorities.NewSuitDiamonds),
@@ -829,12 +766,8 @@ class NewSuitByOpener(RebidAfterOneLevelOpen):
     shared_constraints = MinLength(4)
 
 
-class ReverseByOpener(RebidAfterOneLevelOpen):
-    preconditions = [
-        InvertedPrecondition(SuitLowerThanMyLastSuit()),
-        UnbidSuit(),
-        NotJumpFromLastContract(),
-    ]
+class ReverseByOpener(SecondSuitFromOpener):
+    preconditions = InvertedPrecondition(SuitLowerThanMyLastSuit())
     constraints = {
         # 2C is never a reverse
         '2D': (MinimumCombinedPoints(22), opener_rebid_priorities.ReverseDiamonds),
@@ -858,14 +791,9 @@ class SupportPartnerSuit(RebidAfterOneLevelOpen):
 
 class SupportPartnerMajorSuit(SupportPartnerSuit):
     constraints = {
-        '2H': (NO_CONSTRAINTS, opener_rebid_priorities.SupportMajorMin),
-        '2S': (NO_CONSTRAINTS, opener_rebid_priorities.SupportMajorMin),
-
-        '3H': (MinimumCombinedPoints(22), opener_rebid_priorities.SupportMajorLimit),
-        '3S': (MinimumCombinedPoints(22), opener_rebid_priorities.SupportMajorLimit),
-
-        '4H': (MinimumCombinedPoints(25), opener_rebid_priorities.SupportMajorMax),
-        '4S': (MinimumCombinedPoints(25), opener_rebid_priorities.SupportMajorMax),
+        ('2H', '2S'): (NO_CONSTRAINTS, opener_rebid_priorities.SupportMajorMin),
+        ('3H', '3S'): (MinimumCombinedPoints(22), opener_rebid_priorities.SupportMajorLimit),
+        ('4H', '4S'): (MinimumCombinedPoints(25), opener_rebid_priorities.SupportMajorMax),
     }
     shared_constraints = MinimumCombinedLength(8)
 
@@ -874,18 +802,21 @@ class RebidOriginalSuitByOpener(RebidAfterOneLevelOpen):
     preconditions = [
         LastBidHasLevel(positions.Me, 1),
         RebidSameSuit(),
-        NotJumpFromLastContract(),
     ]
 
 
-class UnforcedRebidOriginalSuitByOpener(RebidOriginalSuitByOpener):
+class MinimumRebidOriginalSuitByOpener(RebidOriginalSuitByOpener):
+    preconditions = NotJumpFromLastContract()
+
+
+class UnforcedRebidOriginalSuitByOpener(MinimumRebidOriginalSuitByOpener):
     preconditions = InvertedPrecondition(ForcedToBid())
     call_names = ['2C', '2D', '2H', '2S']
     shared_constraints = MinLength(6)
     priority = opener_rebid_priorities.UnforcedRebidOriginalSuit
 
 
-class ForcedRebidOriginalSuitByOpener(RebidOriginalSuitByOpener):
+class ForcedRebidOriginalSuitByOpener(MinimumRebidOriginalSuitByOpener):
     preconditions = ForcedToBid()
     call_names = ['2C', '2D', '2H', '2S']
     conditional_priorities = [
@@ -893,6 +824,37 @@ class ForcedRebidOriginalSuitByOpener(RebidOriginalSuitByOpener):
     ]
     shared_constraints = MinLength(5)
     priority = forced_rebid_priorities.ForcedRebidOriginalSuit
+
+
+class UnsupportedRebid(RebidOriginalSuitByOpener):
+    preconditions = MaxShownLength(positions.Partner, 0)
+
+
+class InvitationalUnsupportedRebidByOpener(UnsupportedRebid):
+    preconditions = JumpFromLastContract()
+    call_names = ['3C', '3D', '3H', '3S']
+    shared_constraints = MinLength(6), points >= 16
+    priority = opener_rebid_priorities.InvitationalUnsupportedRebidByOpener
+
+
+class GameForcingUnsupportedRebidByOpener(UnsupportedRebid):
+    preconditions = JumpFromLastContract()
+    call_names = ['4C', '4D', '4H', '4S']
+    shared_constraints = MinLength(6), points >= 19
+    priority = opener_rebid_priorities.GameForcingUnsupportedRebidByOpener
+
+
+class HelpSuitGameTry(RebidAfterOneLevelOpen):
+    preconditions = [
+        NotJumpFromLastContract(),
+        HaveFit(),
+        UnbidSuit(),
+    ]
+    # Minimum: 1C,2C,2D, Max: 1C,3C,3S
+    call_names = ['3C', '3D', '3H', '3S']
+    # Descriptive not placement bid hence points instead of MinimumCombinedPoints.
+    shared_constraints = [MinLength(4), Stopper(), points >= 16]
+    priority = opener_rebid_priorities.HelpSuitGameTry
 
 
 class JumpShiftByOpener(RebidAfterOneLevelOpen):
@@ -1060,7 +1022,7 @@ class NoTrumpResponse(Rule):
 
 
 class BasicStayman(NoTrumpResponse):
-    annotations = [annotations.Artificial, annotations.Stayman]
+    annotations = annotations.Stayman
     priority = nt_response_priorities.Stayman
     shared_constraints = [z3.Or(hearts >= 4, spades >= 4)]
 
@@ -1085,7 +1047,7 @@ class StolenThreeClubStayman(BasicStayman):
 
 
 class NoTrumpTransferResponse(NoTrumpResponse):
-    annotations = [annotations.Artificial, annotations.Transfer]
+    annotations = annotations.Transfer
 
 
 class JacobyTransferToHearts(NoTrumpTransferResponse):
@@ -1193,10 +1155,8 @@ class StaymanResponse(Rule):
 class NaturalStaymanResponse(StaymanResponse):
     preconditions = NotJumpFromPartnerLastBid()
     constraints = {
-        '2H': (hearts >= 4, stayman_response_priorities.HeartStaymanResponse),
-        '2S': (spades >= 4, stayman_response_priorities.SpadeStaymanResponse),
-        '3H': (hearts >= 4, stayman_response_priorities.HeartStaymanResponse),
-        '3S': (spades >= 4, stayman_response_priorities.SpadeStaymanResponse),
+        ('2H', '3H'): (hearts >= 4, stayman_response_priorities.HeartStaymanResponse),
+        ('2S', '3S'): (spades >= 4, stayman_response_priorities.SpadeStaymanResponse),
     }
 
 
@@ -1265,6 +1225,7 @@ overcall_priorities = enum.Enum(
     "MichaelsCuebid",
     "Unusual2N",
     "DirectOvercall1N",
+    "DirectNotrumpDouble",
     "TakeoutDouble",
     "DirectOvercallLongestMajor",
     "DirectOvercallMajor",
@@ -1277,9 +1238,14 @@ overcall_priorities = enum.Enum(
 
 
 class DirectOvercall(Rule):
-    preconditions = [
-        LastBidHasAnnotation(positions.RHO, annotations.Opening),
-    ]
+    preconditions = EitherPrecondition(
+            LastBidHasAnnotation(positions.RHO, annotations.Opening),
+            AndPrecondition(
+                LastBidHasAnnotation(positions.LHO, annotations.Opening),
+                LastBidWas(positions.Partner, 'P'),
+                InvertedPrecondition(LastBidWas(positions.RHO, 'P'))
+            )
+        )
 
 
 class BalancingOvercall(Rule):
@@ -1295,68 +1261,135 @@ class StandardDirectOvercall(DirectOvercall):
         LastBidHasSuit(positions.RHO),
         NotJumpFromLastContract(),
         UnbidSuit(),
+        # FIXME: We should not bid if we have 4 cards in their suit.
     ]
-    shared_constraints = ThreeOfTheTopFiveOrBetter()
+    shared_constraints = [MinLength(5), ThreeOfTheTopFiveOrBetter()]
+    annotations = annotations.StandardOvercall
 
 
-class OneDiamondOvercall(StandardDirectOvercall):
+class OneLevelStandardOvercall(StandardDirectOvercall):
+    shared_constraints = points >= 8
+
+
+class OneDiamondOvercall(OneLevelStandardOvercall):
     call_names = '1D'
-    shared_constraints = [MinLength(5), points >= 8]
     priority = overcall_priorities.DirectOvercallMinor
 
 
-class OneHeartOvercall(StandardDirectOvercall):
+class OneHeartOvercall(OneLevelStandardOvercall):
     call_names = '1H'
-    shared_constraints = [MinLength(5), points >= 8]
     conditional_priorities = [
         (hearts > spades, overcall_priorities.DirectOvercallLongestMajor),
     ]
     priority = overcall_priorities.DirectOvercallMajor
 
 
-class OneSpadeOvercall(StandardDirectOvercall):
+class OneSpadeOvercall(OneLevelStandardOvercall):
     call_names = '1S'
-    shared_constraints = [MinLength(5), points >= 8]
     conditional_priorities = [
         (spades >= hearts, overcall_priorities.DirectOvercallLongestMajor),
     ]
     priority = overcall_priorities.DirectOvercallMajor
 
 
-class TwoClubOvercall(StandardDirectOvercall):
+class DirectNotrumpDouble(DirectOvercall):
+    preconditions = LastBidWas(positions.RHO, '1N')
+    call_names = 'X'
+    shared_constraints = z3.And(points >= 15, points <= 17, balanced)
+    priority = overcall_priorities.DirectNotrumpDouble
+
+
+class TwoLevelStandardOvercall(StandardDirectOvercall):
+    shared_constraints = points >= 10
+
+
+class TwoClubOvercall(TwoLevelStandardOvercall):
     call_names = '2C'
-    shared_constraints = [MinLength(5), points >= 10]
     conditional_priorities = [
         (clubs > diamonds, overcall_priorities.DirectOvercallLongestMinor),
     ]
     priority = overcall_priorities.DirectOvercallMinor
 
 
-class TwoDiamondOvercall(StandardDirectOvercall):
+class TwoDiamondOvercall(TwoLevelStandardOvercall):
     call_names = '2D'
-    shared_constraints = [MinLength(5), points >= 10]
     conditional_priorities = [
         (diamonds >= clubs, overcall_priorities.DirectOvercallLongestMinor),
     ]
     priority = overcall_priorities.DirectOvercallMinor
 
 
-class TwoHeartOvercall(StandardDirectOvercall):
+class TwoHeartOvercall(TwoLevelStandardOvercall):
     call_names = '2H'
-    shared_constraints = [MinLength(5), points >= 10]
     conditional_priorities = [
         (hearts > spades, overcall_priorities.DirectOvercallLongestMajor),
     ]
     priority = overcall_priorities.DirectOvercallMajor
 
 
-class TwoSpadeOvercall(StandardDirectOvercall):
+class TwoSpadeOvercall(TwoLevelStandardOvercall):
     call_names = '2S'
-    shared_constraints = [MinLength(5), points >= 10]
     conditional_priorities = [
         (spades >= hearts, overcall_priorities.DirectOvercallLongestMajor),
     ]
     priority = overcall_priorities.DirectOvercallMajor
+
+
+overcall_response_priorities = enum.Enum(
+    "CuebidResponseToStandardOvercall",
+    "RaiseResponseToStandardOvercall",
+    "NewSuitResponseToStandardOvercall",
+)
+
+
+class ResponseToStandardOvercall(Rule):
+    preconditions = LastBidHasAnnotation(positions.Partner, annotations.StandardOvercall)
+
+
+# This is nearly identical to TheLaw, it just notes that you have 6 points.
+# All it does is cause one test to fail.  It may not be worth having.
+class RaiseResponseToStandardOvercall(ResponseToStandardOvercall):
+    preconditions = [RaiseOfPartnersLastSuit(), NotJumpFromLastContract()]
+    call_names = [
+              '2D', '2H', '2S',
+        '3C', '3D', '3H', '3S',
+    ]
+    shared_constraints = [MinLength(3), points >= 6]
+    priority = overcall_response_priorities.RaiseResponseToStandardOvercall
+
+
+# class CuebidResponseToStandardOvercall(ResponseToStandardOvercall):
+#     preconditions = [
+#         CueBid(positions.LHO),
+#         NotJumpFromLastContract()
+#     ]
+#     call_names = [
+#         '2C', '2D', '2H', '2S',
+#         '3C', '3D', '3H',
+#     ]
+#     shared_constraints = [SupportForPartnerLastBid(3), points >= 11]
+#     priority = overcall_response_priorities.CuebidResponseToStandardOvercall
+
+
+# class NewSuitResponseToStandardOvercall(ResponseToStandardOvercall):
+#     preconditions = [
+#         TheyOpened(),
+#         InvertedPrecondition(LastBidWas(positions.Partner, 'P')),
+#         NotJumpFromLastContract(),
+#         UnbidSuit()
+#     ]
+#     call_names = [
+#                     '1H', '1S',
+#         '2C', '2D', '2H', '2S',
+#         '3C', '3D', '3H', '3S',
+#     ]
+#     shared_constraints = [
+#         MinLength(5),
+#         TwoOfTheTopThree(),
+#         # Unclear exactly how many points these should promise, but this seems reasoanble for now.
+#         MinCombinedPointsForPartnerMinimumRebid(),
+#     ]
+#     priority = overcall_response_priorities.NewSuitResponseToStandardOvercall
 
 
 class DirectOvercall1N(DirectOvercall):
@@ -1370,20 +1403,18 @@ class MichaelsCuebid(object):
     preconditions = [
         NotJumpFromLastContract(),
         InvertedPrecondition(UnbidSuit()),
+        # Michaels is only on if the opponents have only bid one suit.
+        UnbidSuitCountRange(3, 3),
     ]
     constraints = {
-        '2C': (z3.And(hearts >= 5, spades >= 5), overcall_priorities.MichaelsCuebid),
-        '2D': (z3.And(hearts >= 5, spades >= 5), overcall_priorities.MichaelsCuebid),
-        '2H': (z3.And(spades >= 5, z3.Or(clubs >= 5, diamonds >= 5)), overcall_priorities.MichaelsCuebid),
-        '2S': (z3.And(hearts >= 5, z3.Or(clubs >= 5, diamonds >= 5)), overcall_priorities.MichaelsCuebid),
-
-        '3C': (z3.And(hearts >= 5, spades >= 5), overcall_priorities.MichaelsCuebid),
-        '3D': (z3.And(hearts >= 5, spades >= 5), overcall_priorities.MichaelsCuebid),
-        '3H': (z3.And(spades >= 5, z3.Or(clubs >= 5, diamonds >= 5)), overcall_priorities.MichaelsCuebid),
-        '3S': (z3.And(hearts >= 5, z3.Or(clubs >= 5, diamonds >= 5)), overcall_priorities.MichaelsCuebid),
+        ('2C', '2D', '3C', '3D'): z3.And(hearts >= 5, spades >= 5),
+        ('2H', '3H'): z3.And(spades >= 5, z3.Or(clubs >= 5, diamonds >= 5)),
+        ('2S', '3S'): z3.And(hearts >= 5, z3.Or(clubs >= 5, diamonds >= 5)),
     }
-    annotations = [annotations.MichaelsCuebid, annotations.Artificial]
-    shared_constraints = [points >= 8]
+    priority = overcall_priorities.MichaelsCuebid
+    annotations = annotations.MichaelsCuebid
+    # FIXME: Should the hole in this point range be generated by a higher priority bid?
+    shared_constraints = z3.Or(6 <= points <= 12, 15 <= points)
 
 
 class DirectMichaelsCuebid(MichaelsCuebid, DirectOvercall):
@@ -1394,14 +1425,16 @@ class BalancingMichaelsCuebid(MichaelsCuebid, BalancingOvercall):
     pass
 
 
-class Unusual2N(DirectOvercall):
+class Unusual2N(Rule):
     preconditions = [
+        # Unusual2N only exists immediately after RHO opens.
+        LastBidHasAnnotation(positions.RHO, annotations.Opening),
         JumpFromLastContract(),
     ]
     call_names = '2N'
     # FIXME: We should consider doing mini-max unusual 2N now that we can!
     shared_constraints = [Unusual2NShape(), points >= 6]
-    annotations = [annotations.Unusual2N, annotations.Artificial]
+    annotations = annotations.Unusual2N
     priority = overcall_priorities.Unusual2N
 
 
@@ -1412,16 +1445,21 @@ class TakeoutDouble(Rule):
         InvertedPrecondition(HasBid(positions.Partner)),
         # LastBidWasNaturalSuit(),
         # LastBidWasBelowGame(),
-        MinUnbidSuitCount(2),
+        UnbidSuitCountRange(2, 3),
     ]
-    annotations = [annotations.TakeoutDouble, annotations.Artificial]
+    annotations = annotations.TakeoutDouble
     shared_constraints = SupportForUnbidSuits()
     priority = overcall_priorities.TakeoutDouble
 
 
 class OneLevelTakeoutDouble(TakeoutDouble):
-    preconditions = MaxLevel(1)
+    preconditions = Level(1)
     shared_constraints = points >= 11
+
+
+class TwoLevelTakeoutDouble(TakeoutDouble):
+    preconditions = Level(2)
+    shared_constraints = points >= 15
 
 
 preempt_priorities = enum.Enum(
@@ -1433,48 +1471,23 @@ preempt_priorities = enum.Enum(
 class PreemptiveOpen(Opening):
     # Never worth preempting in 4th seat.
     preconditions = InvertedPrecondition(LastBidWas(positions.LHO, 'P'))
-
-
-class SixCardPreemptiveOpen(PreemptiveOpen):
-    call_names = ['2D', '2H', '2S', '3C']
-    shared_constraints = [MinLength(6), ThreeOfTheTopFiveOrBetter(), points >= 5]
-    priority = preempt_priorities.SixCardPreempt
-
-
-class SevenCardPreemptiveOpen(PreemptiveOpen):
-    call_names = ['3D', '3H', '3S']
-    shared_constraints = [MinLength(7), ThreeOfTheTopFiveOrBetter(), points >= 5]
-    priority = preempt_priorities.SevenCardPreempt
-
-
-class EightCardPreemptiveOpen(PreemptiveOpen):
-    call_names = ['4C', '4D', '4H', '4S']
-    shared_constraints = [MinLength(8), ThreeOfTheTopFiveOrBetter(), points >= 5]
-    priority = preempt_priorities.EightCardPreempt
+    constraints = {
+        # 3C only promises 6 cards due to 2C being taken for strong bids.
+        (      '2D', '2H', '2S', '3C'): (MinLength(6), preempt_priorities.SixCardPreempt),
+        (      '3D', '3H', '3S'): (MinLength(7), preempt_priorities.SevenCardPreempt),
+        ('4C', '4D', '4H', '4S'): (MinLength(8), preempt_priorities.EightCardPreempt),
+    }
+    shared_constraints = [ThreeOfTheTopFiveOrBetter(), points >= 5]
 
 
 class PreemptiveOvercall(DirectOvercall):
     preconditions = JumpFromLastContract()
+    constraints = {
+        ('2C', '2D', '2H', '2S'): (MinLength(6), overcall_priorities.TwoLevelPremptive),
+        ('3C', '3D', '3H', '3S'): (MinLength(7), overcall_priorities.ThreeLevelPremptive),
+        ('4C', '4D', '4H', '4S'): (MinLength(8), overcall_priorities.FourLevelPremptive),
+    }
     shared_constraints = [ThreeOfTheTopFiveOrBetter(), points >= 5]
-
-
-# FIXME: Should we use conditional priorities instead of upper bounding the points?
-class TwoLevelPremptiveOvercall(PreemptiveOvercall):
-    call_names = ['2C', '2D', '2H', '2S']
-    shared_constraints = MinLength(6)
-    priority = overcall_priorities.TwoLevelPremptive
-
-
-class ThreeLevelPremptiveOvercall(PreemptiveOvercall):
-    call_names = ['3C', '3D', '3H', '3S']
-    shared_constraints = MinLength(7)
-    priority = overcall_priorities.ThreeLevelPremptive
-
-
-class FourLevelPremptiveOvercall(PreemptiveOvercall):
-    call_names = ['4C', '4D', '4H', '4S']
-    shared_constraints = MinLength(8)
-    priority = overcall_priorities.FourLevelPremptive
 
 
 the_law_priorities = enum.Enum(
@@ -1492,26 +1505,12 @@ class LawOfTotalTricks(Rule):
     ]
     shared_constraints = LengthSatisfiesLawOfTotalTricks()
     category = categories.LawOfTotalTricks
-
-
-class TwoLevelLaw(LawOfTotalTricks):
-    call_names = ['2C', '2D', '2H', '2S']
-    priority = the_law_priorities.TwoLevelLaw
-
-
-class ThreeLevelLaw(LawOfTotalTricks):
-    call_names = ['3C', '3D', '3H', '3S']
-    priority = the_law_priorities.ThreeLevelLaw
-
-
-class FourLevelLaw(LawOfTotalTricks):
-    call_names = ['4C', '4D', '4H', '4S']
-    priority = the_law_priorities.FourLevelLaw
-
-
-class FiveLevelLaw(LawOfTotalTricks):
-    call_names = ['5C', '5D']
-    priority = the_law_priorities.FiveLevelLaw
+    constraints = {
+        ('2C', '2D', '2H', '2S'): (NO_CONSTRAINTS, the_law_priorities.TwoLevelLaw),
+        ('3C', '3D', '3H', '3S'): (NO_CONSTRAINTS, the_law_priorities.ThreeLevelLaw),
+        ('4C', '4D', '4H', '4S'): (NO_CONSTRAINTS, the_law_priorities.FourLevelLaw),
+        ('5C', '5D',           ): (NO_CONSTRAINTS, the_law_priorities.FiveLevelLaw), 
+    }
 
 
 feature_asking_priorites = enum.Enum(
@@ -1561,47 +1560,47 @@ class ResponseToGerber(Rule):
     annotations = annotations.Artificial
 
 
-# Blackwood is done, just needs JumpOrHaveFit() and some testing.
-# class Blackwood(Rule):
-#     category = categories.Gadget
-#     requires_planning = True
-#     shared_constraints = NO_CONSTRAINTS
-#     annotations = annotations.Blackwood
-#     priority = feature_asking_priorites.Blackwood
+class Blackwood(Rule):
+    category = categories.Gadget
+    requires_planning = True
+    shared_constraints = NO_CONSTRAINTS
+    annotations = annotations.Blackwood
+    priority = feature_asking_priorites.Blackwood
 
 
-# class BlackwoodForAces(Blackwood):
-#     call_names = '4N'
-#     preconditions = [
-#         InvertedPrecondition(LastBidHasStrain(positions.Partner, suit.NOTRUMP)),
-#         InvertedPrecondition(LastBidHasAnnotation(positions.Partner, annotations.Artificial)),
-#         JumpOrHaveFit()
-#     ]
+class BlackwoodForAces(Blackwood):
+    call_names = '4N'
+    preconditions = [
+        InvertedPrecondition(LastBidHasStrain(positions.Partner, suit.NOTRUMP)),
+        InvertedPrecondition(LastBidHasAnnotation(positions.Partner, annotations.Artificial)),
+        EitherPrecondition(JumpFromLastContract(), HaveFit())
+    ]
 
 
-# class BlackwoodForKings(Blackwood):
-#     call_names = '5N'
-#     preconditions = LastBidHasAnnotation(positions.Me, annotations.Blackwood)
+class BlackwoodForKings(Blackwood):
+    call_names = '5N'
+    preconditions = LastBidHasAnnotation(positions.Me, annotations.Blackwood)
 
 
-# class ResponseToBlackwood(Rule):
-#     category = categories.Relay
-#     preconditions = [
-#         LastBidHasAnnotation(positions.Partner, annotations.Blackwood),
-#         NotJumpFromPartnerLastBid(),
-#     ]
-#     constraints = {
-#         '4C': z3.Or(number_of_aces == 0, number_of_aces == 4),
-#         '4D': number_of_aces == 1,
-#         '4H': number_of_aces == 2,
-#         '4S': number_of_aces == 3,
-#         '5C': z3.Or(number_of_kings == 0, number_of_kings == 4),
-#         '5D': number_of_kings == 1,
-#         '5H': number_of_kings == 2,
-#         '5S': number_of_kings == 3,
-#     }
-#     priority = feature_asking_priorites.Blackwood
-#     annotations = annotations.Artificial
+class ResponseToBlackwood(Rule):
+    category = categories.Relay
+    preconditions = [
+        LastBidHasAnnotation(positions.Partner, annotations.Blackwood),
+        NotJumpFromPartnerLastBid(),
+    ]
+    constraints = {
+        '5C': z3.Or(number_of_aces == 0, number_of_aces == 4),
+        '5D': number_of_aces == 1,
+        '5H': number_of_aces == 2,
+        '5S': number_of_aces == 3,
+        '6C': z3.Or(number_of_kings == 0, number_of_kings == 4),
+        '6D': number_of_kings == 1,
+        '6H': number_of_kings == 2,
+        '6S': number_of_kings == 3,
+    }
+    priority = feature_asking_priorites.Blackwood
+    annotations = annotations.Artificial
+
 
 pass_priorities = enum.Enum(
     "Default",
@@ -1648,7 +1647,9 @@ class StandardAmericanYellowCard(object):
     priority_ordering.make_less_than(forced_rebid_priorities, natural_priorities)
     priority_ordering.make_less_than(the_law_priorities, responder_rebid_priorities)
     priority_ordering.make_less_than(the_law_priorities, natural_priorities)
+    priority_ordering.make_less_than(overcall_response_priorities, the_law_priorities)
     priority_ordering.make_less_than(sign_off_priorities, the_law_priorities)
+    priority_ordering.make_less_than(pass_priorities, overcall_response_priorities)
     priority_ordering.make_less_than(pass_priorities, the_law_priorities)
     priority_ordering.make_less_than(pass_priorities, sign_off_priorities)
     priority_ordering.make_less_than(pass_priorities, opening_priorities)

@@ -83,7 +83,7 @@ class SupportForUnbidSuits(Constraint):
             return z3.And(three_card_support_expr, four_card_support_expr)
         if len(unbid_suits) == 2:
             return z3.And([expr_for_suit(suit) >= 4 for suit in unbid_suits])
-        assert False, "SupportForUnbidSuits only supports 2 or 3 unbid suits."
+        assert False, "SupportForUnbidSuits only supports 2 or 3 unbid suits, found %d: %s" % (len(unbid_suits), history.call_history)
 
 
 class Unusual2NShape(Constraint):
@@ -103,6 +103,11 @@ class StoppersInUnbidSuits(Constraint):
         if not history.unbid_suits:
             return model.NO_CONSTRAINTS
         return z3.And([model.stopper_expr_for_suit(suit) for suit in history.unbid_suits])
+
+
+class Stopper(Constraint):
+    def expr(self, history, call):
+        return model.stopper_expr_for_suit(call.strain)
 
 
 class TwoOfTheTopThree(Constraint):

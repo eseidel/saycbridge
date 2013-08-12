@@ -1,0 +1,38 @@
+#!/usr/bin/env python
+# Copyright (c) 2013 The SAYCBridge Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import logging
+import sys
+import find_src
+
+from core.callhistory import CallHistory
+from core.call import Call
+from z3b.bidder import Interpreter
+from z3b.model import positions
+from core.callexplorer import CallExplorer
+
+from core.suit import *
+
+
+if __name__ == '__main__':
+    interpreter = Interpreter()
+    explorer = CallExplorer()
+
+    # Loop over calls between 1C and 1S
+    # Loop over possible calls above them.
+    for suit in SUITS:
+        opening = Call.from_level_and_strain(1, suit)
+        history = CallHistory([opening])
+        for future in explorer.possible_futures(history):
+            overcall = future.last_call()
+            if not overcall.strain in SUITS or overcall.level() > 2 or overcall.strain == opening.strain:
+                continue
+            double = Call.from_string('X')
+            call_history = future.copy_appending_call(double)
+            history = interpreter.create_history(call_history)
+            rule = history.rho.rule_for_last_call
+            previous_history = history._history_after_last_call_for(positions.Partner) # Right before the double.
+            exprs = rule._constraint_exprs_for_call(previous_history, double)
+            print "    '%s': %s, # %s" % (future.calls_string(), exprs, rule)

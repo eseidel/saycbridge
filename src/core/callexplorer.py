@@ -11,9 +11,6 @@ from core.suit import *
 
 
 class CallExplorer(object):
-    def _make_call(self, level, strain):
-        return Call("%s%s" % (level, strain_char(strain)))
-
     def possible_calls_over(self, history):
         if history.is_complete():
             return
@@ -35,7 +32,7 @@ class CallExplorer(object):
             for strain in STRAINS:
                 if last_contract and level == last_contract.level() and strain <= last_contract.strain:
                     continue
-                yield self._make_call(level, strain)
+                yield Call.from_level_and_strain(level, strain)
 
     def possible_futures(self, history):
         future_history = copy.copy(history)
