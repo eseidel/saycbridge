@@ -89,6 +89,10 @@ class Opened(Precondition):
     def __init__(self, position):
         self.position = position
 
+    @property
+    def name(self):
+        return "Opened(%s)" % repr(self.position.key)
+
     def fits(self, history, call):
         return annotations.Opening in history.annotations_for_position(self.position)
 
@@ -96,6 +100,10 @@ class Opened(Precondition):
 class HasBid(Precondition):
     def __init__(self, position):
         self.position = position
+
+    @property
+    def name(self):
+        return "HasBid(%s)" % repr(self.position.key)
 
     def fits(self, history, call):
         for view in history.view_for(self.position).walk:
