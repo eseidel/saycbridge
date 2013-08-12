@@ -612,6 +612,8 @@ class NegativeDouble(ResponseToOneLevelSuitedOpen):
         LastBidHasAnnotation(positions.Partner, annotations.Opening),
         LastBidHasSuit(positions.Partner),
         LastBidHasSuit(positions.RHO),
+        # A hackish way to make sure Partner and RHO did not bid the same suit.
+        InvertedPrecondition(LastBidHasAnnotation(positions.RHO, annotations.Artificial)),
     ]
     shared_constraints = ShapeForNegativeDouble()
     priority = response_priorities.NegativeDouble
