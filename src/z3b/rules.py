@@ -9,9 +9,11 @@ from third_party import enum
 from third_party.memoized import memoized
 from z3b.constraints import *
 from z3b.model import *
-from z3b.orderings import PartialOrdering
+from z3b import ordering
 from z3b.preconditions import *
 
+
+rule_order = ordering.Ordering()
 
 categories = enum.Enum(
     "Relay",
@@ -247,6 +249,7 @@ relay_priorities = enum.Enum(
     "SuperAccept",
     "Accept",
 )
+rule_order.order(*reversed(relay_priorities))
 
 
 natural_priorities = enum.Enum(
@@ -278,6 +281,7 @@ natural_priorities = enum.Enum(
 
     "OneLevelNaturalNT",
 )
+rule_order.order(*reversed(natural_priorities))
 
 
 class Natural(Rule):
@@ -334,6 +338,7 @@ opening_priorities = enum.Enum(
     "HigherMinor",
     "LowerMinor",
 )
+rule_order.order(*reversed(opening_priorities))
 
 
 class Opening(Rule):
@@ -418,6 +423,7 @@ response_priorities = enum.Enum(
     "MinorMinimumRaise",
     "OneNotrumpResponse",
 )
+rule_order.order(*reversed(response_priorities))
 
 
 class Response(Rule):
@@ -544,6 +550,7 @@ jacoby_2n_response_priorities = enum.Enum(
     "Notrump",
     "MinimumGame",
 )
+rule_order.order(*reversed(jacoby_2n_response_priorities))
 
 
 class ResponseToJacoby2N(Rule):
@@ -655,6 +662,7 @@ two_clubs_response_priorities = enum.Enum(
     "NoBiddableSuit",
     "WaitingResponse",
 )
+rule_order.order(*reversed(two_clubs_response_priorities))
 
 
 class ResponseToStrongTwoClubs(Response):
@@ -702,11 +710,14 @@ opener_rebid_priorities = enum.Enum(
     "RebidOneNotrump",
     "ForcedRebidOriginalSuit",
 )
+rule_order.order(*reversed(opener_rebid_priorities))
 
 
 forced_rebid_priorities = enum.Enum(
     "ForcedRebidOriginalSuit",
 )
+rule_order.order(*reversed(forced_rebid_priorities))
+
 
 class OpenerRebid(Rule):
     preconditions = [
@@ -871,6 +882,7 @@ two_clubs_opener_rebid_priorities = enum.Enum(
     "SuitedJumpRebid",
     "SuitedRebid",
 )
+rule_order.order(*reversed(two_clubs_opener_rebid_priorities))
 
 
 class OpenerRebidAfterStrongTwoClubs(OpenerRebid):
@@ -903,11 +915,14 @@ responder_rebid_priorities = enum.Enum(
     "ThreeLevelSuitRebidByResponder",
     "RebidResponderSuitByResponder",
 )
+rule_order.order(*reversed(responder_rebid_priorities))
+
 
 sign_off_priorities = enum.Enum(
     "ResponderSignoffInMinorGame",
     "ResponderSignoffInPartnersSuit",
 )
+rule_order.order(*reversed(sign_off_priorities))
 
 
 class ResponderRebid(Rule):
@@ -1011,6 +1026,7 @@ nt_response_priorities = enum.Enum(
     "TwoSpadesRelay",
     "GarbageStayman",
 )
+rule_order.order(*reversed(nt_response_priorities))
 
 
 class NoTrumpResponse(Rule):
@@ -1145,6 +1161,7 @@ stayman_response_priorities = enum.Enum(
     "DiamondStaymanResponse",
     "PassStaymanResponse",
 )
+rule_order.order(*reversed(stayman_response_priorities))
 
 
 class StaymanResponse(Rule):
@@ -1208,6 +1225,7 @@ class LongMajorSlamInvitation(OneNoTrumpResponse):
 stayman_rebid_priorities = enum.Enum(
     "GarbagePassStaymanRebid",
 )
+rule_order.order(*reversed(stayman_rebid_priorities))
 
 
 class StaymanRebid(Rule):
@@ -1235,6 +1253,7 @@ overcall_priorities = enum.Enum(
     "ThreeLevelPremptive",
     "TwoLevelPremptive",
 )
+rule_order.order(*reversed(overcall_priorities))
 
 
 class DirectOvercall(Rule):
@@ -1340,6 +1359,7 @@ overcall_response_priorities = enum.Enum(
     "RaiseResponseToStandardOvercall",
     "NewSuitResponseToStandardOvercall",
 )
+rule_order.order(*reversed(overcall_response_priorities))
 
 
 class ResponseToStandardOvercall(Rule):
@@ -1467,6 +1487,8 @@ preempt_priorities = enum.Enum(
     "SevenCardPreempt",
     "SixCardPreempt",
 )
+rule_order.order(*reversed(preempt_priorities))
+
 
 class PreemptiveOpen(Opening):
     # Never worth preempting in 4th seat.
@@ -1496,6 +1518,7 @@ the_law_priorities = enum.Enum(
     "ThreeLevelLaw",
     "TwoLevelLaw",
 )
+rule_order.order(*reversed(the_law_priorities))
 
 
 class LawOfTotalTricks(Rule):
@@ -1517,6 +1540,7 @@ feature_asking_priorites = enum.Enum(
     "Gerber",
     "Blackwood",
 )
+rule_order.order(*reversed(feature_asking_priorites))
 
 
 class Gerber(Rule):
@@ -1605,6 +1629,8 @@ class ResponseToBlackwood(Rule):
 pass_priorities = enum.Enum(
     "Default",
 )
+rule_order.order(*reversed(pass_priorities))
+
 
 class DefaultPass(Rule):
     preconditions = [InvertedPrecondition(ForcedToBid())]
@@ -1628,30 +1654,28 @@ def _concrete_rule_classes():
 class StandardAmericanYellowCard(object):
     # Rule ordering does not matter.  We could have python crawl the files to generate this list instead.
     rules = [RuleCompiler.compile(description_class) for description_class in _concrete_rule_classes()]
-    priority_ordering = PartialOrdering()
+    priority_ordering = rule_order
 
-    priority_ordering.make_less_than(response_priorities, relay_priorities)
-    priority_ordering.make_less_than(preempt_priorities, opening_priorities)
-    priority_ordering.make_less_than(natural_priorities, preempt_priorities)
-    priority_ordering.make_less_than(response_priorities, nt_response_priorities)
-    priority_ordering.make_less_than(response_priorities, two_clubs_response_priorities)
-    priority_ordering.make_less_than(response_priorities, jacoby_2n_response_priorities)
-    priority_ordering.make_less_than(natural_priorities, overcall_priorities)
-    priority_ordering.make_less_than(natural_priorities, response_priorities)
-    priority_ordering.make_less_than(natural_priorities, opener_rebid_priorities)
-    priority_ordering.make_less_than(natural_priorities, nt_response_priorities)
-    priority_ordering.make_less_than(natural_priorities, stayman_response_priorities)
-    priority_ordering.make_less_than(natural_priorities, stayman_rebid_priorities)
-    priority_ordering.make_less_than(natural_priorities, two_clubs_opener_rebid_priorities)
-    priority_ordering.make_less_than(natural_priorities, responder_rebid_priorities)
-    priority_ordering.make_less_than(forced_rebid_priorities, natural_priorities)
-    priority_ordering.make_less_than(the_law_priorities, responder_rebid_priorities)
-    priority_ordering.make_less_than(the_law_priorities, natural_priorities)
-    priority_ordering.make_less_than(overcall_response_priorities, the_law_priorities)
-    priority_ordering.make_less_than(sign_off_priorities, the_law_priorities)
-    priority_ordering.make_less_than(pass_priorities, overcall_response_priorities)
-    priority_ordering.make_less_than(pass_priorities, the_law_priorities)
-    priority_ordering.make_less_than(pass_priorities, sign_off_priorities)
-    priority_ordering.make_less_than(pass_priorities, opening_priorities)
-
-    priority_ordering.make_transitive()
+    rule_order.order(response_priorities, relay_priorities)
+    rule_order.order(preempt_priorities, opening_priorities)
+    rule_order.order(natural_priorities, preempt_priorities)
+    rule_order.order(response_priorities, nt_response_priorities)
+    rule_order.order(response_priorities, two_clubs_response_priorities)
+    rule_order.order(response_priorities, jacoby_2n_response_priorities)
+    rule_order.order(natural_priorities, overcall_priorities)
+    rule_order.order(natural_priorities, response_priorities)
+    rule_order.order(natural_priorities, opener_rebid_priorities)
+    rule_order.order(natural_priorities, nt_response_priorities)
+    rule_order.order(natural_priorities, stayman_response_priorities)
+    rule_order.order(natural_priorities, stayman_rebid_priorities)
+    rule_order.order(natural_priorities, two_clubs_opener_rebid_priorities)
+    rule_order.order(natural_priorities, responder_rebid_priorities)
+    rule_order.order(forced_rebid_priorities, natural_priorities)
+    rule_order.order(the_law_priorities, responder_rebid_priorities)
+    rule_order.order(the_law_priorities, natural_priorities)
+    rule_order.order(overcall_response_priorities, the_law_priorities)
+    rule_order.order(sign_off_priorities, the_law_priorities)
+    rule_order.order(pass_priorities, overcall_response_priorities)
+    rule_order.order(pass_priorities, the_law_priorities)
+    rule_order.order(pass_priorities, sign_off_priorities)
+    rule_order.order(pass_priorities, opening_priorities)
