@@ -1590,6 +1590,68 @@ class TwoLevelTakeoutDouble(TakeoutDouble):
     shared_constraints = points >= 15
 
 
+takeout_double_response_priorities = enum.Enum(
+    "ThreeNotrump",
+    "TwoNotrump",
+    "OneNotrump",
+)
+rule_order.order(*reversed(takeout_double_response_priorities))
+
+
+class ResponseToTakeoutDouble(Rule):
+    preconditions = [
+        LastBidHasAnnotation(positions.Partner, annotations.TakeoutDouble),
+        LastBidWas(positions.RHO, 'P')
+    ]
+
+
+class NotrumpResponseToTakeoutDouble(ResponseToTakeoutDouble):
+    constraints = {
+        '1N': (points >= 6, takeout_double_response_priorities.OneNotrump),
+        '2N': (points >= 11, takeout_double_response_priorities.TwoNotrump),
+        '3N': (points >= 13, takeout_double_response_priorities.ThreeNotrump),
+    }
+    shared_constraints = [balanced, StoppersInOpponentsSuits()]
+
+
+# class SuitResponseToTakeoutDouble(ResponseToTakeoutDouble):
+#     preconditions = [IsSuit(), NotSameSuitAsLastContract(), NotJumpFromLastContract()]
+#     constraints = {
+#         # FIXME: p125 implies that a non-jump suit bid implies < 9 points.
+#         # However there are hands with 13 points w/o stoppers in opponent's suit
+#         # which are too big to jump with and not fit for NT.  For now this
+#         # it their only option.
+#         Rule.ANY_OTHER_BID: [LongestSuitExceptOpponentSuits()]
+#     }
+
+
+class JumpSuitResponseToTakeoutDouble(ResponseToTakeoutDouble):
+    # FIXME: Maybe this is JumpFromLHOLastBid instead of JumpFromLastContract?
+    preconditions = [IsSuit(), NotSameSuitAsLastContract(), JumpFromLastContract(exact_size=1)]
+    implied_constraints = {
+        # FIXME: This range is wrong when replying to Reoppening Doubles
+        Rule.ANY_OTHER_BID: [LongestSuitExceptOpponentSuits(), HighCardPointRange(10, 12)]
+    }
+
+
+class CuebidResponseToTakeoutDouble(ResponseToTakeoutDouble):
+    preconditions = ResponseToTakeoutDouble.preconditions + [IsSuit(), SameSuitAsLastContract(), NotJumpFromLastContract()]
+    priority = priorities.CueBidAfterTakeoutDouble
+
+    def consume_call(self, knowledge, bid):
+        # FIXME: opponent_suit is wrong for two-suited takeout doubles.
+        opponent_contract = knowledge.last_contract()
+        opponent_suit = opponent_contract.strain
+        assert opponent_suit in SUITS
+
+        # Cuebids show 13+ hcp and 4+ cards in available majors.
+        knowledge.me.set_min_hcp(13)
+        for suit in MAJORS:
+            if suit != opponent_suit:
+                knowledge.me.set_min_length(suit, 4)
+        return knowledge
+
+
 preempt_priorities = enum.Enum(
     "EightCardPreempt",
     "SevenCardPreempt",
