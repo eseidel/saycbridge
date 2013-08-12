@@ -21,7 +21,7 @@ class Ordering(object):
     def lt(self, left, right):
         self._compile()
 
-        return bool(self._mapping.get((left, right))
+        return bool(self._mapping.get((left, right)))
 
     def cmp(self, left, right):
         self._compile()
