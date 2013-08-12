@@ -199,6 +199,7 @@ class RuleCompiler(object):
         )
 
 
+
 # The rules of SAYC are all described in terms of Rule.
 # These classes exist to support the DSL and make it easy to concisely express
 # the conventions of SAYC.
@@ -315,6 +316,7 @@ class NotrumpToPlay(Natural):
 opening_priorities = enum.Enum(
     "StrongTwoClubs",
     "NoTrumpOpening",
+
     "LongestMajor",
     "HigherMajor",
     "LowerMajor",
@@ -351,6 +353,17 @@ class OneLevelOpening(Opening):
     }
     shared_constraints = OpeningRuleConstraint()
     priority_rules = [PreferMajors, PreferLongest, PreferHigher, TreatClubsAsLongerWhenEqual]
+
+    priorities 
+
+    call_to_priority = {
+        '1C': [
+            (clubs > diamonds, opening_priorities.LongestMinor),
+            (z3.And(clubs == 3, diamonds == 3), opening_priorities.LongestMinor),
+            opening_priorities.LowerMinor,
+        ]
+    }
+
 
 
 class OneClubOpening(Opening):
@@ -948,6 +961,7 @@ class ForcedRebidOriginalSuitByOpener(MinimumRebidOriginalSuitByOpener):
         (MinLength(6), opener_rebid_priorities.UnforcedRebidOriginalSuit),
     ]
     shared_constraints = MinLength(5)
+    priority_rules = [PreferMajors, PerferLonger, ]
     priority = forced_rebid_priorities.ForcedRebidOriginalSuit
 
 
