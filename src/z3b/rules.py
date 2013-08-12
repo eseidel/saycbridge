@@ -42,7 +42,7 @@ class CompiledRule(object):
 
     @property
     def name(self):
-        return self.dsl_rule.name
+        return self.dsl_rule.name()
 
     def __str__(self):
         return self.name
@@ -127,10 +127,10 @@ class RuleCompiler(object):
         return chain.from_iterable([cls.exprs_from_constraints(constraint, history, call) for constraint in constraints])
 
     @classmethod
-    def _collect_from_ancestors(cls, dls_class, property_name):
+    def _collect_from_ancestors(cls, dsl_class, property_name):
         getter = lambda ancestor: getattr(ancestor, property_name, [])
         # The DSL expects that parent preconditions, etc. apply before child ones.
-        return map(getter, reversed(dls_class.__mro__))
+        return map(getter, reversed(dsl_class.__mro__))
 
     @classmethod
     def _ensure_list(cls, value_or_list):
@@ -174,15 +174,40 @@ class RuleCompiler(object):
         return compiled_set
 
     @classmethod
-    def compile(cls, dsl_rule_class):
-        dsl_rule = dsl_rule_class()
-        constraints = cls._flatten_constraints(dsl_rule_class.constraints)
+    def _validate_rule(cls, dsl_class):
+        assert dsl_class.priority or dsl_class.constraints, "" + dsl_class.name + " is missing priority"
+        # Rules have to apply some constraints to the hand.
+        assert dsl_class.constraints or dsl_class.shared_constraints, "" + dsl_class.name + " is missing constraints"
+        # conditional_priorities doesn't work with self.constraints
+        assert not dsl_class.conditional_priorities or not dsl_class.constraints
+        assert not dsl_class.conditional_priorities or dsl_class.call_names
+        # FIXME: We should also walk the class and assert that no unexpected properties are found.
+        allowed_keys = set([
+            "annotations",
+            "call_names",
+            "category",
+            "conditional_priorities",
+            "constraints",
+            "preconditions",
+            "priority",
+            "requires_planning",
+            "shared_constraints",
+        ])
+        properties = dsl_class.__dict__.keys()
+        public_properties = filter(lambda p: not p.startswith("_"), properties)
+        unexpected_properties = set(public_properties) - allowed_keys
+        assert not unexpected_properties, "%s defines unexpected properties: %s" % (dsl_class, unexpected_properties)
+
+    @classmethod
+    def compile(cls, dsl_rule):
+        cls._validate_rule(dsl_rule)
+        constraints = cls._flatten_constraints(dsl_rule.constraints)
         # Unclear if compiled results should be memoized on the rule?
         return CompiledRule(dsl_rule,
-            known_calls=cls._compile_known_calls(dsl_rule_class, constraints),
-            annotations=cls._compile_annotations(dsl_rule_class),
-            preconditions=cls._joined_list_from_ancestors(dsl_rule_class, 'preconditions'),
-            shared_constraints=cls._joined_list_from_ancestors(dsl_rule_class, 'shared_constraints'),
+            known_calls=cls._compile_known_calls(dsl_rule, constraints),
+            annotations=cls._compile_annotations(dsl_rule),
+            preconditions=cls._joined_list_from_ancestors(dsl_rule, 'preconditions'),
+            shared_constraints=cls._joined_list_from_ancestors(dsl_rule, 'shared_constraints'),
             constraints=constraints,
         )
 
@@ -208,16 +233,11 @@ class Rule(object):
     priority = None
 
     def __init__(self):
-        assert self.priority or self.constraints, "" + self.name + " is missing priority"
-        # Rules have to apply some constraints to the hand.
-        assert self.constraints or self.shared_constraints, "" + self.name + " is missing constraints"
-        # conditional_priorities doesn't work with self.constraints
-        assert not self.conditional_priorities or not self.constraints
-        assert not self.conditional_priorities or self.call_names
+        assert False, "Rule objects should be compiled into EngineRule objects instead of instantiating them."
 
-    @property
-    def name(self):
-        return self.__class__.__name__
+    @classmethod
+    def name(cls):
+        return cls.__name__
 
     def __repr__(self):
         return "%s()" % self.name
