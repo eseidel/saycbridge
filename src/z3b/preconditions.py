@@ -6,21 +6,30 @@ from third_party import enum
 import core.suit as suit
 
 
+# The ordering of these values does not matter.  We only use Enum so that
+# python throws an lookup error when we typo the annotation name.
 annotations = enum.Enum(
     "Opening",
     "NoTrumpSystemsOn",
+    "StandardOvercall",
+
     "Artificial",
-    "Stayman",
+    # NOTE: RuleCompiler._compile_annotations will automatically imply
+    # "Artificial" when encountering any annotations > Artificial.
+    # This is a hack to avoid "forgot to add Artifical" bugs.
     "Blackwood",
     "Gerber",
-    "Transfer",
-    "NegativeDouble",
-    "StandardOvercall",
     "Jacoby2N",
-    "TakeoutDouble",
     "MichaelsCuebid",
+    "NegativeDouble",
+    "Stayman",
+    "TakeoutDouble",
+    "Transfer",
     "Unusual2N",
 )
+
+# Used by RuleCompiler._compile_annotations.
+implies_artificial = set([value for value in annotations if value > annotations.Artificial])
 
 
 class Precondition(object):
@@ -53,7 +62,7 @@ class EitherPrecondition(Precondition):
 
     @property
     def name(self):
-        return "EitherPrecondition(%s)" % repr(preconditions)
+        return "EitherPrecondition(%s)" % repr(self.preconditions)
 
     def fits(self, history, call):
         return any(precondition.fits(history, call) for precondition in self.preconditions)
@@ -65,7 +74,7 @@ class AndPrecondition(Precondition):
 
     @property
     def name(self):
-        return "AndPrecondition(%s,%s)" % repr(preconditions)
+        return "AndPrecondition(%s)" % repr(self.preconditions)
 
     def fits(self, history, call):
         return all(precondition.fits(history, call) for precondition in self.preconditions)
