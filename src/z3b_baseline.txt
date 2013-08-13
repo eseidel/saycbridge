@@ -1,5 +1,5 @@
 test_3c_stayman:
-Pass 3 of 3 hands
+Pass 5 of 5 hands
 
 test_doubles:
 FAIL: 2N (expected P) for T98.KQ4.863.Q875 (hcp: 7 lp: 7 sp: 7), history: 1N X P
@@ -479,4 +479,4 @@ FAIL: 3S (expected 4S) for K74.9.J98.KJT742 (hcp: 8 lp: 10 sp: 11), history: 1N 
 FAIL: 2N (expected P) for Q87.J843.K65.Q93 (hcp: 8 lp: 8 sp: 8), history: 1N P
 Pass 1 of 3 hands
 
-Pass 729 (67%) of 1083 total hands
+Pass 731 (67%) of 1085 total hands

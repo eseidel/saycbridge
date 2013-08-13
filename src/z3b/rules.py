@@ -1197,8 +1197,10 @@ class StaymanRebid(Rule):
 
 
 class GarbagePassStaymanRebid(StaymanRebid):
+    # GarbageStayman only exists at the 2-level
+    preconditions = LastBidWas(positions.Me, '2C')
     call_names = 'P'
-    shared_constraints = [points <= 7]
+    shared_constraints = points <= 7
     priority = stayman_rebid_priorities.GarbagePassStaymanRebid
 
 
