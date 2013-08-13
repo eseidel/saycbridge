@@ -160,7 +160,7 @@ test_minimum_stayman:
 Pass 13 of 13 hands
 
 test_misc_hands_from_play:
-WARNING: Multiple calls match and have maximal priority: ['3S', '4D'] from rules: [CompiledRule(JumpShiftResponderRebid()), CompiledRule(JumpShiftResponderRebid())]
+WARNING: Multiple calls match and have maximal priority: ['3S', '4D'] from rules: [CompiledRule(JumpShiftResponderRebid), CompiledRule(JumpShiftResponderRebid)]
 FAIL: 3H (expected 2C) for AKJ52.J.J9743.54 (hcp: 10 lp: 12 sp: 13), history: 1H P
 FAIL: 2S (expected 3S) for AQJ5.QT42.74.T52 (hcp: 9 lp: 9 sp: 10), history: 1S P
 FAIL: 3H (expected 1S) for A2.T752.KQJ.AQ72 (hcp: 16 lp: 16 sp: 17), history: 1H P
