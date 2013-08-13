@@ -1499,6 +1499,10 @@ feature_asking_priorites = enum.Enum(
     "Blackwood",
 )
 
+feature_response_priorities = enum.Enum(
+    "Gerber",
+    "Blackwood",
+)
 
 class Gerber(Rule):
     category = categories.Gadget
@@ -1537,7 +1541,7 @@ class ResponseToGerber(Rule):
         '5S': number_of_kings == 2,
         '5N': number_of_kings == 3,
     }
-    priority = feature_asking_priorites.Gerber
+    priority = feature_response_priorities.Gerber
     annotations = annotations.Artificial
 
 
@@ -1553,7 +1557,6 @@ class BlackwoodForAces(Blackwood):
     call_names = '4N'
     preconditions = [
         InvertedPrecondition(LastBidHasStrain(positions.Partner, suit.NOTRUMP)),
-        InvertedPrecondition(LastBidHasAnnotation(positions.Partner, annotations.Artificial)),
         EitherPrecondition(JumpFromLastContract(), HaveFit())
     ]
 
@@ -1579,7 +1582,7 @@ class ResponseToBlackwood(Rule):
         '6H': number_of_kings == 2,
         '6S': number_of_kings == 3,
     }
-    priority = feature_asking_priorites.Blackwood
+    priority = feature_response_priorities.Blackwood
     annotations = annotations.Artificial
 
 
@@ -1611,6 +1614,7 @@ class StandardAmericanYellowCard(object):
     rules = [RuleCompiler.compile(description_class) for description_class in _concrete_rule_classes()]
     priority_ordering = PartialOrdering()
 
+    priority_ordering.make_less_than(response_priorities, feature_response_priorities)
     priority_ordering.make_less_than(response_priorities, relay_priorities)
     priority_ordering.make_less_than(preempt_priorities, opening_priorities)
     priority_ordering.make_less_than(natural_priorities, preempt_priorities)

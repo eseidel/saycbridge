@@ -894,6 +894,13 @@ class SAYCBidderTest(unittest2.TestCase):
         ["KQ.QJT9.A87.QJ73", "P", "1N P 4N P"], # p156, West
     ]
 
+
+    def test_slam_biding(self):
+        self._assert_hands_match_calls([
+            ["A63.J43.AKQJT.A2", "5S", "1H P 2N P 3H P 4N P"], # 4N is blackwood after Jacoby2N
+        ])
+
+
     def test_remaining_hands_from_book(self):
         self._assert_hands_match_calls(self.remaining_bidding_tests_from_book)
 
