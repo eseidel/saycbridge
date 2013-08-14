@@ -299,8 +299,22 @@ natural_priorities = enum.Enum(
 
     "OneLevelNaturalNT",
 )
+
+# FIXME: Can we order these using a priority compiler?
 rule_order.order(*reversed(natural_priorities))
 
+natural_suited_part_scores = set([
+    natural_priorities.TwoLevelNaturalMinor,
+    natural_priorities.TwoLevelNaturalMajor,
+    natural_priorities.ThreeLevelNaturalMinor,
+    natural_priorities.ThreeLevelNaturalMajor,
+    natural_priorities.FourLevelNaturalMinor,
+])
+
+natural_nt_part_scores = set([
+    natural_priorities.OneLevelNaturalNT,
+    natural_priorities.TwoLevelNaturalNT,
+])
 
 class Natural(Rule):
     # FIXME: This should have a SomeoneOpened() precondition.
@@ -994,8 +1008,7 @@ class JumpShiftResponderRebid(ResponderRebid):
 
 nt_response_priorities = enum.Enum(
     "LongMajorSlamInvitation",
-    "NoTrumpJumpRaise",
-    "NoTrumpMinimumRaise",
+    "FourFiveStayman",
     "JacobyTransferToLongerMajor",
     "JacobyTransferToSpadesWithGameForcingValues",
     "JacobyTransferToHeartsWithGameForcingValues",
@@ -1038,6 +1051,16 @@ two_club_stayman_constraint = ConstraintAnd(
     z3.Or(hearts >= 4, spades >= 4)
 )
 
+
+four_five_stayman_constraint = ConstraintAnd(
+    MinimumCombinedPoints(23),
+    z3.Or(
+        z3.And(hearts == 4, spades == 5),
+        z3.And(hearts == 5, spades == 4),
+    ),
+)
+
+
 # 2C is a very special snowflake and can lead into many sequences, thus it gets its own class.
 class TwoLevelStayman(NoTrumpResponse):
     annotations = annotations.Stayman
@@ -1054,7 +1077,8 @@ class TwoLevelStayman(NoTrumpResponse):
         ),
     )
     conditional_priorities = [
-        (two_club_stayman_constraint, nt_response_priorities.Stayman)
+        (four_five_stayman_constraint, nt_response_priorities.FourFiveStayman),
+        (two_club_stayman_constraint, nt_response_priorities.Stayman),
     ]
     priority = nt_response_priorities.GarbageStayman
 
@@ -1250,6 +1274,36 @@ class GarbagePassStaymanRebid(StaymanRebid):
     preconditions = LastBidWas(positions.Me, '2C')
     call_names = 'P'
     shared_constraints = points <= 7
+
+
+# FIXME: Before this could work we need to allow 2C Stayman to mean 6+ in a minor.
+# class MinorGameForceRebid(RebidAfterStaymanOverOneNotrump):
+#     call_names = ['3C', '3D']
+#     shared_constraints = [MinLength(6), points >= 13]
+#     priority = stayman_rebid_priorities.MinorGameForceRebid
+
+
+stayman_rebid_priorities = enum.Enum(
+    "GameForcingOtherMajor",
+    "InvitationalOtherMajor",
+)
+rule_order.order(*reversed(stayman_rebid_priorities))
+
+
+class OtherMajorRebidAfterStayman(StaymanRebid):
+    preconditions = [
+        InvertedPrecondition(RaiseOfPartnersLastSuit()),
+    ]
+    # Rebidding the other major shows 5-4, with invitational or game-force values.
+    constraints = {
+        '2H': ([points >= 8, hearts == 5, spades == 4], stayman_rebid_priorities.InvitationalOtherMajor),
+        '2S': ([points >= 8, spades == 5, hearts == 4], stayman_rebid_priorities.InvitationalOtherMajor),
+
+        # # Use MinimumCombinedPoints instead of MinHighCardPoints as 3-level bids
+        # # are game forcing over both 2C and 3C Stayman responses.
+        '3H': ([MinimumCombinedPoints(25), hearts == 5, spades == 4], stayman_rebid_priorities.GameForcingOtherMajor),
+        '3S': ([MinimumCombinedPoints(25), spades == 5, hearts == 4], stayman_rebid_priorities.GameForcingOtherMajor),
+    }
 
 
 overcall_priorities = enum.Enum(
@@ -1682,6 +1736,8 @@ class StandardAmericanYellowCard(object):
     rule_order.order(natural_priorities, GarbagePassStaymanRebid)
     rule_order.order(natural_priorities, two_clubs_opener_rebid_priorities)
     rule_order.order(natural_priorities, responder_rebid_priorities)
+    rule_order.order(natural_priorities.ThreeLevelNaturalNT, stayman_rebid_priorities.GameForcingOtherMajor, natural_priorities.FourLevelNaturalMajor)
+    rule_order.order(natural_nt_part_scores, stayman_rebid_priorities.InvitationalOtherMajor, natural_suited_part_scores)
     rule_order.order(ForcedRebidOriginalSuitByOpener, natural_priorities)
     rule_order.order(the_law_priorities, responder_rebid_priorities)
     rule_order.order(the_law_priorities, natural_priorities)
