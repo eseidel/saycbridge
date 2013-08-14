@@ -14,6 +14,7 @@ THIRD_PARTY_SCRIPTS = \
 SCRIPTS = \
 	model.js \
 	controller.js \
+	fight.js \
 	view.js \
 	controller.js \
 	controller.test.js \
