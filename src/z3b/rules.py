@@ -28,13 +28,14 @@ categories = enum.Enum(
 # This is a public interface from RuleGenerators to the rest of the system.
 # This class knows nothing about the DSL.
 class CompiledRule(object):
-    def __init__(self, rule, preconditions, known_calls, shared_constraints, annotations, constraints):
+    def __init__(self, rule, preconditions, known_calls, shared_constraints, annotations, constraints, default_priority):
         self.dsl_rule = rule
         self.preconditions = preconditions
         self.known_calls = known_calls
         self.shared_constraints = shared_constraints
         self._annotations = annotations
         self.constraints = constraints
+        self.default_priority = default_priority
 
     def requires_planning(self, history):
         return self.dsl_rule.requires_planning
@@ -112,8 +113,9 @@ class CompiledRule(object):
         try:
             list(constraints_tuple)
         except TypeError:
-            constraints_tuple = (constraints_tuple, self.dsl_rule.priority)
+            constraints_tuple = (constraints_tuple, self.default_priority)
         assert len(constraints_tuple) == 2
+        # FIXME: Is it possible to not end up with a priority anymore?
         assert constraints_tuple[1], "" + self.name + " is missing priority"
         return constraints_tuple
 
@@ -181,7 +183,6 @@ class RuleCompiler(object):
 
     @classmethod
     def _validate_rule(cls, dsl_class):
-        assert dsl_class.priority or dsl_class.constraints, "" + dsl_class.name + " is missing priority"
         # Rules have to apply some constraints to the hand.
         assert dsl_class.constraints or dsl_class.shared_constraints, "" + dsl_class.name + " is missing constraints"
         # conditional_priorities doesn't work with self.constraints
@@ -206,6 +207,12 @@ class RuleCompiler(object):
         assert not unexpected_properties, "%s defines unexpected properties: %s" % (dsl_class, unexpected_properties)
 
     @classmethod
+    def _default_priority(cls, dsl_rule):
+        if dsl_rule.priority:
+            return dsl_rule.priority
+        return dsl_rule # Use the class as the default priority.
+
+    @classmethod
     def compile(cls, dsl_rule):
         cls._validate_rule(dsl_rule)
         constraints = cls._flatten_constraints(dsl_rule.constraints)
@@ -216,6 +223,7 @@ class RuleCompiler(object):
             preconditions=cls._joined_list_from_ancestors(dsl_rule, 'preconditions'),
             shared_constraints=cls._joined_list_from_ancestors(dsl_rule, 'shared_constraints'),
             constraints=constraints,
+            default_priority = cls._default_priority(dsl_rule),
         )
 
 
@@ -692,12 +700,6 @@ opener_rebid_priorities = enum.Enum(
 rule_order.order(*reversed(opener_rebid_priorities))
 
 
-forced_rebid_priorities = enum.Enum(
-    "ForcedRebidOriginalSuit",
-)
-rule_order.order(*reversed(forced_rebid_priorities))
-
-
 class OpenerRebid(Rule):
     preconditions = [
         LastBidHasAnnotation(positions.Me, annotations.Opening),
@@ -813,7 +815,6 @@ class ForcedRebidOriginalSuitByOpener(MinimumRebidOriginalSuitByOpener):
         (MinLength(6), opener_rebid_priorities.UnforcedRebidOriginalSuit),
     ]
     shared_constraints = MinLength(5)
-    priority = forced_rebid_priorities.ForcedRebidOriginalSuit
 
 
 class UnsupportedRebid(RebidOriginalSuitByOpener):
@@ -1201,12 +1202,6 @@ class LongMajorSlamInvitation(OneNoTrumpResponse):
     priority = nt_response_priorities.LongMajorSlamInvitation
 
 
-stayman_rebid_priorities = enum.Enum(
-    "GarbagePassStaymanRebid",
-)
-rule_order.order(*reversed(stayman_rebid_priorities))
-
-
 class StaymanRebid(Rule):
     preconditions = LastBidHasAnnotation(positions.Me, annotations.Stayman)
     category = categories.NoTrumpSystem
@@ -1217,7 +1212,6 @@ class GarbagePassStaymanRebid(StaymanRebid):
     preconditions = LastBidWas(positions.Me, '2C')
     call_names = 'P'
     shared_constraints = points <= 7
-    priority = stayman_rebid_priorities.GarbagePassStaymanRebid
 
 
 overcall_priorities = enum.Enum(
@@ -1611,18 +1605,11 @@ class ResponseToBlackwood(Rule):
     annotations = annotations.Artificial
 
 
-pass_priorities = enum.Enum(
-    "Default",
-)
-rule_order.order(*reversed(pass_priorities))
-
-
 class DefaultPass(Rule):
     preconditions = [InvertedPrecondition(ForcedToBid())]
     call_names = 'P'
     shared_constraints = NO_CONSTRAINTS
     category = categories.DefaultPass
-    priority = pass_priorities.Default
 
 
 # FIXME: This is wrong as soon as we try to support more than one system.
@@ -1654,15 +1641,15 @@ class StandardAmericanYellowCard(object):
     rule_order.order(natural_priorities, opener_rebid_priorities)
     rule_order.order(natural_priorities, nt_response_priorities)
     rule_order.order(natural_priorities, stayman_response_priorities)
-    rule_order.order(natural_priorities, stayman_rebid_priorities)
+    rule_order.order(natural_priorities, GarbagePassStaymanRebid)
     rule_order.order(natural_priorities, two_clubs_opener_rebid_priorities)
     rule_order.order(natural_priorities, responder_rebid_priorities)
-    rule_order.order(forced_rebid_priorities, natural_priorities)
+    rule_order.order(ForcedRebidOriginalSuitByOpener, natural_priorities)
     rule_order.order(the_law_priorities, responder_rebid_priorities)
     rule_order.order(the_law_priorities, natural_priorities)
     rule_order.order(overcall_response_priorities, the_law_priorities)
     rule_order.order(sign_off_priorities, the_law_priorities)
-    rule_order.order(pass_priorities, overcall_response_priorities)
-    rule_order.order(pass_priorities, the_law_priorities)
-    rule_order.order(pass_priorities, sign_off_priorities)
-    rule_order.order(pass_priorities, opening_priorities)
+    rule_order.order(DefaultPass, overcall_response_priorities)
+    rule_order.order(DefaultPass, the_law_priorities)
+    rule_order.order(DefaultPass, sign_off_priorities)
+    rule_order.order(DefaultPass, opening_priorities)
