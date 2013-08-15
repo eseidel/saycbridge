@@ -30,7 +30,7 @@ The typical development cycle:
 
     # Make changes to the bidder (src/z3b)
     make check
-    # Bah, my changes don't work as expect!
+    # Bah, my changes don't work as expected!
     # Try ./scripts/test-hand and ./scripts/explain to understand why.
     # Use http://localhost:8080/explorer to understand my changes better.
     # Fix my changes to actually work.
@@ -41,9 +41,9 @@ The typical development cycle:
 Testing Setup
 -------------
 
-Running the unittests requires unittest2:
+The engine requires networkx, and running the unittests requires unittest2:
 
-    sudo easy_install unittest2
+    sudo pip install networkx unittest2
 
 You will also need a copy of MSR's z3:
 http://z3.codeplex.com/
@@ -129,6 +129,7 @@ Make Targets
     make check  # check your latest changes against your baseline.txt
     make accept # replace the current baseline file with your last make check results
     make clean  # remove all *.pyc files
+    make serve
     make serve-kbb # run a local copy of saycbridge.com for testing
 
 
