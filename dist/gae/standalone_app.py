@@ -12,4 +12,5 @@ app = werkzeug.SharedDataMiddleware(appengine_main.app, {
     '/stylesheets': os.path.join(gae_dir, 'stylesheets'),
     '/images': os.path.join(gae_dir, 'images'),
     '/static': os.path.join(gae_dir, 'static'),
+    '/fight': os.path.join(gae_dir, 'static', 'fight.html')
 })

@@ -50,7 +50,7 @@ class CompiledRule(object):
         return self.name
 
     def __repr__(self):
-        return "CompiledRule(%s)" % repr(self.dsl_rule)
+        return "CompiledRule(%s)" % self.dsl_rule.name()
 
     # FIXME: This exists for compatiblity with KBB's Rule interface and is used by bidder_handler.py
     def explanation_for_bid(self, call):
@@ -87,6 +87,12 @@ class CompiledRule(object):
 
     def meaning_of(self, history, call):
         exprs = self._constraint_exprs_for_call(history, call)
+        per_call_conditionals = self.dsl_rule.conditional_priorities_per_call.get(call.name)
+        if per_call_conditionals:
+            for condition, priority in per_call_conditionals:
+                condition_exprs = RuleCompiler.exprs_from_constraints(condition, history, call)
+                yield priority, z3.And(exprs + condition_exprs)
+
         for condition, priority in self.dsl_rule.conditional_priorities:
             condition_exprs = RuleCompiler.exprs_from_constraints(condition, history, call)
             yield priority, z3.And(exprs + condition_exprs)
@@ -192,6 +198,7 @@ class RuleCompiler(object):
             "priority",
             "requires_planning",
             "shared_constraints",
+            "conditional_priorities_per_call",
         ])
         properties = dsl_class.__dict__.keys()
         public_properties = filter(lambda p: not p.startswith("_"), properties)
@@ -230,6 +237,11 @@ class Rule(object):
     shared_constraints = [] # Auto-collects from parent classes
     annotations = []
     conditional_priorities = []
+    # FIXME: conditional_priorities_per_call is a stepping-stone to allow us to
+    # write more conditional priorities and better understand what rules we should
+    # develop to generate them.  The syntax is:
+    # {'1C': [(condition, priority), (condition, priority)]}
+    conditional_priorities_per_call = {}
     priority = None
 
     def __init__(self):
@@ -346,42 +358,21 @@ class Opening(Rule):
 
 class OneLevelSuitOpening(Opening):
     shared_constraints = OpeningRuleConstraint()
-
-
-class OneClubOpening(OneLevelSuitOpening):
-    call_names = '1C'
-    shared_constraints = clubs >= 3
-    conditional_priorities = [
-        (z3.Or(clubs > diamonds, z3.And(clubs == 3, diamonds == 3)), opening_priorities.LongestMinor),
-    ]
-    priority = opening_priorities.LowerMinor
-
-
-class OneDiamondOpening(OneLevelSuitOpening):
-    call_names = '1D'
-    shared_constraints = diamonds >= 3
-    conditional_priorities = [
-        (diamonds > clubs, opening_priorities.LongestMinor),
-    ]
-    priority = opening_priorities.HigherMinor
-
-
-class OneHeartOpening(OneLevelSuitOpening):
-    call_names = '1H'
-    shared_constraints = hearts >= 5
-    conditional_priorities = [
-        (hearts > spades, opening_priorities.LongestMajor),
-    ]
-    priority = opening_priorities.LowerMajor
-
-
-class OneSpadeOpening(OneLevelSuitOpening):
-    call_names = '1S'
-    shared_constraints = spades >= 5
-    conditional_priorities = [
-        (spades > hearts, opening_priorities.LongestMajor),
-    ]
-    priority = opening_priorities.HigherMajor
+    constraints = {
+        '1C': (clubs >= 3, opening_priorities.LowerMinor),
+        '1D': (diamonds >= 3, opening_priorities.HigherMinor),
+        '1H': (hearts >= 5, opening_priorities.LowerMajor),
+        '1S': (spades >= 5, opening_priorities.HigherMajor),
+    }
+    conditional_priorities_per_call = {
+        '1C': [
+            (clubs > diamonds, opening_priorities.LongestMinor),
+            (z3.And(clubs == 3, diamonds == 3), opening_priorities.LongestMinor),
+        ],
+        '1D': [(diamonds > clubs, opening_priorities.LongestMinor)],
+        '1H': [(hearts > spades, opening_priorities.LongestMajor)],
+        '1S': [(spades > hearts, opening_priorities.LongestMajor)],
+    }
 
 
 class NoTrumpOpening(Opening):
@@ -434,37 +425,27 @@ class ResponseToOneLevelSuitedOpen(Response):
         InvertedPrecondition(LastBidHasStrain(positions.Partner, suit.NOTRUMP))
     ]
 
-class OneLevelResponse(ResponseToOneLevelSuitedOpen):
+
+class OneLevelNewSuitResponse(ResponseToOneLevelSuitedOpen):
     shared_constraints = points >= 6
+    constraints = {
+        '1D': (diamonds >= 4, response_priorities.OneDiamondResponse),
+        '1H': (hearts >= 4, response_priorities.OneHeartWithFourResponse),
+        '1S': (spades >= 4, response_priorities.OneSpadeWithFourResponse),
+    }
+    # FIXME: 4 should probably be the special case and 5+ be the default priority.
+    conditional_priorities_per_call = {
+        '1H': [
+            (z3.And(hearts >= 5, hearts > spades), response_priorities.LongestNewMajor),
+            (hearts >= 5, response_priorities.OneHeartWithFiveResponse),
+        ],
+        '1S': [(spades >= 5, response_priorities.OneSpadeWithFiveResponse)]
+    }
 
 
-class OneDiamondResponse(OneLevelResponse):
-    call_names = '1D'
-    shared_constraints = diamonds >= 4
-    priority = response_priorities.OneDiamondResponse
-
-
-class OneHeartResponse(OneLevelResponse):
-    call_names = '1H'
-    shared_constraints = hearts >= 4
-    conditional_priorities = [
-        (z3.And(hearts >= 5, hearts > spades), response_priorities.LongestNewMajor),
-        (hearts >= 5, response_priorities.OneHeartWithFiveResponse),
-    ]
-    priority = response_priorities.OneHeartWithFourResponse
-
-
-class OneSpadeResponse(OneLevelResponse):
-    call_names = '1S'
-    shared_constraints = spades >= 4
-    conditional_priorities = [
-        (spades >= 5, response_priorities.OneSpadeWithFiveResponse)
-    ]
-    priority = response_priorities.OneSpadeWithFourResponse
-
-
-class OneNotrumpResponse(OneLevelResponse):
+class OneNotrumpResponse(ResponseToOneLevelSuitedOpen):
     call_names = '1N'
+    shared_constraints = points >= 6
     priority = response_priorities.OneNotrumpResponse
 
 
@@ -1232,8 +1213,10 @@ class StaymanRebid(Rule):
 
 
 class GarbagePassStaymanRebid(StaymanRebid):
+    # GarbageStayman only exists at the 2-level
+    preconditions = LastBidWas(positions.Me, '2C')
     call_names = 'P'
-    shared_constraints = [points <= 7]
+    shared_constraints = points <= 7
     priority = stayman_rebid_priorities.GarbagePassStaymanRebid
 
 
@@ -1534,19 +1517,24 @@ class LawOfTotalTricks(Rule):
     }
 
 
-feature_asking_priorites = enum.Enum(
+feature_asking_priorities = enum.Enum(
     "Gerber",
     "Blackwood",
 )
-rule_order.order(*reversed(feature_asking_priorites))
+rule_order.order(*reversed(feature_asking_priorities))
 
+feature_response_priorities = enum.Enum(
+    "Gerber",
+    "Blackwood",
+)
+rule_order.order(*reversed(feature_response_priorities))
 
 class Gerber(Rule):
     category = categories.Gadget
     requires_planning = True
     shared_constraints = NO_CONSTRAINTS
     annotations = annotations.Gerber
-    priority = feature_asking_priorites.Gerber
+    priority = feature_asking_priorities.Gerber
 
 
 class GerberForAces(Gerber):
@@ -1578,7 +1566,7 @@ class ResponseToGerber(Rule):
         '5S': number_of_kings == 2,
         '5N': number_of_kings == 3,
     }
-    priority = feature_asking_priorites.Gerber
+    priority = feature_response_priorities.Gerber
     annotations = annotations.Artificial
 
 
@@ -1587,14 +1575,13 @@ class Blackwood(Rule):
     requires_planning = True
     shared_constraints = NO_CONSTRAINTS
     annotations = annotations.Blackwood
-    priority = feature_asking_priorites.Blackwood
+    priority = feature_asking_priorities.Blackwood
 
 
 class BlackwoodForAces(Blackwood):
     call_names = '4N'
     preconditions = [
         InvertedPrecondition(LastBidHasStrain(positions.Partner, suit.NOTRUMP)),
-        InvertedPrecondition(LastBidHasAnnotation(positions.Partner, annotations.Artificial)),
         EitherPrecondition(JumpFromLastContract(), HaveFit())
     ]
 
@@ -1620,7 +1607,7 @@ class ResponseToBlackwood(Rule):
         '6H': number_of_kings == 2,
         '6S': number_of_kings == 3,
     }
-    priority = feature_asking_priorites.Blackwood
+    priority = feature_response_priorities.Blackwood
     annotations = annotations.Artificial
 
 
@@ -1654,6 +1641,8 @@ class StandardAmericanYellowCard(object):
     rules = [RuleCompiler.compile(description_class) for description_class in _concrete_rule_classes()]
     priority_ordering = rule_order
 
+    rule_order.order(response_priorities, relay_priorities)
+    rule_order.order(response_priorities, feature_response_priorities)
     rule_order.order(response_priorities, relay_priorities)
     rule_order.order(preempt_priorities, opening_priorities)
     rule_order.order(natural_priorities, preempt_priorities)

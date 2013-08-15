@@ -44,6 +44,10 @@ class Autobidder
         boardJSON = board.toJSON()
         boardJSON['calls_string'] = callHistory.callsString()
         boardJSON['until_position'] = stopPosition.name
+
+        if document.location.hostname == "localhost"
+            boardJSON['cache_bust'] = new Date
+
         jqxhr = $.getJSON Autobidder.autobidURL, boardJSON, (data, textStatus, jqXHR) =>
             console.assert board.number == data['board_number']
             callHistory = model.CallHistory.fromCallsStringAndDealerChar(data['calls_string'], board.dealer.name)
@@ -106,6 +110,9 @@ class BidInterpreter
             'dealer': board.dealer.name,
             'vulnerability': board.vulnerability.name(),
         }
+        if document.location.hostname == "localhost"
+            requestJSON['cache_bust'] = new Date
+
         jqxhr = $.getJSON BidInterpreter.interpretURL, requestJSON, (data, textStatus, jqXHR) =>
             interpretation = Interpretation.fromBoardAndCallsAndJSONDict(board, calls, data)
             BidInterpreter.cache.storeByBoardAndCalls(board, calls, interpretation)

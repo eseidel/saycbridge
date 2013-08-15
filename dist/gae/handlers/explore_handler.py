@@ -66,14 +66,10 @@ class JSONExploreHandler(webapp2.RequestHandler):
         }
         explore_dict.update(self._json_from_rule(rule, call_history.calls[-1]))
         self.response.headers["Content-Type"] = "application/json"
+        self.response.headers["Cache-Control"] = "public"
 
-        # FIXME: We should do some sort of cache-busting, include the current
-        # version or similar.  For now I'm just disabling caching for local
-        # testing.
-        # self.response.headers["Cache-Control"] = "public"
-
-        # expires_date = datetime.datetime.utcnow() + datetime.timedelta(days=1)
-        # expires_str = expires_date.strftime("%d %b %Y %H:%M:%S GMT")
-        # self.response.headers.add_header("Expires", expires_str)
+        expires_date = datetime.datetime.utcnow() + datetime.timedelta(days=1)
+        expires_str = expires_date.strftime("%d %b %Y %H:%M:%S GMT")
+        self.response.headers.add_header("Expires", expires_str)
 
         self.response.out.write(json.dumps(explore_dict))

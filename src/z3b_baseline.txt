@@ -1,5 +1,5 @@
 test_3c_stayman:
-Pass 3 of 3 hands
+Pass 5 of 5 hands
 
 test_doubles:
 FAIL: 2N (expected P) for T98.KQ4.863.Q875 (hcp: 7 lp: 7 sp: 7), history: 1N X P
@@ -160,7 +160,7 @@ test_minimum_stayman:
 Pass 13 of 13 hands
 
 test_misc_hands_from_play:
-WARNING: Multiple calls match and have maximal priority: ['3S', '4D'] from rules: [CompiledRule(<class 'z3b.rules.JumpShiftResponderRebid'>), CompiledRule(<class 'z3b.rules.JumpShiftResponderRebid'>)]
+WARNING: Multiple calls match and have maximal priority: ['3S', '4D'] from rules: [CompiledRule(JumpShiftResponderRebid), CompiledRule(JumpShiftResponderRebid)]
 FAIL: 3H (expected 2C) for AKJ52.J.J9743.54 (hcp: 10 lp: 12 sp: 13), history: 1H P
 FAIL: 2S (expected 3S) for AQJ5.QT42.74.T52 (hcp: 9 lp: 9 sp: 10), history: 1S P
 FAIL: 3H (expected 1S) for A2.T752.KQJ.AQ72 (hcp: 16 lp: 16 sp: 17), history: 1H P
@@ -419,6 +419,9 @@ Pass 21 of 29 hands
 test_rule_of_twenty_open:
 Pass 15 of 15 hands
 
+test_slam_biding:
+Pass 3 of 3 hands
+
 test_slam_invitations_over_one_nt:
 FAIL: 4C (expected 3C) for AK8743.K2.K52.J8 (hcp: 14 lp: 16 sp: 15), history: 1N P 2C P 2H P
 FAIL: 3C (expected 2C) for AK8743.K2.K52.J8 (hcp: 14 lp: 16 sp: 15), history: 1N P (subtest of 1N P 2C P 2H P)
@@ -476,4 +479,4 @@ FAIL: 3S (expected 4S) for K74.9.J98.KJT742 (hcp: 8 lp: 10 sp: 11), history: 1N 
 FAIL: 2N (expected P) for Q87.J843.K65.Q93 (hcp: 8 lp: 8 sp: 8), history: 1N P
 Pass 1 of 3 hands
 
-Pass 726 (67%) of 1080 total hands
+Pass 731 (67%) of 1085 total hands

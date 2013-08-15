@@ -100,6 +100,7 @@ class SAYCBidderTest(unittest2.TestCase):
         self._assert_hands_match_calls([
             ["T9.AJ2.T652.T973", "3C", "2N P"],
             ["AQ.AQ2.AK52.Q973", "3H", "2N P 3C P"],
+            ['Q.T43.JT92.KT863', '4H', 'P 2N P 3C P 3H P'],  # 14-59d6f2b05f85e1f680b938c4a3, N, 3C is never garbage stayman.
         ])
 
     def test_escape_route_stayman(self):
@@ -893,6 +894,13 @@ class SAYCBidderTest(unittest2.TestCase):
         ["JT64.AK8.KQ6.A62", "4N", "1N P"],  # p156, East
         ["KQ.QJT9.A87.QJ73", "P", "1N P 4N P"], # p156, West
     ]
+
+
+    def test_slam_biding(self):
+        self._assert_hands_match_calls([
+            ["A63.J43.AKQJT.A2", "5S", "1H P 2N P 3H P 4N P"], # 4N is blackwood after Jacoby2N
+        ])
+
 
     def test_remaining_hands_from_book(self):
         self._assert_hands_match_calls(self.remaining_bidding_tests_from_book)
