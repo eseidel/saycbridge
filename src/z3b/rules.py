@@ -5,10 +5,10 @@
 from core.call import Call
 from core.callexplorer import CallExplorer
 from itertools import chain
-from third_party import enum
 from third_party.memoized import memoized
 from z3b.constraints import *
 from z3b.model import *
+from z3b import enum
 from z3b import ordering
 from z3b.preconditions import *
 
@@ -103,15 +103,13 @@ class CompiledRule(object):
     # FIXME: Should we split this into two methods? on for priority and one for constraints?
     def per_call_constraints_and_priority(self, call):
         constraints_tuple = self.constraints.get(call.name)
-        if constraints_tuple:
-            try:
-                if isinstance(list(constraints_tuple)[-1], enum.EnumValue):
-                    assert len(constraints_tuple) == 2
-                    return constraints_tuple
-            except TypeError:
-                pass
-        assert self.dsl_rule.priority, "" + self.name + " is missing priority"
-        return constraints_tuple, self.dsl_rule.priority
+        try:
+            list(constraints_tuple)
+        except TypeError:
+            constraints_tuple = (constraints_tuple, self.dsl_rule.priority)
+        assert len(constraints_tuple) == 2
+        assert constraints_tuple[1], "" + self.name + " is missing priority"
+        return constraints_tuple
 
 
 class RuleCompiler(object):
@@ -1532,7 +1530,7 @@ class LawOfTotalTricks(Rule):
         ('2C', '2D', '2H', '2S'): (NO_CONSTRAINTS, the_law_priorities.TwoLevelLaw),
         ('3C', '3D', '3H', '3S'): (NO_CONSTRAINTS, the_law_priorities.ThreeLevelLaw),
         ('4C', '4D', '4H', '4S'): (NO_CONSTRAINTS, the_law_priorities.FourLevelLaw),
-        ('5C', '5D',           ): (NO_CONSTRAINTS, the_law_priorities.FiveLevelLaw), 
+        ('5C', '5D',           ): (NO_CONSTRAINTS, the_law_priorities.FiveLevelLaw),
     }
 
 

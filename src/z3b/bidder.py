@@ -6,7 +6,7 @@ from core.call import Call
 from core.callexplorer import CallExplorer
 from core.callhistory import CallHistory
 from itertools import chain
-from third_party import enum
+from z3b import enum
 from third_party.memoized import memoized
 from z3b.model import positions, expr_for_suit, is_possible
 import copy
