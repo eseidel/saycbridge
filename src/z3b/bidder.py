@@ -72,6 +72,14 @@ class GroupView(object):
     def annotations(self):
         return chain.from_iterable(map(self.history.annotations_for_position, self.positions))
 
+    @property
+    def unbid_suits(self):
+        return set(suit.SUITS) - self.bid_suits
+
+    @property
+    def bid_suits(self):
+        return set([_suit for _suit in suit.SUITS if any(self.history.is_bid_suit(_suit, position) for position in self.positions)])
+
 
 class PositionView(object):
     def __init__(self, history, position):
@@ -341,20 +349,15 @@ class History(object):
         return True
 
     @memoized
-    def is_bid_suit(self, suit):
+    def is_bid_suit(self, suit, position):
         # Look for the annotation of bidding a suit.
-        if did_bid_annotation(suit) in self.annotations:
+        if did_bid_annotation(suit) in self.annotations_for_position(position):
             return True
         # Check for the a length of 4 or more.
-        suit_expr = expr_for_suit(suit)
-        for position in positions:
-            solver = self._solver_for_position(position)
-            if is_certain(solver, suit_expr >= 4):
-                return True
-        return False
+        return is_certain(self._solver_for_position(position), expr_for_suit(suit) >= 4)
 
     def is_unbid_suit(self, suit):
-        return not self.is_bid_suit(suit)
+        return not any(self.is_bid_suit(suit, position) for position in positions)
 
     @property
     def unbid_suits(self):

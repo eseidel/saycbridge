@@ -1602,6 +1602,82 @@ class TwoLevelTakeoutDouble(TakeoutDouble):
     shared_constraints = points >= 15
 
 
+takeout_double_responses = enum.Enum(
+    "CuebidResponseToTakeoutDouble",
+
+    "JumpSpadeResonseToTakeoutDouble",
+    "JumpHeartResonseToTakeoutDouble",
+    "JumpDiamondResonseToTakeoutDouble",
+    "JumpClubResonseToTakeoutDouble",
+
+    # Ordering the suit resposes this way makes us prefer first available.
+    "SpadeResonseToTakeoutDouble",
+    "HeartResonseToTakeoutDouble",
+    "DiamondResonseToTakeoutDouble",
+    "ClubResonseToTakeoutDouble",
+
+    "NotrumpResponseToTakeoutDouble",
+)
+rule_order.order(*reversed(takeout_double_responses))
+
+
+# Response indicates longest suit (excepting opponent's) with 3+ cards support.
+# Cheapest level indicates < 10 points.
+# NT indicates a stopper in opponent's suit.  1N: 6-10, 2N: 11-12, 3N: 13-16
+# Jump bid indicates 10-12 points (normal invitational values)
+# cue-bid in opponent's suit is a 13+ michaels-like bid.
+class ResponseToTakeoutDouble(Rule):
+    preconditions = [
+        LastBidWas(positions.RHO, 'P'),
+        LastBidHasAnnotation(positions.Partner, annotations.TakeoutDouble),
+    ]
+
+
+class NotrumpResponseToTakeoutDouble(ResponseToTakeoutDouble):
+    constraints = {
+        '1N': points >= 6,
+        '2N': points >= 11,
+        '3N': points >= 13,
+    }
+    shared_constraints = [balanced, StoppersInOpponentsSuits()]
+    priority = takeout_double_responses.NotrumpResponseToTakeoutDouble
+
+
+class SuitResponseToTakeoutDouble(ResponseToTakeoutDouble):
+    preconditions = [UnbidSuit(), NotJumpFromLastContract()]
+    shared_constraints = LongestSuitExceptOpponentSuits()
+    # Need conditional priorities to disambiguate cases like being 1.4.4.4 with 0 points after 1C X P
+    # Similarly after 1H X P, with 4 spades and 4 clubs, but with xxxx spades and AKQx clubs, do we bid clubs or spades?
+    constraints = {
+        (      '2C', '3C'): (NO_CONSTRAINTS, takeout_double_responses.ClubResonseToTakeoutDouble),
+        ('1D', '2D', '3D'): (NO_CONSTRAINTS, takeout_double_responses.DiamondResonseToTakeoutDouble),
+        ('1H', '2H', '3H'): (NO_CONSTRAINTS, takeout_double_responses.HeartResonseToTakeoutDouble),
+        ('1S', '2S'      ): (NO_CONSTRAINTS, takeout_double_responses.SpadeResonseToTakeoutDouble),
+    }
+
+
+class JumpSuitResponseToTakeoutDouble(ResponseToTakeoutDouble):
+    preconditions = [UnbidSuit(), JumpFromLastContract(exact_size=1)]
+    shared_constraints = [LongestSuitExceptOpponentSuits(), points >= 10]
+    constraints = {
+        (      '3C', '4C'): (NO_CONSTRAINTS, takeout_double_responses.JumpClubResonseToTakeoutDouble),
+        ('2D', '3D', '4D'): (NO_CONSTRAINTS, takeout_double_responses.JumpDiamondResonseToTakeoutDouble),
+        ('2H', '3H', '4H'): (NO_CONSTRAINTS, takeout_double_responses.JumpHeartResonseToTakeoutDouble),
+        ('2S', '3S'      ): (NO_CONSTRAINTS, takeout_double_responses.JumpSpadeResonseToTakeoutDouble),
+    }
+
+
+class CuebidResponseToTakeoutDouble(ResponseToTakeoutDouble):
+    preconditions = [CueBid(positions.LHO), NotJumpFromLastContract()]
+    priority = takeout_double_responses.CuebidResponseToTakeoutDouble
+    call_names = (
+              '2D', '2H', '2S',
+        '3C', '3D', '3H', '3S'
+    )
+    # FIXME: 4+ in the available majors?
+    shared_constraints = points >= 13
+
+
 preempt_priorities = enum.Enum(
     "EightCardPreempt",
     "SevenCardPreempt",
@@ -1795,6 +1871,7 @@ class StandardAmericanYellowCard(object):
         natural_priorities.FourLevelNaturalMajor,
     )
     rule_order.order(natural_nt_part_scores, stayman_rebid_priorities.InvitationalOtherMajor, natural_suited_part_scores)
+    rule_order.order(natural_priorities, takeout_double_responses)
     rule_order.order(ForcedRebidOriginalSuitByOpener, natural_priorities)
     rule_order.order(the_law_priorities, responder_rebid_priorities)
     rule_order.order(the_law_priorities, natural_priorities)
