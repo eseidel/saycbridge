@@ -1008,6 +1008,7 @@ class JumpShiftResponderRebid(ResponderRebid):
 
 nt_response_priorities = enum.Enum(
     "LongMajorSlamInvitation",
+    "MinorGameForceStayman",
     "FourFiveStayman",
     "JacobyTransferToLongerMajor",
     "JacobyTransferToSpadesWithGameForcingValues",
@@ -1060,6 +1061,10 @@ four_five_stayman_constraint = ConstraintAnd(
     ),
 )
 
+minor_game_force_stayman_constraints = z3.And(
+    points >= 13,
+    z3.Or(clubs >= 5, diamonds >= 5)
+)
 
 # 2C is a very special snowflake and can lead into many sequences, thus it gets its own class.
 class TwoLevelStayman(NoTrumpResponse):
@@ -1067,6 +1072,7 @@ class TwoLevelStayman(NoTrumpResponse):
     call_names = '2C'
 
     shared_constraints = ConstraintOr(
+        minor_game_force_stayman_constraints,
         two_club_stayman_constraint,
         # Garbage stayman is a trade-off.  The fewer points you have the less likely
         # your partner will make 1N.  2D with only 6 is better than 1N with only 18 points.
@@ -1077,6 +1083,7 @@ class TwoLevelStayman(NoTrumpResponse):
         ),
     )
     conditional_priorities = [
+        (minor_game_force_stayman_constraints, nt_response_priorities.MinorGameForceStayman),
         (four_five_stayman_constraint, nt_response_priorities.FourFiveStayman),
         (two_club_stayman_constraint, nt_response_priorities.Stayman),
     ]
@@ -1276,18 +1283,18 @@ class GarbagePassStaymanRebid(StaymanRebid):
     shared_constraints = points <= 7
 
 
-# FIXME: Before this could work we need to allow 2C Stayman to mean 6+ in a minor.
-# class MinorGameForceRebid(RebidAfterStaymanOverOneNotrump):
-#     call_names = ['3C', '3D']
-#     shared_constraints = [MinLength(6), points >= 13]
-#     priority = stayman_rebid_priorities.MinorGameForceRebid
-
-
 stayman_rebid_priorities = enum.Enum(
+    "MinorGameForceRebid",
     "GameForcingOtherMajor",
     "InvitationalOtherMajor",
 )
 rule_order.order(*reversed(stayman_rebid_priorities))
+
+
+class MinorGameForceRebid(StaymanRebid):
+    call_names = ['3C', '3D']
+    shared_constraints = [MinLength(5), minor_game_force_stayman_constraints]
+    priority = stayman_rebid_priorities.MinorGameForceRebid
 
 
 class OtherMajorRebidAfterStayman(StaymanRebid):
@@ -1736,7 +1743,12 @@ class StandardAmericanYellowCard(object):
     rule_order.order(natural_priorities, GarbagePassStaymanRebid)
     rule_order.order(natural_priorities, two_clubs_opener_rebid_priorities)
     rule_order.order(natural_priorities, responder_rebid_priorities)
-    rule_order.order(natural_priorities.ThreeLevelNaturalNT, stayman_rebid_priorities.GameForcingOtherMajor, natural_priorities.FourLevelNaturalMajor)
+    rule_order.order(
+        natural_priorities.ThreeLevelNaturalNT,
+        stayman_rebid_priorities.GameForcingOtherMajor,
+        stayman_rebid_priorities.MinorGameForceRebid,
+        natural_priorities.FourLevelNaturalMajor,
+    )
     rule_order.order(natural_nt_part_scores, stayman_rebid_priorities.InvitationalOtherMajor, natural_suited_part_scores)
     rule_order.order(ForcedRebidOriginalSuitByOpener, natural_priorities)
     rule_order.order(the_law_priorities, responder_rebid_priorities)

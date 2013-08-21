@@ -921,9 +921,8 @@ class SAYCBidderTest(unittest2.TestCase):
         ["KQ94.J976.KQ7.A2", "4H", "1N P 2D P 2H P 3N P"],  # E should transfer to 2H, then bid 4H, seeing a heart fit.
         ["A53.A8.J9854.J64", "3N", "1N P 2D P 2H P"],  # W should bid 3N to offer E a choice between 3N and 4H.
         # deal 12654421273047901180661788961394 - 6NT slam for E-W.  E didn't know how to respond after 1N
-        # With only 15 hcp, slam is unlikely, but game is sure.
-        # I think we're still supposed to bid 2C, 3C for possible slam interest (p14)
-        ["AKQT5.Q865.875.K", "3N", "1N P"],
+        # With only 15 hcp. We're supposed to bid 2C, 3C for possible slam interest (p14).
+        ["AKQT5.Q865.875.K", "2C", "1N P"],
         ["J94.AK9.A9.QJ932", "3N", "1N P 2C P 2S P 3C P"],  # West's hand is a minimum and plays best in NT.
         # It's unclear if the auction should continue from here, however if we pass all of the above, I'll be ecstatic.
         # deal 3428385259717852034512334730768, N failed to bid 3N with 19 hcp.
