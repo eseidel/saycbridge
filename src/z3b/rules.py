@@ -303,6 +303,24 @@ natural_priorities = enum.Enum(
 # FIXME: Can we order these using a priority compiler?
 rule_order.order(*reversed(natural_priorities))
 
+natural_slams = set([
+    natural_priorities.SixLevelNaturalMinor,
+    natural_priorities.SixLevelNaturalMajor,
+    natural_priorities.SixLevelNaturalNT,
+    natural_priorities.SevenLevelNaturalMinor,
+    natural_priorities.SevenLevelNaturalMajor,
+    natural_priorities.SevenLevelNaturalNT,
+])
+
+natural_games = set([
+    natural_priorities.ThreeLevelNaturalNT,
+    natural_priorities.FourLevelNaturalMajor,
+    natural_priorities.FourLevelNaturalNT,
+    natural_priorities.FiveLevelNaturalMinor,
+    natural_priorities.FiveLevelNaturalNT,
+    natural_priorities.FiveLevelNaturalMajor,
+])
+
 natural_suited_part_scores = set([
     natural_priorities.TwoLevelNaturalMinor,
     natural_priorities.TwoLevelNaturalMajor,
@@ -1008,6 +1026,7 @@ class JumpShiftResponderRebid(ResponderRebid):
 
 
 nt_response_priorities = enum.Enum(
+    "QuantitativeFourNotrumpJump",
     "LongMajorSlamInvitation",
     "MinorGameForceStayman",
     "FourFiveStayman",
@@ -1141,6 +1160,19 @@ class TwoSpadesRelay(NoTrumpTransferResponse):
         '2S': z3.Or(diamonds >= 6, clubs >= 6),
     }
     priority = nt_response_priorities.TwoSpadesRelay
+
+
+class QuantitativeFourNotrumpJumpConstraint(Constraint):
+    def expr(self, history, call):
+        # Invites opener to bid 6N if at a maxium, otherwise pass.
+        return points + history.partner.max_points >= 33
+
+
+class QuantitativeFourNotrumpJump(NoTrumpResponse):
+    call_names = '4N'
+    preconditions = JumpFromLastContract()
+    shared_constraints = QuantitativeFourNotrumpJumpConstraint()
+    priority = nt_response_priorities.QuantitativeFourNotrumpJump
 
 
 class AcceptTransfer(Rule):
@@ -1733,13 +1765,12 @@ class StandardAmericanYellowCard(object):
     rule_order.order(response_priorities, relay_priorities)
     rule_order.order(preempt_priorities, opening_priorities)
     rule_order.order(natural_priorities, preempt_priorities)
-    rule_order.order(response_priorities, nt_response_priorities)
     rule_order.order(response_priorities, two_clubs_response_priorities)
     rule_order.order(response_priorities, jacoby_2n_response_priorities)
     rule_order.order(natural_priorities, overcall_priorities)
     rule_order.order(natural_priorities, response_priorities)
     rule_order.order(natural_priorities, opener_rebid_priorities)
-    rule_order.order(natural_priorities, nt_response_priorities)
+    rule_order.order(natural_games, nt_response_priorities, natural_slams)
     rule_order.order(natural_priorities, stayman_response_priorities)
     rule_order.order(natural_priorities, GarbagePassStaymanRebid)
     rule_order.order(natural_priorities, two_clubs_opener_rebid_priorities)
