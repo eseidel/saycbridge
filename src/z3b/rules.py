@@ -40,7 +40,11 @@ class CompiledRule(object):
     def requires_planning(self, history):
         return self.dsl_rule.requires_planning
 
-    def annotations(self, history):
+    def annotations_for_call(self, call):
+        if self.dsl_rule.annotations_per_call:
+            per_call_annotations = self.dsl_rule.annotations_per_call.get(call.name)
+            if per_call_annotations:
+                return self._annotations | set(RuleCompiler._ensure_list(per_call_annotations))
         return self._annotations
 
     @property
@@ -191,6 +195,7 @@ class RuleCompiler(object):
         # FIXME: We should also walk the class and assert that no unexpected properties are found.
         allowed_keys = set([
             "annotations",
+            "annotations_per_call",
             "call_names",
             "category",
             "conditional_priorities",
@@ -250,6 +255,7 @@ class Rule(object):
     # develop to generate them.  The syntax is:
     # {'1C': [(condition, priority), (condition, priority)]}
     conditional_priorities_per_call = {}
+    annotations_per_call = {}
     priority = None
 
     def __init__(self):
@@ -399,6 +405,12 @@ class Opening(Rule):
 
 class OneLevelSuitOpening(Opening):
     shared_constraints = OpeningRuleConstraint()
+    annotations_per_call = {
+        '1C': annotations.BidClubs,
+        '1D': annotations.BidDiamonds,
+        '1H': annotations.BidHearts,
+        '1S': annotations.BidSpades,
+    }
     constraints = {
         '1C': (clubs >= 3, opening_priorities.LowerMinor),
         '1D': (diamonds >= 3, opening_priorities.HigherMinor),

@@ -13,6 +13,11 @@ annotations = enum.Enum(
     "NoTrumpSystemsOn",
     "StandardOvercall",
 
+    "BidClubs",
+    "BidDiamonds",
+    "BidHearts",
+    "BidSpades",
+
     "Artificial",
     # NOTE: RuleCompiler._compile_annotations will automatically imply
     # "Artificial" when encountering any annotations > Artificial.
@@ -30,6 +35,15 @@ annotations = enum.Enum(
 
 # Used by RuleCompiler._compile_annotations.
 implies_artificial = set([value for value in annotations if value > annotations.Artificial])
+
+
+def did_bid_annotation(suit):
+    return (
+        annotations.BidClubs,
+        annotations.BidDiamonds,
+        annotations.BidHearts,
+        annotations.BidSpades,
+    )[suit]
 
 
 class Precondition(object):

@@ -8,7 +8,8 @@ from core.callhistory import CallHistory
 from itertools import chain
 from z3b import enum
 from third_party.memoized import memoized
-from z3b.model import positions, expr_for_suit, is_possible
+from z3b.model import positions, expr_for_suit, is_possible, is_certain
+from z3b.preconditions import did_bid_annotation
 import copy
 import core.suit as suit
 import z3
@@ -340,13 +341,20 @@ class History(object):
         return True
 
     @memoized
-    def is_unbid_suit(self, suit):
+    def is_bid_suit(self, suit):
+        # Look for the annotation of bidding a suit.
+        if did_bid_annotation(suit) in self.annotations:
+            return True
+        # Check for the a length of 4 or more.
         suit_expr = expr_for_suit(suit)
         for position in positions:
             solver = self._solver_for_position(position)
-            if not is_possible(solver, suit_expr < 3):
-                return False
-        return True
+            if is_certain(solver, suit_expr >= 4):
+                return True
+        return False
+
+    def is_unbid_suit(self, suit):
+        return not self.is_bid_suit(suit)
 
     @property
     def unbid_suits(self):
@@ -548,7 +556,7 @@ class Interpreter(object):
             constraints = model.NO_CONSTRAINTS
             annotations = []
             if rule:
-                annotations = rule.annotations(history)
+                annotations = rule.annotations_for_call(call)
                 constraints = selector.constraints_for_call(call)
                 if not history.is_consistent(positions.Me, constraints):
                     if explain:
