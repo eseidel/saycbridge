@@ -62,6 +62,16 @@ _solver_pool = SolverPool()
 # history.partner.max_hcp()
 
 
+class GroupView(object):
+    def __init__(self, history, positions):
+        self.history = history
+        self.positions = positions
+
+    @property
+    def annotations(self):
+        return chain.from_iterable(map(self.history.annotations_for_position, self.positions))
+
+
 class PositionView(object):
     def __init__(self, history, position):
         self.history = history
@@ -361,6 +371,18 @@ class History(object):
     @property
     def lho(self):
         return PositionView(self, positions.LHO)
+
+    @property
+    def us(self):
+        return GroupView(self, [positions.Me, positions.Partner])
+
+    @property
+    def them(self):
+        return GroupView(self, [positions.LHO, positions.RHO])
+
+    @property
+    def everyone(self):
+        return GroupView(self, positions)
 
     def view_for(self, position):
         return PositionView(self, position)

@@ -717,7 +717,7 @@ rule_order.order(*reversed(opener_rebid_priorities))
 class OpenerRebid(Rule):
     preconditions = [
         LastBidHasAnnotation(positions.Me, annotations.Opening),
-        InvertedPrecondition(LastBidHasAnnotation(positions.Me, annotations.NoTrumpSystemsOn))
+        InvertedPrecondition(NoTrumpSystemsOn())
     ]
 
 
@@ -923,6 +923,7 @@ class ResponderRebid(Rule):
     preconditions = [
         Opened(positions.Partner),
         HasBid(positions.Me),
+        InvertedPrecondition(NoTrumpSystemsOn())
     ]
 
 

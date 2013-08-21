@@ -97,6 +97,11 @@ class Opened(Precondition):
         return annotations.Opening in history.annotations_for_position(self.position)
 
 
+class NoTrumpSystemsOn(Precondition):
+    def fits(self, history, call):
+        return annotations.NoTrumpSystemsOn in history.us.annotations
+
+
 class HasBid(Precondition):
     def __init__(self, position):
         self.position = position
