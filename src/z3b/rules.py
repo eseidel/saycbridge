@@ -1588,7 +1588,7 @@ class TakeoutDouble(Rule):
         UnbidSuitCountRange(2, 3),
     ]
     annotations = annotations.TakeoutDouble
-    shared_constraints = SupportForUnbidSuits()
+    shared_constraints = ConstraintOr(SupportForUnbidSuits(), points >= 17)
     priority = overcall_priorities.TakeoutDouble
 
 
