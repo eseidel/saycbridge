@@ -1002,6 +1002,8 @@ nt_response_priorities = enum.Enum(
     "JacobyTransferToHearts",
     "JacobyTransferToSpades",
     "Stayman",
+    "NotrumpGameAccept",
+    "NotrumpGameInvitation",
     "LongMinorGameInvitation",
     "TwoSpadesRelay",
     "GarbageStayman",
@@ -1017,19 +1019,55 @@ class NoTrumpResponse(Rule):
     ]
 
 
+class NotrumpGameInvitation(NoTrumpResponse):
+    # This is an explicit descriptive rule, not a ToPlay rule.
+    # ToPlay is 7-9, but 7 points isn't in game range.
+    constraints = { '2N': points >= 8 }
+    priority = nt_response_priorities.NotrumpGameInvitation
+
+
+class NotrumpGameAccept(NoTrumpResponse):
+    # This is an explicit descriptive rule, not a ToPlay rule.
+    # ToPlay is 7-9, but 7 points isn't in game range.
+    constraints = { '3N': points >= 10 }
+    priority = nt_response_priorities.NotrumpGameAccept
+
+
+two_club_stayman_constraint = ConstraintAnd(
+    MinimumCombinedPoints(23),
+    z3.Or(hearts >= 4, spades >= 4)
+)
+
+# 2C is a very special snowflake and can lead into many sequences, thus it gets its own class.
+class TwoLevelStayman(NoTrumpResponse):
+    annotations = annotations.Stayman
+    call_names = '2C'
+
+    shared_constraints = ConstraintOr(
+        two_club_stayman_constraint,
+        # Garbage stayman is a trade-off.  The fewer points you have the less likely
+        # your partner will make 1N.  2D with only 6 is better than 1N with only 18 points.
+        z3.And(spades >= 3, hearts >= 3, 
+            z3.Or(diamonds >= 5,
+                z3.And(diamonds >= 4, points <= 3)
+            ),
+        ),
+    )
+    conditional_priorities = [
+        (two_club_stayman_constraint, nt_response_priorities.Stayman)
+    ]
+    priority = nt_response_priorities.GarbageStayman
+
+
 class BasicStayman(NoTrumpResponse):
     annotations = annotations.Stayman
     priority = nt_response_priorities.Stayman
     shared_constraints = [z3.Or(hearts >= 4, spades >= 4)]
 
 
-class Stayman(BasicStayman):
+class ThreeLevelStayman(BasicStayman):
     preconditions = NotJumpFromPartnerLastBid()
-    constraints = {
-        # FIXME: I think of GarbageStayman as guarenteeing support in any response.
-        '2C': ConstraintOr(MinimumCombinedPoints(23), z3.And(spades <= 4, hearts <= 4, diamonds <= 5, clubs <= 1)),
-        '3C': MinimumCombinedPoints(25),
-    }
+    constraints = { '3C': MinimumCombinedPoints(25) }
 
 
 class StolenTwoClubStayman(BasicStayman):

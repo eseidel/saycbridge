@@ -105,15 +105,15 @@ class SAYCBidderTest(unittest2.TestCase):
 
     def test_escape_route_stayman(self):
         self._assert_hands_match_calls([
-            ["9.8753.7652.8732", "P", "1N P 2C P 2D P"],  # p7
-            ["9.8753.7652.8732", "P", "1N P 2C P 2H P"],  # p7
-            ["9.8753.7652.8732", "P", "1N P 2C P 2S P"],  # p7
-            ["2.J8742.652.Q732", "P", "1N P 2C P 2D P"],  # p7
-            ["2.J8742.652.Q732", "P", "1N P 2C P 2H P"],  # p7
-            ["2.J8742.652.Q732", "P", "1N P 2C P 2S P"],  # p7
-            ["8.T9762.Q732.J65", "P", "1N P 2C P 2D P"],  # p7
-            ["8.T9762.Q732.J65", "P", "1N P 2C P 2H P"],  # p7
-            ["8.T9762.Q732.J65", "P", "1N P 2C P 2S P"],  # p7
+            ["9.8753.7652.8732", "P", "1N P 2C P 2D P"],  # p8, h9
+            ["9.8753.7652.8732", "P", "1N P 2C P 2H P"],  # p8, h9
+            ["9.8753.7652.8732", "P", "1N P 2C P 2S P"],  # p8, h9
+            ["2.J8742.652.Q732", "P", "1N P 2C P 2D P"],  # p8, h10
+            ["2.J8742.652.Q732", "P", "1N P 2C P 2H P"],  # p8, h10
+            ["2.J8742.652.Q732", "P", "1N P 2C P 2S P"],  # p8, h10
+            ["8.T9762.Q732.J65", "P", "1N P 2C P 2D P"],  # p8, h11
+            ["8.T9762.Q732.J65", "P", "1N P 2C P 2H P"],  # p8, h11
+            ["8.T9762.Q732.J65", "P", "1N P 2C P 2S P"],  # p8, h11
         ])
 
     def test_jacoby_transfers(self):

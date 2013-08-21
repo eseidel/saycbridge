@@ -12,6 +12,14 @@ class Constraint(object):
         raise NotImplementedError
 
 
+class ConstraintAnd(Constraint):
+    def __init__(self, *constraints):
+        self.constraints = constraints
+
+    def expr(self, history, call):
+        return z3.And([constraint.expr(history, call) if isinstance(constraint, Constraint) else constraint for constraint in self.constraints])
+
+
 class ConstraintOr(Constraint):
     def __init__(self, *constraints):
         self.constraints = constraints
