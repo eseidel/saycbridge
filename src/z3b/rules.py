@@ -371,9 +371,10 @@ class NotrumpToPlay(Natural):
         '1N': [MinimumCombinedPoints(19), natural_priorities.OneLevelNaturalNT],
         '2N': [MinimumCombinedPoints(22), natural_priorities.TwoLevelNaturalNT],
         '3N': [MinimumCombinedPoints(25), natural_priorities.ThreeLevelNaturalNT],
+        # FIXME: 4N should really be 25, but in order to make that work we need SlamIsRemotePass.
         '4N': [MinimumCombinedPoints(28), natural_priorities.FourLevelNaturalNT],
-        '5N': [MinimumCombinedPoints(31), natural_priorities.FiveLevelNaturalNT],
-        '6N': [MinimumCombinedPoints(34), natural_priorities.SixLevelNaturalNT],
+        '5N': [MinimumCombinedPoints(30), natural_priorities.FiveLevelNaturalNT],
+        '6N': [MinimumCombinedPoints(33), natural_priorities.SixLevelNaturalNT],
         '7N': [MinimumCombinedPoints(37), natural_priorities.SevenLevelNaturalNT],
     }
 
