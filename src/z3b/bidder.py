@@ -71,6 +71,10 @@ class GroupView(object):
     def annotations(self):
         return chain.from_iterable(map(self.history.annotations_for_position, self.positions))
 
+    @property
+    def bid_suits(self):
+        return set(chain.from_iterable(map(self.history.bid_suits_for_position, self.positions)))
+
 
 class PositionView(object):
     def __init__(self, history, position):
