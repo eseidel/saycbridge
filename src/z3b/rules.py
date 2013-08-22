@@ -1605,18 +1605,20 @@ class TwoLevelTakeoutDouble(TakeoutDouble):
 takeout_double_responses = enum.Enum(
     "CuebidResponseToTakeoutDouble",
 
+    # FIXME: Prefer NT jump if we don't have a 4-card suit.
     "JumpSpadeResonseToTakeoutDouble",
     "JumpHeartResonseToTakeoutDouble",
     "JumpDiamondResonseToTakeoutDouble",
     "JumpClubResonseToTakeoutDouble",
+
+    # FIXME: We prefer 4-card suits if we have them.
+    "NotrumpResponseToTakeoutDouble",
 
     # Ordering the suit resposes this way makes us prefer first available.
     "SpadeResonseToTakeoutDouble",
     "HeartResonseToTakeoutDouble",
     "DiamondResonseToTakeoutDouble",
     "ClubResonseToTakeoutDouble",
-
-    "NotrumpResponseToTakeoutDouble",
 )
 rule_order.order(*reversed(takeout_double_responses))
 
@@ -1634,6 +1636,7 @@ class ResponseToTakeoutDouble(Rule):
 
 
 class NotrumpResponseToTakeoutDouble(ResponseToTakeoutDouble):
+    preconditions = [NotJumpFromLastContract()]
     constraints = {
         '1N': points >= 6,
         '2N': points >= 11,
@@ -1645,7 +1648,8 @@ class NotrumpResponseToTakeoutDouble(ResponseToTakeoutDouble):
 
 class SuitResponseToTakeoutDouble(ResponseToTakeoutDouble):
     preconditions = [UnbidSuit(), NotJumpFromLastContract()]
-    shared_constraints = LongestSuitExceptOpponentSuits()
+    # FIXME: Why is the min-length constraint necessary?
+    shared_constraints = [MinLength(3), LongestSuitExceptOpponentSuits()]
     # Need conditional priorities to disambiguate cases like being 1.4.4.4 with 0 points after 1C X P
     # Similarly after 1H X P, with 4 spades and 4 clubs, but with xxxx spades and AKQx clubs, do we bid clubs or spades?
     constraints = {
@@ -1658,7 +1662,9 @@ class SuitResponseToTakeoutDouble(ResponseToTakeoutDouble):
 
 class JumpSuitResponseToTakeoutDouble(ResponseToTakeoutDouble):
     preconditions = [UnbidSuit(), JumpFromLastContract(exact_size=1)]
-    shared_constraints = [LongestSuitExceptOpponentSuits(), points >= 10]
+    # You can have 10 points, but no stopper in opponents suit and only a 3 card suit to bid.
+    # 1C X P, xxxx.Axx.Kxx.Kxx
+    shared_constraints = [MinLength(3), LongestSuitExceptOpponentSuits(), points >= 10]
     constraints = {
         (      '3C', '4C'): (NO_CONSTRAINTS, takeout_double_responses.JumpClubResonseToTakeoutDouble),
         ('2D', '3D', '4D'): (NO_CONSTRAINTS, takeout_double_responses.JumpDiamondResonseToTakeoutDouble),

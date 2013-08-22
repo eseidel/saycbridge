@@ -487,7 +487,7 @@ class RuleSelector(object):
                     # FIXME: It's lame that enum's < is backwards.
                     if category < existing_category:
                         if self.explain and call == self.expected_call:
-                            print rule.name + " is higher category than " + str(maximal[call])
+                            print "%s is higher category than %s" % (rule.name, str(maximal[call]))
                         maximal[call] = (category, [rule])
                     elif category == existing_category:
                         existing_rules.append(rule)
@@ -564,6 +564,7 @@ class Interpreter(object):
                 if not history.is_consistent(positions.Me, constraints):
                     if explain:
                         print "WARNING: History is not consistent, ignoring %s from %s" % (call.name, rule)
+                        print constraints
                     constraints = model.NO_CONSTRAINTS
                     annotations = []
 

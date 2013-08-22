@@ -12,7 +12,7 @@ class Enum(object):
             self.index = index
             self.key = key
 
-        def __str__(self):
+        def __repr__(self):
             return self.key
 
         def __le__(self, other):
