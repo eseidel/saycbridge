@@ -47,48 +47,52 @@ def did_bid_annotation(suit):
 
 
 class Precondition(object):
+    repr_name = None
+
     def __repr__(self):
-        return "%s()" % self.name
+        name = self.repr_name or self.__class__.__name__
+        return "%s(%s)" % (name, ", ".join(map(repr, self.repr_args)))
 
     @property
-    def name(self):
-        return self.__class__.__name__
+    def repr_args(self):
+        return []
 
     def fits(self, history, call):
         raise NotImplementedError
 
 
 class InvertedPrecondition(Precondition):
+    repr_name = "Not"
+
     def __init__(self, precondition):
         self.precondition = precondition
 
     @property
-    def name(self):
-        return "NOT_%s" % self.precondition.name
+    def repr_args(self):
+        return [self.precondition]
 
     def fits(self, history, call):
         return not self.precondition.fits(history, call)
 
 
-class EitherPrecondition(Precondition):
+class SummaryPrecondition(Precondition):
     def __init__(self, *preconditions):
         self.preconditions = preconditions
 
     @property
-    def name(self):
-        return "EitherPrecondition(%s)" % repr(self.preconditions)
+    def repr_args(self):
+        return self.preconditions
+
+
+class EitherPrecondition(SummaryPrecondition):
+    repr_name = "Either"
 
     def fits(self, history, call):
         return any(precondition.fits(history, call) for precondition in self.preconditions)
 
 
-class AndPrecondition(Precondition):
-    def __init__(self, *preconditions):
-        self.preconditions = preconditions
-
-    @property
-    def name(self):
-        return "AndPrecondition(%s)" % repr(self.preconditions)
+class AndPrecondition(SummaryPrecondition):
+    repr_name = "And"
 
     def fits(self, history, call):
         return all(precondition.fits(history, call) for precondition in self.preconditions)
@@ -104,8 +108,8 @@ class Opened(Precondition):
         self.position = position
 
     @property
-    def name(self):
-        return "Opened(%s)" % repr(self.position.key)
+    def repr_args(self):
+        return [self.position.key]
 
     def fits(self, history, call):
         return annotations.Opening in history.annotations_for_position(self.position)
@@ -121,8 +125,8 @@ class HasBid(Precondition):
         self.position = position
 
     @property
-    def name(self):
-        return "HasBid(%s)" % repr(self.position.key)
+    def repr_args(self):
+        return [self.position.key]
 
     def fits(self, history, call):
         for view in history.view_for(self.position).walk:
@@ -167,8 +171,9 @@ class LastBidHasAnnotation(Precondition):
         self.position = position
         self.annotation = annotation
 
-    def __repr__(self):
-        return "%s(%s, %s)" % (self.name, repr(self.position.key), repr(self.annotation.key))
+    @property
+    def repr_args(self):
+        return [self.position.key, self.annotation.key]
 
     def fits(self, history, call):
         return self.annotation in history.view_for(self.position).annotations_for_last_call
@@ -182,8 +187,9 @@ class LastBidHasStrain(Precondition):
         else:
             self.strains = strain_or_strains
 
-    def __repr__(self):
-        return "%s(%s, %s)" % (self.name, repr(self.position.key), self.strains)
+    @property
+    def repr_args(self):
+        return [self.position.key, self.starins]
 
     def fits(self, history, call):
         last_call = history.view_for(self.position).last_call
@@ -194,9 +200,10 @@ class LastBidHasSuit(Precondition):
     def __init__(self, position=None):
         self.position = position
 
-    def __repr__(self):
+    @property
+    def repr_args(self):
         position_string = repr(self.position.key) if self.position else None
-        return "%s(%s)" % (self.name, position_string)
+        return [position_string]
 
     def fits(self, history, call):
         last_call = history.last_contract if not self.position else history.view_for(self.position).last_call
@@ -208,8 +215,9 @@ class LastBidHasLevel(Precondition):
         self.position = position
         self.level = level
 
-    def __repr__(self):
-        return "%s(%s, %s)" % (self.name, repr(self.position.key), self.level)
+    @property
+    def repr_args(self):
+        return [self.position.key, self.level]
 
     def fits(self, history, call):
         last_call = history.view_for(self.position).last_call
@@ -221,8 +229,9 @@ class LastBidWas(Precondition):
         self.position = position
         self.call_name = call_name
 
-    def __repr__(self):
-        return "%s(%s, %s)" % (self.name, repr(self.position.key), self.call_name)
+    @property
+    def repr_args(self):
+        return [self.position.key, self.call_name]
 
     def fits(self, history, call):
         last_call = history.view_for(self.position).last_call
@@ -258,8 +267,9 @@ class PartnerHasAtLeastLengthInSuit(Precondition):
     def __init__(self, length):
         self.length = length
 
-    def __repr__(self):
-        return "%s(%s)" % (self.name, self.length)
+    @property
+    def repr_args(self):
+        return [self.length]
 
     def fits(self, history, call):
         if call.strain not in suit.SUITS:
@@ -272,6 +282,11 @@ class MaxShownLength(Precondition):
         self.position = position
         self.max_length = max_length
         self.suit = suit
+
+
+    @property
+    def repr_args(self):
+        return [self.position.key, self.max_length, self.suit]
 
     def fits(self, history, call):
         strain = call.strain if self.suit is None else self.suit
@@ -290,6 +305,10 @@ class UnbidSuitCountRange(Precondition):
         self.lower = lower
         self.upper = upper
 
+    @property
+    def repr_args(self):
+        return [self.lower, self.upper]
+
     def fits(self, history, call):
         count = len(history.unbid_suits)
         return count >= self.lower and count <= self.upper
@@ -299,8 +318,9 @@ class Strain(Precondition):
     def __init__(self, strain):
         self.strain = strain
 
-    def __repr__(self):
-        return "%s(%s)" % (self.name, self.strain)
+    @property
+    def repr_args(self):
+        return [self.strain]
 
     def fits(self, history, call):
         return call.strain == self.strain
@@ -309,6 +329,10 @@ class Strain(Precondition):
 class Level(Precondition):
     def __init__(self, level):
         self.level = level
+
+    @property
+    def repr_args(self):
+        return [self.level]
 
     def fits(self, history, call):
         if call.is_double():
@@ -320,6 +344,10 @@ class MaxLevel(Precondition):
     def __init__(self, max_level):
         self.max_level = max_level
 
+    @property
+    def repr_args(self):
+        return [self.max_level]
+
     def fits(self, history, call):
         if call.is_double():
             return history.last_contract.level() <= self.max_level
@@ -329,6 +357,10 @@ class MaxLevel(Precondition):
 class MinimumCombinedPointsPrecondition(Precondition):
     def __init__(self, min_points):
         self.min_points = min_points
+
+    @property
+    def repr_args(self):
+        return [self.min_points]
 
     def fits(self, history, call):
         return history.partner.min_points + history.me.min_points >= self.min_points
@@ -345,6 +377,10 @@ class HaveFit(Precondition):
 class Jump(Precondition):
     def __init__(self, exact_size=None):
         self.exact_size = exact_size
+
+    @property
+    def repr_args(self):
+        return [self.exact_size]
 
     def _jump_size(self, last_call, call):
         if call.strain <= last_call.strain:

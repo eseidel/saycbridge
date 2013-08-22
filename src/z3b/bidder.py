@@ -511,8 +511,8 @@ class RuleSelector(object):
                 for unmade_priority, unmade_z3_meaning in unmade_rule.meaning_of(self.history, unmade_call):
                     if self.system.priority_ordering.lt(priority, unmade_priority):
                         if self.explain and self.expected_call == call:
-                            print "adding negation " + unmade_rule.name + "(" + unmade_call.name + ") to " + rule.name
-                            print z3.Not(unmade_z3_meaning)
+                            print "Adding negation %s (%s) to %s:" % (unmade_rule.name, unmade_call.name, rule.name)
+                            print " %s" % z3.simplify(z3.Not(unmade_z3_meaning))
                         situational_exprs.append(z3.Not(unmade_z3_meaning))
             situations.append(z3.And(situational_exprs))
 
