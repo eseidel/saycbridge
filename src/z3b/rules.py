@@ -15,6 +15,33 @@ from z3b.preconditions import *
 
 rule_order = ordering.Ordering()
 
+# FIXME: Unclear if these are clearer to read or not.
+def suit_bids_below_game(lowest_call_name=None):
+    all_suit_bids_below_game = (
+        '1C', '1D', '1H', '1S',
+        '2C', '2D', '2H', '2S',
+        '3C', '3D', '3H', '3S',
+        '4C', '4D'
+    )
+    lowest_call_index = all_suit_bids_below_game.index(lowest_call_name) if lowest_call_name else 0
+    return all_suit_bids_below_game[lowest_call_index:]
+
+
+def suit_bids_between(low_call_name, high_call_name):
+    all_suit_bids = (
+        '1C', '1D', '1H', '1S',
+        '2C', '2D', '2H', '2S',
+        '3C', '3D', '3H', '3S',
+        '4C', '4D', '4H', '4S',
+        '5C', '5D', '5H', '5S',
+        '6C', '6D', '6H', '6S',
+        '7C', '7D', '7H', '7S',
+    )
+    low_index = all_suit_bids.index(low_call_name)
+    high_index = all_suit_bids.index(high_call_name)
+    return all_suit_bids[low_index:high_index]
+
+
 categories = enum.Enum(
     "Relay",
     "Gadget",
@@ -189,7 +216,7 @@ class RuleCompiler(object):
     @classmethod
     def _validate_rule(cls, dsl_class):
         # Rules have to apply some constraints to the hand.
-        assert dsl_class.constraints or dsl_class.shared_constraints, "" + dsl_class.name + " is missing constraints"
+        assert dsl_class.constraints or dsl_class.shared_constraints, "" + dsl_class.name() + " is missing constraints"
         # conditional_priorities doesn't work with self.constraints
         assert not dsl_class.conditional_priorities or not dsl_class.constraints
         assert not dsl_class.conditional_priorities or dsl_class.call_names
@@ -1735,6 +1762,123 @@ class CuebidResponseToTakeoutDouble(ResponseToTakeoutDouble):
     shared_constraints = [points >= 13, SupportForUnbidSuits()]
 
 
+rebid_after_takeout_double_priorities = enum.Enum(
+    "CueBidAfterTakeoutDouble",
+
+    "JumpRaiseAfterTakeoutDouble",
+    "RaiseAfterTakeoutDouble",
+
+    "NotrumpAfterTakeoutDouble",
+
+    "JumpNewSuitAfterTakeoutDouble",
+    
+    "JumpTwoNotrumpAfterTakeoutDouble",
+    "NonJumpTwoNotrumpAfterTakeoutDouble",
+
+    "NewSuitAfterTakeoutDouble", 
+)
+rule_order.order(*reversed(rebid_after_takeout_double_priorities))
+
+
+class RebidAfterTakeoutDouble(Rule):
+    preconditions = LastBidHasAnnotation(positions.Me, annotations.TakeoutDouble)
+    shared_constraints = points >= 17
+
+
+# class PassAfterTakeoutDouble(Rule):
+#     preconditions = [
+#         LastBidHasAnnotation(positions.Me, annotations.TakeoutDouble)
+#         LastBidWas(positions.RHO, 'P')
+#     ]
+#     call_names = 'P'
+#     shared_constraints = points < 17
+
+
+class RaiseAfterTakeoutDouble(RebidAfterTakeoutDouble):
+    preconditions = [
+        LastBidWas(positions.RHO, 'P'),
+        RaiseOfPartnersLastSuit(),
+        NotJumpFromLastContract()
+    ]
+    # Min: 1C X 1D P 2D
+    # FIXME: Unclear the max?
+    call_names = suit_bids_below_game('2D')
+    # FIXME: Majors should be preferred over NewSuitAfterTakeoutDouble?
+    shared_constraints = MinLength(4)
+    priority = rebid_after_takeout_double_priorities.RaiseAfterTakeoutDouble
+
+
+# class JumpRaiseAfterTakeoutDouble(RebidAfterTakeoutDouble):
+#     preconditions = [
+#         RaiseOfPartnersLastSuit(),
+#         JumpFromPartnerLastBid(exact_size=1)
+#     ]
+#     call_names = suit_bids_below_game('3D')
+#     shared_constraints = [MinLength(4), points >= 19]
+#     priority = rebid_after_takeout_double_priorities.JumpRaiseAfterTakeoutDouble
+
+
+# class NewSuitAfterTakeoutDouble(RebidAfterTakeoutDouble):
+#     preconditions = [
+#         UnbidSuit(),
+#         NotJumpFromLastContract()
+#     ]
+#     # Min: 1C X XX P 1D
+#     call_names = suit_bids_below_game('1D')
+#     shared_constraints = MinLength(5)
+#     priority = rebid_after_takeout_double_priorities.NewSuitAfterTakeoutDouble
+
+
+# class JumpNewSuitAfterTakeoutDouble(RebidAfterTakeoutDouble):
+#     preconditions = [
+#         UnbidSuit(),
+#         JumpFromLastContract(exact_size=1)
+#     ]
+#     # Min: 1C X 1D P 2H
+#     call_names = suit_bids_below_game('2H')
+#     shared_constraints = [MinLength(6), TwoOfTheTopThree(), points >= 21]
+#     priority = rebid_after_takeout_double_priorities.JumpNewSuitAfterTakeoutDouble
+
+
+# class NotrumpAfterTakeoutDouble(RebidAfterTakeoutDouble):
+#     constraints = {
+#         '1N': points >= 18,
+#         # 2N depends on whether it is a jump.
+#         '3N': points >= 22,  # FIXME: Techincally means 9+ tricks.
+#     }
+#     shared_constraints = StoppersInOpponentsSuits()
+#     priority = rebid_after_takeout_double_priorities.NotrumpAfterTakeoutDouble
+
+
+# class NonJumpTwoNotrumpAfterTakeoutDouble(RebidAfterTakeoutDouble):
+#     preconditions = NotJumpFromLastContract()
+#     call_names = '2N'
+#     shared_constraints = [points >= 19, StoppersInOpponentsSuits()]
+#     priority = rebid_after_takeout_double_priorities.NonJumpTwoNotrumpAfterTakeoutDouble
+
+
+# class JumpTwoNotrumpAfterTakeoutDouble(RebidAfterTakeoutDouble):
+#     preconditions = JumpFromLastContract()
+#     call_names = '2N'
+#     shared_constraints = [points >= 21, StoppersInOpponentsSuits()]
+#     priority = rebid_after_takeout_double_priorities.JumpTwoNotrumpAfterTakeoutDouble
+
+
+# class CueBidAfterTakeoutDouble(RebidAfterTakeoutDouble):
+#     preconditions = [
+#         NotJumpFromLastContract(),
+#         CueBid(positions.RHO),
+#     ]
+#     # Min: 1C X 1D P 2C
+#     call_names = suit_bids_below_game('2C')
+#     shared_constraints = points >= 21
+#     priority = rebid_after_takeout_double_priorities.CueBidAfterTakeoutDouble
+
+
+# class TakeoutDoubleAfterTakeoutDouble(RebidAfterTakeoutDouble):
+#     call_names = 'X'
+
+
 preempt_priorities = enum.Enum(
     "EightCardPreempt",
     "SevenCardPreempt",
@@ -1944,3 +2088,4 @@ class StandardAmericanYellowCard(object):
     rule_order.order(DefaultPass, the_law_priorities)
     rule_order.order(DefaultPass, sign_off_priorities)
     rule_order.order(DefaultPass, opening_priorities)
+    rule_order.order(DefaultPass, rebid_after_takeout_double_priorities)

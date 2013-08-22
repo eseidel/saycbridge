@@ -773,6 +773,8 @@ class SAYCBidderTest(unittest2.TestCase):
             ["KJ7.AJ6.KJ7.AQ86", "X", "1S"],  # p118, h12
             ["K2.AKT86.5.AQJ76", "1S", "1C"],  # p118, h13
 
+            ["A874.AK96.8.AK84", "2S", "1H X P 2S P"],
+
             # Responding to a takeout double
             # Responding with no intervening bid
             ["T874.876.86.J843", "2C", "1S X P"],  # p119, h14
