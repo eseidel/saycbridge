@@ -276,7 +276,7 @@ class RebidSameSuit(Precondition):
     def fits(self, history, call):
         if call.strain not in suit.SUITS:
             return False
-        return history.me.last_call and call.strain == history.me.last_call.strain
+        return history.me.last_call and call.strain == history.me.last_call.strain and call.strain in history.me.bid_suits
 
 
 class PartnerHasAtLeastLengthInSuit(Precondition):

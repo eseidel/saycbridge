@@ -805,8 +805,16 @@ class NewSuitByOpener(SecondSuitFromOpener):
     shared_constraints = MinLength(4)
 
 
+reverse_preconditions = [
+    InvertedPrecondition(SuitLowerThanMyLastSuit()),
+    LastBidHasSuit(positions.Me),
+    UnbidSuit(),
+    NotJumpFromLastContract(),
+]
+
+
 class ReverseByOpener(SecondSuitFromOpener):
-    preconditions = InvertedPrecondition(SuitLowerThanMyLastSuit())
+    preconditions = reverse_preconditions
     constraints = {
         # 2C is never a reverse
         '2D': (MinimumCombinedPoints(22), opener_rebid_priorities.ReverseDiamonds),
@@ -1012,10 +1020,15 @@ class ResponderSignoffInPartnersSuit(ResponderRebid):
 #     priority = sign_off_priorities.ResponderSignoffInMinorGame
 
 
-# class ResponderReverse(ResponderRebid):
-#     preconditions = Reverse.preconditions
-#     shared_constraints = [MinLength(4), points >= 12]
-#     priority = responder_rebid_priorities.ResponderReverse
+class ResponderReverse(ResponderRebid):
+    preconditions = reverse_preconditions
+    # Min: 1C,1D,2C,2H, Max: 1S,2D,2S,3H
+    call_names = [
+                  '2H','2S',
+        '3C','3D','3H',
+    ]
+    shared_constraints = [MinLength(4), points >= 12]
+    priority = responder_rebid_priorities.ResponderReverse
 
 
 class JumpShiftResponderRebid(ResponderRebid):

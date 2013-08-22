@@ -128,6 +128,14 @@ class PositionView(object):
     def max_length(self, suit):
         return self.history.max_length_for_position(self.position, suit)
 
+    @property
+    def unbid_suits(self):
+        return set(suit.SUITS) - self.bid_suits
+
+    @property
+    def bid_suits(self):
+        return set([_suit for _suit in suit.SUITS if self.history.is_bid_suit(_suit, self.position)])
+
 
 # This class is immutable.
 class History(object):

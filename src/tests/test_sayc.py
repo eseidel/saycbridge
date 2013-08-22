@@ -464,6 +464,10 @@ class SAYCBidderTest(unittest2.TestCase):
             ["KJ6.T.KQT97.KQ74", "2S", "1C P 1H P 1N P"], # p71, h13
             ["K54.KQJ87.KQT97.", "3D", "1C P 1H P 1N P"], # p71, h14
 
+            # Responder Reverse.  Fear not. p65
+            ["3.KJ643.AK75.Q65", "2H", "1C P 1D P 2C P"],
+            ["KJ643.Q32.AK75.6", "3H", "1S P 2C P 2S P"],
+
             # Game sign-offs.
             ["KJ64.JT.KQT9.KJ9", "3N", "1D P 1H P 1N P"], # p72, h15
             ["2.KQ43.KQT8.QT98", "4S", "1D P 1H P 1S P"], # p72, h16
