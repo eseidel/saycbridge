@@ -381,7 +381,9 @@ class SAYCBidderTest(unittest2.TestCase):
             ["KJ86.K4.A8.KQ632", "3C", "1S P 2S P"],  # p53, h15
 
             ["A532.AK52.J4.AQ9", "2N", "P 1D P 1H P"],
-        ])  # FIXME: Using support points in the fallback bidder would pass some of these.
+
+            ["AKJ43.AKJ4.432.4", "2D", "1C P 2C P"], # 2D is the lowest HelpSuitGameTry.
+        ])
 
     def test_game_forcing_rebid_by_opener(self):
         self._assert_hands_match_calls([
@@ -1113,7 +1115,7 @@ class SAYCBidderTest(unittest2.TestCase):
 
     def _parse_expectation(self, expectation):
         hand_string = expectation[0]
-        assert '.' in hand_string, "_split_expectation expectes C.D.H.S formatted hands"
+        assert '.' in hand_string, "_split_expectation expectes C.D.H.S formatted hands, missing '.': %s" % hand_string
         expected_bid = expectation[1]
         assert len(expected_bid) == 2 or expected_bid in ('P', 'X')
         history_string = expectation[2] if len(expectation) > 2 else ""

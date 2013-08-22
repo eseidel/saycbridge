@@ -889,7 +889,10 @@ class HelpSuitGameTry(RebidAfterOneLevelOpen):
         UnbidSuit(),
     ]
     # Minimum: 1C,2C,2D, Max: 1C,3C,3S
-    call_names = ['3C', '3D', '3H', '3S']
+    call_names = [
+              '2D', '2H', '2S',
+        '3C', '3D', '3H', '3S'
+    ]
     # Descriptive not placement bid hence points instead of MinimumCombinedPoints.
     shared_constraints = [MinLength(4), Stopper(), points >= 16]
     priority = opener_rebid_priorities.HelpSuitGameTry
@@ -899,7 +902,11 @@ class JumpShiftByOpener(RebidAfterOneLevelOpen):
     preconditions = JumpShift.preconditions
     # The lowest possible jumpshift is 1C P 1D P 2H.
     # The highest possible jumpshift is 1S P 2H P 4D
-    call_names = ['2H', '2S', '3C', '3D', '3H', '3S', '4C', '4D']
+    call_names = [
+                    '2H', '2S',
+        '3C', '3D', '3H', '3S',
+        '4C', '4D'
+    ]
     # FIXME: The book mentions that opener jumpshifts don't always promise 4, especially for 1C P MAJOR P 3D
     shared_constraints = (points >= 19, MinLength(4))
     priority = opener_rebid_priorities.JumpShiftByOpener
