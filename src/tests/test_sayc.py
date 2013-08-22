@@ -581,9 +581,12 @@ class SAYCBidderTest(unittest2.TestCase):
 
     def test_preemptive_overcalls(self):
         self._assert_hands_match_calls([
-            ["4.Q765.83.KQJ932", "1S", "1H"],
-            ["9.QJ2.AQJ984.986", "1H", "1C"],
-            ["Q9.QT82.AQJ984.2", "1H", "1D"],
+            # The book covers preemptive overcalls with 2 whole sentences.
+            # Here are some cases we've come up with to test that with <= 11 points
+            # we prefer to preempt, but with 12+ we prefer a standard overcall.
+            ["4.Q765.K3.AQJ932", "1S", "1H"],
+            ["9.QJ2.AQJ984.K86", "1H", "1C"],
+            ["KQ.QT82.AQJ984.2", "1H", "1D"],
 
             ["4.T765.83.KQJ932", "2S", "1H"],
             ["9.JT2.AQT984.986", "2H", "1C"],

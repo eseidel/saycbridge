@@ -1367,10 +1367,16 @@ overcall_priorities = enum.Enum(
     "DirectOvercall1N",
     "DirectNotrumpDouble",
     "TakeoutDouble",
+
+    "WeakFourLevelPremptive",
+    "WeakThreeLevelPremptive",
+    "WeakTwoLevelPremptive",
+
     "DirectOvercallLongestMajor",
     "DirectOvercallMajor",
     "DirectOvercallLongestMinor",
     "DirectOvercallMinor",
+
     "FourLevelPremptive",
     "ThreeLevelPremptive",
     "TwoLevelPremptive",
@@ -1730,11 +1736,16 @@ class PreemptiveOpen(Opening):
 
 
 class PreemptiveOvercall(DirectOvercall):
-    preconditions = JumpFromLastContract()
+    preconditions = [JumpFromLastContract(), UnbidSuit()]
     constraints = {
         ('2C', '2D', '2H', '2S'): (MinLength(6), overcall_priorities.TwoLevelPremptive),
         ('3C', '3D', '3H', '3S'): (MinLength(7), overcall_priorities.ThreeLevelPremptive),
         ('4C', '4D', '4H', '4S'): (MinLength(8), overcall_priorities.FourLevelPremptive),
+    }
+    conditional_priorities_per_call = {
+        ('2C', '2D', '2H', '2S'): [(points <= 11, overcall_priorities.WeakTwoLevelPremptive)],
+        ('3C', '3D', '3H', '3S'): [(points <= 11, overcall_priorities.WeakThreeLevelPremptive)],
+        ('4C', '4D', '4H', '4S'): [(points <= 11, overcall_priorities.WeakFourLevelPremptive)],
     }
     shared_constraints = [ThreeOfTheTopFiveOrBetter(), points >= 5]
 
