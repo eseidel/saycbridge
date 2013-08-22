@@ -34,10 +34,13 @@ class MinimumCombinedLength(Constraint):
         self.min_count = min_count
 
     def expr(self, history, call):
-        suit = call.strain
-        partner_promised_length = history.partner.min_length(suit)
+        strain = call.strain
+        if strain is None:
+            strain = history.partner.last_call.strain
+            assert history.rho.last_call.is_pass()
+        partner_promised_length = history.partner.min_length(strain)
         implied_length = max(self.min_count - partner_promised_length, 0)
-        return expr_for_suit(suit) >= implied_length
+        return expr_for_suit(strain) >= implied_length
 
 
 class MinimumCombinedPoints(Constraint):
@@ -46,6 +49,14 @@ class MinimumCombinedPoints(Constraint):
 
     def expr(self, history, call):
         return model.points >= max(0, self.min_points - history.partner.min_points)
+
+
+class MaximumCombinedPoints(Constraint):
+    def __init__(self, max_points):
+        self.max_points = max_points
+
+    def expr(self, history, call):
+        return model.points <= max(0, self.max_points - history.partner.max_points)
 
 
 class MinLength(Constraint):

@@ -390,6 +390,30 @@ class HaveFit(Precondition):
         return False
 
 
+class IsGame(Precondition):
+    def _game_level(self, strain):
+        if strain in suit.MINORS:
+            return 5
+        if strain in suit.MAJORS:
+            return 4
+        return 3
+
+    def fits(self, history, call):
+        return call.is_contract() and call.level() == self._game_level(call.strain)
+
+
+class LastBidWasGameOrAbove(IsGame):
+    def fits(self, history, call):
+        last_contract = history.last_contract
+        return last_contract.level() >= self._game_level(last_contract.strain)
+
+
+class LastBidWasBelowGame(IsGame):
+    def fits(self, history, call):
+        last_contract = history.last_contract
+        return last_contract.level() < self._game_level(last_contract.strain)
+
+
 class Jump(Precondition):
     def __init__(self, exact_size=None):
         self.exact_size = exact_size

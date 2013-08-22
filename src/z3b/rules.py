@@ -1579,8 +1579,6 @@ class TakeoutDouble(Rule):
     preconditions = [
         LastBidHasSuit(),
         InvertedPrecondition(HasBid(positions.Partner)),
-        # LastBidWasNaturalSuit(),
-        # LastBidWasBelowGame(),
         UnbidSuitCountRange(2, 3),
     ]
     annotations = annotations.TakeoutDouble
@@ -1868,11 +1866,56 @@ class ResponseToBlackwood(Rule):
     annotations = annotations.Artificial
 
 
-class DefaultPass(Rule):
+class PassRule(Rule):
     preconditions = [InvertedPrecondition(ForcedToBid())]
     call_names = 'P'
+
+
+class DefaultPass(PassRule):
     shared_constraints = NO_CONSTRAINTS
     category = categories.DefaultPass
+
+
+# class NotrumpGameIsRemote(PassRule):
+#     preconditions = [RHOPassed(), PartnerLastBidWasNaturalNotrump(), LastBidWasBelowGame()]
+#     priority = priorities.SettleForNotrumpPartScore
+#     point_system = point_systems.NotrumpSupport
+#     implied_constraints = {
+#         'P': [MaximumCombinedPoints(24)],
+#     }
+
+
+class SuitGameIsRemote(PassRule):
+    category = categories.Natural
+    preconditions = [
+        LastBidWas(positions.RHO, 'P'),
+        LastBidHasSuit(positions.Partner),
+        LastBidWasBelowGame(),
+    ]
+    shared_constraints = [MinimumCombinedLength(7), MaximumCombinedPoints(24)]
+
+
+# class SuitSlamIsRemote(PassRule):
+#     # FIXME: This should only apply if last bid was a suit we have a fit in, right?
+#     preconditions = [RHOPassed(), PartnerLastBidWasNaturalSuit(), LastBidWasGameOrAbove()]
+#     priority = priorities.SettleForGame
+#     point_system = point_systems.SupportPointsIfFit
+#     implied_constraints = {
+#         'P': [MinimumCombinedLength(7, use_last_call_suit=True), MaximumCombinedPoints(32)],
+#     }
+
+
+# class NotrumpSlamIsRemote(PassRule):
+#     preconditions = [RHOPassed(), PartnerLastBidWasNaturalNotrump(), LastBidWasGameOrAbove()]
+#     priority = priorities.SettleForGame
+#     point_system = point_systems.NotrumpSupport
+#     implied_constraints = {
+#         'P': [MaximumCombinedPoints(32)],
+#     }
+
+to_play_passes = set([
+    SuitGameIsRemote,
+])
 
 
 # FIXME: This is wrong as soon as we try to support more than one system.
@@ -1891,9 +1934,7 @@ class StandardAmericanYellowCard(object):
     rules = [RuleCompiler.compile(description_class) for description_class in _concrete_rule_classes()]
     priority_ordering = rule_order
 
-    rule_order.order(response_priorities, relay_priorities)
     rule_order.order(response_priorities, feature_response_priorities)
-    rule_order.order(response_priorities, relay_priorities)
     rule_order.order(preempt_priorities, opening_priorities)
     rule_order.order(natural_priorities, preempt_priorities)
     rule_order.order(response_priorities, two_clubs_response_priorities)
@@ -1924,3 +1965,6 @@ class StandardAmericanYellowCard(object):
     rule_order.order(DefaultPass, the_law_priorities)
     rule_order.order(DefaultPass, sign_off_priorities)
     rule_order.order(DefaultPass, opening_priorities)
+
+    rule_order.order(rules)
+    rule_order.order(set(rule_order._graph.nodes()) - to_play_passes - set(relay_priorities), to_play_passes, relay_priorities)
