@@ -28,7 +28,7 @@ categories = enum.Enum(
 # This is a public interface from RuleGenerators to the rest of the system.
 # This class knows nothing about the DSL.
 class CompiledRule(object):
-    def __init__(self, rule, preconditions, known_calls, shared_constraints, annotations, constraints, default_priority):
+    def __init__(self, rule, preconditions, known_calls, shared_constraints, annotations, constraints, default_priority, conditional_priorities_per_call):
         self.dsl_rule = rule
         self.preconditions = preconditions
         self.known_calls = known_calls
@@ -36,6 +36,7 @@ class CompiledRule(object):
         self._annotations = annotations
         self.constraints = constraints
         self.default_priority = default_priority
+        self.conditional_priorities_per_call = conditional_priorities_per_call
 
     def requires_planning(self, history):
         return self.dsl_rule.requires_planning
@@ -92,7 +93,7 @@ class CompiledRule(object):
 
     def meaning_of(self, history, call):
         exprs = self._constraint_exprs_for_call(history, call)
-        per_call_conditionals = self.dsl_rule.conditional_priorities_per_call.get(call.name)
+        per_call_conditionals = self.conditional_priorities_per_call.get(call.name)
         if per_call_conditionals:
             for condition, priority in per_call_conditionals:
                 condition_exprs = RuleCompiler.exprs_from_constraints(condition, history, call)
@@ -166,15 +167,15 @@ class RuleCompiler(object):
         return map(Call.from_string, call_names)
 
     @classmethod
-    def _flatten_constraints(cls, constraints):
-        flattened_constraints  = {}
-        for key, value in constraints.iteritems():
-            if hasattr(key, '__iter__'):
-                for call_name in key:
-                    flattened_constraints[call_name] = value
+    def _flatten_tuple_keyed_dict(cls, original_dict):
+        flattened_dict  = {}
+        for tuple_key, value in original_dict.iteritems():
+            if hasattr(tuple_key, '__iter__'):
+                for key in tuple_key:
+                    flattened_dict[key] = value
             else:
-                flattened_constraints[key] = value
-        return flattened_constraints
+                flattened_dict[tuple_key] = value
+        return flattened_dict
 
     @classmethod
     def _compile_annotations(cls, dsl_class):
@@ -220,7 +221,7 @@ class RuleCompiler(object):
     @classmethod
     def compile(cls, dsl_rule):
         cls._validate_rule(dsl_rule)
-        constraints = cls._flatten_constraints(dsl_rule.constraints)
+        constraints = cls._flatten_tuple_keyed_dict(dsl_rule.constraints)
         # Unclear if compiled results should be memoized on the rule?
         return CompiledRule(dsl_rule,
             known_calls=cls._compile_known_calls(dsl_rule, constraints),
@@ -229,6 +230,7 @@ class RuleCompiler(object):
             shared_constraints=cls._joined_list_from_ancestors(dsl_rule, 'shared_constraints'),
             constraints=constraints,
             default_priority = cls._default_priority(dsl_rule),
+            conditional_priorities_per_call = cls._flatten_tuple_keyed_dict(dsl_rule.conditional_priorities_per_call),
         )
 
 
@@ -1594,12 +1596,129 @@ class TakeoutDouble(Rule):
 
 class OneLevelTakeoutDouble(TakeoutDouble):
     preconditions = Level(1)
+    # FIXME: Why isn't this 12?  SuitedToPlay can only respond to 12+ points currently.
     shared_constraints = points >= 11
 
 
 class TwoLevelTakeoutDouble(TakeoutDouble):
     preconditions = Level(2)
     shared_constraints = points >= 15
+
+
+takeout_double_responses = enum.Enum(
+    "CuebidResponseToTakeoutDouble",
+
+    "JumpSpadeResonseToTakeoutDouble",
+    "JumpHeartResonseToTakeoutDouble",
+
+    "JumpNotrumpResponseToTakeoutDouble",
+
+    "JumpDiamondResonseToTakeoutDouble",
+    "JumpClubResonseToTakeoutDouble",
+
+    "ThreeCardJumpSpadeResonseToTakeoutDouble",
+    "ThreeCardJumpHeartResonseToTakeoutDouble",
+    "ThreeCardJumpDiamondResonseToTakeoutDouble",
+    "ThreeCardJumpClubResonseToTakeoutDouble",
+
+    "SpadeResonseToTakeoutDouble",
+    "HeartResonseToTakeoutDouble",
+
+    "NotrumpResponseToTakeoutDouble",
+
+    "DiamondResonseToTakeoutDouble",
+    "ClubResonseToTakeoutDouble",
+
+    "ThreeCardSpadeResonseToTakeoutDouble",
+    "ThreeCardHeartResonseToTakeoutDouble",
+    "ThreeCardDiamondResonseToTakeoutDouble",
+    "ThreeCardClubResonseToTakeoutDouble",
+)
+rule_order.order(*reversed(takeout_double_responses))
+
+
+# Response indicates longest suit (excepting opponent's) with 3+ cards support.
+# Cheapest level indicates < 10 points.
+# NT indicates a stopper in opponent's suit.  1N: 6-10, 2N: 11-12, 3N: 13-16
+# Jump bid indicates 10-12 points (normal invitational values)
+# cue-bid in opponent's suit is a 13+ michaels-like bid.
+class ResponseToTakeoutDouble(Rule):
+    preconditions = [
+        LastBidWas(positions.RHO, 'P'),
+        LastBidHasAnnotation(positions.Partner, annotations.TakeoutDouble),
+    ]
+
+
+class NotrumpResponseToTakeoutDouble(ResponseToTakeoutDouble):
+    preconditions = [NotJumpFromLastContract()]
+    constraints = {
+        '1N': points >= 6,
+        '2N': points >= 11,
+        '3N': points >= 13,
+    }
+    shared_constraints = [balanced, StoppersInOpponentsSuits()]
+    priority = takeout_double_responses.NotrumpResponseToTakeoutDouble
+
+
+# FIXME: This could probably be handled by suited to play if we could get the priorities right!
+class JumpNotrumpResponseToTakeoutDouble(ResponseToTakeoutDouble):
+    preconditions = [JumpFromLastContract()]
+    constraints = {
+        '2N': points >= 11,
+        '3N': points >= 13,
+    }
+    shared_constraints = [balanced, StoppersInOpponentsSuits()]
+    priority = takeout_double_responses.JumpNotrumpResponseToTakeoutDouble
+
+
+class SuitResponseToTakeoutDouble(ResponseToTakeoutDouble):
+    preconditions = [UnbidSuit(), NotJumpFromLastContract()]
+    # FIXME: Why is the min-length constraint necessary?
+    shared_constraints = [MinLength(3), LongestSuitExceptOpponentSuits()]
+    # Need conditional priorities to disambiguate cases like being 1.4.4.4 with 0 points after 1C X P
+    # Similarly after 1H X P, with 4 spades and 4 clubs, but with xxxx spades and AKQx clubs, do we bid clubs or spades?
+    constraints = {
+        (      '2C', '3C'): (NO_CONSTRAINTS, takeout_double_responses.ThreeCardClubResonseToTakeoutDouble),
+        ('1D', '2D', '3D'): (NO_CONSTRAINTS, takeout_double_responses.ThreeCardDiamondResonseToTakeoutDouble),
+        ('1H', '2H', '3H'): (NO_CONSTRAINTS, takeout_double_responses.ThreeCardHeartResonseToTakeoutDouble),
+        ('1S', '2S'      ): (NO_CONSTRAINTS, takeout_double_responses.ThreeCardSpadeResonseToTakeoutDouble),
+    }
+    conditional_priorities_per_call = {
+        (      '2C', '3C'): [(clubs >= 4, takeout_double_responses.ClubResonseToTakeoutDouble)],
+        ('1D', '2D', '3D'): [(diamonds >= 4, takeout_double_responses.DiamondResonseToTakeoutDouble)],
+        ('1H', '2H', '3H'): [(hearts >= 4, takeout_double_responses.HeartResonseToTakeoutDouble)],
+        ('1S', '2S'      ): [(spades >= 4, takeout_double_responses.SpadeResonseToTakeoutDouble)],
+    }
+
+
+class JumpSuitResponseToTakeoutDouble(ResponseToTakeoutDouble):
+    preconditions = [UnbidSuit(), JumpFromLastContract(exact_size=1)]
+    # You can have 10 points, but no stopper in opponents suit and only a 3 card suit to bid.
+    # 1C X P, xxxx.Axx.Kxx.Kxx
+    shared_constraints = [MinLength(3), LongestSuitExceptOpponentSuits(), points >= 10]
+    constraints = {
+        (      '3C', '4C'): (NO_CONSTRAINTS, takeout_double_responses.ThreeCardJumpClubResonseToTakeoutDouble),
+        ('2D', '3D', '4D'): (NO_CONSTRAINTS, takeout_double_responses.ThreeCardJumpDiamondResonseToTakeoutDouble),
+        ('2H', '3H', '4H'): (NO_CONSTRAINTS, takeout_double_responses.ThreeCardJumpHeartResonseToTakeoutDouble),
+        ('2S', '3S'      ): (NO_CONSTRAINTS, takeout_double_responses.ThreeCardJumpSpadeResonseToTakeoutDouble),
+    }
+    conditional_priorities_per_call = {
+        (      '3C', '4C'): [(clubs >= 4, takeout_double_responses.JumpClubResonseToTakeoutDouble)],
+        ('2D', '3D', '4D'): [(diamonds >= 4, takeout_double_responses.JumpDiamondResonseToTakeoutDouble)],
+        ('2H', '3H', '4H'): [(hearts >= 4, takeout_double_responses.JumpHeartResonseToTakeoutDouble)],
+        ('2S', '3S'      ): [(spades >= 4, takeout_double_responses.JumpSpadeResonseToTakeoutDouble)],
+    }
+
+
+class CuebidResponseToTakeoutDouble(ResponseToTakeoutDouble):
+    preconditions = [CueBid(positions.LHO), NotJumpFromLastContract()]
+    priority = takeout_double_responses.CuebidResponseToTakeoutDouble
+    call_names = (
+        '2C', '2D', '2H', '2S',
+        '3C', '3D', '3H', '3S'
+    )
+    # FIXME: 4+ in the available majors?
+    shared_constraints = [points >= 13, SupportForUnbidSuits()]
 
 
 preempt_priorities = enum.Enum(
@@ -1795,6 +1914,7 @@ class StandardAmericanYellowCard(object):
         natural_priorities.FourLevelNaturalMajor,
     )
     rule_order.order(natural_nt_part_scores, stayman_rebid_priorities.InvitationalOtherMajor, natural_suited_part_scores)
+    rule_order.order(takeout_double_responses, natural_priorities)
     rule_order.order(ForcedRebidOriginalSuitByOpener, natural_priorities)
     rule_order.order(the_law_priorities, responder_rebid_priorities)
     rule_order.order(the_law_priorities, natural_priorities)

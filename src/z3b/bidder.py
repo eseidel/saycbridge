@@ -72,6 +72,14 @@ class GroupView(object):
     def annotations(self):
         return chain.from_iterable(map(self.history.annotations_for_position, self.positions))
 
+    @property
+    def unbid_suits(self):
+        return set(suit.SUITS) - self.bid_suits
+
+    @property
+    def bid_suits(self):
+        return set([_suit for _suit in suit.SUITS if any(self.history.is_bid_suit(_suit, position) for position in self.positions)])
+
 
 class PositionView(object):
     def __init__(self, history, position):
@@ -341,20 +349,15 @@ class History(object):
         return True
 
     @memoized
-    def is_bid_suit(self, suit):
+    def is_bid_suit(self, suit, position):
         # Look for the annotation of bidding a suit.
-        if did_bid_annotation(suit) in self.annotations:
+        if did_bid_annotation(suit) in self.annotations_for_position(position):
             return True
         # Check for the a length of 4 or more.
-        suit_expr = expr_for_suit(suit)
-        for position in positions:
-            solver = self._solver_for_position(position)
-            if is_certain(solver, suit_expr >= 4):
-                return True
-        return False
+        return is_certain(self._solver_for_position(position), expr_for_suit(suit) >= 4)
 
     def is_unbid_suit(self, suit):
-        return not self.is_bid_suit(suit)
+        return not any(self.is_bid_suit(suit, position) for position in positions)
 
     @property
     def unbid_suits(self):
@@ -484,7 +487,7 @@ class RuleSelector(object):
                     # FIXME: It's lame that enum's < is backwards.
                     if category < existing_category:
                         if self.explain and call == self.expected_call:
-                            print rule.name + " is higher category than " + str(maximal[call])
+                            print "%s is higher category than %s" % (rule.name, str(maximal[call]))
                         maximal[call] = (category, [rule])
                     elif category == existing_category:
                         existing_rules.append(rule)
@@ -561,6 +564,7 @@ class Interpreter(object):
                 if not history.is_consistent(positions.Me, constraints):
                     if explain:
                         print "WARNING: History is not consistent, ignoring %s from %s" % (call.name, rule)
+                        print constraints
                     constraints = model.NO_CONSTRAINTS
                     annotations = []
 

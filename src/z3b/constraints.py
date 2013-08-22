@@ -113,9 +113,23 @@ class StoppersInUnbidSuits(Constraint):
         return z3.And([model.stopper_expr_for_suit(suit) for suit in history.unbid_suits])
 
 
+class StoppersInOpponentsSuits(Constraint):
+    def expr(self, history, call):
+        if not history.them.bid_suits:
+            return model.NO_CONSTRAINTS
+        return z3.And([model.stopper_expr_for_suit(suit) for suit in history.them.bid_suits])
+
+
 class Stopper(Constraint):
     def expr(self, history, call):
         return model.stopper_expr_for_suit(call.strain)
+
+
+class LongestSuitExceptOpponentSuits(Constraint):
+    def expr(self, history, call):
+        suit_expr = expr_for_suit(call.strain)
+        # Including hearts >= hearts in this And doesn't hurt, but just reads funny when debugging.
+        return z3.And([suit_expr >= expr_for_suit(suit) for suit in history.them.unbid_suits if suit != call.strain])
 
 
 class TwoOfTheTopThree(Constraint):
