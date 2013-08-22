@@ -10,8 +10,14 @@ import core.suit as suit
 # python throws an lookup error when we typo the annotation name.
 annotations = enum.Enum(
     "Opening",
-    "NoTrumpSystemsOn",
-    "StandardOvercall",
+
+    # FIXME: It's a bit odd that 1C, 1S, 2N can end up with both
+    # OneLevelSuitOpening and NoTrumpSystemsOn.
+    # e.g. Does ResponderJumpShift apply after 2N?
+    "OneLevelSuitOpening", # 1-level suited response opening book.
+    "NoTrumpSystemsOn", # NT response opening book.
+    "StandardOvercall", # Overcall opening book.
+    "Preemptive", # Preemptive opening book.
 
     "BidClubs",
     "BidDiamonds",
@@ -31,6 +37,7 @@ annotations = enum.Enum(
     "TakeoutDouble",
     "Transfer",
     "Unusual2N",
+    "FeatureRequest",
 )
 
 # Used by RuleCompiler._compile_annotations.

@@ -440,6 +440,8 @@ class OneLevelSuitOpening(Opening):
         '1H': annotations.BidHearts,
         '1S': annotations.BidSpades,
     }
+    # FIXME: This shadows the "annotations" module for the rest of this class scope!
+    annotations = annotations.OneLevelSuitOpening
     constraints = {
         '1C': (clubs >= 3, opening_priorities.LowerMinor),
         '1D': (diamonds >= 3, opening_priorities.HigherMinor),
@@ -503,8 +505,7 @@ class Response(Rule):
 
 class ResponseToOneLevelSuitedOpen(Response):
     preconditions = [
-        LastBidHasLevel(positions.Partner, 1),
-        InvertedPrecondition(LastBidHasStrain(positions.Partner, suit.NOTRUMP))
+        LastBidHasAnnotation(positions.Partner, annotations.OneLevelSuitOpening),
     ]
 
 
@@ -697,7 +698,7 @@ class ShapeForNegativeDouble(Constraint):
 class NegativeDouble(ResponseToOneLevelSuitedOpen):
     call_names = 'X'
     preconditions = [
-        LastBidHasAnnotation(positions.Partner, annotations.Opening),
+        LastBidHasAnnotation(positions.Partner, annotations.OneLevelSuitOpening),
         LastBidHasSuit(positions.Partner),
         LastBidHasSuit(positions.RHO),
         # A hackish way to make sure Partner and RHO did not bid the same suit.
@@ -776,8 +777,7 @@ rule_order.order(*reversed(opener_rebid_priorities))
 
 class OpenerRebid(Rule):
     preconditions = [
-        LastBidHasAnnotation(positions.Me, annotations.Opening),
-        InvertedPrecondition(NoTrumpSystemsOn())
+        LastBidHasAnnotation(positions.Me, annotations.OneLevelSuitOpening),
     ]
 
 
@@ -997,6 +997,7 @@ rule_order.order(*reversed(sign_off_priorities))
 class ResponderRebid(Rule):
     preconditions = [
         Opened(positions.Partner),
+        # FIXME: This should only apply over 1-level suited opens!
         HasBid(positions.Me),
         InvertedPrecondition(NoTrumpSystemsOn())
     ]
@@ -1888,6 +1889,7 @@ rule_order.order(*reversed(preempt_priorities))
 
 
 class PreemptiveOpen(Opening):
+    annotations = annotations.Preemptive
     # Never worth preempting in 4th seat.
     preconditions = InvertedPrecondition(LastBidWas(positions.LHO, 'P'))
     constraints = {
@@ -1900,6 +1902,7 @@ class PreemptiveOpen(Opening):
 
 
 class PreemptiveOvercall(DirectOvercall):
+    annotations = annotations.Preemptive
     preconditions = [JumpFromLastContract(), UnbidSuit()]
     constraints = {
         ('2C', '2D', '2H', '2S'): (MinLength(6), overcall_priorities.TwoLevelPremptive),
@@ -1912,6 +1915,23 @@ class PreemptiveOvercall(DirectOvercall):
         ('4C', '4D', '4H', '4S'): [(points <= 11, overcall_priorities.WeakFourLevelPremptive)],
     }
     shared_constraints = [ThreeOfTheTopFiveOrBetter(), points >= 5]
+
+
+class ResponseToPreempt(Rule):
+    preconditions = LastBidHasAnnotation(positions.Partner, annotations.Preemptive)
+
+
+class NewSuitResponseToPreempt(ResponseToPreempt):
+    preconditions = [
+        UnbidSuit(),
+        NotJumpFromLastContract()
+    ]
+    call_names = [
+              '2D', '2H', '2S',
+        '3C', '3D', '3H', '3S',
+        '4C', '4D',
+    ]
+    shared_constraints = [MinLength(5), MinCombinedPointsForPartnerMinimumSuitedRebid()]
 
 
 the_law_priorities = enum.Enum(
@@ -1947,8 +1967,8 @@ rule_order.order(*reversed(feature_asking_priorities))
 feature_response_priorities = enum.Enum(
     "Gerber",
     "Blackwood",
+    "TwoNotrumpFeatureResponse",
 )
-rule_order.order(*reversed(feature_response_priorities))
 
 class Gerber(Rule):
     category = categories.Gadget
@@ -2030,6 +2050,30 @@ class ResponseToBlackwood(Rule):
     }
     priority = feature_response_priorities.Blackwood
     annotations = annotations.Artificial
+
+
+class TwoNotrumpFeatureRequest(ResponseToPreempt):
+    category = categories.Gadget
+    annotations = annotations.FeatureRequest
+    requires_planning = True
+    constraints = { '2N': MinimumCombinedPoints(22) }
+
+
+class ResponseToTwoNotrumpFeatureRequest(Rule):
+    category = categories.Gadget
+    preconditions = LastBidHasAnnotation(positions.Partner, annotations.FeatureRequest)
+    priority = feature_response_priorities.TwoNotrumpFeatureResponse
+
+
+class FeatureResponseToTwoNotrumpFeatureRequest(ResponseToTwoNotrumpFeatureRequest):
+    preconditions = InvertedPrecondition(RebidSameSuit())
+    annotations = annotations.Artificial
+    call_names = ('3C', '3D', '3H', '3S')
+    # Note: We could have a protected outside honor with as few as 6 points,
+    # (QJTxxx in our main suit + Qxx in our outside honor suit)
+    # Unittests would suggest we should require 9+?
+    shared_constraints = [points >= 9, ThirdRoundStopper()]
+
 
 
 class DefaultPass(Rule):

@@ -101,6 +101,11 @@ three_of_the_top_five_hearts_or_better = z3.Or(two_of_the_top_three_hearts, thre
 three_of_the_top_five_diamonds_or_better = z3.Or(two_of_the_top_three_diamonds, three_of_the_top_five_diamonds)
 three_of_the_top_five_clubs_or_better = z3.Or(two_of_the_top_three_clubs, three_of_the_top_five_clubs)
 
+third_round_stopper_spades = z3.Or(ace_of_spades == 1, z3.And(king_of_spades == 1, spades >= 2), z3.And(queen_of_spades == 1, spades >= 3))
+third_round_stopper_hearts = z3.Or(ace_of_hearts == 1, z3.And(king_of_hearts == 1, hearts >= 2), z3.And(queen_of_hearts == 1, hearts >= 3))
+third_round_stopper_diamonds = z3.Or(ace_of_diamonds == 1, z3.And(king_of_diamonds == 1, diamonds >= 2), z3.And(queen_of_diamonds == 1, diamonds >= 3))
+third_round_stopper_clubs = z3.Or(ace_of_clubs == 1, z3.And(king_of_clubs == 1, clubs >= 2), z3.And(queen_of_clubs == 1, clubs >= 3))
+
 number_of_aces = ace_of_spades + ace_of_hearts + ace_of_diamonds + ace_of_clubs
 number_of_kings = king_of_spades + king_of_hearts + king_of_diamonds + king_of_clubs
 
