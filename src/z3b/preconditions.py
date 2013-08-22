@@ -115,6 +115,11 @@ class Opened(Precondition):
         return annotations.Opening in history.annotations_for_position(self.position)
 
 
+class TheyOpened(Precondition):
+    def fits(self, history, call):
+        return annotations.Opening in history.them.annotations
+
+
 class NoTrumpSystemsOn(Precondition):
     def fits(self, history, call):
         return annotations.NoTrumpSystemsOn in history.us.annotations

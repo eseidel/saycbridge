@@ -659,6 +659,8 @@ class SAYCBidderTest(unittest2.TestCase):
             ["K7.Q876.KJ75.KQ5", "3H", "1C 1H P 2C P 2H P"],  # p101, h11, The book says to rebid 3H to show your extra values, partner has already capped at 10hcp, so seems unecessary?
             # FIXME: We should probably have an example of responding with competition?
 
+            ["43.5432.Q2.AKQ42", "1S", "1D 1H P"],
+
             # Preemptive jump overcalls
             ["J63.K43.KQT874.5", "2H", "1D"],  # p101, h12
             ["6.Q84.AQT8764.65", "3H", "1D"],  # p101, h13

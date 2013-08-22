@@ -1503,24 +1503,23 @@ class CuebidResponseToStandardOvercall(ResponseToStandardOvercall):
     shared_constraints = [SupportForPartnerLastBid(3), points >= 11]
 
 
-# class NewSuitResponseToStandardOvercall(ResponseToStandardOvercall):
-#     preconditions = [
-#         TheyOpened(),
-#         InvertedPrecondition(LastBidWas(positions.Partner, 'P')),
-#         NotJumpFromLastContract(),
-#         UnbidSuit()
-#     ]
-#     call_names = [
-#                     '1H', '1S',
-#         '2C', '2D', '2H', '2S',
-#         '3C', '3D', '3H', '3S',
-#     ]
-#     shared_constraints = [
-#         MinLength(5),
-#         TwoOfTheTopThree(),
-#         # Unclear exactly how many points these should promise, but this seems reasoanble for now.
-#         MinCombinedPointsForPartnerMinimumRebid(),
-#     ]
+class NewSuitResponseToStandardOvercall(ResponseToStandardOvercall):
+    preconditions = [
+        TheyOpened(),
+        InvertedPrecondition(LastBidWas(positions.Partner, 'P')),
+        NotJumpFromLastContract(),
+        UnbidSuit()
+    ]
+    call_names = [
+                    '1H', '1S',
+        '2C', '2D', '2H', '2S',
+        '3C', '3D', '3H', '3S',
+    ]
+    shared_constraints = [
+        MinLength(5),
+        TwoOfTheTopThree(),
+        MinCombinedPointsForPartnerMinimumSuitedRebid(),
+    ]
 
 
 class DirectOvercall1N(DirectOvercall):
@@ -1907,8 +1906,8 @@ class StandardAmericanYellowCard(object):
     rule_order.order(ForcedRebidOriginalSuitByOpener, natural_priorities)
     rule_order.order(the_law_priorities, responder_rebid_priorities)
     rule_order.order(the_law_priorities, natural_priorities)
-    rule_order.order(natural_priorities, CuebidResponseToStandardOvercall)
-    rule_order.order(RaiseResponseToStandardOvercall, the_law_priorities, CuebidResponseToStandardOvercall)
+    rule_order.order(natural_priorities, NewSuitResponseToStandardOvercall, CuebidResponseToStandardOvercall)
+    rule_order.order(RaiseResponseToStandardOvercall, the_law_priorities, NewSuitResponseToStandardOvercall, CuebidResponseToStandardOvercall)
     rule_order.order(DefaultPass, RaiseResponseToStandardOvercall)
     rule_order.order(sign_off_priorities, the_law_priorities)
     rule_order.order(DefaultPass, the_law_priorities)

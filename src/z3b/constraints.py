@@ -5,6 +5,7 @@
 from z3b.model import expr_for_suit
 import z3b.model as model
 import z3
+from core import suit
 
 
 class Constraint(object):
@@ -160,3 +161,16 @@ class OpeningRuleConstraint(Constraint):
         #if history.lho.last_call is None:
         #    return model.rule_of_nineteen
         return model.rule_of_fifteen
+
+
+class MinCombinedPointsForPartnerMinimumSuitedRebid(Constraint):
+    def expr(self, history, call):
+        # If we're forcing partner to bid, we're promising it's OK to rebid their suit at the next level with a minimum.
+        partner_call = history.partner.last_call
+        assert call.strain != partner_call.strain
+        rebid_level = call.level()
+        if call.strain > partner_call.strain:
+            rebid_level += 1
+        # NOTE: This math matches SuitedToPlay:
+        expected_points = 19 + (rebid_level - 2) * 3
+        return model.points >= expected_points - history.partner.min_points
