@@ -1871,20 +1871,22 @@ class RaiseAfterTakeoutDouble(RebidAfterTakeoutDouble):
 #     priority = rebids_after_takeout_double.JumpRaiseAfterTakeoutDouble
 
 
-# class NewSuitAfterTakeoutDouble(RebidAfterTakeoutDouble):
-#     preconditions = [
-#         UnbidSuit(),
-#         NotJumpFromLastContract()
-#     ]
-#     # Min: 1C X XX P 1D, Max: 2D X P 2S 3H
-#     call_names = suit_bids_below_game('1D')
-#     constraints = {
-#         (      '2C', '3C'): (NO_CONSTRAINTS, rebids_after_takeout_double.ClubsNewSuit),
-#         ('1D', '2D', '3D'): (NO_CONSTRAINTS, rebids_after_takeout_double.DiamondsNewSuit),
-#         ('1H', '2H', '3H'): (NO_CONSTRAINTS, rebids_after_takeout_double.HeartsNewSuit),
-#         ('1S', '2S'      ): (NO_CONSTRAINTS, rebids_after_takeout_double.SpadesNewSuit),
-#     }
-#     shared_constraints = MinLength(5)
+class NewSuitAfterTakeoutDouble(RebidAfterTakeoutDouble):
+    preconditions = [
+        UnbidSuit(),
+        NotJumpFromLastContract(),
+        # FIXME: Remove !RaiseOfPartnersLastSuit once SuitResponseToTakeoutDouble implies 4+ (even though it
+        # only needs 3+ to make the bid).  Promising only 3 is currently confusing UnbidSuit.
+        InvertedPrecondition(RaiseOfPartnersLastSuit()),
+    ]
+    # Min: 1C X XX P 1D, Max: 2D X P 2S 3H
+    constraints = {
+        (      '2C', '3C'): (NO_CONSTRAINTS, rebids_after_takeout_double.ClubsNewSuit),
+        ('1D', '2D', '3D'): (NO_CONSTRAINTS, rebids_after_takeout_double.DiamondsNewSuit),
+        ('1H', '2H', '3H'): (NO_CONSTRAINTS, rebids_after_takeout_double.HeartsNewSuit),
+        ('1S', '2S'      ): (NO_CONSTRAINTS, rebids_after_takeout_double.SpadesNewSuit),
+    }
+    shared_constraints = MinLength(5)
 
 
 # class JumpNewSuitAfterTakeoutDouble(RebidAfterTakeoutDouble):
@@ -2187,6 +2189,6 @@ class StandardAmericanYellowCard(object):
     rule_order.order(DefaultPass, the_law_priorities)
     rule_order.order(DefaultPass, sign_off_priorities)
     rule_order.order(DefaultPass, opening_priorities)
-    rule_order.order(natural_priorities, RaiseAfterTakeoutDouble)
+    rule_order.order(rebids_after_takeout_double, natural_priorities)
     rule_order.order(SecondNegative, natural_priorities)
     rule_order.order(DefaultPass, rebids_after_takeout_double)
