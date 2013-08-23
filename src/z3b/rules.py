@@ -776,13 +776,11 @@ rule_order.order(*reversed(opener_rebid_priorities))
 
 
 class OpenerRebid(Rule):
-    preconditions = [
-        LastBidHasAnnotation(positions.Me, annotations.OneLevelSuitOpening),
-    ]
+    preconditions = LastBidHasAnnotation(positions.Me, annotations.Opening)
 
 
 class RebidAfterOneLevelOpen(OpenerRebid):
-    preconditions = LastBidHasLevel(positions.Me, 1)
+    preconditions = LastBidHasAnnotation(positions.Me, annotations.OneLevelSuitOpening),
 
 
 class TwoNoTrumpOpenerRebid(RebidAfterOneLevelOpen):
@@ -997,9 +995,8 @@ rule_order.order(*reversed(sign_off_priorities))
 class ResponderRebid(Rule):
     preconditions = [
         Opened(positions.Partner),
-        # FIXME: This should only apply over 1-level suited opens!
+        OneLevelSuitedOpeningBook(),
         HasBid(positions.Me),
-        InvertedPrecondition(NoTrumpSystemsOn())
     ]
 
 

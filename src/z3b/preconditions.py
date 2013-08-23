@@ -127,9 +127,15 @@ class TheyOpened(Precondition):
         return annotations.Opening in history.them.annotations
 
 
+# FIXME: Rename to NotrumpOpeningBook?
 class NoTrumpSystemsOn(Precondition):
     def fits(self, history, call):
         return annotations.NoTrumpSystemsOn in history.us.annotations
+
+
+class OneLevelSuitedOpeningBook(Precondition):
+    def fits(self, history, call):
+        return annotations.OneLevelSuitOpening in history.us.annotations
 
 
 class HasBid(Precondition):
