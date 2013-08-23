@@ -479,19 +479,23 @@ response_priorities = enum.Enum(
     "NegativeDouble",
     "Jacoby2N",
     "JumpShiftResponseToOpen",
+
     "MajorJumpToGame",
     "MajorLimitRaise",
     "MajorMinimumRaise",
+
     "LongestNewMajor",
     "OneSpadeWithFiveResponse",
     "OneHeartWithFiveResponse",
     "OneDiamondResponse",
     "OneHeartWithFourResponse",
     "OneSpadeWithFourResponse",
+
     "TwoHeartNewSuitResponse",
     "TwoSpadeNewSuitResponse",
     "TwoClubNewSuitResponse",
     "TwoDiamondNewSuitResponse",
+
     "MinorLimitRaise",
     "TwoNotrumpLimitResponse",
     "MinorMinimumRaise",
@@ -756,17 +760,21 @@ opener_rebid_priorities = enum.Enum(
     "SupportMajorMax",
     "SupportMajorLimit",
     "SupportMajorMin",
+
     "TwoNoTrumpOpenerRebid",
     "JumpShiftByOpener",
     "HelpSuitGameTry",
+
     # FIXME: 1S P 2D looks like this will will prefer 3C over 2S!
     "NewSuitClubs",
     "NewSuitDiamonds",
     "NewSuitHearts",
     "NewSuitSpades",
+
     "ReverseDiamonds",
     "ReverseHearts",
     "ReverseSpades",
+
     "GameForcingUnsupportedRebidByOpener",
     "InvitationalUnsupportedRebidByOpener",
     "UnforcedRebidOriginalSuit",
@@ -1789,15 +1797,26 @@ class CuebidResponseToTakeoutDouble(ResponseToTakeoutDouble):
 rebids_after_takeout_double = enum.Enum(
     "CueBidAfterTakeoutDouble",
 
-    "JumpRaiseAfterTakeoutDouble",
+    "JumpMajorRaise",
+    "MajorRaise",
 
     "ThreeNotrumpAfterTakeoutDouble",
 
-    "JumpNewSuitAfterTakeoutDouble",
-    "TwoNotrumpAfterTakeoutDouble",
+    "JumpSpadesSuit",
+    "SpadesNewSuit",
+    "JumpHeartsSuit",
+    "HeartsNewSuit",
 
-    "NewSuitAfterTakeoutDouble",
+    "TwoNotrumpAfterTakeoutDouble",
     "OneNotrumpAfterTakeoutDouble",
+
+    "JumpMinorRaise",
+    "MinorRaise",
+
+    "JumpDiamondsNewSuit",
+    "DiamondsNewSuit",
+    "JumpClubsNewSuit",
+    "ClubsNewSuit",
 )
 rule_order.order(*reversed(rebids_after_takeout_double))
 
@@ -1823,10 +1842,14 @@ class RaiseAfterTakeoutDouble(RebidAfterTakeoutDouble):
         RaiseOfPartnersLastSuit(),
         NotJumpFromLastContract()
     ]
-    # Min: 1C X 1D P 2D
-    # FIXME: Unclear the max?
-    call_names = suit_bids_below_game('2D')
-    # FIXME: Majors should be preferred over NewSuitAfterTakeoutDouble?
+    # Min: 1C X 1D P 2D, Max: 2S X P 3H P 4H
+    # FIXME: Game doesn't seem like a raise here?
+    constraints = {
+        (      '3C', '4C'): (NO_CONSTRAINTS, rebids_after_takeout_double.MinorRaise),
+        ('2D', '3D', '4D'): (NO_CONSTRAINTS, rebids_after_takeout_double.MinorRaise),
+        ('2H', '3H', '4H'): (NO_CONSTRAINTS, rebids_after_takeout_double.MajorRaise),
+        ('2S', '3S'      ): (NO_CONSTRAINTS, rebids_after_takeout_double.MajorRaise),
+    }
     shared_constraints = MinLength(4)
 
 
@@ -1835,6 +1858,14 @@ class RaiseAfterTakeoutDouble(RebidAfterTakeoutDouble):
 #         RaiseOfPartnersLastSuit(),
 #         JumpFromPartnerLastBid(exact_size=1)
 #     ]
+#     # Min: 1C X 1D P 3D, Max: 2S X P 3D P 5D
+#     # FIXME: Game doesn't seem like a raise here?
+#     constraints = {
+#         (      '3C', '4C', '5C'): (NO_CONSTRAINTS, rebids_after_takeout_double.MinorRaise),
+#         ('2D', '3D', '4D', '5D'): (NO_CONSTRAINTS, rebids_after_takeout_double.MinorRaise),
+#         ('2H', '3H', '4H'      ): (NO_CONSTRAINTS, rebids_after_takeout_double.MajorRaise),
+#         ('2S', '3S', '4H'      ): (NO_CONSTRAINTS, rebids_after_takeout_double.MajorRaise),
+#     }
 #     call_names = suit_bids_below_game('3D')
 #     shared_constraints = [MinLength(4), points >= 19]
 #     priority = rebids_after_takeout_double.JumpRaiseAfterTakeoutDouble
@@ -1845,10 +1876,15 @@ class RaiseAfterTakeoutDouble(RebidAfterTakeoutDouble):
 #         UnbidSuit(),
 #         NotJumpFromLastContract()
 #     ]
-#     # Min: 1C X XX P 1D
+#     # Min: 1C X XX P 1D, Max: 2D X P 2S 3H
 #     call_names = suit_bids_below_game('1D')
+#     constraints = {
+#         (      '2C', '3C'): (NO_CONSTRAINTS, rebids_after_takeout_double.ClubsNewSuit),
+#         ('1D', '2D', '3D'): (NO_CONSTRAINTS, rebids_after_takeout_double.DiamondsNewSuit),
+#         ('1H', '2H', '3H'): (NO_CONSTRAINTS, rebids_after_takeout_double.HeartsNewSuit),
+#         ('1S', '2S'      ): (NO_CONSTRAINTS, rebids_after_takeout_double.SpadesNewSuit),
+#     }
 #     shared_constraints = MinLength(5)
-#     priority = rebids_after_takeout_double.NewSuitAfterTakeoutDouble
 
 
 # class JumpNewSuitAfterTakeoutDouble(RebidAfterTakeoutDouble):

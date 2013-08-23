@@ -784,6 +784,16 @@ class SAYCBidderTest(unittest2.TestCase):
             # With no stopper a cuebid to show 21+ seems better than jump to 2N.
             ["98.AKQ.AJ76.AKJ4", "2C", "1C X P 1D P"],
 
+            # Prefer majors over nt over minors:
+            ["A8.AKQ.J763.KJ84", "2S", "1C X P 1S P"],
+            ["A8.KQJ9.AJ7.K984", "1N", "1C X P 1D P"],
+            ["98.KQJ9.AJ7.AK84", "2D", "1C X P 1D P"],
+
+            # majors > nt > minors for jumps too:
+            ["A8.AKQ.A976.KJ84", "2S", "1C X P 1S P"],
+            ["A8.KQJ9.AJ7.AQ84", "2N", "1C X P 1D P"],
+            ["98.KQJ9.AQ7.AK84", "3D", "1C X P 1D P"],
+
             # Responding to a takeout double
             # Responding with no intervening bid
             ["T874.876.86.J843", "2C", "1S X P"],  # p119, h14
