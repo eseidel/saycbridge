@@ -947,8 +947,11 @@ class JumpShiftByOpener(RebidAfterOneLevelOpen):
 
 
 two_clubs_opener_rebid_priorities = enum.Enum(
-    "SuitedJumpRebid",
-    "SuitedRebid",
+    "ThreeLevelNTRebid",
+    "SuitedJumpRebid", # This isn't actually comparible with 3N.
+
+    "SuitedRebid", # I think you'd rather bid 2S when available, instead of 2N, right?
+    "TwoLevelNTRebid",
 )
 rule_order.order(*reversed(two_clubs_opener_rebid_priorities))
 
@@ -958,11 +961,25 @@ class OpenerRebidAfterStrongTwoClubs(OpenerRebid):
     # This could also alternatively use annotations.StrongTwoClubOpening
 
 
+class NotrumpRebidOverTwoClubs(OpenerRebidAfterStrongTwoClubs):
+    annotations = annotations.NoTrumpSystemsOn
+    # These bids are only systematic after a 2D response from partner.
+    preconditions = LastBidWas(positions.Partner, '2D')
+    constraints = {
+        '2N': [points >= 22, two_clubs_opener_rebid_priorities.TwoLevelNTRebid],
+        '3N': [points >= 25, two_clubs_opener_rebid_priorities.ThreeLevelNTRebid], # Should this cap at 27?
+    }
+    shared_constraints = balanced
+
+
 class OpenerSuitedRebidAfterStrongTwoClubs(OpenerRebidAfterStrongTwoClubs):
     preconditions = [UnbidSuit(), NotJumpFromLastContract()]
     # This maxes out at 4C -> 2C P 3D P 4C
     # If the opponents are competing we're just gonna double them anyway.
-    call_names = ['2H', '2S', '3C', '3D', '3H', '3S', '4C']
+    call_names = [
+                '2H', '2S',
+    '3C', '3D', '3H', '3S',
+    '4C']
     # FIXME: This should either have NoMajorFit(), or have priorities separated
     # so that we prefer to support our partner's major before bidding our own new minor.
     shared_constraints = MinLength(5)
@@ -1080,6 +1097,8 @@ class JumpShiftResponderRebid(OneLevelOpeningResponderRebid):
 
 
 class SecondNegative(ResponderRebid):
+    # FIXME: This should not apply over 2N, but currently ForcedToBid thinks that all
+    # bids of 17+ are forcing forever. :(
     preconditions = [
         StrongTwoClubOpeningBook(),
         LastBidWas(positions.Me, '2D'),
