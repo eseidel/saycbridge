@@ -1827,13 +1827,14 @@ class RebidAfterTakeoutDouble(Rule):
     shared_constraints = points >= 17
 
 
-# class PassAfterTakeoutDouble(Rule):
-#     preconditions = [
-#         LastBidHasAnnotation(positions.Me, annotations.TakeoutDouble)
-#         LastBidWas(positions.RHO, 'P')
-#     ]
-#     call_names = 'P'
-#     shared_constraints = points < 17
+class PassAfterTakeoutDouble(Rule):
+    preconditions = [
+        LastBidHasAnnotation(positions.Me, annotations.TakeoutDouble),
+        LastBidWas(positions.LHO, 'P'), # If LHO bid up, we don't necessarily have < 17hcp.
+        LastBidWas(positions.RHO, 'P'),
+    ]
+    call_names = 'P'
+    shared_constraints = points < 17
 
 
 class RaiseAfterTakeoutDouble(RebidAfterTakeoutDouble):
@@ -2168,6 +2169,7 @@ class StandardAmericanYellowCard(object):
     rule_order.order(natural_games, nt_response_priorities, natural_slams)
     rule_order.order(natural_priorities, stayman_response_priorities)
     rule_order.order(natural_priorities, GarbagePassStaymanRebid)
+    rule_order.order(natural_priorities, PassAfterTakeoutDouble)
     rule_order.order(natural_priorities, two_clubs_opener_rebid_priorities)
     rule_order.order(natural_priorities, responder_rebid_priorities)
     rule_order.order(
