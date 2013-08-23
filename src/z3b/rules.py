@@ -1670,12 +1670,13 @@ class TwoLevelTakeoutDouble(TakeoutDouble):
 
 
 takeout_double_responses = enum.Enum(
+    "ThreeNotrump",
     "CuebidResponseToTakeoutDouble",
 
     "JumpSpadeResonseToTakeoutDouble",
     "JumpHeartResonseToTakeoutDouble",
 
-    "JumpNotrumpResponseToTakeoutDouble",
+    "TwoNotrumpJump",
 
     "JumpDiamondResonseToTakeoutDouble",
     "JumpClubResonseToTakeoutDouble",
@@ -1688,7 +1689,8 @@ takeout_double_responses = enum.Enum(
     "SpadeResonseToTakeoutDouble",
     "HeartResonseToTakeoutDouble",
 
-    "NotrumpResponseToTakeoutDouble",
+    "TwoNotrump",
+    "OneNotrump",
 
     "DiamondResonseToTakeoutDouble",
     "ClubResonseToTakeoutDouble",
@@ -1716,23 +1718,21 @@ class ResponseToTakeoutDouble(Rule):
 class NotrumpResponseToTakeoutDouble(ResponseToTakeoutDouble):
     preconditions = [NotJumpFromLastContract()]
     constraints = {
-        '1N': points >= 6,
-        '2N': points >= 11,
-        '3N': points >= 13,
+        '1N': (points >= 6, takeout_double_responses.OneNotrump),
+        '2N': (points >= 11, takeout_double_responses.TwoNotrump),
+        '3N': (points >= 13, takeout_double_responses.ThreeNotrump),
     }
     shared_constraints = [balanced, StoppersInOpponentsSuits()]
-    priority = takeout_double_responses.NotrumpResponseToTakeoutDouble
 
 
 # FIXME: This could probably be handled by suited to play if we could get the priorities right!
 class JumpNotrumpResponseToTakeoutDouble(ResponseToTakeoutDouble):
     preconditions = [JumpFromLastContract()]
     constraints = {
-        '2N': points >= 11,
-        '3N': points >= 13,
+        '2N': (points >= 11, takeout_double_responses.TwoNotrumpJump),
+        '3N': (points >= 13, takeout_double_responses.ThreeNotrump),
     }
     shared_constraints = [balanced, StoppersInOpponentsSuits()]
-    priority = takeout_double_responses.JumpNotrumpResponseToTakeoutDouble
 
 
 class SuitResponseToTakeoutDouble(ResponseToTakeoutDouble):
