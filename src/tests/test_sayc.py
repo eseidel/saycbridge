@@ -780,9 +780,13 @@ class SAYCBidderTest(unittest2.TestCase):
 
             # Non-jump shows 19-21, jump shows 21-22. p125
             ["A87.AK9.A98.AT84", "2N", "1H X P 2C P"],
-            ["A87.AK9.A98.AK84", "2N", "1C X P 1D P"],
+            ["K98.AQJ9.AQ7.KQ4", "2N", "1H X P 1S P"], # 21 hcp
             # With no stopper a cuebid to show 21+ seems better than jump to 2N.
             ["98.AKQ.AJ76.AKJ4", "2C", "1C X P 1D P"],
+
+            # 2N is 21-22 and 3N is 23+
+            ["A87.AK9.A98.AK84", "2N", "1C X P 1D P"], # 22 hcp
+            ["KQ8.AQJ9.AQ7.KQ4", "3N", "1H X P 1S P"], # 23 hcp
 
             # Prefer majors over nt over minors for rasises:
             ["A8.AKQ.J763.KJ84", "2S", "1C X P 1S P"],

@@ -1912,7 +1912,7 @@ class NotrumpAfterTakeoutDouble(RebidAfterTakeoutDouble):
     constraints = {
         '1N': (points >= 18, rebids_after_takeout_double.OneNotrumpAfterTakeoutDouble),
         # 2N depends on whether it is a jump.
-        '3N': (points >= 22, rebids_after_takeout_double.ThreeNotrumpAfterTakeoutDouble), # FIXME: Techincally means 9+ tricks.
+        '3N': (points >= 23, rebids_after_takeout_double.ThreeNotrumpAfterTakeoutDouble), # FIXME: Techincally means 9+ tricks.
     }
     shared_constraints = StoppersInOpponentsSuits()
 
