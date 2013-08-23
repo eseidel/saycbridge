@@ -10,7 +10,7 @@ class Call(object):
     def __init__(self, name):
         self.name = name.upper()
         self.strain = None if self.name in ('P', 'X', 'XX') else strain_from_char(self.name[1])
-        self._level = int(self.name[0]) if self.is_contract() else None
+        self.level = int(self.name[0]) if self.is_contract() else None
         self._validate()
 
     def __str__(self):
@@ -51,15 +51,6 @@ class Call(object):
 
     def is_pass(self):
         return self.name == "P"
-
-    @property
-    def level(self):
-        return self._level
-
-    def suit(self):
-        if not self.is_contract():
-            return None
-        return strain_from_char(self.name[1])
 
     def is_double(self):
         # FIXME: It's unclear if double should include the information about the
