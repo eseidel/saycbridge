@@ -790,9 +790,13 @@ class SAYCBidderTest(unittest2.TestCase):
             ["98.KQJ9.AJ7.AK84", "2D", "1C X P 1D P"],
 
             # majors > nt > minors for jumps too:
-            ["A8.AKQ.A976.KJ84", "2S", "1C X P 1S P"],
+            ["A8.AKQ.A976.KJ84", "3S", "1C X P 1S P"],
             ["A8.KQJ9.AJ7.AQ84", "2N", "1C X P 1D P"],
             ["98.KQJ9.AQ7.AK84", "3D", "1C X P 1D P"],
+
+            # FIXME: Should big-hand jump raises really take us to game?
+            ["98.KQJ9.AQ7.AKQ4", "4S", "2D X P 2S P"],
+            ["98.KQJ9.AQ7.AKQ4", "5D", "2H X P 3D P"],
 
             # Responding to a takeout double
             # Responding with no intervening bid

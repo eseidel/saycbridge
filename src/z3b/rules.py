@@ -1853,22 +1853,20 @@ class RaiseAfterTakeoutDouble(RebidAfterTakeoutDouble):
     shared_constraints = MinLength(4)
 
 
-# class JumpRaiseAfterTakeoutDouble(RebidAfterTakeoutDouble):
-#     preconditions = [
-#         RaiseOfPartnersLastSuit(),
-#         JumpFromPartnerLastBid(exact_size=1)
-#     ]
-#     # Min: 1C X 1D P 3D, Max: 2S X P 3D P 5D
-#     # FIXME: Game doesn't seem like a raise here?
-#     constraints = {
-#         (      '3C', '4C', '5C'): (NO_CONSTRAINTS, rebids_after_takeout_double.MinorRaise),
-#         ('2D', '3D', '4D', '5D'): (NO_CONSTRAINTS, rebids_after_takeout_double.MinorRaise),
-#         ('2H', '3H', '4H'      ): (NO_CONSTRAINTS, rebids_after_takeout_double.MajorRaise),
-#         ('2S', '3S', '4H'      ): (NO_CONSTRAINTS, rebids_after_takeout_double.MajorRaise),
-#     }
-#     call_names = suit_bids_below_game('3D')
-#     shared_constraints = [MinLength(4), points >= 19]
-#     priority = rebids_after_takeout_double.JumpRaiseAfterTakeoutDouble
+class JumpRaiseAfterTakeoutDouble(RebidAfterTakeoutDouble):
+    preconditions = [
+        RaiseOfPartnersLastSuit(),
+        JumpFromPartnerLastBid(exact_size=1)
+    ]
+    # Min: 1C X 1D P 3D, Max: 2S X P 3D P 5D
+    # FIXME: Game doesn't seem like a raise here?
+    constraints = {
+        (      '3C', '4C', '5C'): (NO_CONSTRAINTS, rebids_after_takeout_double.JumpMinorRaise),
+        ('2D', '3D', '4D', '5D'): (NO_CONSTRAINTS, rebids_after_takeout_double.JumpMinorRaise),
+        ('2H', '3H', '4H'      ): (NO_CONSTRAINTS, rebids_after_takeout_double.JumpMajorRaise),
+        ('2S', '3S', '4H'      ): (NO_CONSTRAINTS, rebids_after_takeout_double.JumpMajorRaise),
+    }
+    shared_constraints = [MinLength(4), points >= 19]
 
 
 class NewSuitAfterTakeoutDouble(RebidAfterTakeoutDouble):
