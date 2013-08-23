@@ -270,8 +270,8 @@ class ResponseToJacobyTransfer(Rule):
 
     def _cheapest_level(self, last_call, suit):
         if suit < last_call.strain:
-            return last_call.level() + 1
-        return last_call.level()
+            return last_call.level + 1
+        return last_call.level
 
     def consume_call(self, knowledge, bid):
         if not bid.is_contract():
@@ -279,11 +279,11 @@ class ResponseToJacobyTransfer(Rule):
         partner_bid = knowledge.partner.last_call
         accept_suit = partner_bid.transfer_to
         accept_level = self._cheapest_level(partner_bid, accept_suit)
-        level_change = bid.level() - accept_level
+        level_change = bid.level - accept_level
         if bid.strain != accept_suit or level_change > 1:
             return None  # Any non-accept is a broken bid.
         if level_change == 1:
-            if partner_bid.level() != 2:
+            if partner_bid.level != 2:
                 return None  # Super accepts only apply over 1N, all others are broken bids.
             knowledge.me.set_min_length(accept_suit, 4)
             knowledge.me.set_min_hcp(17)
@@ -294,7 +294,7 @@ class ResponseToJacobyTransfer(Rule):
         # FIXME: Maybe these should be separate rules?
         # Unfortunately we can't distinguish these cases using only constraints
         # as one does a normal accept when one has fewer than 4 OR fewer than 17 points.
-        if bid.level() == 3:
+        if bid.level == 3:
             return priorities.SuperAcceptResponseToJacobyTransfer
         return priorities.ResponseToJacobyTransfer
 

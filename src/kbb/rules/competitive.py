@@ -457,11 +457,11 @@ class PreemptiveBid(object):
     def priority_for_bid(cls, hand, bid):
         # Separate the priorties between the levels so we can prefer higher preempts.
         # FIXME: 3rd seat preempts should be higher priority than weak Ro20 openings.
-        if bid.level() == 4:
+        if bid.level == 4:
             return priorities.FourLevelPreempt
-        if bid.level() == 3:
+        if bid.level == 3:
             return priorities.ThreeLevelPreempt
-        assert bid.level() == 2
+        assert bid.level == 2
         return priorities.TwoLevelPreempt
 
 
@@ -582,7 +582,7 @@ class MinimumSuitRebidResponseAfterPreempt(Rule):
 #     preconditions = Rule.preconditions + [PartnerWeak(), PartnerHasAtLeastCountInSuit(6), GameOrBelow()]
 #
 #     def consume_call(self, knowledge, bid):
-#         tricks_required_for_contract = bid.level() + 6
+#         tricks_required_for_contract = bid.level + 6
 #         winners_promised_by_partner = knowledge.partner.min_length(bid.strain) - 1
 #         required_tricks = tricks_required_for_contract - winners_promised_by_partner
 #         if required_tricks < 0:
@@ -870,7 +870,7 @@ class NegativeDouble(ResponseToOneLevelSuitedOpen):
     def consume_call(self, knowledge, bid):
         partner_suit = knowledge.partner.last_call.strain
         rho_suit = knowledge.rho.last_call.strain
-        rho_level = knowledge.rho.last_call.level()
+        rho_level = knowledge.rho.last_call.level
 
         for suit in MAJORS:
             # Does 1D 2C X really show both majors?  p130 h8 h9 seems to imply so.

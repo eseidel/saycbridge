@@ -51,7 +51,7 @@ class ConsistencyOracle(object):
 
     def _should_bid_stayman(self, knowledge, hand):
         # FIXME: GarbageStayman and MinorGameForceStayman are only valid over 1N openings.
-        if knowledge.partner.last_call.level() == 1:
+        if knowledge.partner.last_call.level == 1:
             if self._is_garbage_stayman(hand):
                 return True
             if self._is_minor_game_force_stayman(hand):

@@ -72,7 +72,7 @@ class Rule(object):
         if constraints is None and call.strain:
             constraints = self.implied_constraints.get(strain_char(call.strain))
         if constraints is None:
-            constraints = self.implied_constraints.get(call.level())
+            constraints = self.implied_constraints.get(call.level)
         if constraints is None:
             constraints = self.implied_constraints.get(self.ANY_OTHER_BID)
         if constraints is None:

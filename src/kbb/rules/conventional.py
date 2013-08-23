@@ -40,14 +40,14 @@ class ResponseToJacoby2N(Rule):
     # FIXME: Most of these responses should be marked as artificial!
 
     def consume_call(self, knowledge, bid):
-        if not bid.is_contract() or bid.level() > 4 or bid.name == '4N':
+        if not bid.is_contract() or bid.level > 4 or bid.name == '4N':
             # Jacoby 2N is a game-force, and you have a sub-game bid for when
             # you're strong.  Anything 4N or above is nonsense.
             return None
 
         trump_suit = knowledge.me.last_call.strain
         if bid.strain not in (trump_suit, NOTRUMP):
-            if bid.level() == 3:
+            if bid.level == 3:
                 knowledge.me.set_max_length(bid.strain, 1)
             else:
                 knowledge.me.set_min_length(bid.strain, 5)
@@ -62,7 +62,7 @@ class ResponseToJacoby2N(Rule):
             knowledge.me.set_length_range(suit, 2, 5)
 
         if bid.strain == trump_suit:
-            if bid.level() == 3:
+            if bid.level == 3:
                 knowledge.me.set_min_hcp(18)
             else:
                 # Direct game-jump is a minimum opener.

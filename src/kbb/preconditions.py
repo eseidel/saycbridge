@@ -487,7 +487,7 @@ class LastBidWasLevel(Precondition):
 
     def fits(self, knowledge, bid):
         last_non_pass = knowledge.last_non_pass()
-        return last_non_pass and last_non_pass.level() == self.expected_level
+        return last_non_pass and last_non_pass.level == self.expected_level
 
 
 # WARNING! You probably want to use a more semantic precondition!
@@ -549,7 +549,7 @@ class MyLastBidWas(Precondition):
 class MyLastBidWasOneOfASuit(Precondition):
     def fits(self, knowledge, bid):
         last_call = knowledge.me.last_call
-        return last_call and last_call.level() == 1 and last_call.strain in SUITS
+        return last_call and last_call.level == 1 and last_call.strain in SUITS
 
 
 class PartnerLastBidWasLevel(Precondition):
@@ -557,7 +557,7 @@ class PartnerLastBidWasLevel(Precondition):
         self.expected_level = expected_level
 
     def fits(self, knowledge, bid):
-        return knowledge.partner.last_call and knowledge.partner.last_call.level() == self.expected_level
+        return knowledge.partner.last_call and knowledge.partner.last_call.level == self.expected_level
 
 
 class CuebidOfRHOsSuit(Precondition):
@@ -713,8 +713,8 @@ class MinLevel(Precondition):
 
     def fits(self, knowledge, bid):
         if bid.is_double():
-            return knowledge.last_contract().level() >= self.min_level
-        return bid.is_contract() and bid.level() >= self.min_level
+            return knowledge.last_contract().level >= self.min_level
+        return bid.is_contract() and bid.level >= self.min_level
 
 
 class MaxLevel(Precondition):
@@ -723,8 +723,8 @@ class MaxLevel(Precondition):
 
     def fits(self, knowledge, bid):
         if bid.is_double():
-            return knowledge.last_contract().level() <= self.max_level
-        return bid.is_contract() and bid.level() <= self.max_level
+            return knowledge.last_contract().level <= self.max_level
+        return bid.is_contract() and bid.level <= self.max_level
 
 
 class Level(Precondition):
@@ -733,8 +733,8 @@ class Level(Precondition):
 
     def fits(self, knowledge, bid):
         if bid.is_double():
-            return knowledge.last_contract().level() == self._level
-        return bid.is_contract() and bid.level() == self._level
+            return knowledge.last_contract().level == self._level
+        return bid.is_contract() and bid.level == self._level
 
 
 class IsGame(Precondition):
@@ -746,29 +746,29 @@ class IsGame(Precondition):
         return 3
 
     def fits(self, knowledge, bid):
-        return bid.is_contract() and bid.level() == self._game_level(bid.strain)
+        return bid.is_contract() and bid.level == self._game_level(bid.strain)
 
 
 class LastBidWasGameOrAbove(IsGame):
     def fits(self, knowledge, bid):
         last_contract = knowledge.last_contract()
-        return last_contract.level() >= self._game_level(last_contract.strain)
+        return last_contract.level >= self._game_level(last_contract.strain)
 
 
 class LastBidWasBelowGame(IsGame):
     def fits(self, knowledge, bid):
         last_contract = knowledge.last_contract()
-        return last_contract.level() < self._game_level(last_contract.strain)
+        return last_contract.level < self._game_level(last_contract.strain)
 
 
 class BelowGame(IsGame):
     def fits(self, knowledge, bid):
-        return bid.is_contract() and bid.level() < self._game_level(bid.strain)
+        return bid.is_contract() and bid.level < self._game_level(bid.strain)
 
 
 class GameOrBelow(IsGame):
     def fits(self, knowledge, bid):
-        return bid.is_contract() and bid.level() <= self._game_level(bid.strain)
+        return bid.is_contract() and bid.level <= self._game_level(bid.strain)
 
 
 class IsSuit(Precondition):
@@ -808,9 +808,9 @@ class Jump(Precondition):
     def _jump_size(self, last_call, bid):
         if bid.strain <= last_call.strain:
             # If the new suit is less than the last bid one, than we need to change more than one level for it to be a jump.
-            return bid.level() - last_call.level() - 1
+            return bid.level - last_call.level - 1
         # Otherwise any bid not at the current level is a jump.
-        return bid.level() - last_call.level()
+        return bid.level - last_call.level
 
     def fits(self, knowledge, bid):
         if bid.is_pass():
@@ -865,7 +865,7 @@ class SameLevelAsLastContract(Precondition):
         if not bid.is_contract():
             return False
         last_contract = knowledge.last_contract()
-        return last_contract and last_contract.level() == bid.level()
+        return last_contract and last_contract.level == bid.level
 
 
 class MinimumCombinedPointsPrecondition(Precondition):

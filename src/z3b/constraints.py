@@ -67,7 +67,7 @@ class MaxLength(Constraint):
 class LengthSatisfiesLawOfTotalTricks(Constraint):
     def expr(self, history, call):
         # Written forward: level = partner_min + my_min - 6
-        my_count = call.level() + 6 - history.partner.min_length(call.strain)
+        my_count = call.level + 6 - history.partner.min_length(call.strain)
         return expr_for_suit(call.strain) >= my_count
 
 
@@ -181,7 +181,7 @@ class MinCombinedPointsForPartnerMinimumSuitedRebid(Constraint):
         # If we're forcing partner to bid, we're promising it's OK to rebid their suit at the next level with a minimum.
         partner_call = history.partner.last_call
         assert call.strain != partner_call.strain
-        rebid_level = call.level()
+        rebid_level = call.level
         if call.strain > partner_call.strain:
             rebid_level += 1
         # NOTE: This math matches SuitedToPlay:

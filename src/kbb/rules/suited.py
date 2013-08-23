@@ -457,7 +457,7 @@ class RebidOriginalSuitByOpener(OpenerRebid):
     def consume_call(self, knowledge, bid):
         # We can't skip over four-card majors.
         # FIXME: This should just use NoAvailableFourCardMajor()
-        if knowledge.partner.last_call.level() == 1:
+        if knowledge.partner.last_call.level == 1:
             for suit in MAJORS:
                 if suit <= knowledge.me.last_call.strain:
                     continue
@@ -566,7 +566,7 @@ class DoubleJumpRebidByOpener(OpenerSuitRebid):
         Rule.ANY_OTHER_BID : [MinLength(6), HighCardPointRange(19, 21)]
     }
     def priority_for_bid(self, hand, bid):
-        is_game = IsGame()._game_level(bid.strain) == bid.level()
+        is_game = IsGame()._game_level(bid.strain) == bid.level
         if not is_game:
             return priorities.Default
 

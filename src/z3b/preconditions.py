@@ -247,7 +247,7 @@ class LastBidHasLevel(Precondition):
 
     def fits(self, history, call):
         last_call = history.view_for(self.position).last_call
-        return last_call and last_call.level() == self.level
+        return last_call and last_call.level == self.level
 
 
 class LastBidWas(Precondition):
@@ -373,8 +373,8 @@ class Level(Precondition):
 
     def fits(self, history, call):
         if call.is_double():
-            return history.last_contract.level() == self.level
-        return call.is_contract() and call.level() == self.level
+            return history.last_contract.level == self.level
+        return call.is_contract() and call.level == self.level
 
 
 class MaxLevel(Precondition):
@@ -387,8 +387,8 @@ class MaxLevel(Precondition):
 
     def fits(self, history, call):
         if call.is_double():
-            return history.last_contract.level() <= self.max_level
-        return call.is_contract() and call.level() <= self.max_level
+            return history.last_contract.level <= self.max_level
+        return call.is_contract() and call.level <= self.max_level
 
 
 class MinimumCombinedPointsPrecondition(Precondition):
@@ -422,9 +422,9 @@ class Jump(Precondition):
     def _jump_size(self, last_call, call):
         if call.strain <= last_call.strain:
             # If the new suit is less than the last bid one, than we need to change more than one level for it to be a jump.
-            return call.level() - last_call.level() - 1
+            return call.level - last_call.level - 1
         # Otherwise any bid not at the current level is a jump.
-        return call.level() - last_call.level()
+        return call.level - last_call.level
 
     def fits(self, history, call):
         if call.is_pass():

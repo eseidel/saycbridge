@@ -22,7 +22,7 @@ class Call(object):
     def _validate(self):
         if self.is_contract():
             assert len(self.name) == 2, "%s is not a valid call name" % self.name
-            assert self.level() in range(8) and self.strain in STRAINS
+            assert self.level in range(8) and self.strain in STRAINS
         else:
             assert self.name in ('P', 'X', 'XX'), "%s is not a valid call name" % self.name
 
@@ -52,6 +52,7 @@ class Call(object):
     def is_pass(self):
         return self.name == "P"
 
+    @property
     def level(self):
         return self._level
 
@@ -92,8 +93,8 @@ class Call(object):
             # This should return 'P', 'X', 'XX' which seems reasonable.
             return cmp(self.name, other.name)
         # Level comparisons are more important than suit comparisons, so 1S will be before 2C.
-        if self.level() != other.level():
-            return cmp(self.level(), other.level())
+        if self.level != other.level:
+            return cmp(self.level, other.level)
         # Using the suit enum, this comparison is very easy and will correctly order C, D, H, S
         return cmp(self.strain, other.strain)
 

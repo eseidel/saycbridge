@@ -359,7 +359,7 @@ class BetterFitThanPartnerLastContract(Constraint):
 class LengthSatisfiesLawOfTotalTricks(Constraint):
     def apply_to(self, knowledge, bid):
         # Written forward: level = partner_min + my_min - 6
-        my_count = bid.level() + 6 - knowledge.partner.min_length(bid.strain)
+        my_count = bid.level + 6 - knowledge.partner.min_length(bid.strain)
         knowledge.me.set_min_length(bid.strain, my_count)
 
 
@@ -429,7 +429,7 @@ class NoAvailableFourCardMajor(Constraint):
 class LessThanFourCardsInAllSkippedSuits(Constraint):
     def _skipped_suits(self, knowledge, bid):
         last_contract = knowledge.last_contract()
-        if bid.level() > last_contract.level() and bid.strain >= last_contract.strain:
+        if bid.level > last_contract.level and bid.strain >= last_contract.strain:
             return knowledge.unbid_suits()  # If we jumped, then we skipped all the suits!
 
         last_suit = last_contract.strain
@@ -568,7 +568,7 @@ class MinCombinedPointsForPartnerMinimumRebid(Constraint):
             return
 
         # If we're forcing partner to bid, we're promising it's OK to escape to NT with a minimum.
-        level = call.level() if call.level() else knowledge.last_contract().level()
+        level = call.level if call.level else knowledge.last_contract().level
         knowledge.me.set_min_hcp(self._min_points_for_cheapest_notrump(level) - knowledge.partner.min_hcp())
         # FIXME: It's possible that partner doesn't need quite points for cheapest NT, if
         # a suit rebid is available (and could be made with a couple fewer points).

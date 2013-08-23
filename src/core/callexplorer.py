@@ -27,10 +27,10 @@ class CallExplorer(object):
 
         last_contract = history.last_contract()
         for level in range(1, 8):
-            if last_contract and level < last_contract.level():
+            if last_contract and level < last_contract.level:
                 continue
             for strain in STRAINS:
-                if last_contract and level == last_contract.level() and strain <= last_contract.strain:
+                if last_contract and level == last_contract.level and strain <= last_contract.strain:
                     continue
                 yield Call.from_level_and_strain(level, strain)
 

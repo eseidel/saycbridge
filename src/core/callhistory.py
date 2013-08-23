@@ -139,10 +139,10 @@ class CallHistory(object):
         if not last_contract:
             return not call.is_double() and not call.is_redouble()
         # Doubles do not have levels.
-        if call.level():
-            if last_contract.level() > call.level():
+        if call.level:
+            if last_contract.level > call.level:
                 return False
-            if last_contract.level() == call.level() and last_contract.strain >= call.strain:
+            if last_contract.level == call.level and last_contract.strain >= call.strain:
                 return False
         if call.is_double() and not self.can_double():
             return False
