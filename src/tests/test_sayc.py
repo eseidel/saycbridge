@@ -784,15 +784,24 @@ class SAYCBidderTest(unittest2.TestCase):
             # With no stopper a cuebid to show 21+ seems better than jump to 2N.
             ["98.AKQ.AJ76.AKJ4", "2C", "1C X P 1D P"],
 
-            # Prefer majors over nt over minors:
+            # Prefer majors over nt over minors for rasises:
             ["A8.AKQ.J763.KJ84", "2S", "1C X P 1S P"],
             ["A8.KQJ9.AJ7.K984", "1N", "1C X P 1D P"],
             ["98.KQJ9.AJ7.AK84", "2D", "1C X P 1D P"],
 
-            # majors > nt > minors for jumps too:
+            # Prefer support over majors over NT.
+            ["A.A43.KQJ32.KJ84", "2S", "1C X P 1S P"],
+            ["A8.KQ8.AQ732.K98", "1H", "1C X P 1D P"],
+            ["A8.KJ4.AK73.K982", "1N", "1C X P 1D P"],
+
+            # majors > nt > minors for jump rasises too:
             ["A8.AKQ.A976.KJ84", "3S", "1C X P 1S P"],
             ["A8.KQJ9.AJ7.AQ84", "2N", "1C X P 1D P"],
             ["98.KQJ9.AQ7.AK84", "3D", "1C X P 1D P"],
+
+            # Prefer support over majors for jumps too (NT is never an option if you have the shape to new-suit-jump)
+            ["A.AK.AK9876.QJ84", "3S", "1C X P 1S P"],
+            ["AJ.KQ.AQJ832.KJ9", "2H", "1C X P 1D P"],
 
             # FIXME: Should big-hand jump raises really take us to game?
             ["98.KQJ9.AQ7.AKQ4", "4S", "2D X P 2S P"],

@@ -1802,9 +1802,9 @@ rebids_after_takeout_double = enum.Enum(
 
     "ThreeNotrumpAfterTakeoutDouble",
 
-    "JumpSpadesSuit",
+    "JumpSpadesNewSuit",
     "SpadesNewSuit",
-    "JumpHeartsSuit",
+    "JumpHeartsNewSuit",
     "HeartsNewSuit",
 
     "TwoNotrumpAfterTakeoutDouble",
@@ -1888,15 +1888,24 @@ class NewSuitAfterTakeoutDouble(RebidAfterTakeoutDouble):
     shared_constraints = MinLength(5)
 
 
-# class JumpNewSuitAfterTakeoutDouble(RebidAfterTakeoutDouble):
-#     preconditions = [
-#         UnbidSuit(),
-#         JumpFromLastContract(exact_size=1)
-#     ]
-#     # Min: 1C X 1D P 2H
-#     call_names = suit_bids_below_game('2H')
-#     shared_constraints = [MinLength(6), TwoOfTheTopThree(), points >= 21]
-#     priority = rebids_after_takeout_double.JumpNewSuitAfterTakeoutDouble
+class JumpNewSuitAfterTakeoutDouble(RebidAfterTakeoutDouble):
+    preconditions = [
+        UnbidSuit(),
+        JumpFromLastContract(exact_size=1),
+        # FIXME: Remove !RaiseOfPartnersLastSuit once SuitResponseToTakeoutDouble implies 4+ (even though it
+        # only needs 3+ to make the bid).  Promising only 3 is currently confusing UnbidSuit.
+        InvertedPrecondition(RaiseOfPartnersLastSuit()),
+    ]
+    # Min: 1C X XX P 2D, Max: 2S X P 3C 5D
+    # FIXME: Jumping straight to game seems less useful than a cuebid would?
+    constraints = {
+        (      '3C', '4C', '5C'): (NO_CONSTRAINTS, rebids_after_takeout_double.JumpClubsNewSuit),
+        ('2D', '3D', '4D', '5D'): (NO_CONSTRAINTS, rebids_after_takeout_double.JumpDiamondsNewSuit),
+        ('2H', '3H', '4H'      ): (NO_CONSTRAINTS, rebids_after_takeout_double.JumpHeartsNewSuit),
+        ('2S', '3S', '4H'      ): (NO_CONSTRAINTS, rebids_after_takeout_double.JumpSpadesNewSuit),
+
+    }
+    shared_constraints = [MinLength(6), TwoOfTheTopThree(), points >= 21]
 
 
 class NotrumpAfterTakeoutDouble(RebidAfterTakeoutDouble):
