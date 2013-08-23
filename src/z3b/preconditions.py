@@ -15,6 +15,7 @@ annotations = enum.Enum(
     # OneLevelSuitOpening and NoTrumpSystemsOn.
     # e.g. Does ResponderJumpShift apply after 2N?
     "OneLevelSuitOpening", # 1-level suited response opening book.
+    "StrongTwoClubOpening", # 2C response opening book.
     "NoTrumpSystemsOn", # NT response opening book.
     "StandardOvercall", # Overcall opening book.
     "Preemptive", # Preemptive opening book.
@@ -138,6 +139,11 @@ class OneLevelSuitedOpeningBook(Precondition):
         return annotations.OneLevelSuitOpening in history.us.annotations
 
 
+class StrongTwoClubOpeningBook(Precondition):
+    def fits(self, history, call):
+        return annotations.StrongTwoClubOpening in history.us.annotations
+
+
 class HasBid(Precondition):
     def __init__(self, position):
         self.position = position
@@ -178,6 +184,8 @@ class ForcedToBid(Precondition):
         # FIXME: We're attempting to express that partner is unbounded but
         # partner is never truly unbounded if other players have bid.
         # "Game is not remote" might be better?
+        # FIXME: This is wrong and will cause hands with 17+ points to
+        # only be able to make forcing bids, including 2N! NT is bounded and thus never forcing.
         return history.partner.could_have_more_points_than(17)
 
     def fits(self, history, call):

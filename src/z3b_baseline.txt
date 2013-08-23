@@ -2,6 +2,7 @@ test_3c_stayman:
 Pass 5 of 5 hands
 
 test_doubles:
+WARNING: Multiple calls match and have maximal priority: ['2N', '3N'] from rules: [CompiledRule(JumpNotrumpResponseToTakeoutDouble), CompiledRule(JumpNotrumpResponseToTakeoutDouble)]
 FAIL: 2N (expected P) for T98.KQ4.863.Q875 (hcp: 7 lp: 7 sp: 7), history: 1N X P
 FAIL: None (expected 2C) for JT9872.87.86.JT9 (hcp: 2 lp: 4 sp: 4), history: 1N X P
 FAIL: None (expected 2H) for 7643.5.Q9843.432 (hcp: 2 lp: 3 sp: 5), history: 1N X P
@@ -393,18 +394,15 @@ Pass 2 of 2 hands
 
 test_strong_two_club:
 FAIL: 1S (expected 2C) for .A4.2.AKQT985432 (hcp: 13 lp: 19 sp: 22), history: 
-FAIL: 2N (expected 2S) for K876.AK.A2.AKQT9 (hcp: 23 lp: 24 sp: 25), history: 2C P 2D P
-FAIL: 3N (expected 4S) for QJ95.984.Q76.653 (hcp: 5 lp: 5 sp: 5), history: 2C P 2D P 2S P
 FAIL: 5S (expected 6S) for K94.AK.AKQT2.AJ3 (hcp: 24 lp: 25 sp: 25), history: 2C P 2S P 4N P 5C P
-FAIL: 4S (expected 4N) for K94.AK.AKQT2.AJ3 (hcp: 24 lp: 25 sp: 25), history: 2C P 2S P (subtest of 2C P 2S P 4N P 5C P)
-FAIL: P (expected 3S) for K842.AK.AKQ.A974 (hcp: 23 lp: 23 sp: 24), history: 2C P 2D P 2N P 3C P
+FAIL: 3H (expected 4N) for K94.AK.AKQT2.AJ3 (hcp: 24 lp: 25 sp: 25), history: 2C P 2S P (subtest of 2C P 2S P 4N P 5C P)
+FAIL: None (expected 3S) for K842.AK.AKQ.A974 (hcp: 23 lp: 23 sp: 24), history: 2C P 2D P 2N P 3C P
 FAIL: 3N (expected 4S) for JT65.764.72.KQ65 (hcp: 6 lp: 6 sp: 7), history: 2C P 2D P 2N P 3C P 3S P
 FAIL: 3N (expected 3C) for JT65.764.72.KQ65 (hcp: 6 lp: 6 sp: 7), history: 2C P 2D P 2N P (subtest of 2C P 2D P 2N P 3C P 3S P)
-FAIL: P (expected 3S) for 6.AJ3.AK4.AKQJT6 (hcp: 22 lp: 24 sp: 25), history: 2C P 2D P 2S P 3C P
-FAIL: 2N (expected 2S) for 6.AJ3.AK4.AKQJT6 (hcp: 22 lp: 24 sp: 25), history: 2C P 2D P (subtest of 2C P 2D P 2S P 3C P)
+FAIL: None (expected 3S) for 6.AJ3.AK4.AKQJT6 (hcp: 22 lp: 24 sp: 25), history: 2C P 2D P 2S P 3C P
 FAIL: None (expected P) for T954.952.T863.82 (hcp: 0 lp: 0 sp: 1), history: 2C P 2D P 2S P 3C P 3S P
 FAIL: 2N (expected 3C) for T954.952.T863.82 (hcp: 0 lp: 0 sp: 1), history: 2C P 2D P 2S P (subtest of 2C P 2D P 2S P 3C P 3S P)
-Pass 17 of 29 hands
+Pass 20 of 29 hands
 
 test_subsequent_bidding_by_responder:
 FAIL: None (expected P) for JT64.K532.8.A543 (hcp: 8 lp: 8 sp: 11), history: 1H P 1S P 2C P
@@ -433,4 +431,4 @@ FAIL: 3S (expected 4S) for K74.9.J98.KJT742 (hcp: 8 lp: 10 sp: 11), history: 1N 
 FAIL: 2N (expected P) for Q87.J843.K65.Q93 (hcp: 8 lp: 8 sp: 8), history: 1N P
 Pass 1 of 3 hands
 
-Pass 786 (71%) of 1094 total hands
+Pass 789 (72%) of 1094 total hands

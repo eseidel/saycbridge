@@ -469,6 +469,7 @@ class NoTrumpOpening(Opening):
 
 
 class StrongTwoClubs(Opening):
+    annotations = annotations.StrongTwoClubOpening
     call_names = '2C'
     shared_constraints = points >= 22  # FIXME: Should support "or 9+ winners"
     priority = opening_priorities.StrongTwoClubs
@@ -728,7 +729,7 @@ rule_order.order(*reversed(two_clubs_response_priorities))
 
 
 class ResponseToStrongTwoClubs(Response):
-    preconditions = LastBidWas(positions.Partner, '2C')
+    preconditions = LastBidHasAnnotation(positions.Partner, annotations.StrongTwoClubOpening)
 
 
 class WaitingResponseToStrongTwoClubs(ResponseToStrongTwoClubs):
@@ -954,6 +955,7 @@ rule_order.order(*reversed(two_clubs_opener_rebid_priorities))
 
 class OpenerRebidAfterStrongTwoClubs(OpenerRebid):
     preconditions = LastBidWas(positions.Me, '2C')
+    # This could also alternatively use annotations.StrongTwoClubOpening
 
 
 class OpenerSuitedRebidAfterStrongTwoClubs(OpenerRebidAfterStrongTwoClubs):
@@ -995,12 +997,15 @@ rule_order.order(*reversed(sign_off_priorities))
 class ResponderRebid(Rule):
     preconditions = [
         Opened(positions.Partner),
-        OneLevelSuitedOpeningBook(),
         HasBid(positions.Me),
     ]
 
 
-class ResponderSuitRebid(ResponderRebid):
+class OneLevelOpeningResponderRebid(ResponderRebid):
+    preconditions = OneLevelSuitedOpeningBook()
+
+
+class ResponderSuitRebid(OneLevelOpeningResponderRebid):
     preconditions = RebidSameSuit()
 
 
@@ -1022,7 +1027,7 @@ class ThreeLevelSuitRebidByResponder(ResponderSuitRebid):
     priority = responder_rebid_priorities.ThreeLevelSuitRebidByResponder
 
 
-class ResponderSignoffInPartnersSuit(ResponderRebid):
+class ResponderSignoffInPartnersSuit(OneLevelOpeningResponderRebid):
     preconditions = [
         InvertedPrecondition(RaiseOfPartnersLastSuit()),
         PartnerHasAtLeastLengthInSuit(3)
@@ -1045,7 +1050,7 @@ class ResponderSignoffInPartnersSuit(ResponderRebid):
 #     priority = sign_off_priorities.ResponderSignoffInMinorGame
 
 
-class ResponderReverse(ResponderRebid):
+class ResponderReverse(OneLevelOpeningResponderRebid):
     preconditions = reverse_preconditions
     # Min: 1C,1D,2C,2H, Max: 1S,2D,2S,3H
     call_names = [
@@ -1056,7 +1061,7 @@ class ResponderReverse(ResponderRebid):
     priority = responder_rebid_priorities.ResponderReverse
 
 
-class JumpShiftResponderRebid(ResponderRebid):
+class JumpShiftResponderRebid(OneLevelOpeningResponderRebid):
     preconditions = JumpShift.preconditions
     # Smallest: 1C,1D,1H,2S
     # Largest: 1S,2H,3C,4D (anything above 4D is game)
@@ -1074,15 +1079,16 @@ class JumpShiftResponderRebid(ResponderRebid):
 # This is not covered in the book or the SAYC pdf.
 
 
-# class SecondNegative(ResponderRebid):
-#     preconditions = [
-#         LastBidWas(positions.Me, '2D'),
-#         InvertedPrecondition(ForcedToBid()), # Does not apply over 2C,2D,2N
-#     ]
-#     call_names = '3C'
-#     shared_constraints = NO_CONSTRAINTS
-#     annotations = annotations.Artificial
-#     priority = responder_rebid_priorities.SecondNegative
+class SecondNegative(ResponderRebid):
+    preconditions = [
+        StrongTwoClubOpeningBook(),
+        LastBidWas(positions.Me, '2D'),
+        ForcedToBid(),
+    ]
+    call_names = '3C'
+    # Denies a fit, shows a max of 3 hcp
+    shared_constraints = NO_CONSTRAINTS
+    annotations = annotations.Artificial
 
 
 nt_response_priorities = enum.Enum(
@@ -2127,4 +2133,5 @@ class StandardAmericanYellowCard(object):
     rule_order.order(DefaultPass, sign_off_priorities)
     rule_order.order(DefaultPass, opening_priorities)
     rule_order.order(natural_priorities, RaiseAfterTakeoutDouble)
+    rule_order.order(SecondNegative, natural_priorities)
     rule_order.order(DefaultPass, RaiseAfterTakeoutDouble)
