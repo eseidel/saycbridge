@@ -2,7 +2,6 @@ test_3c_stayman:
 Pass 5 of 5 hands
 
 test_doubles:
-WARNING: Multiple calls match and have maximal priority: ['2N', '3N'] from rules: [CompiledRule(JumpNotrumpResponseToTakeoutDouble), CompiledRule(JumpNotrumpResponseToTakeoutDouble)]
 FAIL: 2N (expected P) for T98.KQ4.863.Q875 (hcp: 7 lp: 7 sp: 7), history: 1N X P
 FAIL: None (expected 2C) for JT9872.87.86.JT9 (hcp: 2 lp: 4 sp: 4), history: 1N X P
 FAIL: None (expected 2H) for 7643.5.Q9843.432 (hcp: 2 lp: 3 sp: 5), history: 1N X P
@@ -15,7 +14,7 @@ FAIL: 3D (expected 2S) for A87.AK96.8.AK875 (hcp: 18 lp: 19 sp: 21), history: 1H
 FAIL: X (expected 2S) for A87.AK96.8.AK875 (hcp: 18 lp: 19 sp: 21), history: 1H X 2C P 2H
 FAIL: X (expected 2S) for A87.AK96.8.AK875 (hcp: 18 lp: 19 sp: 21), history: 1H X 2D P P
 FAIL: X (expected 1S) for K2.AKT86.5.AQJ76 (hcp: 17 lp: 19 sp: 21), history: 1C
-FAIL: None (expected 2S) for A874.AK96.8.AK84 (hcp: 18 lp: 18 sp: 21), history: 1H X P 2S P
+FAIL: 3S (expected 2S) for A874.AK96.8.AK84 (hcp: 18 lp: 18 sp: 21), history: 1H X P 2S P
 FAIL: None (expected 3N) for QJ83.AQ64.K76.Q8 (hcp: 14 lp: 14 sp: 13), history: 1D X P
 FAIL: 2S (expected 4S) for Q86.J32.K7.AQT65 (hcp: 12 lp: 13 sp: 13), history: 1D X P
 FAIL: P (expected 3S) for T874.876.6.AK863 (hcp: 7 lp: 8 sp: 10), history: 1D X 1H

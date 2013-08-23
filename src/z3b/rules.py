@@ -1763,11 +1763,11 @@ class CuebidResponseToTakeoutDouble(ResponseToTakeoutDouble):
     shared_constraints = [points >= 13, SupportForUnbidSuits()]
 
 
+# NOTE: I don't think we're going to end up needing most of these.
 rebid_after_takeout_double_priorities = enum.Enum(
     "CueBidAfterTakeoutDouble",
 
     "JumpRaiseAfterTakeoutDouble",
-    "RaiseAfterTakeoutDouble",
 
     "NotrumpAfterTakeoutDouble",
 
@@ -1778,7 +1778,6 @@ rebid_after_takeout_double_priorities = enum.Enum(
 
     "NewSuitAfterTakeoutDouble",
 )
-rule_order.order(*reversed(rebid_after_takeout_double_priorities))
 
 
 class RebidAfterTakeoutDouble(Rule):
@@ -1806,7 +1805,6 @@ class RaiseAfterTakeoutDouble(RebidAfterTakeoutDouble):
     call_names = suit_bids_below_game('2D')
     # FIXME: Majors should be preferred over NewSuitAfterTakeoutDouble?
     shared_constraints = MinLength(4)
-    priority = rebid_after_takeout_double_priorities.RaiseAfterTakeoutDouble
 
 
 # class JumpRaiseAfterTakeoutDouble(RebidAfterTakeoutDouble):
@@ -2117,7 +2115,6 @@ class StandardAmericanYellowCard(object):
     rule_order.order(
         natural_priorities.ThreeLevelNaturalNT,
         stayman_rebid_priorities.GameForcingOtherMajor,
-        stayman_rebid_priorities.MinorGameForceRebid,
         natural_priorities.FourLevelNaturalMajor,
     )
     rule_order.order(natural_nt_part_scores, stayman_rebid_priorities.InvitationalOtherMajor, natural_suited_part_scores)
@@ -2132,4 +2129,5 @@ class StandardAmericanYellowCard(object):
     rule_order.order(DefaultPass, the_law_priorities)
     rule_order.order(DefaultPass, sign_off_priorities)
     rule_order.order(DefaultPass, opening_priorities)
-    rule_order.order(DefaultPass, rebid_after_takeout_double_priorities)
+    rule_order.order(natural_priorities, RaiseAfterTakeoutDouble)
+    rule_order.order(DefaultPass, RaiseAfterTakeoutDouble)
