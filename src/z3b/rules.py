@@ -1786,23 +1786,24 @@ class CuebidResponseToTakeoutDouble(ResponseToTakeoutDouble):
 
 
 # NOTE: I don't think we're going to end up needing most of these.
-rebid_after_takeout_double_priorities = enum.Enum(
+rebids_after_takeout_double = enum.Enum(
     "CueBidAfterTakeoutDouble",
 
     "JumpRaiseAfterTakeoutDouble",
 
-    "NotrumpAfterTakeoutDouble",
+    "ThreeNotrumpAfterTakeoutDouble",
 
     "JumpNewSuitAfterTakeoutDouble",
-
-    "JumpTwoNotrumpAfterTakeoutDouble",
-    "NonJumpTwoNotrumpAfterTakeoutDouble",
+    "TwoNotrumpAfterTakeoutDouble",
 
     "NewSuitAfterTakeoutDouble",
+    "OneNotrumpAfterTakeoutDouble",
 )
+rule_order.order(*reversed(rebids_after_takeout_double))
 
 
 class RebidAfterTakeoutDouble(Rule):
+    # FIXME: These only apply after a minimum (non-jump?) response from partner.
     preconditions = LastBidHasAnnotation(positions.Me, annotations.TakeoutDouble)
     shared_constraints = points >= 17
 
@@ -1836,7 +1837,7 @@ class RaiseAfterTakeoutDouble(RebidAfterTakeoutDouble):
 #     ]
 #     call_names = suit_bids_below_game('3D')
 #     shared_constraints = [MinLength(4), points >= 19]
-#     priority = rebid_after_takeout_double_priorities.JumpRaiseAfterTakeoutDouble
+#     priority = rebids_after_takeout_double.JumpRaiseAfterTakeoutDouble
 
 
 # class NewSuitAfterTakeoutDouble(RebidAfterTakeoutDouble):
@@ -1847,7 +1848,7 @@ class RaiseAfterTakeoutDouble(RebidAfterTakeoutDouble):
 #     # Min: 1C X XX P 1D
 #     call_names = suit_bids_below_game('1D')
 #     shared_constraints = MinLength(5)
-#     priority = rebid_after_takeout_double_priorities.NewSuitAfterTakeoutDouble
+#     priority = rebids_after_takeout_double.NewSuitAfterTakeoutDouble
 
 
 # class JumpNewSuitAfterTakeoutDouble(RebidAfterTakeoutDouble):
@@ -1858,31 +1859,30 @@ class RaiseAfterTakeoutDouble(RebidAfterTakeoutDouble):
 #     # Min: 1C X 1D P 2H
 #     call_names = suit_bids_below_game('2H')
 #     shared_constraints = [MinLength(6), TwoOfTheTopThree(), points >= 21]
-#     priority = rebid_after_takeout_double_priorities.JumpNewSuitAfterTakeoutDouble
+#     priority = rebids_after_takeout_double.JumpNewSuitAfterTakeoutDouble
 
 
-# class NotrumpAfterTakeoutDouble(RebidAfterTakeoutDouble):
-#     constraints = {
-#         '1N': points >= 18,
-#         # 2N depends on whether it is a jump.
-#         '3N': points >= 22,  # FIXME: Techincally means 9+ tricks.
-#     }
-#     shared_constraints = StoppersInOpponentsSuits()
-#     priority = rebid_after_takeout_double_priorities.NotrumpAfterTakeoutDouble
+class NotrumpAfterTakeoutDouble(RebidAfterTakeoutDouble):
+    constraints = {
+        '1N': (points >= 18, rebids_after_takeout_double.OneNotrumpAfterTakeoutDouble),
+        # 2N depends on whether it is a jump.
+        '3N': (points >= 22, rebids_after_takeout_double.ThreeNotrumpAfterTakeoutDouble), # FIXME: Techincally means 9+ tricks.
+    }
+    shared_constraints = StoppersInOpponentsSuits()
 
 
-# class NonJumpTwoNotrumpAfterTakeoutDouble(RebidAfterTakeoutDouble):
-#     preconditions = NotJumpFromLastContract()
-#     call_names = '2N'
-#     shared_constraints = [points >= 19, StoppersInOpponentsSuits()]
-#     priority = rebid_after_takeout_double_priorities.NonJumpTwoNotrumpAfterTakeoutDouble
+class NonJumpTwoNotrumpAfterTakeoutDouble(RebidAfterTakeoutDouble):
+    preconditions = NotJumpFromLastContract()
+    call_names = '2N'
+    shared_constraints = [points >= 19, StoppersInOpponentsSuits()]
+    priority = rebids_after_takeout_double.TwoNotrumpAfterTakeoutDouble
 
 
-# class JumpTwoNotrumpAfterTakeoutDouble(RebidAfterTakeoutDouble):
-#     preconditions = JumpFromLastContract()
-#     call_names = '2N'
-#     shared_constraints = [points >= 21, StoppersInOpponentsSuits()]
-#     priority = rebid_after_takeout_double_priorities.JumpTwoNotrumpAfterTakeoutDouble
+class JumpTwoNotrumpAfterTakeoutDouble(RebidAfterTakeoutDouble):
+    preconditions = JumpFromLastContract()
+    call_names = '2N'
+    shared_constraints = [points >= 21, StoppersInOpponentsSuits()]
+    priority = rebids_after_takeout_double.TwoNotrumpAfterTakeoutDouble
 
 
 # class CueBidAfterTakeoutDouble(RebidAfterTakeoutDouble):
@@ -1893,7 +1893,7 @@ class RaiseAfterTakeoutDouble(RebidAfterTakeoutDouble):
 #     # Min: 1C X 1D P 2C
 #     call_names = suit_bids_below_game('2C')
 #     shared_constraints = points >= 21
-#     priority = rebid_after_takeout_double_priorities.CueBidAfterTakeoutDouble
+#     priority = rebids_after_takeout_double.CueBidAfterTakeoutDouble
 
 
 # class TakeoutDoubleAfterTakeoutDouble(RebidAfterTakeoutDouble):
@@ -2153,4 +2153,4 @@ class StandardAmericanYellowCard(object):
     rule_order.order(DefaultPass, opening_priorities)
     rule_order.order(natural_priorities, RaiseAfterTakeoutDouble)
     rule_order.order(SecondNegative, natural_priorities)
-    rule_order.order(DefaultPass, RaiseAfterTakeoutDouble)
+    rule_order.order(DefaultPass, rebids_after_takeout_double)

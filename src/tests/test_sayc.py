@@ -775,6 +775,15 @@ class SAYCBidderTest(unittest2.TestCase):
 
             ["A874.AK96.8.AK84", "2S", "1H X P 2S P"],
 
+            # Even w/o a stopper, 1N to show 18-19 seems reasonable here?
+            ["T87.AK9.A98.AK84", "1N", "1C X P 1D P"],
+
+            # Non-jump shows 19-21, jump shows 21-22. p125
+            ["A87.AK9.A98.AT84", "2N", "1H X P 2C P"],
+            ["A87.AK9.A98.AK84", "2N", "1C X P 1D P"],
+            # With no stopper a cuebid to show 21+ seems better than jump to 2N.
+            ["98.AKQ.AJ76.AKJ4", "2C", "1C X P 1D P"],
+
             # Responding to a takeout double
             # Responding with no intervening bid
             ["T874.876.86.J843", "2C", "1S X P"],  # p119, h14

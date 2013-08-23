@@ -5,7 +5,7 @@
 from suit import *
 from third_party.memoized import memoized
 
-
+# Call objects should be global singletons and thus immutable.
 class Call(object):
     def __init__(self, name):
         self.name = name.upper()
