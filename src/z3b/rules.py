@@ -1115,7 +1115,7 @@ class SecondNegative(ResponderRebid):
     ]
     call_names = '3C'
     # Denies a fit, shows a max of 3 hcp
-    shared_constraints = NO_CONSTRAINTS
+    shared_constraints = points < 3
     annotations = annotations.Artificial
 
 
@@ -2200,5 +2200,5 @@ class StandardAmericanYellowCard(object):
     rule_order.order(DefaultPass, sign_off_priorities)
     rule_order.order(DefaultPass, opening_priorities)
     rule_order.order(rebids_after_takeout_double, natural_priorities)
-    rule_order.order(SecondNegative, natural_priorities)
+    rule_order.order(natural_priorities, SecondNegative)
     rule_order.order(DefaultPass, rebids_after_takeout_double)
