@@ -199,8 +199,10 @@ class RuleCompiler(object):
         for tuple_key, value in original_dict.iteritems():
             if hasattr(tuple_key, '__iter__'):
                 for key in tuple_key:
+                    assert key not in flattened_dict, "Key (%s) was listed twice in %s" % (key, original_dict)
                     flattened_dict[key] = value
             else:
+                assert tuple_key not in flattened_dict, "Key (%s) was listed twice in %s" % (tuple_key, original_dict)
                 flattened_dict[tuple_key] = value
         return flattened_dict
 
@@ -1865,7 +1867,7 @@ class JumpRaiseAfterTakeoutDouble(RebidAfterTakeoutDouble):
         (      '3C', '4C', '5C'): (NO_CONSTRAINTS, rebids_after_takeout_double.JumpMinorRaise),
         ('2D', '3D', '4D', '5D'): (NO_CONSTRAINTS, rebids_after_takeout_double.JumpMinorRaise),
         ('2H', '3H', '4H'      ): (NO_CONSTRAINTS, rebids_after_takeout_double.JumpMajorRaise),
-        ('2S', '3S', '4H'      ): (NO_CONSTRAINTS, rebids_after_takeout_double.JumpMajorRaise),
+        ('2S', '3S', '4S'      ): (NO_CONSTRAINTS, rebids_after_takeout_double.JumpMajorRaise),
     }
     shared_constraints = [MinLength(4), points >= 19]
 
@@ -1902,7 +1904,7 @@ class JumpNewSuitAfterTakeoutDouble(RebidAfterTakeoutDouble):
         (      '3C', '4C', '5C'): (NO_CONSTRAINTS, rebids_after_takeout_double.JumpClubsNewSuit),
         ('2D', '3D', '4D', '5D'): (NO_CONSTRAINTS, rebids_after_takeout_double.JumpDiamondsNewSuit),
         ('2H', '3H', '4H'      ): (NO_CONSTRAINTS, rebids_after_takeout_double.JumpHeartsNewSuit),
-        ('2S', '3S', '4H'      ): (NO_CONSTRAINTS, rebids_after_takeout_double.JumpSpadesNewSuit),
+        ('2S', '3S', '4S'      ): (NO_CONSTRAINTS, rebids_after_takeout_double.JumpSpadesNewSuit),
 
     }
     shared_constraints = [MinLength(6), TwoOfTheTopThree(), points >= 21]
