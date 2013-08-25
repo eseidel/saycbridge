@@ -23,16 +23,31 @@ SCRIPTS = \
 	play.test.js \
 	recap.js \
 
+PYTHON_PACKAGES=networkx unittest2
+
+PYTHON_EGGS=$(patsubst %,sayc-env/%.STAMP,$(PYTHON_PACKAGES))
+
 all:
 	@echo "Run 'make check' to check against the current baseline and 'make accept' to set a new baseline from the last results."
 
+sayc-env:
+	@virtualenv sayc-env
+
+sayc-env/%.STAMP: sayc-env
+	@source sayc-env/bin/activate && easy_install $(patsubst sayc-env/%.STAMP,%,$@) && touch $@
+
+env: $(PYTHON_EGGS)
+ifndef VIRTUAL_ENV
+	@echo "Type 'source sayc-env/bin/activate' to activate the virtual environment."
+endif
+
 clean:
-	@find . -name "*.pyc" | xargs rm
+	@find . -name "*.pyc" -print0 | xargs -0 rm
 
 accept:
 	@mv $(src_dir)/z3b_actual.txt $(src_dir)/z3b_baseline.txt
 
-check: clean
+check: clean env
 	@$(scripts_dir)/test-sayc -f > $(src_dir)/z3b_actual.txt && diff -U 7 $(src_dir)/z3b_baseline.txt $(src_dir)/z3b_actual.txt ; true
 
 serve: clean
