@@ -23,7 +23,7 @@ SCRIPTS = \
 	play.test.js \
 	recap.js \
 
-PYTHON_PACKAGES=networkx unittest2
+PYTHON_PACKAGES=networkx unittest2 werkzeug webapp2 webob jinja2
 
 PYTHON_EGGS=$(patsubst %,sayc-env/%.STAMP,$(PYTHON_PACKAGES))
 
