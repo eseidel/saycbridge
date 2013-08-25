@@ -944,11 +944,11 @@ class HelpSuitGameTry(RebidAfterOneLevelOpen):
 class JumpShiftByOpener(RebidAfterOneLevelOpen):
     preconditions = JumpShift.preconditions
     # The lowest possible jumpshift is 1C P 1D P 2H.
-    # The highest possible jumpshift is 1S P 2H P 4D
+    # The highest possible jumpshift is 1S P 2S P 4H
     call_names = [
                     '2H', '2S',
         '3C', '3D', '3H', '3S',
-        '4C', '4D'
+        '4C', '4D', '4H',
     ]
     # FIXME: The book mentions that opener jumpshifts don't always promise 4, especially for 1C P MAJOR P 3D
     shared_constraints = (points >= 19, MinLength(4))
