@@ -18,6 +18,86 @@ from multiprocessing import Pool
 
 _log = logging.getLogger(__name__)
 
+
+class CompiledTest(object):
+    def __init__(self, hand, call_history, expected_call, parent_test=None):
+        self.hand = hand
+        self.call_history = call_history
+        self.expected_call = expected_call
+        self.parent_test = parent_test
+
+    @property
+    def subtest_string(self):
+        if self.parent_test:
+            return " (subtest of %s)" % self.parent_test.call_history.calls_string()
+        return ""
+
+
+class TestListCompiler(object):
+    def __init__(self):
+        self._known_tests = {}
+        self.tests = []
+
+    @classmethod
+    def _identifier_for_test(cls, hand, history):
+        # FIXME: Our "have we run this" check would be more powerful if we used a combinatics based identifier for the hands.
+        return "%s-%s" % (hand.reverse_pbn_string(), history.identifier())
+
+    @classmethod
+    def _parse_expectation(cls, expectation):
+        hand_string = expectation[0]
+        assert '.' in hand_string, "_split_expectation expectes C.D.H.S formatted hands, missing '.': %s" % hand_string
+        expected_bid = expectation[1]
+        # FIXME: expected_bid should just be made a Call and then we get this for free.
+        assert len(expected_bid) == 2 or expected_bid in ('P', 'X')
+        history_string = expectation[2] if len(expectation) > 2 else ""
+        vulnerability_string = expectation[3] if len(expectation) > 3 else None
+        hand = Hand.from_cdhs_string(hand_string)
+        call_history = CallHistory.from_string(history_string, vulnerability_string=vulnerability_string)
+        return expected_bid, hand, call_history
+
+    def add_expectation_line(self, expectation):
+        expected_bid, hand, call_history = self._parse_expectation(expectation)
+        partial_history = call_history
+        parent_test = None
+        while True:
+            # Sanity check to make sure we're not running a test twice.
+            test_identifier = self._identifier_for_test(hand, partial_history)
+            previous_expected_bid = self._known_tests.get(test_identifier)
+            if previous_expected_bid:
+                if previous_expected_bid != expected_bid:
+                    _log.error("Conflicting expectations for %s, %s != %s" % (test_identifier, previous_expected_bid, expected_bid))
+                elif not parent_test:
+                     _log.debug("%s is an explicit duplicate of an earlier test." % test_identifier)
+                else:
+                    _log.debug("Ignoring dupliate subtest %s" % test_identifier)
+                break
+            self._known_tests[test_identifier] = expected_bid
+
+            # Add test
+            new_test = CompiledTest(hand, partial_history, expected_bid, parent_test)
+            self.tests.append(new_test)
+
+            # FIXME: The sub-test generation should be moved into CompiledTest.subtests
+            if len(partial_history.calls) < 4:
+                break
+            expected_bid = partial_history.calls[-4].name
+            partial_history = partial_history.copy_with_partial_history(-4)
+            if not parent_test:
+                parent_test = new_test
+
+    def add_expectation_lines(self, expectation_lines):
+        for expectation in expectation_lines:
+            self.add_expectation_line(expectation)
+
+
+# class NewHarness(object):
+#     # Collect all the tests to run.
+#     # Validate them all
+#     # Run them, recording results and outputs
+#     # Sort the outputs, print them as soon as a group is complete.
+
+
 def _run_test(args):
     bidder = BidderFactory.default_bidder()
     hand, partial_history = args
@@ -27,6 +107,7 @@ def _run_test(args):
         return actual_bid_name
     except Exception, e:
         return e
+
 
 class SAYCBidderTest(unittest2.TestCase):
     @classmethod
@@ -1155,56 +1236,15 @@ class SAYCBidderTest(unittest2.TestCase):
         # the bidder can't get into
         self._assert_hands_match_calls(self.misc_hands_from_play)
 
-    def _parse_expectation(self, expectation):
-        hand_string = expectation[0]
-        assert '.' in hand_string, "_split_expectation expectes C.D.H.S formatted hands, missing '.': %s" % hand_string
-        expected_bid = expectation[1]
-        assert len(expected_bid) == 2 or expected_bid in ('P', 'X')
-        history_string = expectation[2] if len(expectation) > 2 else ""
-        vulnerability_string = expectation[3] if len(expectation) > 3 else None
-        hand = Hand.from_cdhs_string(hand_string)
-        call_history = CallHistory.from_string(history_string, vulnerability_string=vulnerability_string)
-        return expected_bid, hand, call_history
+    def _run_bidding_tests_parallel(self, expected_calls):
+        compiler = TestListCompiler()
+        compiler.add_expectation_lines(expected_calls)
 
-    def _identifier_for_test(self, hand, history):
-        # FIXME: Our "have we run this" check would be more powerful if we used a combinatics based identifier for the hands.
-        return "%s-%s" % (hand.reverse_pbn_string(), history.identifier())
-
-    def _run_bidding_tests_parallel(self, expected_calls):        
-        tests_run = dict()
+        # Map from the CompiledTest format to avoid needing to re-write the rest of this function yet.
         # Args to be passed to processes
-        test_args = []
+        test_args = [(test.hand, test.call_history) for test in compiler.tests]
         # Extra state for the test case for logging purposes
-        extra_args = []
-
-        # First compile a list of tests to run
-        for expectation in expected_calls:
-            expected_bid, hand, call_history = self._parse_expectation(expectation)
-            partial_history = call_history
-            subtest_string = ""
-            while True:
-                # Sanity check to make sure we're not running a test twice.
-                test_identifier = self._identifier_for_test(hand, partial_history)
-                previous_expected_bid = tests_run.get(test_identifier)
-                if previous_expected_bid:
-                    if previous_expected_bid != expected_bid:
-                        _log.error("Conflicting expectations for %s, %s != %s" % (test_identifier, previous_expected_bid, expected_bid))
-                    elif not subtest_string:
-                         _log.debug("%s is an explicit duplicate of an earlier test." % test_identifier)
-                    else:
-                        _log.debug("Ignoring dupliate subtest %s" % test_identifier)
-                    break
-                tests_run[test_identifier] = expected_bid
-
-                # Add test
-                test_args.append((hand, partial_history))
-                extra_args.append((expected_bid, subtest_string))
-
-                if len(partial_history.calls) < 4:
-                    break
-                expected_bid = partial_history.calls[-4].name
-                partial_history = partial_history.copy_with_partial_history(-4)
-                subtest_string = " (subtest of %s)" % call_history.calls_string()
+        extra_args = [(test.expected_call, test.subtest_string) for test in compiler.tests]
 
         # Run the tests
         assert len(test_args) == len(extra_args)
@@ -1246,12 +1286,12 @@ class SAYCBidderTest(unittest2.TestCase):
         tests_run = dict()
 
         for expectation in expected_calls:
-            expected_bid, hand, call_history = self._parse_expectation(expectation)
+            expected_bid, hand, call_history = TestListCompiler._parse_expectation(expectation)
             partial_history = call_history
             subtest_string = ""
             while True:
                 # Sanity check to make sure we're not running a test twice.
-                test_identifier = self._identifier_for_test(hand, partial_history)
+                test_identifier = TestListCompiler._identifier_for_test(hand, partial_history)
                 previous_expected_bid = tests_run.get(test_identifier)
                 if previous_expected_bid:
                     if previous_expected_bid != expected_bid:
