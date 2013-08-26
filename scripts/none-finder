@@ -24,15 +24,13 @@ class NoneFinder(object):
     def main(self):
         history_string = " ".join(sys.argv[1:])
         call_history = CallHistory.from_string(history_string)
+
         interpreter = Interpreter()
-
-        explorer = CallExplorer()
-
         history = interpreter.create_history(call_history)
         selector = RuleSelector(interpreter.system, history)
 
         constraints = []
-        for call in explorer.possible_calls_over(call_history):
+        for call in CallExplorer().possible_calls_over(call_history):
             rule = selector.rule_for_call(call)
             if rule and not rule.requires_planning(history):
                 #print call, rule
@@ -42,6 +40,7 @@ class NoneFinder(object):
         solver = z3.SolverFor('QF_LIA')
         solver.add(model.axioms)
         solver.add(constraints_expr)
+
         if solver.check() == z3.unsat:
             print "Calls found for all possible hands."
         else:
