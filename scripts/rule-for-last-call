@@ -3,11 +3,26 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import logging
 import sys
 import find_src
 
 from core.callexplorer import CallExplorer
 from z3b.bidder import Interpreter
+from kbb.interpreter import BidInterpreter
+
+
+_log = logging.getLogger(__name__)
+
+
+def silence_kbb_logging():
+    handler = logging.StreamHandler(sys.stderr)
+    formatter = logging.Formatter("%(levelname)-8s: %(message)s")
+    handler.setFormatter(formatter)
+
+    logger = logging.getLogger()
+    logger.addHandler(handler)
+    logger.setLevel(logging.CRITICAL) # Only the worst will get through.
 
 
 # FIXME: It's possible the glob should be separated out into its own tool.
@@ -20,12 +35,20 @@ def _print_usage_and_exit():
 
 if __name__ == '__main__':
     args = sys.argv[1:]
+    # The z3 bidder doesn't use python logging, silence kbb error logs
+    # since we don't care about kbb errors in this tool.
+    silence_kbb_logging()
+
     if not args:
         _print_usage_and_exit()
 
     interpreter = Interpreter()
+    kbb_interpreter = BidInterpreter()
+
     glob_string = " ".join(args)
-    print "History matching '%s' : (rule used for last call)" % glob_string
+    print "Matching '%s':" % glob_string
+    print "history : z3 rule : kbb rule"
     for call_history in CallExplorer().history_glob(glob_string):
         history = interpreter.create_history(call_history)
-        print "%s : %s" % (call_history.calls_string(), history.rho.rule_for_last_call)
+        _, knowledge_builder = kbb_interpreter.knowledge_from_history(call_history)
+        print "%s : %s : %s" % (call_history.calls_string(), history.rho.rule_for_last_call, knowledge_builder.bid_rule_tuples[-1][1])
