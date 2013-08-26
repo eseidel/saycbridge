@@ -134,7 +134,7 @@ class ResultsAggregator(object):
 
             if result.exception:
                 _log.error("Exception during find_call_for %s %s: %s" % (test.hand.pretty_one_line(), test.call_history.calls_string(), result.call))
-                raise result
+                raise result.exception
 
             if result.call and result.call == test.expected_call:
                 _log.info("PASS: %s for %s" % (test.expected_call, test.test_string))
