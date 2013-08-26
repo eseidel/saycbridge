@@ -30,11 +30,15 @@ class ConstraintOr(Constraint):
 
 
 class MinimumCombinedLength(Constraint):
-    def __init__(self, min_count):
+    def __init__(self, min_count, use_last_call_suit=False):
         self.min_count = min_count
+        self.use_last_call_suit = use_last_call_suit
 
     def expr(self, history, call):
         suit = call.strain
+        if self.use_last_call_suit:
+            assert suit is None
+            suit = history.last_contract.strain
         partner_promised_length = history.partner.min_length(suit)
         implied_length = max(self.min_count - partner_promised_length, 0)
         return expr_for_suit(suit) >= implied_length
@@ -46,6 +50,14 @@ class MinimumCombinedPoints(Constraint):
 
     def expr(self, history, call):
         return model.points >= max(0, self.min_points - history.partner.min_points)
+
+
+class MaximumCombinedPoints(Constraint):
+    def __init__(self, max_points):
+        self.max_points = max_points
+
+    def expr(self, history, call):
+        return model.points <= max(0, self.max_points - history.partner.max_points)
 
 
 class MinLength(Constraint):

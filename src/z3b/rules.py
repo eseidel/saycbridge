@@ -49,6 +49,7 @@ categories = enum.Enum(
     "Default",
     "Natural",
     "LawOfTotalTricks",
+    "NaturalPass",
     "DefaultPass",
 )
 
@@ -2150,6 +2151,25 @@ class DefaultPass(Rule):
     category = categories.DefaultPass
 
 
+class NaturalPass(Rule):
+    preconditions = [
+        LastBidWas(positions.RHO, 'P'),
+    ]
+    call_names = 'P'
+    category = categories.NaturalPass
+
+
+class SuitGameIsRemote(NaturalPass):
+    preconditions = [
+        LastBidHasSuit(positions.Partner),
+        LastBidWasBelowGame(),
+    ]
+    shared_constraints = [
+        MinimumCombinedLength(7, use_last_call_suit=True),
+        MaximumCombinedPoints(24),
+    ]
+
+
 # FIXME: This is wrong as soon as we try to support more than one system.
 def _get_subclasses(base_class):
     subclasses = base_class.__subclasses__()
@@ -2202,3 +2222,5 @@ class StandardAmericanYellowCard(object):
     rule_order.order(rebids_after_takeout_double, natural_priorities)
     rule_order.order(natural_priorities, SecondNegative)
     rule_order.order(DefaultPass, rebids_after_takeout_double)
+    rule_order.order(SuitGameIsRemote, DefaultPass)
+
