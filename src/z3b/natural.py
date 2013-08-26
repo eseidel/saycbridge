@@ -10,15 +10,6 @@ from z3b.preconditions import *
 from z3b.rule_compiler import Rule, rule_order, categories
 
 
-the_law_priorities = enum.Enum(
-    "FiveLevelLaw",
-    "FourLevelLaw",
-    "ThreeLevelLaw",
-    "TwoLevelLaw",
-)
-rule_order.order(*reversed(the_law_priorities))
-
-
 # FIXME: This should be in a more general location.
 LEVELS = [1, 2, 3, 4, 5, 6, 7]
 
@@ -225,10 +216,23 @@ class LawOfTotalTricks(Rule):
         PartnerHasAtLeastLengthInSuit(1),
     ]
     priorities_per_call = {
-        ('2C', '2D', '2H', '2S'): the_law_priorities.TwoLevelLaw,
-        ('3C', '3D', '3H', '3S'): the_law_priorities.ThreeLevelLaw,
-        ('4C', '4D', '4H', '4S'): the_law_priorities.FourLevelLaw,
-        ('5C', '5D',           ): the_law_priorities.FiveLevelLaw,
+        '2C': natural.get('2C'),
+        '2D': natural.get('2D'),
+        '2H': natural.get('2H'),
+        '2S': natural.get('2S'),
+
+        '3C': natural.get('3C'),
+        '3D': natural.get('3D'),
+        '3H': natural.get('3H'),
+        '3S': natural.get('3S'),
+
+        '4C': natural.get('4C'),
+        '4D': natural.get('4D'),
+        '4H': natural.get('4H'),
+        '4S': natural.get('4S'),
+
+        '5C': natural.get('5C'),
+        '5D': natural.get('5D'),
     }
     shared_constraints = LengthSatisfiesLawOfTotalTricks()
     category = categories.LawOfTotalTricks
