@@ -10,6 +10,15 @@ from z3b.preconditions import *
 from z3b.rule_compiler import Rule, rule_order, categories
 
 
+the_law_priorities = enum.Enum(
+    "FiveLevelLaw",
+    "FourLevelLaw",
+    "ThreeLevelLaw",
+    "TwoLevelLaw",
+)
+rule_order.order(*reversed(the_law_priorities))
+
+
 natural_priorities = enum.Enum(
     "SevenLevelNaturalNT",
     "SevenLevelNaturalMajor",
@@ -109,6 +118,13 @@ class SufficientCombinedLength(MinimumCombinedLength):
         return MinimumCombinedLength.expr(self, history, call)
 
 
+class LengthSatisfiesLawOfTotalTricks(Constraint):
+    def expr(self, history, call):
+        # Written forward: level = partner_min + my_min - 6
+        my_count = call.level + 6 - history.partner.min_length(call.strain)
+        return expr_for_suit(call.strain) >= my_count
+
+
 class Natural(Rule):
     category = categories.Natural
 
@@ -155,25 +171,9 @@ class NotrumpToPlay(SoundNaturalBid):
     }
 
 
-the_law_priorities = enum.Enum(
-    "FiveLevelLaw",
-    "FourLevelLaw",
-    "ThreeLevelLaw",
-    "TwoLevelLaw",
-)
-rule_order.order(*reversed(the_law_priorities))
-
-
-class LengthSatisfiesLawOfTotalTricks(Constraint):
-    def expr(self, history, call):
-        # Written forward: level = partner_min + my_min - 6
-        my_count = call.level + 6 - history.partner.min_length(call.strain)
-        return expr_for_suit(call.strain) >= my_count
-
-
 class LawOfTotalTricks(Rule):
     preconditions = [
-        InvertedPrecondition(Opened(positions.Me)),
+        PartnerHasAtLeastLengthInSuit(1)
     ]
     priorities_per_call = {
         ('2C', '2D', '2H', '2S'): the_law_priorities.TwoLevelLaw,
