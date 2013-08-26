@@ -49,6 +49,7 @@ categories = enum.Enum(
     "Default",
     "Natural",
     "LawOfTotalTricks",
+    "NaturalPass",
     "DefaultPass",
 )
 
@@ -2142,12 +2143,41 @@ class FeatureResponseToTwoNotrumpFeatureRequest(ResponseToTwoNotrumpFeatureReque
     shared_constraints = [points >= 9, ThirdRoundStopper()]
 
 
-
 class DefaultPass(Rule):
     preconditions = [InvertedPrecondition(ForcedToBid())]
     call_names = 'P'
     shared_constraints = NO_CONSTRAINTS
     category = categories.DefaultPass
+
+
+class NaturalPass(Rule):
+    preconditions = [LastBidWas(positions.RHO, 'P')]
+    call_names = 'P'
+    category = categories.NaturalPass
+
+
+class NaturalPassWithFit(NaturalPass):
+    preconditions = [LastBidHasSuit(positions.Partner)]
+    shared_constraints = [MinimumCombinedLength(7, use_last_call_suit=True)]
+
+
+class SuitGameIsRemote(NaturalPassWithFit):
+    preconditions = [LastBidWasBelowGame()]
+    shared_constraints = [MaximumCombinedPoints(24)]
+
+
+class SuitSlamIsRemote(NaturalPassWithFit):
+    preconditions = [
+        LastBidWasGameOrAbove(),
+        LastBidWasBelowSlam(),
+    ]
+    shared_constraints = [MaximumCombinedPoints(32)]
+
+
+natural_passses = set([
+    SuitGameIsRemote,
+    SuitSlamIsRemote,
+])
 
 
 # FIXME: This is wrong as soon as we try to support more than one system.
@@ -2202,3 +2232,5 @@ class StandardAmericanYellowCard(object):
     rule_order.order(rebids_after_takeout_double, natural_priorities)
     rule_order.order(natural_priorities, SecondNegative)
     rule_order.order(DefaultPass, rebids_after_takeout_double)
+    rule_order.order(natural_passses, DefaultPass)
+

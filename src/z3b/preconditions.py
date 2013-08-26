@@ -192,6 +192,36 @@ class ForcedToBid(Precondition):
         return self._is_forced_to_bid(history)
 
 
+class IsGame(Precondition):
+    def _game_level(self, strain):
+        if strain in suit.MINORS:
+            return 5
+        if strain in suit.MAJORS:
+            return 4
+        return 3
+
+    def fits(self, history, call):
+        return call.is_contract() and call.level == self._game_level(bid.strain)
+
+
+class LastBidWasBelowGame(IsGame):
+    def fits(self, history, call):
+        last_contract = history.last_contract
+        return last_contract.level < self._game_level(last_contract.strain)
+
+
+class LastBidWasGameOrAbove(IsGame):
+    def fits(self, history, call):
+        last_contract = history.last_contract
+        return last_contract.level >= self._game_level(last_contract.strain)
+
+
+class LastBidWasBelowSlam(Precondition):
+    def fits(self, history, call):
+        last_contract = history.last_contract
+        return last_contract.level < 6
+
+
 class LastBidHasAnnotation(Precondition):
     def __init__(self, position, annotation):
         self.position = position
