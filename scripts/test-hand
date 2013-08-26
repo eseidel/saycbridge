@@ -31,7 +31,7 @@ def _print_usage_and_exit():
     print "USAGE: test-hand [EXPECTED_CALL] HAND [HISTORY]"
     print " EXPECTED_CALL enables debug logging"
     print " HAND is either C.D.H.S"
-    print " HISTORY is space separated"
+    print " HISTORY is space or comma separated"
     print
     sys.exit(1)
 

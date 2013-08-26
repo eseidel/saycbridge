@@ -30,7 +30,7 @@ def configure_logging(is_verbose):
 
 def _print_usage_and_exit():
     print "USAGE: explain HISTORY"
-    print " HISTORY is space separated"
+    print " HISTORY is space or comma separated"
     print
     sys.exit(1)
 

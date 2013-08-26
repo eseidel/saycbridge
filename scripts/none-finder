@@ -15,7 +15,7 @@ import z3
 
 def _print_usage_and_exit():
     print "USAGE: none-finder HISTORY"
-    print " HISTORY is space separated"
+    print " HISTORY is space or comma separated"
     print
     sys.exit(1)
 
