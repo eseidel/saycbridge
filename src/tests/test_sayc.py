@@ -165,9 +165,30 @@ class ResultsAggregator(object):
         print "Pass %s (%d%%) of %s total hands" % (total_pass, percent, total_tests)
 
 
-class NewHarness(unittest2.TestCase):
+# Pickle gets mad at us if we make this a member or even static function.
+def _run_test(test):
+    # FIXME: There is no need to lookup the bidder every time.
+    bidder = BidderFactory.default_bidder()
+    result = TestResult()
+    result.test = test
+    # FIXME: OutputCapture captures logging channels as well which is probably a waste.
+    output = outputcapture.OutputCapture()
+    stdout, stderr = output.capture_output()
+    try:
+        result.call = bidder.find_call_for(test.hand, test.call_history)
+    except Exception, e:
+        result.exception = e
+    output.restore_output()
+    result.save_captured_logs(stdout, stderr)
+    return result
+
+
+class TestHarness(unittest2.TestCase):
+    use_multi_process = True
+    test_shard_size = 10
+
     def __init__(self, *args, **kwargs):
-        super(NewHarness, self).__init__(*args, **kwargs)
+        super(TestHarness, self).__init__(*args, **kwargs)
         self.groups = []
         self.results = None
 
@@ -183,17 +204,31 @@ class NewHarness(unittest2.TestCase):
         for test_name in unittest2.TestLoader().getTestCaseNames(SAYCBidderTest):
             getattr(test_container, test_name)()
 
-    def run_tests(self):
-        segment_size = 10
+    def run_tests_single_process(self):
+        # This follows the same logic-flow as the multi-process code, yet stays single threaded.
+        all_tests = list(chain.from_iterable(group.tests for group in self.groups))
+        for x in range(0, len(all_tests), self.test_shard_size):
+            shard = all_tests[x : x + self.test_shard_size]
+            results = map(_run_test, shard)
+            self.results.add_results_callback(results)
+
+    def run_tests_multi_process(self):
         all_tests = list(chain.from_iterable(group.tests for group in self.groups))
         pool = Pool()
-        # FIXME: outstanding_jobs is a workaround for http://bugs.python.org/issue8296 (only fixed in python 3)
+        # FIXME: outstanding_jobs + map_async is a workaround for http://bugs.python.org/issue8296 (only fixed in python 3)
         outstanding_jobs = []
-        for x in range(0, len(all_tests), segment_size):
-            # Use map_async instead of map so that KeyboardInterrupts work
-            outstanding_jobs.append(pool.map_async(_run_test, all_tests[x : x + segment_size], segment_size, self.results.add_results_callback))
+        for x in range(0, len(all_tests), self.test_shard_size):
+            results = pool.map_async(
+                _run_test,
+                all_tests[x : x + self.test_shard_size],
+                self.test_shard_size,
+                self.results.add_results_callback
+            )
+            outstanding_jobs.append(results)
         pool.close()
 
+        # Calling pool.join() won't handle KeyboardInterrupts, so we do a timed wait
+        # on each individual results object.
         while outstanding_jobs:
             outstanding_jobs.pop(0).wait(0xFFFF)
 
@@ -202,7 +237,10 @@ class NewHarness(unittest2.TestCase):
     def test_main(self):
         self.collect_test_groups()
         self.results = ResultsAggregator(self.groups)
-        self.run_tests()
+        if self.use_multi_process:
+            self.run_tests_multi_process()
+        else:
+            self.run_tests_single_process()
         self.results.print_summary()
 
 
@@ -225,25 +263,9 @@ class TestResult(object):
             print self.stdout
 
 
-# FIXME: This should move onto NewHarness.
-def _run_test(test):
-    bidder = BidderFactory.default_bidder()
-    result = TestResult()
-    result.test = test
-    output = outputcapture.OutputCapture()
-    stdout, stderr = output.capture_output()
-    try:
-        result.call = bidder.find_call_for(test.hand, test.call_history)
-    except Exception, e:
-        result.exception = e
-    output.restore_output()
-    result.save_captured_logs(stdout, stderr)
-    return result
-
-
 # This used to be a subclass of unittests.TestCase.
 # Now it defines a bunch of test_ hand groups, but
-# NewHarness is the class which actually implements
+# TestHarness is the class which actually implements
 # the unittests.TestCase protocol and runs the tests.
 class SAYCBidderTest(object):
     def test_open_one_nt(self):
@@ -1355,5 +1377,5 @@ class SAYCBidderTest(object):
         self._assert_hands_match_calls(self.misc_hands_from_play)
 
     def _assert_hands_match_calls(self, expected_calls):
-        # This used to run tests, but is now just a hook for NewHarness.
+        # This used to run tests, but is now just a hook for TestHarness.
         raise NotImplementedError("Subclasses should implement this!")

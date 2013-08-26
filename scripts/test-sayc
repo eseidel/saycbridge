@@ -46,6 +46,10 @@ if __name__ == '__main__':
 
     sys.argv = BidderFactory.configure_from_args(sys.argv)
 
+    if '-s' in sys.argv:
+        sys.argv.remove('-s')
+        TestHarness.use_multi_process = False
+
     if '-p' in sys.argv:
         sys.argv.remove('-p')
         import cProfile as profile
