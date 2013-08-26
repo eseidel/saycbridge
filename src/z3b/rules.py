@@ -386,10 +386,12 @@ class OpenerRebid(Rule):
 
 
 class RebidAfterOneLevelOpen(OpenerRebid):
+    # FIXME: Most subclasses here only make sense over a minimum rebid from partner.
     preconditions = LastBidHasAnnotation(positions.Me, annotations.OneLevelSuitOpening),
 
 
 class TwoNoTrumpOpenerRebid(RebidAfterOneLevelOpen):
+    # FIXME: This only makes sense if partner didn't jump.
     annotations = annotations.NoTrumpSystemsOn
     constraints = {
         '2N': z3.And(points >= 18, points <= 19, balanced)
@@ -419,6 +421,7 @@ class SecondSuitFromOpener(RebidAfterOneLevelOpen):
         UnbidSuit(),
         InvertedPrecondition(HaveFit()),
     ]
+
 
 class NewSuitByOpener(SecondSuitFromOpener):
     preconditions = SuitLowerThanMyLastSuit()
