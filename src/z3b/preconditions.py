@@ -421,18 +421,6 @@ class MaxLevel(Precondition):
         return call.is_contract() and call.level <= self.max_level
 
 
-class MinimumCombinedPointsPrecondition(Precondition):
-    def __init__(self, min_points):
-        self.min_points = min_points
-
-    @property
-    def repr_args(self):
-        return [self.min_points]
-
-    def fits(self, history, call):
-        return history.partner.min_points + history.me.min_points >= self.min_points
-
-
 class HaveFit(Precondition):
     def fits(self, history, call):
         for strain in suit.SUITS:

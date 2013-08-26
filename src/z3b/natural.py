@@ -95,6 +95,11 @@ points_for_sound_notrump_bid_at_level = [
 ]
 
 
+class WeHaveShownMorePointsThanThem(Precondition):
+    def fits(self, history, call):
+        return history.us.min_points > history.them.min_points
+
+
 class SufficientCombinedPoints(Constraint):
     def expr(self, history, call):
         strain = call.strain
@@ -135,8 +140,9 @@ class SoundNaturalBid(Natural):
 
 class SuitedToPlay(SoundNaturalBid):
     preconditions = [
-        MinimumCombinedPointsPrecondition(12),
-        PartnerHasAtLeastLengthInSuit(1)
+        InvertedPrecondition(LastBidHasAnnotation(positions.Partner, annotations.Preemptive)),
+        WeHaveShownMorePointsThanThem(),
+        PartnerHasAtLeastLengthInSuit(1),
     ]
     priorities_per_call = {
         ('2C', '2D'): natural_priorities.TwoLevelNaturalMinor,
@@ -159,6 +165,20 @@ class SuitedToPlay(SoundNaturalBid):
     }
 
 
+class LawOfTotalTricks(Rule):
+    preconditions = [
+        PartnerHasAtLeastLengthInSuit(1),
+    ]
+    priorities_per_call = {
+        ('2C', '2D', '2H', '2S'): the_law_priorities.TwoLevelLaw,
+        ('3C', '3D', '3H', '3S'): the_law_priorities.ThreeLevelLaw,
+        ('4C', '4D', '4H', '4S'): the_law_priorities.FourLevelLaw,
+        ('5C', '5D',           ): the_law_priorities.FiveLevelLaw,
+    }
+    shared_constraints = LengthSatisfiesLawOfTotalTricks()
+    category = categories.LawOfTotalTricks
+
+
 class NotrumpToPlay(SoundNaturalBid):
     priorities_per_call = {
         '1N': natural_priorities.OneLevelNaturalNT,
@@ -169,20 +189,6 @@ class NotrumpToPlay(SoundNaturalBid):
         '6N': natural_priorities.SixLevelNaturalNT,
         '7N': natural_priorities.SevenLevelNaturalNT,
     }
-
-
-class LawOfTotalTricks(Rule):
-    preconditions = [
-        PartnerHasAtLeastLengthInSuit(1)
-    ]
-    priorities_per_call = {
-        ('2C', '2D', '2H', '2S'): the_law_priorities.TwoLevelLaw,
-        ('3C', '3D', '3H', '3S'): the_law_priorities.ThreeLevelLaw,
-        ('4C', '4D', '4H', '4S'): the_law_priorities.FourLevelLaw,
-        ('5C', '5D',           ): the_law_priorities.FiveLevelLaw,
-    }
-    shared_constraints = LengthSatisfiesLawOfTotalTricks()
-    category = categories.LawOfTotalTricks
 
 
 class DefaultPass(Rule):

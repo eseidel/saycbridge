@@ -80,6 +80,10 @@ class GroupView(object):
     def bid_suits(self):
         return set([_suit for _suit in suit.SUITS if any(self.history.is_bid_suit(_suit, position) for position in self.positions)])
 
+    @property
+    def min_points(self):
+        return sum(map(self.history.min_points_for_position, self.positions))
+
 
 class PositionView(object):
     def __init__(self, history, position):
