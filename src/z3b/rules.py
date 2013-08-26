@@ -981,8 +981,14 @@ class OneNoTrumpResponse(NoTrumpResponse):
 
 class LongMinorGameInvitation(OneNoTrumpResponse):
     call_names = ['3C', '3D']
-    shared_constraints = [MinLength(6), TwoOfTheTopThree(), points >= 5]
-    # FIXME: Should use the longer suit preference pattern.
+    shared_constraints = [
+        MinLength(6),
+        TwoOfTheTopThree(),
+        points >= 5,
+        # # If we have an outside entry, we should just bid 3N and take our chances. p13
+        # # FIXME: Maybe an OutsideEntry constraint belongs on 3N instead?
+        NoOutsideEntry(),
+    ]
     priority = nt_response_priorities.LongMinorGameInvitation
 
 

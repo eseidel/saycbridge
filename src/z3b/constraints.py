@@ -134,6 +134,19 @@ class Stopper(Constraint):
         return model.stopper_expr_for_suit(call.strain)
 
 
+class OutsideEntry(Constraint):
+    def expr(self, history, call):
+        assert call.strain in suit.SUITS
+        constraint = z3.Or(*[model.stopper_expr_for_suit(strain) for strain in suit.SUITS if strain != call.strain])
+        return constraint
+
+
+# FIXME: Negative constraints are not generally needed in the z3b, this is likely a bad sign.
+class NoOutsideEntry(OutsideEntry):
+    def expr(self, history, call):
+        return not super(NoOutsideEntry, self).expr(history, call)
+
+
 class LongestSuitExceptOpponentSuits(Constraint):
     def expr(self, history, call):
         suit_expr = expr_for_suit(call.strain)
