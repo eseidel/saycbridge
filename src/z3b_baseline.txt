@@ -141,6 +141,7 @@ Pass 11 of 11 hands
 test_minimum_stayman:
 Pass 13 of 13 hands
 
+WARNING: Got duplicate result (1D, 1D) K4.AKQJ94.87.A96 (hcp: 17 lp: 19 sp: 19), history:  (subtest of 1D P 2H P)
 test_misc_hands_from_play:
 FAIL: 3H (expected 2C) for AKJ52.J.J9743.54 (hcp: 10 lp: 12 sp: 13), history: 1H P
 FAIL: 2S (expected 3S) for AQJ5.QT42.74.T52 (hcp: 9 lp: 9 sp: 10), history: 1S P
@@ -368,6 +369,8 @@ Pass 15 of 15 hands
 test_slam_biding:
 Pass 3 of 3 hands
 
+WARNING: Got duplicate result (1N, 1N) KQ4.AQ8.K9873.K2 (hcp: 17 lp: 18 sp: 18), history:  (subtest of 1N P 4C P 4H P 5C P)
+WARNING: Got duplicate result (1N, 1N) 97.KJ2.AT3.AKQ95 (hcp: 17 lp: 18 sp: 18), history:  (subtest of 1N P 4C P 4S P 5C P)
 test_slam_invitations_over_one_nt:
 FAIL: 5N (expected P) for AJ4.KQ8.K9873.Q2 (hcp: 15 lp: 16 sp: 14), history: 1N P 4N P
 Pass 26 of 27 hands
@@ -414,4 +417,4 @@ FAIL: 3S (expected 4S) for K74.9.J98.KJT742 (hcp: 8 lp: 10 sp: 11), history: 1N 
 FAIL: 2N (expected P) for Q87.J843.K65.Q93 (hcp: 8 lp: 8 sp: 8), history: 1N P
 Pass 1 of 3 hands
 
-Pass 844 (74%) of 1132 total hands
+Pass 841 (74%) of 1129 total hands
