@@ -14,17 +14,30 @@ from core.hand import Hand
 from core.autobidder import Autobidder
 from factory import BidderFactory
 from multiprocessing import Pool
+from third_party import outputcapture
+from core.call import Call
+from itertools import chain
 
 
 _log = logging.getLogger(__name__)
 
 
 class CompiledTest(object):
-    def __init__(self, hand, call_history, expected_call, parent_test=None):
+    def __init__(self, group, hand, call_history, expected_call, parent_test=None):
+        self.group = group
         self.hand = hand
         self.call_history = call_history
         self.expected_call = expected_call
         self.parent_test = parent_test
+
+    @classmethod
+    def _identifier_for_test(cls, hand, history):
+        # FIXME: Our "have we run this" check would be more powerful if we used a combinatics based identifier for the hands.
+        return "%s-%s" % (hand.reverse_pbn_string(), history.identifier())
+
+    @property
+    def identifier(self):
+        return self._identifier_for_test(self.hand, self.call_history)
 
     @property
     def subtest_string(self):
@@ -32,102 +45,229 @@ class CompiledTest(object):
             return " (subtest of %s)" % self.parent_test.call_history.calls_string()
         return ""
 
+    @property
+    def test_string(self):
+        return "%s, history: %s%s" % (self.hand.pretty_one_line(), self.call_history.calls_string(), self.subtest_string)
 
-class TestListCompiler(object):
-    def __init__(self):
-        self._known_tests = {}
+    @property
+    def subtests(self):
+        subtests = []
+        partial_history = self.call_history
+        while len(partial_history.calls) >= 4:
+            expected_call = partial_history.calls[-4]
+            partial_history = partial_history.copy_with_partial_history(-4)
+            subtests.append(CompiledTest(self.group, self.hand, partial_history, expected_call, self))
+        return subtests
+
+
+class TestGroup(object):
+    def __init__(self, name):
+        self.name = name
+        self._seen_expectations = {}
         self.tests = []
-
-    @classmethod
-    def _identifier_for_test(cls, hand, history):
-        # FIXME: Our "have we run this" check would be more powerful if we used a combinatics based identifier for the hands.
-        return "%s-%s" % (hand.reverse_pbn_string(), history.identifier())
 
     @classmethod
     def _parse_expectation(cls, expectation):
         hand_string = expectation[0]
         assert '.' in hand_string, "_split_expectation expectes C.D.H.S formatted hands, missing '.': %s" % hand_string
-        expected_bid = expectation[1]
-        # FIXME: expected_bid should just be made a Call and then we get this for free.
-        assert len(expected_bid) == 2 or expected_bid in ('P', 'X')
+        expected_call = Call.from_string(expectation[1])
         history_string = expectation[2] if len(expectation) > 2 else ""
         vulnerability_string = expectation[3] if len(expectation) > 3 else None
         hand = Hand.from_cdhs_string(hand_string)
         call_history = CallHistory.from_string(history_string, vulnerability_string=vulnerability_string)
-        return expected_bid, hand, call_history
+        return expected_call, hand, call_history
+
+    def add_test(self, test):
+        # Sanity check to make sure we're not running a test twice.
+        test_identifier = test.identifier
+        previous_call = self._seen_expectations.get(test_identifier)
+        if previous_call:
+            if previous_call != test.expected_call:
+                _log.error("Conflicting expectations for %s, %s != %s" % (test_identifier, previous_call, test.expected_call))
+            elif not test.parent_test:
+                 _log.debug("%s is an explicit duplicate of an earlier test." % test_identifier)
+            else:
+                _log.debug("Ignoring dupliate subtest %s" % test_identifier)
+            return
+        self._seen_expectations[test_identifier] = test.expected_call
+        self.tests.append(test)
 
     def add_expectation_line(self, expectation):
-        expected_bid, hand, call_history = self._parse_expectation(expectation)
-        partial_history = call_history
-        parent_test = None
-        while True:
-            # Sanity check to make sure we're not running a test twice.
-            test_identifier = self._identifier_for_test(hand, partial_history)
-            previous_expected_bid = self._known_tests.get(test_identifier)
-            if previous_expected_bid:
-                if previous_expected_bid != expected_bid:
-                    _log.error("Conflicting expectations for %s, %s != %s" % (test_identifier, previous_expected_bid, expected_bid))
-                elif not parent_test:
-                     _log.debug("%s is an explicit duplicate of an earlier test." % test_identifier)
-                else:
-                    _log.debug("Ignoring dupliate subtest %s" % test_identifier)
-                break
-            self._known_tests[test_identifier] = expected_bid
-
-            # Add test
-            new_test = CompiledTest(hand, partial_history, expected_bid, parent_test)
-            self.tests.append(new_test)
-
-            # FIXME: The sub-test generation should be moved into CompiledTest.subtests
-            if len(partial_history.calls) < 4:
-                break
-            expected_bid = partial_history.calls[-4].name
-            partial_history = partial_history.copy_with_partial_history(-4)
-            if not parent_test:
-                parent_test = new_test
+        expected_call, hand, call_history = self._parse_expectation(expectation)
+        test = CompiledTest(self, hand, call_history, expected_call)
+        self.add_test(test)
+        for test in test.subtests:
+            self.add_test(test)
 
     def add_expectation_lines(self, expectation_lines):
         for expectation in expectation_lines:
             self.add_expectation_line(expectation)
 
 
-# class NewHarness(object):
-#     # Collect all the tests to run.
-#     # Validate them all
-#     # Run them, recording results and outputs
-#     # Sort the outputs, print them as soon as a group is complete.
+class ResultsAggregator(object):
+    def __init__(self, groups):
+        self.groups = groups
+        self._results_count_by_group = { group.name: 0 for group in self.groups }
+        self._results_by_identifier = {}
+        self._group_has_printed = [False for group in self.groups]
+        self._total_failures = 0
+
+    def _is_complete(self, group):
+        return self._results_count_by_group.get(group.name) == len(group.tests)
+
+    def _print_completed_groups(self):
+        for index, has_printed in enumerate(self._group_has_printed):
+            if has_printed == True:
+                continue
+            group = self.groups[index]
+            if not self._is_complete(group):
+                return
+            self._print_group_summary(group)
+            self._group_has_printed[index] = True
+
+    def _print_group_summary(self, group):
+        fail_count = 0
+        print "%s:" % group.name
+        for test in group.tests:
+            result = self._results_by_identifier[test.identifier]
+            result.print_captured_logs()
+
+            if result.exception:
+                _log.error("Exception during find_call_for %s %s: %s" % (test.hand.pretty_one_line(), test.call_history.calls_string(), result.call))
+                raise result.exception
+
+            if result.call and result.call == test.expected_call:
+                _log.info("PASS: %s for %s" % (test.expected_call, test.test_string))
+            else:
+                fail_count += 1
+                print "FAIL: %s (expected %s) for %s" % (result.call, test.expected_call, test.test_string)
+
+        # FIXME: We don't need to update _total_failures here.
+        self._total_failures += fail_count
+        print "Pass %s of %s hands" % (len(group.tests) - fail_count, len(group.tests))
+        print
+
+    def add_results_callback(self, results):
+        for result in results:
+            # FIXME: Instead of warning, we should assert here, and we should fix
+            # duplicated detection to be global, instead of per TestGroup.
+            existing_result = self._results_by_identifier.get(result.test.identifier)
+            if existing_result:
+                print "WARNING: Got duplicate result (%s, %s) %s" % (existing_result.call, result.call, result.test.test_string)
+            self._results_by_identifier[result.test.identifier] = result
+            self._results_count_by_group[result.test.group.name] += 1
+        self._print_completed_groups()
+
+    def print_summary(self):
+        total_tests = len(self._results_by_identifier)
+        total_pass = total_tests - self._total_failures
+        percent = 100 * total_pass / total_tests if total_tests else 0
+        print "Pass %s (%d%%) of %s total hands" % (total_pass, percent, total_tests)
 
 
-def _run_test(args):
+# Pickle gets mad at us if we make this a member or even static function.
+def _run_test(test):
+    # FIXME: There is no need to lookup the bidder every time.
     bidder = BidderFactory.default_bidder()
-    hand, partial_history = args
+    result = TestResult()
+    result.test = test
+    # FIXME: OutputCapture captures logging channels as well which is probably a waste.
+    output = outputcapture.OutputCapture()
+    stdout, stderr = output.capture_output()
     try:
-        actual_bid = bidder.find_call_for(hand, partial_history)
-        actual_bid_name = actual_bid.name if actual_bid else None
-        return actual_bid_name
+        result.call = bidder.find_call_for(test.hand, test.call_history)
     except Exception, e:
-        return e
+        result.exception = e
+    output.restore_output()
+    result.save_captured_logs(stdout, stderr)
+    return result
 
 
-class SAYCBidderTest(unittest2.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.total_tests = 0
-        cls.total_failures = 0
+class TestHarness(unittest2.TestCase):
+    use_multi_process = True
+    test_shard_size = 10
 
-    @classmethod
-    def tearDownClass(cls):
-        total_pass = cls.total_tests - cls.total_failures
-        percent = 100 * total_pass / cls.total_tests if cls.total_tests else 0
-        print "Pass %s (%d%%) of %s total hands" % (total_pass, percent, cls.total_tests)
+    def __init__(self, *args, **kwargs):
+        super(TestHarness, self).__init__(*args, **kwargs)
+        self.groups = []
+        self.results = None
 
-    @classmethod
-    def record_test_results(cls, tests, failures):
-        cls.total_tests += tests
-        cls.total_failures += failures
-        print "Pass %s of %s hands" % (tests - failures, tests)
-        print # Make the test results a bit more readable by giving some space.
+    def _add_test_group(self, expectations_list):
+        group_name = inspect.stack()[1][3]  # A convenient hack.
+        group = TestGroup(group_name)
+        group.add_expectation_lines(expectations_list)
+        self.groups.append(group)
 
+    def collect_test_groups(self):
+        test_container = SAYCBidderTest()
+        test_container._assert_hands_match_calls = self._add_test_group
+        for test_name in unittest2.TestLoader().getTestCaseNames(SAYCBidderTest):
+            getattr(test_container, test_name)()
+
+    def run_tests_single_process(self):
+        # This follows the same logic-flow as the multi-process code, yet stays single threaded.
+        all_tests = list(chain.from_iterable(group.tests for group in self.groups))
+        for x in range(0, len(all_tests), self.test_shard_size):
+            shard = all_tests[x : x + self.test_shard_size]
+            results = map(_run_test, shard)
+            self.results.add_results_callback(results)
+
+    def run_tests_multi_process(self):
+        all_tests = list(chain.from_iterable(group.tests for group in self.groups))
+        pool = Pool()
+        # FIXME: outstanding_jobs + map_async is a workaround for http://bugs.python.org/issue8296 (only fixed in python 3)
+        outstanding_jobs = []
+        for x in range(0, len(all_tests), self.test_shard_size):
+            results = pool.map_async(
+                _run_test,
+                all_tests[x : x + self.test_shard_size],
+                self.test_shard_size,
+                self.results.add_results_callback
+            )
+            outstanding_jobs.append(results)
+        pool.close()
+
+        # Calling pool.join() won't handle KeyboardInterrupts, so we do a timed wait
+        # on each individual results object.
+        while outstanding_jobs:
+            outstanding_jobs.pop(0).wait(0xFFFF)
+
+        pool.terminate()
+
+    def test_main(self):
+        self.collect_test_groups()
+        self.results = ResultsAggregator(self.groups)
+        if self.use_multi_process:
+            self.run_tests_multi_process()
+        else:
+            self.run_tests_single_process()
+        self.results.print_summary()
+
+
+class TestResult(object):
+    def __init__(self):
+        self.test = None
+        self.call = None
+        self.exception = None
+        self.stdout = None
+        self.stderr = None
+
+    def save_captured_logs(self, stdout, stderr):
+        self.stdout = stdout.getvalue()
+        self.stderr = stderr.getvalue()
+
+    def print_captured_logs(self):
+        if self.stderr:
+            print self.stderr
+        if self.stdout:
+            print self.stdout
+
+
+# This used to be a subclass of unittests.TestCase.
+# Now it defines a bunch of test_ hand groups, but
+# TestHarness is the class which actually implements
+# the unittests.TestCase protocol and runs the tests.
+class SAYCBidderTest(object):
     def test_open_one_nt(self):
         self._assert_hands_match_calls([
             ["KQ4.AQ8.K9873.K2", "1N"],  #p2
@@ -1236,100 +1376,6 @@ class SAYCBidderTest(unittest2.TestCase):
         # the bidder can't get into
         self._assert_hands_match_calls(self.misc_hands_from_play)
 
-    def _run_bidding_tests_parallel(self, expected_calls):
-        compiler = TestListCompiler()
-        compiler.add_expectation_lines(expected_calls)
-
-        # Map from the CompiledTest format to avoid needing to re-write the rest of this function yet.
-        # Args to be passed to processes
-        test_args = [(test.hand, test.call_history) for test in compiler.tests]
-        # Extra state for the test case for logging purposes
-        extra_args = [(test.expected_call, test.subtest_string) for test in compiler.tests]
-
-        # Run the tests
-        assert len(test_args) == len(extra_args)
-        pool = Pool(processes=4)
-        # Use map_async instead of map so that KeyboardInterrupts work
-        actual_bids = pool.map_async(_run_test, test_args).get(9999999)
-        pool.terminate()
-        assert len(actual_bids) == len(test_args)
-
-        # Log the results
-        fail_count = 0
-        for i in xrange(len(extra_args)):
-            # Unpack the args
-            actual_bid_name = actual_bids[i]
-            hand, partial_history = test_args[i]
-            expected_bid, subtest_string = extra_args[i]
-
-            # Log results
-            if isinstance(actual_bid_name, Exception):
-                _log.error("Exception during find_call_for %s %s: %s" % (hand.pretty_one_line(), partial_history.calls_string(), actual_bid_name))
-                raise actual_bid_name
-
-            if actual_bid_name and actual_bid_name.lower() == expected_bid.lower():
-                _log.info("PASS: %s for %s, history: %s%s" % (expected_bid, hand.pretty_one_line(), partial_history.calls_string(), subtest_string))
-            else:
-                fail_count += 1
-                # FIXME: This print seems to interact badly with standard logging.
-                sys.stdout.flush()
-                sys.stderr.flush()
-                print "FAIL: %s (expected %s) for %s, history: %s%s" % (actual_bid_name, expected_bid, hand.pretty_one_line(), partial_history.calls_string(), subtest_string)
-
-        tests_count = len(actual_bids)
-        return tests_count, fail_count
-
-
-    def _run_bidding_tests(self, expected_calls):
-        fail_count = 0
-        bidder = BidderFactory.default_bidder()
-        tests_run = dict()
-
-        for expectation in expected_calls:
-            expected_bid, hand, call_history = TestListCompiler._parse_expectation(expectation)
-            partial_history = call_history
-            subtest_string = ""
-            while True:
-                # Sanity check to make sure we're not running a test twice.
-                test_identifier = TestListCompiler._identifier_for_test(hand, partial_history)
-                previous_expected_bid = tests_run.get(test_identifier)
-                if previous_expected_bid:
-                    if previous_expected_bid != expected_bid:
-                        _log.error("Conflicting expectations for %s, %s != %s" % (test_identifier, previous_expected_bid, expected_bid))
-                    elif not subtest_string:
-                         _log.debug("%s is an explicit duplicate of an earlier test." % test_identifier)
-                    else:
-                        _log.debug("Ignoring dupliate subtest %s" % test_identifier)
-                    break
-                tests_run[test_identifier] = expected_bid
-
-                try:
-                    actual_bid = bidder.find_call_for(hand, partial_history)
-                    actual_bid_name = actual_bid.name if actual_bid else None
-                except Exception, e:
-                    _log.error("Exception during find_call_for %s %s: %s" % (hand.pretty_one_line(), partial_history.calls_string(), e))
-                    raise
-
-                if actual_bid and actual_bid.name.lower() == expected_bid.lower():
-                    _log.info("PASS: %s for %s, history: %s%s" % (expected_bid, hand.pretty_one_line(), partial_history.calls_string(), subtest_string))
-                else:
-                    fail_count += 1
-                    # FIXME: This print seems to interact badly with standard logging.
-                    sys.stdout.flush()
-                    sys.stderr.flush()
-                    print "FAIL: %s (expected %s) for %s, history: %s%s" % (actual_bid_name, expected_bid, hand.pretty_one_line(), partial_history.calls_string(), subtest_string)
-
-                if len(partial_history.calls) < 4:
-                    break
-                expected_bid = partial_history.calls[-4].name
-                partial_history = partial_history.copy_with_partial_history(-4)
-                subtest_string = " (subtest of %s)" % call_history.calls_string()
-
-        tests_count = len(tests_run)
-        return tests_count, fail_count
-
     def _assert_hands_match_calls(self, expected_calls):
-        caller_method_name = inspect.stack()[1][3]  # A convenient hack.
-        print "%s:" % caller_method_name
-        tests_count, fail_count = self._run_bidding_tests_parallel(expected_calls)
-        self.record_test_results(tests_count, fail_count)
+        # This used to run tests, but is now just a hook for TestHarness.
+        raise NotImplementedError("Subclasses should implement this!")

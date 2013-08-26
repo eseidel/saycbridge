@@ -1,1 +1,5 @@
-Files in this directory are unmodified copies from various other sources and are covered by their own licenses.
+Files in this directory are (mostly) unmodified copies from various other sources and are covered by their own licenses.
+
+outputcapture.py is from:
+http://trac.webkit.org/export/154585/trunk/Tools/Scripts/webkitpy/common/system/outputcapture.py
+I removed some of the parts we didn't need.
