@@ -2143,7 +2143,6 @@ class FeatureResponseToTwoNotrumpFeatureRequest(ResponseToTwoNotrumpFeatureReque
     shared_constraints = [points >= 9, ThirdRoundStopper()]
 
 
-
 class DefaultPass(Rule):
     preconditions = [InvertedPrecondition(ForcedToBid())]
     call_names = 'P'
