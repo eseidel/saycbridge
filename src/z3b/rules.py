@@ -359,12 +359,14 @@ opener_rebid_priorities = enum.Enum(
     "SupportMajorLimit",
     "SupportMajorMin",
 
-    "TwoNoTrumpOpenerRebid",
+    "NotrumpJumpRebid",
     "JumpShiftByOpener",
     "HelpSuitGameTry",
 
+    # FIXME: Why would we rather mention a new suit instead of reversing?
     "NewSuitSpades",
     "NewSuitHearts",
+    "NotrumpInvitationByOpener",
     "NewSuitDiamonds",
     "NewSuitClubs",
 
@@ -390,14 +392,18 @@ class RebidAfterOneLevelOpen(OpenerRebid):
     preconditions = LastBidHasAnnotation(positions.Me, annotations.OneLevelSuitOpening),
 
 
-class TwoNoTrumpOpenerRebid(RebidAfterOneLevelOpen):
-    # FIXME: This only makes sense if partner didn't jump.
+class NotrumpJumpRebid(RebidAfterOneLevelOpen):
+    # See KBB's NotrumpJumpRebid for dicusssion of cases for this bid.
     # Unclear how this is affected by competition?
     annotations = annotations.NoTrumpSystemsOn
-    constraints = {
-        '2N': z3.And(points >= 18, points <= 19, balanced)
-    }
-    priority = opener_rebid_priorities.TwoNoTrumpOpenerRebid
+    preconditions = JumpFromLastContract(exact_size=1)
+    call_names = '2N'
+    shared_constraints = [
+        points >= 18,
+        points <= 19,
+        balanced,
+    ]
+    priority = opener_rebid_priorities.NotrumpJumpRebid
 
 
 class RebidOneNotrumpByOpener(RebidAfterOneLevelOpen):
@@ -405,6 +411,14 @@ class RebidOneNotrumpByOpener(RebidAfterOneLevelOpen):
     call_names = '1N'
     priority = opener_rebid_priorities.RebidOneNotrump
     shared_constraints = NO_CONSTRAINTS
+
+
+class NotrumpInvitationByOpener(RebidAfterOneLevelOpen):
+    preconditions = [NotJumpFromLastContract(), HaveFit()]
+    # If we're not balanced, than we'd have a HelpSuitGameTry to use instead.
+    call_names = '2N'
+    shared_constraints = [points >= 16, balanced]
+    priority = opener_rebid_priorities.NotrumpInvitationByOpener
 
 
 class NewOneLevelMajorByOpener(RebidAfterOneLevelOpen):
