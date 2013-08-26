@@ -204,26 +204,26 @@ class LawOfTotalTricks(Rule):
 
 
 class DefaultPass(Rule):
-    preconditions = [InvertedPrecondition(ForcedToBid())]
+    preconditions = InvertedPrecondition(ForcedToBid())
     call_names = 'P'
     shared_constraints = NO_CONSTRAINTS
     category = categories.DefaultPass
 
 
 class NaturalPass(Rule):
-    preconditions = [LastBidWas(positions.RHO, 'P')]
+    preconditions = LastBidWas(positions.RHO, 'P')
     call_names = 'P'
     category = categories.NaturalPass
 
 
 class NaturalPassWithFit(NaturalPass):
-    preconditions = [LastBidHasSuit(positions.Partner)]
-    shared_constraints = [MinimumCombinedLength(7, use_last_call_suit=True)]
+    preconditions = LastBidHasSuit(positions.Partner)
+    shared_constraints = MinimumCombinedLength(7, use_last_call_suit=True)
 
 
 class SuitGameIsRemote(NaturalPassWithFit):
-    preconditions = [LastBidWasBelowGame()]
-    shared_constraints = [MaximumCombinedPoints(24)]
+    preconditions = LastBidWasBelowGame()
+    shared_constraints = MaximumCombinedPoints(24)
 
 
 class SuitSlamIsRemote(NaturalPassWithFit):
@@ -231,7 +231,7 @@ class SuitSlamIsRemote(NaturalPassWithFit):
         LastBidWasGameOrAbove(),
         LastBidWasBelowSlam(),
     ]
-    shared_constraints = [MaximumCombinedPoints(32)]
+    shared_constraints = MaximumCombinedPoints(32)
 
 
 natural_passses = set([
