@@ -210,6 +210,18 @@ class LastBidWasBelowGame(IsGame):
         return last_contract.level < self._game_level(last_contract.strain)
 
 
+class LastBidWasGameOrAbove(IsGame):
+    def fits(self, history, call):
+        last_contract = history.last_contract
+        return last_contract.level >= self._game_level(last_contract.strain)
+
+
+class LastBidWasBelowSlam(Precondition):
+    def fits(self, history, call):
+        last_contract = history.last_contract
+        return last_contract.level < 6
+
+
 class LastBidHasAnnotation(Precondition):
     def __init__(self, position, annotation):
         self.position = position
