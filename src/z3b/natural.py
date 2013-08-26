@@ -116,3 +116,40 @@ class NotrumpToPlay(Natural):
         '6N': [MinimumCombinedPoints(33), natural_priorities.SixLevelNaturalNT],
         '7N': [MinimumCombinedPoints(37), natural_priorities.SevenLevelNaturalNT],
     }
+
+
+class DefaultPass(Rule):
+    preconditions = [InvertedPrecondition(ForcedToBid())]
+    call_names = 'P'
+    shared_constraints = NO_CONSTRAINTS
+    category = categories.DefaultPass
+
+
+class NaturalPass(Rule):
+    preconditions = [LastBidWas(positions.RHO, 'P')]
+    call_names = 'P'
+    category = categories.NaturalPass
+
+
+class NaturalPassWithFit(NaturalPass):
+    preconditions = [LastBidHasSuit(positions.Partner)]
+    shared_constraints = [MinimumCombinedLength(7, use_last_call_suit=True)]
+
+
+class SuitGameIsRemote(NaturalPassWithFit):
+    preconditions = [LastBidWasBelowGame()]
+    shared_constraints = [MaximumCombinedPoints(24)]
+
+
+class SuitSlamIsRemote(NaturalPassWithFit):
+    preconditions = [
+        LastBidWasGameOrAbove(),
+        LastBidWasBelowSlam(),
+    ]
+    shared_constraints = [MaximumCombinedPoints(32)]
+
+
+natural_passses = set([
+    SuitGameIsRemote,
+    SuitSlamIsRemote,
+])

@@ -2,16 +2,11 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-from core.call import Call
-from core.callexplorer import CallExplorer
-from itertools import chain
-from third_party.memoized import memoized
+from z3b import enum
 from z3b.constraints import *
 from z3b.model import *
-from z3b import enum
-from z3b import ordering
-from z3b.preconditions import *
 from z3b.natural import *
+from z3b.preconditions import *
 from z3b.rule_compiler import Rule, RuleCompiler, rule_order, categories
 
 
@@ -1773,43 +1768,6 @@ class FeatureResponseToTwoNotrumpFeatureRequest(ResponseToTwoNotrumpFeatureReque
     # (QJTxxx in our main suit + Qxx in our outside honor suit)
     # Unittests would suggest we should require 9+?
     shared_constraints = [points >= 9, ThirdRoundStopper()]
-
-
-class DefaultPass(Rule):
-    preconditions = [InvertedPrecondition(ForcedToBid())]
-    call_names = 'P'
-    shared_constraints = NO_CONSTRAINTS
-    category = categories.DefaultPass
-
-
-class NaturalPass(Rule):
-    preconditions = [LastBidWas(positions.RHO, 'P')]
-    call_names = 'P'
-    category = categories.NaturalPass
-
-
-class NaturalPassWithFit(NaturalPass):
-    preconditions = [LastBidHasSuit(positions.Partner)]
-    shared_constraints = [MinimumCombinedLength(7, use_last_call_suit=True)]
-
-
-class SuitGameIsRemote(NaturalPassWithFit):
-    preconditions = [LastBidWasBelowGame()]
-    shared_constraints = [MaximumCombinedPoints(24)]
-
-
-class SuitSlamIsRemote(NaturalPassWithFit):
-    preconditions = [
-        LastBidWasGameOrAbove(),
-        LastBidWasBelowSlam(),
-    ]
-    shared_constraints = [MaximumCombinedPoints(32)]
-
-
-natural_passses = set([
-    SuitGameIsRemote,
-    SuitSlamIsRemote,
-])
 
 
 # FIXME: This is wrong as soon as we try to support more than one system.
