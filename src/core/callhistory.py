@@ -207,6 +207,7 @@ class CallHistory(object):
             return None
         return self.calls[-1]
 
+    @property
     def last_to_call(self):
         if not self.calls:
             return None
