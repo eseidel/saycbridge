@@ -31,31 +31,8 @@ def natural_calls():
 
 natural = enum.Enum(*natural_calls())
 
-# FIXME: O_o!
-rule_order.order(
-    natural.get('1N'),
-    natural.get('2N'),
-    [natural.get('2C'), natural.get('2D')], [natural.get('2H'), natural.get('2S')],
-    [natural.get('3C'), natural.get('3D')], [natural.get('3H'), natural.get('3S')],
-    [natural.get('4C'), natural.get('4D')],
-                                            [natural.get('5H'), natural.get('5S')],
-    natural.get('5N'),
-    natural.get('4N'),
 
-    [natural.get('5C'), natural.get('5D')],
-    natural.get('3N'),
-                                            [natural.get('4H'), natural.get('4S')],
-
-    [natural.get('6C'), natural.get('6D')], [natural.get('6H'), natural.get('6S')],
-    natural.get('6N'), 
-
-    [natural.get('7C'), natural.get('7D')], [natural.get('7H'), natural.get('7S')],
-    natural.get('7N'), 
-)
-
-natrual_bids = set(natural)
-
-natural_slams = set([
+natural_slams = [
     natural.get('6C'),
     natural.get('6D'),
     natural.get('6H'),
@@ -69,22 +46,57 @@ natural_slams = set([
     natural.get('7S'),
 
     natural.get('7N'), 
-])
+]
+rule_order.order(*natural_slams)
 
-natural_games = set([
+
+natural_exact_games = [
+    natural.get('5C'),
+    natural.get('5D'),
+
     natural.get('3N'),
 
     natural.get('4H'),
     natural.get('4S'),
+]
+rule_order.order(*natural_exact_games)
 
-    natural.get('4N'),
 
-    natural.get('5C'),
-    natural.get('5D'),
+natural_overly_sufficient_games = [
     natural.get('5H'),
     natural.get('5S'),
 
     natural.get('5N'),
+
+    natural.get('4N'),
+]
+rule_order.order(*natural_overly_sufficient_games)
+
+
+natural_part_scores = [
+    natural.get('1N'),
+    natural.get('2N'),
+    
+    natural.get('2C'), natural.get('2D'), natural.get('2H'), natural.get('2S'),
+    natural.get('3C'), natural.get('3D'), natural.get('3H'), natural.get('3S'),
+    natural.get('4C'), natural.get('4D'),
+]
+rule_order.order(*natural_part_scores)
+
+
+rule_order.order(
+    natural_part_scores,
+    natural_overly_sufficient_games,
+    natural_exact_games,
+    natural_slams,
+)
+
+
+natrual_bids = set(natural)
+
+natural_exact_minor_games = set([
+    natural.get('4C'),
+    natural.get('4D'),
 ])
 
 natural_exact_major_games = set([
@@ -96,19 +108,16 @@ natural_exact_notrump_game = set([
     natural.get('3N'),
 ])
 
+natural_games = set([
+                                                                                natural.get('3N'),
+                                          natural.get('4H'), natural.get('4S'), natural.get('4N'),
+    natural.get('5C'), natural.get('5D'), natural.get('5H'), natural.get('5S'), natural.get('5N'),
+])
+
 natural_suited_part_scores = set([
-    natural.get('2C'),
-    natural.get('2D'),
-    natural.get('2H'),
-    natural.get('2S'),
-
-    natural.get('3C'),
-    natural.get('3D'),
-    natural.get('3H'),
-    natural.get('3S'),
-
-    natural.get('4C'),
-    natural.get('4D'),
+    natural.get('2C'), natural.get('2D'), natural.get('2H'), natural.get('2S'),
+    natural.get('3C'), natural.get('3D'), natural.get('3H'), natural.get('3S'),
+    natural.get('4C'), natural.get('4D'),
 ])
 
 natural_nt_part_scores = set([
