@@ -29,6 +29,9 @@ class Enum(object):
 
             self._count += 1
 
+    def get(self, arg):
+        return getattr(self, arg)
+
     def __len__(self):
         return self._count
 

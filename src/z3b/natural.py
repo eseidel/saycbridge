@@ -19,77 +19,101 @@ the_law_priorities = enum.Enum(
 rule_order.order(*reversed(the_law_priorities))
 
 
-natural_priorities = enum.Enum(
-    "SevenLevelNaturalNT",
-    "SevenLevelNaturalMajor",
-    "SevenLevelNaturalMinor",
+# FIXME: This should be in a more general location.
+LEVELS = [1, 2, 3, 4, 5, 6, 7]
 
-    "SixLevelNaturalNT",
-    "SixLevelNaturalMajor",
-    "SixLevelNaturalMinor",
 
-    "FourLevelNaturalMajor",
-    "ThreeLevelNaturalNT", # FIXME: Where does 3N go?
-    "FiveLevelNaturalMinor",
+def natural_calls():
+    for strain in suit.STRAINS:
+        for level in LEVELS:
+            yield "%s%s" % (level, suit.strain_char(strain))
 
-    "FourLevelNaturalNT", # Should 4N be higher priority than 5N?
-    "FiveLevelNaturalNT",
 
-    "FiveLevelNaturalMajor",
+natural = enum.Enum(*natural_calls())
 
-    "FourLevelNaturalMinor",
+# FIXME: O_o!
+rule_order.order(
+    natural.get('1N'),
+    natural.get('2N'),
+    [natural.get('2C'), natural.get('2D')], [natural.get('2H'), natural.get('2S')],
+    [natural.get('3C'), natural.get('3D')], [natural.get('3H'), natural.get('3S')],
+    [natural.get('4C'), natural.get('4D')],
+                                            [natural.get('5H'), natural.get('5S')],
+    natural.get('5N'),
+    natural.get('4N'),
 
-    "ThreeLevelNaturalMajor",
-    "ThreeLevelNaturalMinor",
+    [natural.get('5C'), natural.get('5D')],
+    natural.get('3N'),
+                                            [natural.get('4H'), natural.get('4S')],
 
-    "TwoLevelNaturalMajor",
-    "TwoLevelNaturalMinor",
-    "TwoLevelNaturalNT",
-    "OneLevelNaturalNT",
+    [natural.get('6C'), natural.get('6D')], [natural.get('6H'), natural.get('6S')],
+    natural.get('6N'), 
+
+    [natural.get('7C'), natural.get('7D')], [natural.get('7H'), natural.get('7S')],
+    natural.get('7N'), 
 )
 
-# FIXME: Can we order these using a priority compiler?
-rule_order.order(*reversed(natural_priorities))
-
-natrual_bids = set(natural_priorities)
+natrual_bids = set(natural)
 
 natural_slams = set([
-    natural_priorities.SixLevelNaturalMinor,
-    natural_priorities.SixLevelNaturalMajor,
-    natural_priorities.SixLevelNaturalNT,
-    natural_priorities.SevenLevelNaturalMinor,
-    natural_priorities.SevenLevelNaturalMajor,
-    natural_priorities.SevenLevelNaturalNT,
+    natural.get('6C'),
+    natural.get('6D'),
+    natural.get('6H'),
+    natural.get('6S'),
+
+    natural.get('6N'), 
+
+    natural.get('7C'),
+    natural.get('7D'),
+    natural.get('7H'),
+    natural.get('7S'),
+
+    natural.get('7N'), 
 ])
 
 natural_games = set([
-    natural_priorities.ThreeLevelNaturalNT,
-    natural_priorities.FourLevelNaturalMajor,
-    natural_priorities.FourLevelNaturalNT,
-    natural_priorities.FiveLevelNaturalMinor,
-    natural_priorities.FiveLevelNaturalNT,
-    natural_priorities.FiveLevelNaturalMajor,
+    natural.get('3N'),
+
+    natural.get('4H'),
+    natural.get('4S'),
+
+    natural.get('4N'),
+
+    natural.get('5C'),
+    natural.get('5D'),
+    natural.get('5H'),
+    natural.get('5S'),
+
+    natural.get('5N'),
 ])
 
 natural_exact_major_games = set([
-    natural_priorities.FourLevelNaturalMajor,
+    natural.get('4H'),
+    natural.get('4S'),
 ])
 
 natural_exact_notrump_game = set([
-    natural_priorities.ThreeLevelNaturalNT,
+    natural.get('3N'),
 ])
 
 natural_suited_part_scores = set([
-    natural_priorities.TwoLevelNaturalMinor,
-    natural_priorities.TwoLevelNaturalMajor,
-    natural_priorities.ThreeLevelNaturalMinor,
-    natural_priorities.ThreeLevelNaturalMajor,
-    natural_priorities.FourLevelNaturalMinor,
+    natural.get('2C'),
+    natural.get('2D'),
+    natural.get('2H'),
+    natural.get('2S'),
+
+    natural.get('3C'),
+    natural.get('3D'),
+    natural.get('3H'),
+    natural.get('3S'),
+
+    natural.get('4C'),
+    natural.get('4D'),
 ])
 
 natural_nt_part_scores = set([
-    natural_priorities.OneLevelNaturalNT,
-    natural_priorities.TwoLevelNaturalNT,
+    natural.get('1N'),
+    natural.get('2N'),
 ])
 
 
@@ -155,23 +179,35 @@ class SuitedToPlay(SoundNaturalBid):
         PartnerHasAtLeastLengthInSuit(1),
     ]
     priorities_per_call = {
-        ('2C', '2D'): natural_priorities.TwoLevelNaturalMinor,
-        ('2H', '2S'): natural_priorities.TwoLevelNaturalMajor,
+        '2C': natural.get('2C'),
+        '2D': natural.get('2D'),
+        '2H': natural.get('2H'),
+        '2S': natural.get('2S'),
 
-        ('3C', '3D'): natural_priorities.ThreeLevelNaturalMinor,
-        ('3H', '3S'): natural_priorities.ThreeLevelNaturalMajor,
+        '3C': natural.get('3C'),
+        '3D': natural.get('3D'),
+        '3H': natural.get('3H'),
+        '3S': natural.get('3S'),
 
-        ('4C', '4D'): natural_priorities.FourLevelNaturalMinor,
-        ('4H', '4S'): natural_priorities.FourLevelNaturalMajor,
+        '4C': natural.get('4C'),
+        '4D': natural.get('4D'),
+        '4H': natural.get('4H'),
+        '4S': natural.get('4S'),
 
-        ('5C', '5D'): natural_priorities.FiveLevelNaturalMinor,
-        ('5H', '5S'): natural_priorities.FiveLevelNaturalMajor,
+        '5C': natural.get('5C'),
+        '5D': natural.get('5D'),
+        '5H': natural.get('5H'),
+        '5S': natural.get('5S'),
 
-        ('6C', '6D'): natural_priorities.SixLevelNaturalMinor,
-        ('6H', '6S'): natural_priorities.SixLevelNaturalMajor,
+        '6C': natural.get('6C'),
+        '6D': natural.get('6D'),
+        '6H': natural.get('6H'),
+        '6S': natural.get('6S'),
 
-        ('7C', '7D'): natural_priorities.SevenLevelNaturalMinor,
-        ('7H', '7S'): natural_priorities.SevenLevelNaturalMajor,
+        '7C': natural.get('7C'),
+        '7D': natural.get('7D'),
+        '7H': natural.get('7H'),
+        '7S': natural.get('7S'),
     }
 
 
@@ -191,23 +227,14 @@ class LawOfTotalTricks(Rule):
 
 class NotrumpToPlay(SoundNaturalBid):
     priorities_per_call = {
-        '1N': natural_priorities.OneLevelNaturalNT,
-        '2N': natural_priorities.TwoLevelNaturalNT,
-        '3N': natural_priorities.ThreeLevelNaturalNT,
-        '4N': natural_priorities.FourLevelNaturalNT,
-        '5N': natural_priorities.FiveLevelNaturalNT,
-        '6N': natural_priorities.SixLevelNaturalNT,
-        '7N': natural_priorities.SevenLevelNaturalNT,
+        '1N': natural.get('1N'),
+        '2N': natural.get('2N'),
+        '3N': natural.get('3N'),
+        '4N': natural.get('4N'),
+        '5N': natural.get('5N'),
+        '6N': natural.get('6N'),
+        '7N': natural.get('7N'),
     }
-    # conditional_priorities_per_call = {
-    #     '1N': [(StoppersInOpponentsSuits(), natural_priorities.OneLevelNaturalNT)],
-    #     '2N': [(StoppersInOpponentsSuits(), natural_priorities.TwoLevelNaturalNT)],
-    #     '3N': [(StoppersInOpponentsSuits(), natural_priorities.ThreeLevelNaturalNT)],
-    #     '4N': [(StoppersInOpponentsSuits(), natural_priorities.FourLevelNaturalNT)],
-    #     '5N': [(StoppersInOpponentsSuits(), natural_priorities.FiveLevelNaturalNT)],
-    #     '6N': [(StoppersInOpponentsSuits(), natural_priorities.SixLevelNaturalNT)],
-    #     '7N': [(StoppersInOpponentsSuits(), natural_priorities.SevenLevelNaturalNT)],
-    # }
 
 
 class DefaultPass(Rule):
