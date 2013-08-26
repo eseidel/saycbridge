@@ -174,7 +174,6 @@ class LengthSatisfiesLawOfTotalTricks(Constraint):
 class LawOfTotalTricks(Rule):
     preconditions = [
         InvertedPrecondition(Opened(positions.Me)),
-        RaiseOfPartnersLastSuit()
     ]
     priorities_per_call = {
         ('2C', '2D', '2H', '2S'): the_law_priorities.TwoLevelLaw,
