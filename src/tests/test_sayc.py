@@ -151,9 +151,9 @@ class ResultsAggregator(object):
         for result in results:
             # FIXME: Instead of warning, we should assert here, and we should fix
             # duplicated detection to be global, instead of per TestGroup.
-            existing_result = self._results_by_identifier.get(result.test.identifier)
-            if existing_result:
-                print "WARNING: Got duplicate result (%s, %s) %s" % (existing_result.call, result.call, result.test.test_string)
+            # existing_result = self._results_by_identifier.get(result.test.identifier)
+            # if existing_result:
+            #     print "WARNING: Got duplicate result (%s, %s) %s" % (existing_result.call, result.call, result.test.test_string)
             self._results_by_identifier[result.test.identifier] = result
             self._results_count_by_group[result.test.group.name] += 1
         self._print_completed_groups()
