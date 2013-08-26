@@ -14,17 +14,18 @@ from core.hand import Hand
 from core.autobidder import Autobidder
 from factory import BidderFactory
 from multiprocessing import Pool
+from third_party import outputcapture
+from core.call import Call
 
 
 _log = logging.getLogger(__name__)
 
 
 class CompiledTest(object):
-    def __init__(self, hand, call_history, expected_call_name, parent_test=None):
+    def __init__(self, hand, call_history, expected_call, parent_test=None):
         self.hand = hand
         self.call_history = call_history
-        # FIXME: This should be a Call object, then this upper() would not be needed.
-        self.expected_call_name = expected_call_name.upper()
+        self.expected_call = expected_call
         self.parent_test = parent_test
 
     @classmethod
@@ -43,14 +44,17 @@ class CompiledTest(object):
         return ""
 
     @property
+    def test_string(self):
+        return "%s, history: %s%s" % (self.hand.pretty_one_line(), self.call_history.calls_string(), self.subtest_string)
+
+    @property
     def subtests(self):
-        # FIXME: The sub-test generation should be moved into CompiledTest.subtests
         subtests = []
         partial_history = self.call_history
         while len(partial_history.calls) >= 4:
-            expected_call_name = partial_history.calls[-4].name
+            expected_call = partial_history.calls[-4]
             partial_history = partial_history.copy_with_partial_history(-4)
-            subtests.append(CompiledTest(self.hand, partial_history, expected_call_name, self))
+            subtests.append(CompiledTest(self.hand, partial_history, expected_call, self))
         return subtests
 
 
@@ -63,33 +67,31 @@ class TestListCompiler(object):
     def _parse_expectation(cls, expectation):
         hand_string = expectation[0]
         assert '.' in hand_string, "_split_expectation expectes C.D.H.S formatted hands, missing '.': %s" % hand_string
-        expected_bid = expectation[1]
-        # FIXME: expected_bid should just be made a Call and then we get this for free.
-        assert len(expected_bid) == 2 or expected_bid in ('P', 'X')
+        expected_call = Call.from_string(expectation[1])
         history_string = expectation[2] if len(expectation) > 2 else ""
         vulnerability_string = expectation[3] if len(expectation) > 3 else None
         hand = Hand.from_cdhs_string(hand_string)
         call_history = CallHistory.from_string(history_string, vulnerability_string=vulnerability_string)
-        return expected_bid, hand, call_history
+        return expected_call, hand, call_history
 
     def add_test(self, test):
         # Sanity check to make sure we're not running a test twice.
         test_identifier = test.identifier
-        previous_call_name = self._seen_expectations.get(test_identifier)
-        if previous_call_name:
-            if previous_call_name != test.expected_call_name:
-                _log.error("Conflicting expectations for %s, %s != %s" % (test_identifier, previous_call_name, test.expected_call_name))
+        previous_call = self._seen_expectations.get(test_identifier)
+        if previous_call:
+            if previous_call != test.expected_call:
+                _log.error("Conflicting expectations for %s, %s != %s" % (test_identifier, previous_call, test.expected_call))
             elif not test.parent_test:
                  _log.debug("%s is an explicit duplicate of an earlier test." % test_identifier)
             else:
                 _log.debug("Ignoring dupliate subtest %s" % test_identifier)
             return
-        self._seen_expectations[test_identifier] = test.expected_call_name
+        self._seen_expectations[test_identifier] = test.expected_call
         self.tests.append(test)
 
     def add_expectation_line(self, expectation):
-        expected_call_name, hand, call_history = self._parse_expectation(expectation)
-        test = CompiledTest(hand, call_history, expected_call_name)
+        expected_call, hand, call_history = self._parse_expectation(expectation)
+        test = CompiledTest(hand, call_history, expected_call)
         self.add_test(test)
         for test in test.subtests:
             self.add_test(test)
@@ -106,13 +108,36 @@ class TestListCompiler(object):
 #     # Sort the outputs, print them as soon as a group is complete.
 
 
+class TestResult(object):
+    def __init__(self):
+        self.call = None
+        self.exception = None
+        self.stdout = None
+        self.stderr = None
+
+    def save_captured_logs(self, stdout, stderr):
+        self.stdout = stdout.getvalue()
+        self.stderr = stderr.getvalue()
+
+    def print_captured_logs(self):
+        if self.stderr:
+            print self.stderr
+        if self.stdout:
+            print self.stdout
+
+
 def _run_test(test):
     bidder = BidderFactory.default_bidder()
+    result = TestResult()
+    output = outputcapture.OutputCapture()
+    stdout, stderr = output.capture_output()
     try:
-        call = bidder.find_call_for(test.hand, test.call_history)
-        return call.name if call else None
+        result.call = bidder.find_call_for(test.hand, test.call_history)
     except Exception, e:
-        return e
+        result.exception = e
+    output.restore_output()
+    result.save_captured_logs(stdout, stderr)
+    return result
 
 
 class SAYCBidderTest(unittest2.TestCase):
@@ -1257,23 +1282,22 @@ class SAYCBidderTest(unittest2.TestCase):
         fail_count = 0
         for i, test in enumerate(compiler.tests):
             # Unpack the args
-            test_result = test_results[i]
+            result = test_results[i]
+            result.print_captured_logs()
 
             # Log results
-            if isinstance(test_result, Exception):
-                _log.error("Exception during find_call_for %s %s: %s" % (test.hand.pretty_one_line(), test.call_history.calls_string(), test_result))
-                raise test_result
+            if result.exception:
+                _log.error("Exception during find_call_for %s %s: %s" % (test.hand.pretty_one_line(), test.call_history.calls_string(), result.call))
+                raise result
 
-            actual_call_name = test_result
-            # FIXME: Use Call objects which avoid the need for upper() here.
-            if actual_call_name and actual_call_name == test.expected_call_name:
-                _log.info("PASS: %s for %s, history: %s%s" % (test.expected_call_name, test.hand.pretty_one_line(), test.call_history.calls_string(), test.subtest_string))
+            if result.call and result.call == test.expected_call:
+                _log.info("PASS: %s for %s" % (test.expected_call, test.test_string))
             else:
                 fail_count += 1
                 # FIXME: This print seems to interact badly with standard logging.
                 sys.stdout.flush()
                 sys.stderr.flush()
-                print "FAIL: %s (expected %s) for %s, history: %s%s" % (actual_call_name, test.expected_call_name, test.hand.pretty_one_line(), test.call_history.calls_string(), test.subtest_string)
+                print "FAIL: %s (expected %s) for %s" % (result.call, test.expected_call, test.test_string)
 
         tests_count = len(compiler.tests)
         return tests_count, fail_count
@@ -1285,7 +1309,8 @@ class SAYCBidderTest(unittest2.TestCase):
         tests_run = dict()
 
         for expectation in expected_calls:
-            expected_bid, hand, call_history = TestListCompiler._parse_expectation(expectation)
+            expected_call, hand, call_history = TestListCompiler._parse_expectation(expectation)
+            expected_bid = expected_call.name # FIXME: This needs a rename.
             partial_history = call_history
             subtest_string = ""
             while True:
