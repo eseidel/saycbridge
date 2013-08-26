@@ -61,12 +61,12 @@ class CallHistoryTest(unittest2.TestCase):
         self.assertEquals(CallHistory.from_string("1N P 2C P 2D").position_to_call(), EAST)
 
     def test_last_to_call(self):
-        self.assertEquals(CallHistory.from_string("").last_to_call(), None)
-        self.assertEquals(CallHistory.from_string("P").last_to_call(), NORTH)
-        self.assertEquals(CallHistory.from_string("1N P").last_to_call(), EAST)
-        self.assertEquals(CallHistory.from_string("1N P 2C").last_to_call(), SOUTH)
-        self.assertEquals(CallHistory.from_string("1N P 2C P").last_to_call(), WEST)
-        self.assertEquals(CallHistory.from_string("1N P 2C P 2D").last_to_call(), NORTH)
+        self.assertEquals(CallHistory.from_string("").last_to_call, None)
+        self.assertEquals(CallHistory.from_string("P").last_to_call, NORTH)
+        self.assertEquals(CallHistory.from_string("1N P").last_to_call, EAST)
+        self.assertEquals(CallHistory.from_string("1N P 2C").last_to_call, SOUTH)
+        self.assertEquals(CallHistory.from_string("1N P 2C P").last_to_call, WEST)
+        self.assertEquals(CallHistory.from_string("1N P 2C P 2D").last_to_call, NORTH)
 
     def test_is_passout(self):
         self.assertEquals(CallHistory.from_string("").is_passout(), False)
