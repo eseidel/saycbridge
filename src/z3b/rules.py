@@ -175,6 +175,7 @@ class TwoNotrumpLimitResponse(ResponseToOneLevelSuitedOpen):
     shared_constraints = [balanced, MinimumCombinedPoints(22)]
     priority = response_priorities.TwoNotrumpLimitResponse
 
+
 # We should bid longer suits when possible, up the line for 4 cards.
 # we don't currently bid 2D over 2C when we have longer diamonds.
 
@@ -726,6 +727,7 @@ nt_response_priorities = enum.Enum(
     "NotrumpGameAccept",
     "NotrumpGameInvitation",
     "LongMinorGameInvitation",
+    "RedoubleTransferToMinor",
     "TwoSpadesRelay",
     "GarbageStayman",
 )
@@ -1030,6 +1032,47 @@ class OtherMajorRebidAfterStayman(StaymanRebid):
         # # are game forcing over both 2C and 3C Stayman responses.
         '3H': ([MinimumCombinedPoints(25), hearts == 5, spades == 4], stayman_rebid_priorities.GameForcingOtherMajor),
         '3S': ([MinimumCombinedPoints(25), spades == 5, hearts == 4], stayman_rebid_priorities.GameForcingOtherMajor),
+    }
+
+
+class RedoubleTransferToMinor(NoTrumpResponse):
+    preconditions = [
+        LastBidWas(positions.Partner, '1N'),
+        LastBidWas(positions.RHO, 'X'),
+    ]
+    call_names = 'XX'
+    annotations = annotations.Transfer
+    category = categories.Relay
+    shared_constraints = z3.And(
+        z3.Or(diamonds >= 6, clubs >= 6),
+        points <= 4, # NT is likely to be uncomfortable.
+    )
+    priority = nt_response_priorities.RedoubleTransferToMinor
+
+
+# FIXME: Should share code with AcceptTransfer, except NotJumpFromPartner's LastBid is confused by 'XX'
+class AcceptTransferToTwoClubs(Rule):
+    category = categories.Relay
+    call_names = '2C'
+    preconditions = [
+        LastBidWas(positions.Partner, 'XX'),
+        LastBidWas(positions.RHO, 'P'),
+        LastBidHasAnnotation(positions.Partner, annotations.Transfer),
+    ]
+    annotations = annotations.Artificial
+    priority = relay_priorities.Accept
+    shared_constraints = NO_CONSTRAINTS
+
+
+class ResponseAfterTransferToTwoClubs(Rule):
+    category = categories.Relay
+    preconditions = [
+        LastBidWas(positions.Partner, '2C'),
+        LastBidHasAnnotation(positions.Me, annotations.Transfer),
+    ]
+    constraints = {
+        'P': clubs >= 6,
+        '2D': diamonds >= 6,
     }
 
 
