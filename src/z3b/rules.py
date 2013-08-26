@@ -147,34 +147,26 @@ class RaiseResponse(ResponseToOneLevelSuitedOpen):
     ]
 
 
-class MajorMinimumRaise(RaiseResponse):
-    call_names = ['2H', '2S']
+class MinimumRaise(RaiseResponse):
+    priorities_per_call = {
+        ('2C', '2D'): response_priorities.MinorMinimumRaise,
+        ('2H', '2S'): response_priorities.MajorMinimumRaise,
+    }
     shared_constraints = [MinimumCombinedLength(8), MinimumCombinedPoints(18)]
-    priority = response_priorities.MajorMinimumRaise
 
 
-class MajorLimitRaise(RaiseResponse):
-    call_names = ['3H', '3S']
+class LimitRaise(RaiseResponse):
+    priorities_per_call = {
+        ('3C', '3D'): response_priorities.MinorLimitRaise,
+        ('3H', '3S'): response_priorities.MajorLimitRaise,
+    }
     shared_constraints = [MinimumCombinedLength(8), MinimumCombinedPoints(22)]
-    priority = response_priorities.MajorLimitRaise
 
 
 class MajorJumpToGame(RaiseResponse):
     call_names = ['4H', '4S']
     shared_constraints = [MinimumCombinedLength(10), points < 10]
     priority = response_priorities.MajorJumpToGame
-
-
-class MinorMinimumRaise(RaiseResponse):
-    call_names = ['2C', '2D']
-    shared_constraints = [MinimumCombinedLength(8), MinimumCombinedPoints(18)]
-    priority = response_priorities.MinorMinimumRaise
-
-
-class MinorLimitRaise(RaiseResponse):
-    call_names = ['3C', '3D']
-    shared_constraints = [MinimumCombinedLength(8), MinimumCombinedPoints(22)]
-    priority = response_priorities.MinorLimitRaise
 
 
 class TwoNotrumpLimitResponse(ResponseToOneLevelSuitedOpen):
@@ -411,9 +403,9 @@ class RebidOneNotrumpByOpener(RebidAfterOneLevelOpen):
 
 class NewOneLevelMajorByOpener(RebidAfterOneLevelOpen):
     preconditions = UnbidSuit()
-    constraints = {
-        '1H': (NO_CONSTRAINTS, opener_rebid_priorities.NewSuitHearts),
-        '1S': (NO_CONSTRAINTS, opener_rebid_priorities.NewSuitSpades),
+    priorities_per_call = {
+        '1H': opener_rebid_priorities.NewSuitHearts,
+        '1S': opener_rebid_priorities.NewSuitSpades,
     }
     shared_constraints = MinLength(4)
 
@@ -1351,11 +1343,11 @@ class SuitResponseToTakeoutDouble(ResponseToTakeoutDouble):
     shared_constraints = [MinLength(3), LongestSuitExceptOpponentSuits()]
     # Need conditional priorities to disambiguate cases like being 1.4.4.4 with 0 points after 1C X P
     # Similarly after 1H X P, with 4 spades and 4 clubs, but with xxxx spades and AKQx clubs, do we bid clubs or spades?
-    constraints = {
-        (      '2C', '3C'): (NO_CONSTRAINTS, takeout_double_responses.ThreeCardClubResonseToTakeoutDouble),
-        ('1D', '2D', '3D'): (NO_CONSTRAINTS, takeout_double_responses.ThreeCardDiamondResonseToTakeoutDouble),
-        ('1H', '2H', '3H'): (NO_CONSTRAINTS, takeout_double_responses.ThreeCardHeartResonseToTakeoutDouble),
-        ('1S', '2S'      ): (NO_CONSTRAINTS, takeout_double_responses.ThreeCardSpadeResonseToTakeoutDouble),
+    priorities_per_call = {
+        (      '2C', '3C'): takeout_double_responses.ThreeCardClubResonseToTakeoutDouble,
+        ('1D', '2D', '3D'): takeout_double_responses.ThreeCardDiamondResonseToTakeoutDouble,
+        ('1H', '2H', '3H'): takeout_double_responses.ThreeCardHeartResonseToTakeoutDouble,
+        ('1S', '2S'      ): takeout_double_responses.ThreeCardSpadeResonseToTakeoutDouble,
     }
     conditional_priorities_per_call = {
         (      '2C', '3C'): [(clubs >= 4, takeout_double_responses.ClubResonseToTakeoutDouble)],
@@ -1370,11 +1362,11 @@ class JumpSuitResponseToTakeoutDouble(ResponseToTakeoutDouble):
     # You can have 10 points, but no stopper in opponents suit and only a 3 card suit to bid.
     # 1C X P, xxxx.Axx.Kxx.Kxx
     shared_constraints = [MinLength(3), LongestSuitExceptOpponentSuits(), points >= 10]
-    constraints = {
-        (      '3C', '4C'): (NO_CONSTRAINTS, takeout_double_responses.ThreeCardJumpClubResonseToTakeoutDouble),
-        ('2D', '3D', '4D'): (NO_CONSTRAINTS, takeout_double_responses.ThreeCardJumpDiamondResonseToTakeoutDouble),
-        ('2H', '3H', '4H'): (NO_CONSTRAINTS, takeout_double_responses.ThreeCardJumpHeartResonseToTakeoutDouble),
-        ('2S', '3S'      ): (NO_CONSTRAINTS, takeout_double_responses.ThreeCardJumpSpadeResonseToTakeoutDouble),
+    priorities_per_call = {
+        (      '3C', '4C'): takeout_double_responses.ThreeCardJumpClubResonseToTakeoutDouble,
+        ('2D', '3D', '4D'): takeout_double_responses.ThreeCardJumpDiamondResonseToTakeoutDouble,
+        ('2H', '3H', '4H'): takeout_double_responses.ThreeCardJumpHeartResonseToTakeoutDouble,
+        ('2S', '3S'      ): takeout_double_responses.ThreeCardJumpSpadeResonseToTakeoutDouble,
     }
     conditional_priorities_per_call = {
         (      '3C', '4C'): [(clubs >= 4, takeout_double_responses.JumpClubResonseToTakeoutDouble)],
@@ -1447,11 +1439,11 @@ class RaiseAfterTakeoutDouble(RebidAfterTakeoutDouble):
     ]
     # Min: 1C X 1D P 2D, Max: 2S X P 3H P 4H
     # FIXME: Game doesn't seem like a raise here?
-    constraints = {
-        (      '3C', '4C'): (NO_CONSTRAINTS, rebids_after_takeout_double.MinorRaise),
-        ('2D', '3D', '4D'): (NO_CONSTRAINTS, rebids_after_takeout_double.MinorRaise),
-        ('2H', '3H', '4H'): (NO_CONSTRAINTS, rebids_after_takeout_double.MajorRaise),
-        ('2S', '3S'      ): (NO_CONSTRAINTS, rebids_after_takeout_double.MajorRaise),
+    priorities_per_call = {
+        (      '3C', '4C'): rebids_after_takeout_double.MinorRaise,
+        ('2D', '3D', '4D'): rebids_after_takeout_double.MinorRaise,
+        ('2H', '3H', '4H'): rebids_after_takeout_double.MajorRaise,
+        ('2S', '3S'      ): rebids_after_takeout_double.MajorRaise,
     }
     shared_constraints = MinLength(4)
 
@@ -1463,11 +1455,11 @@ class JumpRaiseAfterTakeoutDouble(RebidAfterTakeoutDouble):
     ]
     # Min: 1C X 1D P 3D, Max: 2S X P 3D P 5D
     # FIXME: Game doesn't seem like a raise here?
-    constraints = {
-        (      '3C', '4C', '5C'): (NO_CONSTRAINTS, rebids_after_takeout_double.JumpMinorRaise),
-        ('2D', '3D', '4D', '5D'): (NO_CONSTRAINTS, rebids_after_takeout_double.JumpMinorRaise),
-        ('2H', '3H', '4H'      ): (NO_CONSTRAINTS, rebids_after_takeout_double.JumpMajorRaise),
-        ('2S', '3S', '4S'      ): (NO_CONSTRAINTS, rebids_after_takeout_double.JumpMajorRaise),
+    priorities_per_call = {
+        (      '3C', '4C', '5C'): rebids_after_takeout_double.JumpMinorRaise,
+        ('2D', '3D', '4D', '5D'): rebids_after_takeout_double.JumpMinorRaise,
+        ('2H', '3H', '4H'      ): rebids_after_takeout_double.JumpMajorRaise,
+        ('2S', '3S', '4S'      ): rebids_after_takeout_double.JumpMajorRaise,
     }
     shared_constraints = [MinLength(4), points >= 19]
 
@@ -1481,11 +1473,11 @@ class NewSuitAfterTakeoutDouble(RebidAfterTakeoutDouble):
         InvertedPrecondition(RaiseOfPartnersLastSuit()),
     ]
     # Min: 1C X XX P 1D, Max: 2D X P 2S 3H
-    constraints = {
-        (      '2C', '3C'): (NO_CONSTRAINTS, rebids_after_takeout_double.ClubsNewSuit),
-        ('1D', '2D', '3D'): (NO_CONSTRAINTS, rebids_after_takeout_double.DiamondsNewSuit),
-        ('1H', '2H', '3H'): (NO_CONSTRAINTS, rebids_after_takeout_double.HeartsNewSuit),
-        ('1S', '2S'      ): (NO_CONSTRAINTS, rebids_after_takeout_double.SpadesNewSuit),
+    priorities_per_call = {
+        (      '2C', '3C'): rebids_after_takeout_double.ClubsNewSuit,
+        ('1D', '2D', '3D'): rebids_after_takeout_double.DiamondsNewSuit,
+        ('1H', '2H', '3H'): rebids_after_takeout_double.HeartsNewSuit,
+        ('1S', '2S'      ): rebids_after_takeout_double.SpadesNewSuit,
     }
     shared_constraints = MinLength(5)
 
@@ -1500,11 +1492,11 @@ class JumpNewSuitAfterTakeoutDouble(RebidAfterTakeoutDouble):
     ]
     # Min: 1C X XX P 2D, Max: 2S X P 3C 5D
     # FIXME: Jumping straight to game seems less useful than a cuebid would?
-    constraints = {
-        (      '3C', '4C', '5C'): (NO_CONSTRAINTS, rebids_after_takeout_double.JumpClubsNewSuit),
-        ('2D', '3D', '4D', '5D'): (NO_CONSTRAINTS, rebids_after_takeout_double.JumpDiamondsNewSuit),
-        ('2H', '3H', '4H'      ): (NO_CONSTRAINTS, rebids_after_takeout_double.JumpHeartsNewSuit),
-        ('2S', '3S', '4S'      ): (NO_CONSTRAINTS, rebids_after_takeout_double.JumpSpadesNewSuit),
+    priorities_per_call = {
+        (      '3C', '4C', '5C'): rebids_after_takeout_double.JumpClubsNewSuit,
+        ('2D', '3D', '4D', '5D'): rebids_after_takeout_double.JumpDiamondsNewSuit,
+        ('2H', '3H', '4H'      ): rebids_after_takeout_double.JumpHeartsNewSuit,
+        ('2S', '3S', '4S'      ): rebids_after_takeout_double.JumpSpadesNewSuit,
 
     }
     shared_constraints = [MinLength(6), TwoOfTheTopThree(), points >= 21]
