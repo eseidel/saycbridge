@@ -19,6 +19,7 @@ class CallExplorerTest(unittest2.TestCase):
         self._assert_histories("P  1C", ["P 1C"])
         self._assert_histories("* 1C", ["P 1C"])
         self._assert_histories("1C * 1H", ["1C 1D 1H", "1C X 1H", "1C P 1H"])
+        self._assert_histories("* 1C * 1D", ["P 1C X 1D", "P 1C P 1D"])
 
 
 if __name__ == '__main__':
