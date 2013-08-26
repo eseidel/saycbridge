@@ -100,6 +100,8 @@ response_priorities = enum.Enum(
     "TwoDiamondNewSuitResponse",
 
     "MinorLimitRaise",
+    # FIXME: Jumping to 2N over a minor is prefered over mentioning a
+    # new minor or raising a minor but not over mentioning a new major.
     "TwoNotrumpLimitResponse",
     "MinorMinimumRaise",
     "OneNotrumpResponse",

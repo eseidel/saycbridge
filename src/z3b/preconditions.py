@@ -245,7 +245,7 @@ class LastBidHasStrain(Precondition):
 
     @property
     def repr_args(self):
-        return [self.position.key, self.starins]
+        return [self.position.key, self.strains]
 
     def fits(self, history, call):
         last_call = history.view_for(self.position).last_call
