@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+from core import suit
 from z3b import enum
 from z3b.constraints import *
 from z3b.model import *
@@ -35,7 +36,6 @@ natural_priorities = enum.Enum(
     "TwoLevelNaturalMajor",
     "TwoLevelNaturalMinor",
     "TwoLevelNaturalNT",
-
     "OneLevelNaturalNT",
 )
 
@@ -73,8 +73,59 @@ natural_nt_part_scores = set([
     natural_priorities.TwoLevelNaturalNT,
 ])
 
+
+# FIXME: Unclear if these are clearer to read or not.
+def suit_bids_below_game(lowest_call_name=None):
+    all_suit_bids_below_game = (
+        '1C', '1D', '1H', '1S',
+        '2C', '2D', '2H', '2S',
+        '3C', '3D', '3H', '3S',
+        '4C', '4D'
+    )
+    lowest_call_index = all_suit_bids_below_game.index(lowest_call_name) if lowest_call_name else 0
+    return all_suit_bids_below_game[lowest_call_index:]
+
+
+def suit_bids_between(low_call_name, high_call_name):
+    all_suit_bids = (
+        '1C', '1D', '1H', '1S',
+        '2C', '2D', '2H', '2S',
+        '3C', '3D', '3H', '3S',
+        '4C', '4D', '4H', '4S',
+        '5C', '5D', '5H', '5S',
+        '6C', '6D', '6H', '6S',
+        '7C', '7D', '7H', '7S',
+    )
+    low_index = all_suit_bids.index(low_call_name)
+    high_index = all_suit_bids.index(high_call_name)
+    return all_suit_bids[low_index:high_index]
+
+
+points_for_sound_suited_bid_at_level = [
+    #  0   1   2   3   4   5   6   7
+    None, 16, 19, 22, 25, 28, 33, 37,
+]
+
+
+points_for_sound_notrump_bid_at_level = [
+    #  0   1   2   3   4   5   6   7
+    None, 19, 22, 25, 28, 30, 33, 37,
+]
+
+
+class SufficientCombinedPoints(Constraint):
+    def expr(self, history, call):
+        strain = call.strain
+        min_points = None
+        if strain == suit.NOTRUMP:
+            min_points = points_for_sound_notrump_bid_at_level[call.level]
+        if strain in suit.SUITS:
+            min_points = points_for_sound_suited_bid_at_level[call.level]
+        assert min_points is not None
+        return points >= max(0, min_points - history.partner.min_points)
+
+
 class Natural(Rule):
-    # FIXME: This should have a SomeoneOpened() precondition.
     category = categories.Natural
 
 
@@ -83,39 +134,41 @@ class SuitedToPlay(Natural):
         MinimumCombinedPointsPrecondition(12),
         PartnerHasAtLeastLengthInSuit(1)
     ]
-    constraints = {
-        ('2C', '2D'): (MinimumCombinedPoints(19), natural_priorities.TwoLevelNaturalMinor),
-        ('2H', '2S'): (MinimumCombinedPoints(19), natural_priorities.TwoLevelNaturalMajor),
+    call_names = suit_bids_between('2C', '7S')
+    priorities_per_call = {
+        ('2C', '2D'): natural_priorities.TwoLevelNaturalMinor,
+        ('2H', '2S'): natural_priorities.TwoLevelNaturalMajor,
 
-        ('3C', '3D'): (MinimumCombinedPoints(22), natural_priorities.ThreeLevelNaturalMinor),
-        ('3H', '3S'): (MinimumCombinedPoints(22), natural_priorities.ThreeLevelNaturalMajor),
+        ('3C', '3D'): natural_priorities.ThreeLevelNaturalMinor,
+        ('3H', '3S'): natural_priorities.ThreeLevelNaturalMajor,
 
-        ('4C', '4D'): (MinimumCombinedPoints(25), natural_priorities.FourLevelNaturalMinor),
-        ('4H', '4S'): (MinimumCombinedPoints(25), natural_priorities.FourLevelNaturalMajor),
+        ('4C', '4D'): natural_priorities.FourLevelNaturalMinor,
+        ('4H', '4S'): natural_priorities.FourLevelNaturalMajor,
 
-        ('5C', '5D'): (MinimumCombinedPoints(28), natural_priorities.FiveLevelNaturalMinor),
-        ('5H', '5S'): (MinimumCombinedPoints(28), natural_priorities.FiveLevelNaturalMajor),
+        ('5C', '5D'): natural_priorities.FiveLevelNaturalMinor,
+        ('5H', '5S'): natural_priorities.FiveLevelNaturalMajor,
 
-        ('6C', '6D'): (MinimumCombinedPoints(33), natural_priorities.SixLevelNaturalMinor),
-        ('6H', '6S'): (MinimumCombinedPoints(33), natural_priorities.SixLevelNaturalMajor),
+        ('6C', '6D'): natural_priorities.SixLevelNaturalMinor,
+        ('6H', '6S'): natural_priorities.SixLevelNaturalMajor,
 
-        ('7C', '7D'): (MinimumCombinedPoints(37), natural_priorities.SevenLevelNaturalMinor),
-        ('7H', '7S'): (MinimumCombinedPoints(37), natural_priorities.SevenLevelNaturalMajor),
+        ('7C', '7D'): natural_priorities.SevenLevelNaturalMinor,
+        ('7H', '7S'): natural_priorities.SevenLevelNaturalMajor,
     }
-    shared_constraints = MinimumCombinedLength(8)
+    shared_constraints = [MinimumCombinedLength(8), SufficientCombinedPoints()]
 
 
 class NotrumpToPlay(Natural):
-    constraints = {
-        '1N': [MinimumCombinedPoints(19), natural_priorities.OneLevelNaturalNT],
-        '2N': [MinimumCombinedPoints(22), natural_priorities.TwoLevelNaturalNT],
-        '3N': [MinimumCombinedPoints(25), natural_priorities.ThreeLevelNaturalNT],
-        # FIXME: 4N should really be 25, but in order to make that work we need SlamIsRemotePass.
-        '4N': [MinimumCombinedPoints(28), natural_priorities.FourLevelNaturalNT],
-        '5N': [MinimumCombinedPoints(30), natural_priorities.FiveLevelNaturalNT],
-        '6N': [MinimumCombinedPoints(33), natural_priorities.SixLevelNaturalNT],
-        '7N': [MinimumCombinedPoints(37), natural_priorities.SevenLevelNaturalNT],
+    call_names = ['1N', '2N', '3N', '4N', '5N', '6N', '7N']
+    priorities_per_call = {
+        '1N': natural_priorities.OneLevelNaturalNT,
+        '2N': natural_priorities.TwoLevelNaturalNT,
+        '3N': natural_priorities.ThreeLevelNaturalNT,
+        '4N': natural_priorities.FourLevelNaturalNT,
+        '5N': natural_priorities.FiveLevelNaturalNT,
+        '6N': natural_priorities.SixLevelNaturalNT,
+        '7N': natural_priorities.SevenLevelNaturalNT,
     }
+    shared_constraints = [SufficientCombinedPoints()]
 
 
 class DefaultPass(Rule):

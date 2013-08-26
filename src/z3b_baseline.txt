@@ -352,6 +352,7 @@ FAIL: 3H (expected P) for KT6.AQJ74.874.T2 (hcp: 10 lp: 11 sp: 11), history: P 1
 FAIL: 2N (expected P) for KT6.AQJ74.874.T2 (hcp: 10 lp: 11 sp: 11), history: P 1S 2D (subtest of P 1S 2D P P X P)
 Pass 9 of 19 hands
 
+WARNING: Got duplicate result (1N, 1N) 97.KJ2.AT3.AKQ95 (hcp: 17 lp: 18 sp: 18), history:  (subtest of 1N P 4C P 4S P 5C P)
 test_reverses:
 FAIL: 2H (expected 2S) for T.8.AKJ762.AKT32 (hcp: 15 lp: 18 sp: 21), history: 1H P 1N P
 FAIL: 2D (expected 3D) for 2.AKJ94.AQJ642.Q (hcp: 17 lp: 20 sp: 21), history: 1H P 1S P
@@ -370,7 +371,6 @@ test_slam_biding:
 Pass 3 of 3 hands
 
 WARNING: Got duplicate result (1N, 1N) KQ4.AQ8.K9873.K2 (hcp: 17 lp: 18 sp: 18), history:  (subtest of 1N P 4C P 4H P 5C P)
-WARNING: Got duplicate result (1N, 1N) 97.KJ2.AT3.AKQ95 (hcp: 17 lp: 18 sp: 18), history:  (subtest of 1N P 4C P 4S P 5C P)
 test_slam_invitations_over_one_nt:
 FAIL: 5N (expected P) for AJ4.KQ8.K9873.Q2 (hcp: 15 lp: 16 sp: 14), history: 1N P 4N P
 Pass 26 of 27 hands
