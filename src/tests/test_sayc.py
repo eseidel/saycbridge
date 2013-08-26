@@ -20,11 +20,21 @@ _log = logging.getLogger(__name__)
 
 
 class CompiledTest(object):
-    def __init__(self, hand, call_history, expected_call, parent_test=None):
+    def __init__(self, hand, call_history, expected_call_name, parent_test=None):
         self.hand = hand
         self.call_history = call_history
-        self.expected_call = expected_call
+        # FIXME: This should be a Call object.
+        self.expected_call_name = expected_call_name
         self.parent_test = parent_test
+
+    @classmethod
+    def _identifier_for_test(cls, hand, history):
+        # FIXME: Our "have we run this" check would be more powerful if we used a combinatics based identifier for the hands.
+        return "%s-%s" % (hand.reverse_pbn_string(), history.identifier())
+
+    @property
+    def identifier(self):
+        return self._identifier_for_test(self.hand, self.call_history)
 
     @property
     def subtest_string(self):
@@ -32,16 +42,22 @@ class CompiledTest(object):
             return " (subtest of %s)" % self.parent_test.call_history.calls_string()
         return ""
 
+    @property
+    def subtests(self):
+        # FIXME: The sub-test generation should be moved into CompiledTest.subtests
+        subtests = []
+        partial_history = self.call_history
+        while len(partial_history.calls) >= 4:
+            expected_call_name = partial_history.calls[-4].name
+            partial_history = partial_history.copy_with_partial_history(-4)
+            subtests.append(CompiledTest(self.hand, partial_history, expected_call_name, self))
+        return subtests
+
 
 class TestListCompiler(object):
     def __init__(self):
-        self._known_tests = {}
+        self._seen_expectations = {}
         self.tests = []
-
-    @classmethod
-    def _identifier_for_test(cls, hand, history):
-        # FIXME: Our "have we run this" check would be more powerful if we used a combinatics based identifier for the hands.
-        return "%s-%s" % (hand.reverse_pbn_string(), history.identifier())
 
     @classmethod
     def _parse_expectation(cls, expectation):
@@ -56,35 +72,27 @@ class TestListCompiler(object):
         call_history = CallHistory.from_string(history_string, vulnerability_string=vulnerability_string)
         return expected_bid, hand, call_history
 
+    def add_test(self, test):
+        # Sanity check to make sure we're not running a test twice.
+        test_identifier = test.identifier
+        previous_call_name = self._seen_expectations.get(test_identifier)
+        if previous_call_name:
+            if previous_call_name != test.expected_call_name:
+                _log.error("Conflicting expectations for %s, %s != %s" % (test_identifier, previous_call_name, test.expected_call_name))
+            elif not test.parent_test:
+                 _log.debug("%s is an explicit duplicate of an earlier test." % test_identifier)
+            else:
+                _log.debug("Ignoring dupliate subtest %s" % test_identifier)
+            return
+        self._seen_expectations[test_identifier] = test.expected_call_name
+        self.tests.append(test)
+
     def add_expectation_line(self, expectation):
-        expected_bid, hand, call_history = self._parse_expectation(expectation)
-        partial_history = call_history
-        parent_test = None
-        while True:
-            # Sanity check to make sure we're not running a test twice.
-            test_identifier = self._identifier_for_test(hand, partial_history)
-            previous_expected_bid = self._known_tests.get(test_identifier)
-            if previous_expected_bid:
-                if previous_expected_bid != expected_bid:
-                    _log.error("Conflicting expectations for %s, %s != %s" % (test_identifier, previous_expected_bid, expected_bid))
-                elif not parent_test:
-                     _log.debug("%s is an explicit duplicate of an earlier test." % test_identifier)
-                else:
-                    _log.debug("Ignoring dupliate subtest %s" % test_identifier)
-                break
-            self._known_tests[test_identifier] = expected_bid
-
-            # Add test
-            new_test = CompiledTest(hand, partial_history, expected_bid, parent_test)
-            self.tests.append(new_test)
-
-            # FIXME: The sub-test generation should be moved into CompiledTest.subtests
-            if len(partial_history.calls) < 4:
-                break
-            expected_bid = partial_history.calls[-4].name
-            partial_history = partial_history.copy_with_partial_history(-4)
-            if not parent_test:
-                parent_test = new_test
+        expected_call_name, hand, call_history = self._parse_expectation(expectation)
+        test = CompiledTest(hand, call_history, expected_call_name)
+        self.add_test(test)
+        for test in test.subtests:
+            self.add_test(test)
 
     def add_expectation_lines(self, expectation_lines):
         for expectation in expectation_lines:
@@ -1244,7 +1252,7 @@ class SAYCBidderTest(unittest2.TestCase):
         # Args to be passed to processes
         test_args = [(test.hand, test.call_history) for test in compiler.tests]
         # Extra state for the test case for logging purposes
-        extra_args = [(test.expected_call, test.subtest_string) for test in compiler.tests]
+        extra_args = [(test.expected_call_name, test.subtest_string) for test in compiler.tests]
 
         # Run the tests
         assert len(test_args) == len(extra_args)
@@ -1291,7 +1299,7 @@ class SAYCBidderTest(unittest2.TestCase):
             subtest_string = ""
             while True:
                 # Sanity check to make sure we're not running a test twice.
-                test_identifier = TestListCompiler._identifier_for_test(hand, partial_history)
+                test_identifier = CompiledTest._identifier_for_test(hand, partial_history)
                 previous_expected_bid = tests_run.get(test_identifier)
                 if previous_expected_bid:
                     if previous_expected_bid != expected_bid:
