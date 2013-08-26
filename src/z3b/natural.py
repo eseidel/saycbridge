@@ -2,14 +2,9 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-from core.call import Call
-from core.callexplorer import CallExplorer
-from itertools import chain
-from third_party.memoized import memoized
+from z3b import enum
 from z3b.constraints import *
 from z3b.model import *
-from z3b import enum
-from z3b import ordering
 from z3b.preconditions import *
 from z3b.rule_compiler import Rule, rule_order, categories
 

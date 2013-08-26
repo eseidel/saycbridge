@@ -3,14 +3,14 @@
 # found in the LICENSE file.
 
 from core.call import Call
-from core.callexplorer import CallExplorer
 from itertools import chain
-from third_party.memoized import memoized
-from z3b.constraints import *
-from z3b.model import *
 from z3b import enum
+from z3b import model
 from z3b import ordering
-from z3b.preconditions import *
+from z3b.constraints import Constraint
+from z3b.preconditions import implies_artificial, annotations
+import z3
+
 
 categories = enum.Enum(
     "Relay",
@@ -131,7 +131,7 @@ class RuleCompiler(object):
     @classmethod
     def exprs_from_constraints(cls, constraints, history, call):
         if not constraints:
-            return [NO_CONSTRAINTS]
+            return [model.NO_CONSTRAINTS]
 
         if isinstance(constraints, Constraint):
             return [constraints.expr(history, call)]
