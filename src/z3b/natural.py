@@ -189,6 +189,15 @@ class NotrumpToPlay(SoundNaturalBid):
         '6N': natural_priorities.SixLevelNaturalNT,
         '7N': natural_priorities.SevenLevelNaturalNT,
     }
+    # conditional_priorities_per_call = {
+    #     '1N': [(StoppersInOpponentsSuits(), natural_priorities.OneLevelNaturalNT)],
+    #     '2N': [(StoppersInOpponentsSuits(), natural_priorities.TwoLevelNaturalNT)],
+    #     '3N': [(StoppersInOpponentsSuits(), natural_priorities.ThreeLevelNaturalNT)],
+    #     '4N': [(StoppersInOpponentsSuits(), natural_priorities.FourLevelNaturalNT)],
+    #     '5N': [(StoppersInOpponentsSuits(), natural_priorities.FiveLevelNaturalNT)],
+    #     '6N': [(StoppersInOpponentsSuits(), natural_priorities.SixLevelNaturalNT)],
+    #     '7N': [(StoppersInOpponentsSuits(), natural_priorities.SevenLevelNaturalNT)],
+    # }
 
 
 class DefaultPass(Rule):
