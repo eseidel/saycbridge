@@ -98,11 +98,26 @@ class SufficientCombinedPoints(Constraint):
         return points >= max(0, min_points - history.partner.min_points)
 
 
+class SufficientCombinedLength(MinimumCombinedLength):
+    def __init__(self):
+        MinimumCombinedLength.__init__(self, 8)
+
+    def expr(self, history, call):
+        strain = call.strain
+        if strain == suit.NOTRUMP:
+            return NO_CONSTRAINTS
+        return MinimumCombinedLength.expr(self, history, call)
+
+
 class Natural(Rule):
     category = categories.Natural
 
 
-class SuitedToPlay(Natural):
+class SoundNaturalBid(Natural):
+    shared_constraints = [SufficientCombinedLength(), SufficientCombinedPoints()]
+
+
+class SuitedToPlay(SoundNaturalBid):
     preconditions = [
         MinimumCombinedPointsPrecondition(12),
         PartnerHasAtLeastLengthInSuit(1)
@@ -126,10 +141,9 @@ class SuitedToPlay(Natural):
         ('7C', '7D'): natural_priorities.SevenLevelNaturalMinor,
         ('7H', '7S'): natural_priorities.SevenLevelNaturalMajor,
     }
-    shared_constraints = [MinimumCombinedLength(8), SufficientCombinedPoints()]
 
 
-class NotrumpToPlay(Natural):
+class NotrumpToPlay(SoundNaturalBid):
     priorities_per_call = {
         '1N': natural_priorities.OneLevelNaturalNT,
         '2N': natural_priorities.TwoLevelNaturalNT,
@@ -139,7 +153,6 @@ class NotrumpToPlay(Natural):
         '6N': natural_priorities.SixLevelNaturalNT,
         '7N': natural_priorities.SevenLevelNaturalNT,
     }
-    shared_constraints = [SufficientCombinedPoints()]
 
 
 the_law_priorities = enum.Enum(
