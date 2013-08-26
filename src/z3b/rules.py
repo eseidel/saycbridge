@@ -10,33 +10,6 @@ from z3b.preconditions import *
 from z3b.rule_compiler import Rule, RuleCompiler, rule_order, categories
 
 
-# FIXME: Unclear if these are clearer to read or not.
-def suit_bids_below_game(lowest_call_name=None):
-    all_suit_bids_below_game = (
-        '1C', '1D', '1H', '1S',
-        '2C', '2D', '2H', '2S',
-        '3C', '3D', '3H', '3S',
-        '4C', '4D'
-    )
-    lowest_call_index = all_suit_bids_below_game.index(lowest_call_name) if lowest_call_name else 0
-    return all_suit_bids_below_game[lowest_call_index:]
-
-
-def suit_bids_between(low_call_name, high_call_name):
-    all_suit_bids = (
-        '1C', '1D', '1H', '1S',
-        '2C', '2D', '2H', '2S',
-        '3C', '3D', '3H', '3S',
-        '4C', '4D', '4H', '4S',
-        '5C', '5D', '5H', '5S',
-        '6C', '6D', '6H', '6S',
-        '7C', '7D', '7H', '7S',
-    )
-    low_index = all_suit_bids.index(low_call_name)
-    high_index = all_suit_bids.index(high_call_name)
-    return all_suit_bids[low_index:high_index]
-
-
 relay_priorities = enum.Enum(
     "SuperAccept",
     "Accept",

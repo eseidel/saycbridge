@@ -30,7 +30,7 @@ rule_order = ordering.Ordering()
 # This is a public interface from RuleGenerators to the rest of the system.
 # This class knows nothing about the DSL.
 class CompiledRule(object):
-    def __init__(self, rule, preconditions, known_calls, shared_constraints, annotations, constraints, default_priority, conditional_priorities_per_call):
+    def __init__(self, rule, preconditions, known_calls, shared_constraints, annotations, constraints, default_priority, conditional_priorities_per_call, priorities_per_call):
         self.dsl_rule = rule
         self.preconditions = preconditions
         self.known_calls = known_calls
@@ -39,6 +39,7 @@ class CompiledRule(object):
         self.constraints = constraints
         self.default_priority = default_priority
         self.conditional_priorities_per_call = conditional_priorities_per_call
+        self.priorities_per_call = priorities_per_call
 
     def requires_planning(self, history):
         return self.dsl_rule.requires_planning
@@ -120,7 +121,8 @@ class CompiledRule(object):
         try:
             list(constraints_tuple)
         except TypeError:
-            constraints_tuple = (constraints_tuple, self.default_priority)
+            priority = self.priorities_per_call.get(call.name, self.default_priority)
+            constraints_tuple = (constraints_tuple, priority)
         assert len(constraints_tuple) == 2
         # FIXME: Is it possible to not end up with a priority anymore?
         assert constraints_tuple[1], "" + self.name + " is missing priority"
@@ -207,6 +209,7 @@ class RuleCompiler(object):
             "constraints",
             "preconditions",
             "priority",
+            "priorities_per_call",
             "requires_planning",
             "shared_constraints",
             "conditional_priorities_per_call",
@@ -233,8 +236,9 @@ class RuleCompiler(object):
             preconditions=cls._joined_list_from_ancestors(dsl_rule, 'preconditions'),
             shared_constraints=cls._joined_list_from_ancestors(dsl_rule, 'shared_constraints'),
             constraints=constraints,
-            default_priority = cls._default_priority(dsl_rule),
-            conditional_priorities_per_call = cls._flatten_tuple_keyed_dict(dsl_rule.conditional_priorities_per_call),
+            default_priority=cls._default_priority(dsl_rule),
+            conditional_priorities_per_call=cls._flatten_tuple_keyed_dict(dsl_rule.conditional_priorities_per_call),
+            priorities_per_call=cls._flatten_tuple_keyed_dict(dsl_rule.priorities_per_call),
         )
 
 
@@ -263,6 +267,7 @@ class Rule(object):
     conditional_priorities_per_call = {}
     annotations_per_call = {}
     priority = None
+    priorities_per_call = {}
 
     def __init__(self):
         assert False, "Rule objects should be compiled into EngineRule objects instead of instantiating them."
