@@ -3,21 +3,14 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import logging
 import sys
 import find_src
 
 from core.callhistory import CallHistory
-from core.hand import Hand
-from core.call import Call
-from z3b.bidder import Interpreter, _solver_pool, RuleSelector
-from core.suit import *
+from z3b.bidder import Interpreter, RuleSelector
 from core.callexplorer import CallExplorer
 from z3b import model
 import z3
-
-
-_log = logging.getLogger(__name__)
 
 
 def _print_usage_and_exit():
@@ -26,32 +19,35 @@ def _print_usage_and_exit():
     print
     sys.exit(1)
 
+
+class NoneFinder(object):
+    def main(self):
+        history_string = " ".join(sys.argv[1:])
+        call_history = CallHistory.from_string(history_string)
+        interpreter = Interpreter()
+
+        explorer = CallExplorer()
+
+        history = interpreter.create_history(call_history)
+        selector = RuleSelector(interpreter.system, history)
+
+        constraints = []
+        for call in explorer.possible_calls_over(call_history):
+            rule = selector.rule_for_call(call)
+            if rule and not rule.requires_planning(history):
+                #print call, rule
+                constraints.append(selector.constraints_for_call(call))
+
+        constraints_expr = z3.Not(z3.Or(*constraints))
+        solver = z3.SolverFor('QF_LIA')
+        solver.add(model.axioms)
+        solver.add(constraints_expr)
+        if solver.check() == z3.unsat:
+            print "Calls found for all possible hands."
+        else:
+            print "Unbiddable hand:"
+            print solver.model()
+
+
 if __name__ == '__main__':
-    args = sys.argv[1:]
-    if not args:
-        _print_usage_and_exit()
-
-    history_string = " ".join(args)
-    call_history = CallHistory.from_string(history_string)
-    interpreter = Interpreter()
-
-    explorer = CallExplorer()
-
-    history = interpreter.create_history(call_history)
-    selector = RuleSelector(interpreter.system, history)
-
-    constraints = []
-    for call in explorer.possible_calls_over(call_history):
-        rule = selector.rule_for_call(call)
-        if rule and not rule.requires_planning(history):
-            print call, rule
-            constraints.append(selector.constraints_for_call(call))
-
-    constraints_expr = z3.Not(z3.Or(*constraints))
-    solver = z3.SolverFor('QF_LIA')
-    solver.add(model.axioms)
-    solver.add(constraints_expr)
-    solver.add(model.high_card_points >= 8)
-    print solver.check()
-    print solver.model()
-
+    NoneFinder().main()
