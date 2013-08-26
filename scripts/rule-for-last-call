@@ -1,0 +1,31 @@
+#!/usr/bin/env python
+# Copyright (c) 2013 The SAYCBridge Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import sys
+import find_src
+
+from core.callexplorer import CallExplorer
+from z3b.bidder import Interpreter
+
+
+# FIXME: It's possible the glob should be separated out into its own tool.
+def _print_usage_and_exit():
+    print "USAGE: rule-regexp HISTORY_GLOB"
+    print " HISTORY_GLOB is space or comma separated, * means 'any call'"
+    print "Will list the rule used for the last call in each possible history."
+    sys.exit(1)
+
+
+if __name__ == '__main__':
+    args = sys.argv[1:]
+    if not args:
+        _print_usage_and_exit()
+
+    interpreter = Interpreter()
+    glob_string = " ".join(args)
+    print "History matching '%s' : (rule used for last call)" % glob_string
+    for call_history in CallExplorer().history_glob(glob_string):
+        history = interpreter.create_history(call_history)
+        print "%s : %s" % (call_history.calls_string(), history.rho.rule_for_last_call)

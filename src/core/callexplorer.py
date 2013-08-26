@@ -74,6 +74,9 @@ class CallExplorer(object):
         call_generator = self._match_pattern_over if self._has_wildcards(last_token) else self._glob_helper
 
         for history in histories:
+            # If we already have 3 passes in a row, there is nothing more we an add to this history.
+            if history.is_complete():
+                continue
             for call in call_generator(history, last_token):
                 yield history.copy_appending_call(call)
 
