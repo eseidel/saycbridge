@@ -23,8 +23,8 @@ class CompiledTest(object):
     def __init__(self, hand, call_history, expected_call_name, parent_test=None):
         self.hand = hand
         self.call_history = call_history
-        # FIXME: This should be a Call object.
-        self.expected_call_name = expected_call_name
+        # FIXME: This should be a Call object, then this upper() would not be needed.
+        self.expected_call_name = expected_call_name.upper()
         self.parent_test = parent_test
 
     @classmethod
@@ -106,13 +106,11 @@ class TestListCompiler(object):
 #     # Sort the outputs, print them as soon as a group is complete.
 
 
-def _run_test(args):
+def _run_test(test):
     bidder = BidderFactory.default_bidder()
-    hand, partial_history = args
     try:
-        actual_bid = bidder.find_call_for(hand, partial_history)
-        actual_bid_name = actual_bid.name if actual_bid else None
-        return actual_bid_name
+        call = bidder.find_call_for(test.hand, test.call_history)
+        return call.name if call else None
     except Exception, e:
         return e
 
@@ -1248,43 +1246,36 @@ class SAYCBidderTest(unittest2.TestCase):
         compiler = TestListCompiler()
         compiler.add_expectation_lines(expected_calls)
 
-        # Map from the CompiledTest format to avoid needing to re-write the rest of this function yet.
-        # Args to be passed to processes
-        test_args = [(test.hand, test.call_history) for test in compiler.tests]
-        # Extra state for the test case for logging purposes
-        extra_args = [(test.expected_call_name, test.subtest_string) for test in compiler.tests]
-
         # Run the tests
-        assert len(test_args) == len(extra_args)
         pool = Pool(processes=4)
         # Use map_async instead of map so that KeyboardInterrupts work
-        actual_bids = pool.map_async(_run_test, test_args).get(9999999)
+        test_results = pool.map_async(_run_test, compiler.tests).get(9999999)
         pool.terminate()
-        assert len(actual_bids) == len(test_args)
+        assert len(test_results) == len(compiler.tests)
 
         # Log the results
         fail_count = 0
-        for i in xrange(len(extra_args)):
+        for i, test in enumerate(compiler.tests):
             # Unpack the args
-            actual_bid_name = actual_bids[i]
-            hand, partial_history = test_args[i]
-            expected_bid, subtest_string = extra_args[i]
+            test_result = test_results[i]
 
             # Log results
-            if isinstance(actual_bid_name, Exception):
-                _log.error("Exception during find_call_for %s %s: %s" % (hand.pretty_one_line(), partial_history.calls_string(), actual_bid_name))
-                raise actual_bid_name
+            if isinstance(test_result, Exception):
+                _log.error("Exception during find_call_for %s %s: %s" % (test.hand.pretty_one_line(), test.call_history.calls_string(), test_result))
+                raise test_result
 
-            if actual_bid_name and actual_bid_name.lower() == expected_bid.lower():
-                _log.info("PASS: %s for %s, history: %s%s" % (expected_bid, hand.pretty_one_line(), partial_history.calls_string(), subtest_string))
+            actual_call_name = test_result
+            # FIXME: Use Call objects which avoid the need for upper() here.
+            if actual_call_name and actual_call_name == test.expected_call_name:
+                _log.info("PASS: %s for %s, history: %s%s" % (test.expected_call_name, test.hand.pretty_one_line(), test.call_history.calls_string(), test.subtest_string))
             else:
                 fail_count += 1
                 # FIXME: This print seems to interact badly with standard logging.
                 sys.stdout.flush()
                 sys.stderr.flush()
-                print "FAIL: %s (expected %s) for %s, history: %s%s" % (actual_bid_name, expected_bid, hand.pretty_one_line(), partial_history.calls_string(), subtest_string)
+                print "FAIL: %s (expected %s) for %s, history: %s%s" % (actual_call_name, test.expected_call_name, test.hand.pretty_one_line(), test.call_history.calls_string(), test.subtest_string)
 
-        tests_count = len(actual_bids)
+        tests_count = len(compiler.tests)
         return tests_count, fail_count
 
 
