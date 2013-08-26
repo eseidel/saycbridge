@@ -41,18 +41,18 @@ The typical development cycle:
 Testing Setup
 -------------
 
-The engine requires networkx, and running the unittests requires unittest2:
+The SAYCBridge python code uses virtualenv:
 
-    sudo pip install networkx unittest2
+    sudo pip install virtualenv
+    make env
+    source sayc-env/bin/activate
 
 You will also need a copy of MSR's z3:
-http://z3.codeplex.com/
+http://z3.codeplex.com/SourceControl/latest
 
-I recommend cloning their git repository and building directly from there.
-Their repository requires Git version 1.7 or greater. You can also install
-using a Homebrew tap (FIXME).
+You can either download a zip of the latest sources, or clone their git repo (requires git 1.7 or later).
 
-Follow their README for instructions on how to build & install z3.
+Follow the instructions in their README (while in the virtualenv) to install z3py into your virtualenv.
 
 
 Running SAYCBridge.com Locally
@@ -71,11 +71,7 @@ Both versions of the site depend on CoffeeScript:
 If you don't already have npm, you can get it from Node.js
 http://nodejs.org/
 
-The Z3 Bidder (make serve) site additionally depends on:
-
-    sudo pip install webapp2 webob jinja2 Werkzeug
-
-The Knowledge Based Bidder version depends on Google App Engine:
+The Knowledge Based Bidder version additionally depends on Google App Engine:
 https://developers.google.com/appengine/
 
 

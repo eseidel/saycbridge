@@ -342,8 +342,8 @@ class BidInterpreter(object):
 
         # FIXME: This should use some sort of history.enumerate_calls_and_bidders() method.
         for partial_history in history.ascending_partial_histories(step=1):
-            bid = partial_history.last_call()
-            bidder = partial_history.last_to_call()
+            bid = partial_history.last_call
+            bidder = partial_history.last_to_call
 
             convention_card = self.our_conventions if in_partnership_with(bidder, viewer) else self.their_conventions
             _, consuming_rule = self.knowledge_including_new_bid(knowledge_builder, bid, convention_card=convention_card, loose_constraints=loose_constraints)

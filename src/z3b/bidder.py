@@ -234,7 +234,7 @@ class History(object):
         history = self._history_after_last_call_for(position)
         if not history:
             return None
-        return history.call_history.last_call()
+        return history.call_history.last_call
 
     def rule_for_last_call(self, position):
         history = self._history_after_last_call_for(position)
@@ -556,12 +556,12 @@ class Interpreter(object):
 
         for partial_history in call_history.ascending_partial_histories(step=1):
             if explain:
-                print partial_history.last_call().name
+                print partial_history.last_call.name
 
-            expected_call = partial_history.last_call() if explain else None
+            expected_call = partial_history.last_call if explain else None
             selector = RuleSelector(self.system, history, expected_call=expected_call, explain=explain)
 
-            call = partial_history.last_call()
+            call = partial_history.last_call
             rule = selector.rule_for_call(call)
 
             constraints = model.NO_CONSTRAINTS

@@ -201,11 +201,13 @@ class CallHistory(object):
     def comma_separated_calls(self):
         return ",".join([call.name for call in self.calls])
 
+    @property
     def last_call(self):
         if not self.calls:
             return None
         return self.calls[-1]
 
+    @property
     def last_to_call(self):
         if not self.calls:
             return None
