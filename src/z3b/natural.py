@@ -142,6 +142,38 @@ class NotrumpToPlay(Natural):
     shared_constraints = [SufficientCombinedPoints()]
 
 
+the_law_priorities = enum.Enum(
+    "FiveLevelLaw",
+    "FourLevelLaw",
+    "ThreeLevelLaw",
+    "TwoLevelLaw",
+)
+rule_order.order(*reversed(the_law_priorities))
+
+
+class LengthSatisfiesLawOfTotalTricks(Constraint):
+    def expr(self, history, call):
+        # Written forward: level = partner_min + my_min - 6
+        my_count = call.level + 6 - history.partner.min_length(call.strain)
+        return expr_for_suit(call.strain) >= my_count
+
+
+class LawOfTotalTricks(Rule):
+    preconditions = [
+        InvertedPrecondition(Opened(positions.Me)),
+        RaiseOfPartnersLastSuit()
+    ]
+    call_names = suit_bids_between('2C', '5D')
+    priorities_per_call = {
+        ('2C', '2D', '2H', '2S'): the_law_priorities.TwoLevelLaw,
+        ('3C', '3D', '3H', '3S'): the_law_priorities.ThreeLevelLaw,
+        ('4C', '4D', '4H', '4S'): the_law_priorities.FourLevelLaw,
+        ('5C', '5D',           ): the_law_priorities.FiveLevelLaw,
+    }
+    shared_constraints = LengthSatisfiesLawOfTotalTricks()
+    category = categories.LawOfTotalTricks
+
+
 class DefaultPass(Rule):
     preconditions = InvertedPrecondition(ForcedToBid())
     call_names = 'P'

@@ -1602,30 +1602,6 @@ class NewSuitResponseToPreempt(ResponseToPreempt):
     shared_constraints = [MinLength(5), MinCombinedPointsForPartnerMinimumSuitedRebid()]
 
 
-the_law_priorities = enum.Enum(
-    "FiveLevelLaw",
-    "FourLevelLaw",
-    "ThreeLevelLaw",
-    "TwoLevelLaw",
-)
-rule_order.order(*reversed(the_law_priorities))
-
-
-class LawOfTotalTricks(Rule):
-    preconditions = [
-        InvertedPrecondition(Opened(positions.Me)),
-        RaiseOfPartnersLastSuit()
-    ]
-    shared_constraints = LengthSatisfiesLawOfTotalTricks()
-    category = categories.LawOfTotalTricks
-    constraints = {
-        ('2C', '2D', '2H', '2S'): (NO_CONSTRAINTS, the_law_priorities.TwoLevelLaw),
-        ('3C', '3D', '3H', '3S'): (NO_CONSTRAINTS, the_law_priorities.ThreeLevelLaw),
-        ('4C', '4D', '4H', '4S'): (NO_CONSTRAINTS, the_law_priorities.FourLevelLaw),
-        ('5C', '5D',           ): (NO_CONSTRAINTS, the_law_priorities.FiveLevelLaw),
-    }
-
-
 feature_asking_priorities = enum.Enum(
     "Gerber",
     "Blackwood",
