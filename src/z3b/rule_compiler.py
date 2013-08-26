@@ -162,12 +162,15 @@ class RuleCompiler(object):
         return list(chain.from_iterable(mapped_values))
 
     @classmethod
-    def _compile_known_calls(cls, dsl_class, constraints):
+    def _compile_known_calls(cls, dsl_class, constraints, priorities_per_call):
         if dsl_class.call_names:
             call_names = cls._ensure_list(dsl_class.call_names)
+        elif priorities_per_call:
+            call_names = priorities_per_call.keys()
+            assert dsl_class.shared_constraints or priorities_per_call.keys() == constraints.keys()
         else:
             call_names = constraints.keys()
-        assert call_names, "%s: call_names or constraints map is required." % dsl_class.__name__
+        assert call_names, "%s: call_names or priorities_per_call or constraints map is required." % dsl_class.__name__
         return map(Call.from_string, call_names)
 
     @classmethod
@@ -229,16 +232,17 @@ class RuleCompiler(object):
     def compile(cls, dsl_rule):
         cls._validate_rule(dsl_rule)
         constraints = cls._flatten_tuple_keyed_dict(dsl_rule.constraints)
+        priorities_per_call = cls._flatten_tuple_keyed_dict(dsl_rule.priorities_per_call)
         # Unclear if compiled results should be memoized on the rule?
         return CompiledRule(dsl_rule,
-            known_calls=cls._compile_known_calls(dsl_rule, constraints),
+            known_calls=cls._compile_known_calls(dsl_rule, constraints, priorities_per_call),
             annotations=cls._compile_annotations(dsl_rule),
             preconditions=cls._joined_list_from_ancestors(dsl_rule, 'preconditions'),
             shared_constraints=cls._joined_list_from_ancestors(dsl_rule, 'shared_constraints'),
             constraints=constraints,
             default_priority=cls._default_priority(dsl_rule),
             conditional_priorities_per_call=cls._flatten_tuple_keyed_dict(dsl_rule.conditional_priorities_per_call),
-            priorities_per_call=cls._flatten_tuple_keyed_dict(dsl_rule.priorities_per_call),
+            priorities_per_call=priorities_per_call,
         )
 
 

@@ -74,33 +74,6 @@ natural_nt_part_scores = set([
 ])
 
 
-# FIXME: Unclear if these are clearer to read or not.
-def suit_bids_below_game(lowest_call_name=None):
-    all_suit_bids_below_game = (
-        '1C', '1D', '1H', '1S',
-        '2C', '2D', '2H', '2S',
-        '3C', '3D', '3H', '3S',
-        '4C', '4D'
-    )
-    lowest_call_index = all_suit_bids_below_game.index(lowest_call_name) if lowest_call_name else 0
-    return all_suit_bids_below_game[lowest_call_index:]
-
-
-def suit_bids_between(low_call_name, high_call_name):
-    all_suit_bids = (
-        '1C', '1D', '1H', '1S',
-        '2C', '2D', '2H', '2S',
-        '3C', '3D', '3H', '3S',
-        '4C', '4D', '4H', '4S',
-        '5C', '5D', '5H', '5S',
-        '6C', '6D', '6H', '6S',
-        '7C', '7D', '7H', '7S',
-    )
-    low_index = all_suit_bids.index(low_call_name)
-    high_index = all_suit_bids.index(high_call_name)
-    return all_suit_bids[low_index:high_index]
-
-
 points_for_sound_suited_bid_at_level = [
     #  0   1   2   3   4   5   6   7
     None, 16, 19, 22, 25, 28, 33, 37,
@@ -134,7 +107,6 @@ class SuitedToPlay(Natural):
         MinimumCombinedPointsPrecondition(12),
         PartnerHasAtLeastLengthInSuit(1)
     ]
-    call_names = suit_bids_between('2C', '7S')
     priorities_per_call = {
         ('2C', '2D'): natural_priorities.TwoLevelNaturalMinor,
         ('2H', '2S'): natural_priorities.TwoLevelNaturalMajor,
@@ -158,7 +130,6 @@ class SuitedToPlay(Natural):
 
 
 class NotrumpToPlay(Natural):
-    call_names = ['1N', '2N', '3N', '4N', '5N', '6N', '7N']
     priorities_per_call = {
         '1N': natural_priorities.OneLevelNaturalNT,
         '2N': natural_priorities.TwoLevelNaturalNT,
