@@ -51,6 +51,8 @@ natural_priorities = enum.Enum(
 # FIXME: Can we order these using a priority compiler?
 rule_order.order(*reversed(natural_priorities))
 
+natrual_bids = set(natural_priorities)
+
 natural_slams = set([
     natural_priorities.SixLevelNaturalMinor,
     natural_priorities.SixLevelNaturalMajor,
@@ -67,6 +69,14 @@ natural_games = set([
     natural_priorities.FiveLevelNaturalMinor,
     natural_priorities.FiveLevelNaturalNT,
     natural_priorities.FiveLevelNaturalMajor,
+])
+
+natural_exact_major_games = set([
+    natural_priorities.FourLevelNaturalMajor,
+])
+
+natural_exact_notrump_game = set([
+    natural_priorities.ThreeLevelNaturalNT,
 ])
 
 natural_suited_part_scores = set([
