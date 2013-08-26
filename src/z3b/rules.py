@@ -1294,6 +1294,7 @@ class TakeoutDouble(Rule):
     preconditions = [
         LastBidHasSuit(),
         InvertedPrecondition(HasBid(positions.Partner)),
+        InvertedPrecondition(LastBidWas(positions.Me, 'X')),
         # LastBidWasNaturalSuit(),
         # LastBidWasBelowGame(),
         UnbidSuitCountRange(2, 3),
@@ -1454,6 +1455,8 @@ rebids_after_takeout_double = enum.Enum(
     "DiamondsNewSuit",
     "JumpClubsNewSuit",
     "ClubsNewSuit",
+
+    "TakeoutDoubleAfterTakeoutDouble",
 )
 rule_order.order(*reversed(rebids_after_takeout_double))
 
@@ -1579,8 +1582,17 @@ class JumpTwoNotrumpAfterTakeoutDouble(RebidAfterTakeoutDouble):
 #     priority = rebids_after_takeout_double.CueBidAfterTakeoutDouble
 
 
-# class TakeoutDoubleAfterTakeoutDouble(RebidAfterTakeoutDouble):
-#     call_names = 'X'
+class TakeoutDoubleAfterTakeoutDouble(RebidAfterTakeoutDouble):
+    call_names = 'X'
+    preconditions = [
+        LastBidWas(positions.Partner, 'P'),
+        MaxLevel(2),
+        LastBidHasSuit(),
+    ]
+    # Doubling a second time shows both 17+ and shortness in the last bid contract.
+    # We're asking partner to pick a suit, any suit but don't let them have it.
+    shared_constraints = [points >= 17, MaxLengthInLastContractSuit(1)]
+    priority = rebids_after_takeout_double.TakeoutDoubleAfterTakeoutDouble
 
 
 preempt_priorities = enum.Enum(
