@@ -56,8 +56,6 @@ class BidderProxy(object):
 
 
 # This is used by the explorer (explorer_handler.py)
-# The Explorer doesn't actually work for z3 yet, but this
-# documents what interface we'd have to provide to make it work.
 class InterpreterProxy(object):
     def __init__(self):
         if use_z3:

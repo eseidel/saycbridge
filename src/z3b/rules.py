@@ -392,6 +392,7 @@ class RebidAfterOneLevelOpen(OpenerRebid):
 
 class TwoNoTrumpOpenerRebid(RebidAfterOneLevelOpen):
     # FIXME: This only makes sense if partner didn't jump.
+    # Unclear how this is affected by competition?
     annotations = annotations.NoTrumpSystemsOn
     constraints = {
         '2N': z3.And(points >= 18, points <= 19, balanced)
