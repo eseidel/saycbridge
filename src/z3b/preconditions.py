@@ -360,6 +360,16 @@ class MaxShownLength(Precondition):
         return strain in suit.SUITS and history.view_for(self.position).min_length(strain) <= self.max_length
 
 
+class DidBidSuit(Precondition):
+    def __init__(self, position):
+        self.position = position
+
+    def fits(self, history, call):
+        if call.strain not in suit.SUITS:
+            return False
+        return history.is_bid_suit(call.strain, self.position)
+
+
 class UnbidSuit(Precondition):
     def fits(self, history, call):
         if call.strain not in suit.SUITS:

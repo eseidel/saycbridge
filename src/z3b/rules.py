@@ -707,7 +707,7 @@ class ResponderSignoffInPartnersSuit(OneLevelOpeningResponderRebid):
         # when re-bidding 1N, but that doesn't mean our (unforced) bid
         # of that new suit would be a sign-off!
         # FIXME: Perhaps this should required ForcedToBid()?
-        PartnerHasAtLeastLengthInSuit(4)
+        DidBidSuit(positions.Partner),
     ]
     call_names = ['2C', '2D', '2H', '2S']
     shared_constraints = MinimumCombinedLength(7)
