@@ -1911,6 +1911,8 @@ class StandardAmericanYellowCard(object):
         DefaultPass,
         opener_higher_level_new_minors,
         opener_jumpshifts_to_minors,
+    )
+    rule_order.order(
         opener_higher_level_new_major,
         opener_reverse_to_a_major,
         opener_jumpshifts_to_majors,
