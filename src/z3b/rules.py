@@ -672,7 +672,11 @@ class ThreeLevelSuitRebidByResponder(ResponderSuitRebid):
 class ResponderSignoffInPartnersSuit(OneLevelOpeningResponderRebid):
     preconditions = [
         InvertedPrecondition(RaiseOfPartnersLastSuit()),
-        PartnerHasAtLeastLengthInSuit(3)
+        # z3 is often smart enough to know that partner has 3 in a suit
+        # when re-bidding 1N, but that doesn't mean our (unforced) bid
+        # of that new suit would be a sign-off!
+        # FIXME: Perhaps this should required ForcedToBid()?
+        PartnerHasAtLeastLengthInSuit(4)
     ]
     call_names = ['2C', '2D', '2H', '2S']
     shared_constraints = MinimumCombinedLength(7)
@@ -1906,7 +1910,7 @@ class StandardAmericanYellowCard(object):
     )
     rule_order.order(
         ResponderSignoffInPartnersSuit,
-        ResponderReverse,
+        responder_rebid_priorities.ResponderReverse,
     )
     rule_order.order(
         # If we see that game is remote, just stop.

@@ -151,8 +151,6 @@ FAIL: 4D (expected P) for A93.Q762.K832.J3 (hcp: 10 lp: 10 sp: 10), history: 1D 
 FAIL: 3D (expected 2N) for A93.Q762.K832.J3 (hcp: 10 lp: 10 sp: 10), history: 1D P 1H P 1S P (subtest of 1D P 1H P 1S P 2N P 3N P)
 FAIL: 5N (expected P) for 6.AKJ75.KJT86.A4 (hcp: 16 lp: 18 sp: 20), history: 1H P 2N P 4D P 4H P
 FAIL: 1N (expected 2C) for KQT4.AT96.632.T8 (hcp: 9 lp: 9 sp: 10), history: 1C P 1D P 1S P
-WARNING: Multiple rules have maximal category for 2S: Default, [ResponderSignoffInPartnersSuit, ResponderReverse]
-WARNING: Multiple rules have maximal category for 2H: Default, [ResponderSignoffInPartnersSuit, RebidResponderSuitByResponder]
 FAIL: P (expected 1S) for 432.AT.T95.AKT87 (hcp: 11 lp: 12 sp: 12), history: P P 1D P P
 FAIL: None (expected P) for KT76.98.K8754.94 (hcp: 6 lp: 7 sp: 8), history: P 1H X 3H P 4H X P
 FAIL: P (expected 2D) for KJ9.AK832.T987.5 (hcp: 11 lp: 12 sp: 14), history: 1S P 1N
@@ -164,8 +162,6 @@ FAIL: None (expected 3N) for AK83.8652.8.AJ73 (hcp: 12 lp: 12 sp: 15), history: 
 FAIL: 3D (expected 2N) for AK83.8652.8.AJ73 (hcp: 12 lp: 12 sp: 15), history: 1D P 1S P 1N P (subtest of 1D P 1S P 1N P 2N P 3S P)
 FAIL: None (expected P) for A64.J63.Q953.Q54 (hcp: 9 lp: 9 sp: 9), history: P P P 1N P 2C P 2S P 2N P 3N P
 FAIL: 2S (expected 4S) for A7.K.QT6.KJ98543 (hcp: 13 lp: 16 sp: 14), history: 1C P 1S P 1N P
-WARNING: Multiple rules have maximal category for 2S: Default, [ResponderSignoffInPartnersSuit, ResponderReverse]
-WARNING: Multiple rules have maximal category for 2H: Default, [ResponderSignoffInPartnersSuit, RebidResponderSuitByResponder]
 FAIL: 2C (expected 1N) for A9863.QJT7.8.KJ6 (hcp: 11 lp: 12 sp: 14), history: P 1C P 1H P
 FAIL: None (expected P) for Q632.JT52.743.86 (hcp: 3 lp: 3 sp: 4), history: 1S 2S P 2N P 3C P
 FAIL: None (expected 2N) for Q632.JT52.743.86 (hcp: 3 lp: 3 sp: 4), history: 1S 2S P (subtest of 1S 2S P 2N P 3C P)
@@ -407,23 +403,13 @@ FAIL: None (expected 3S) for 6.AJ3.AK4.AKQJT6 (hcp: 22 lp: 24 sp: 25), history: 
 Pass 25 of 29 hands
 
 test_subsequent_bidding_by_responder:
-WARNING: Multiple rules have maximal category for 2S: Default, [ResponderSignoffInPartnersSuit, ResponderReverse]
-WARNING: Multiple rules have maximal category for 2H: Default, [ResponderSignoffInPartnersSuit, RebidResponderSuitByResponder]
-FAIL: P (expected 2H) for 75.K53.K98743.98 (hcp: 6 lp: 8 sp: 8), history: 1C P 1H P 1N P
+FAIL: P (expected 2C) for K8754.Q9.76.J984 (hcp: 6 lp: 7 sp: 6), history: 1C P 1S P 1N P
 FAIL: None (expected P) for JT64.K532.8.A543 (hcp: 8 lp: 8 sp: 11), history: 1H P 1S P 2C P
 FAIL: 2N (expected 2C) for KJ642.KT.KQT97.7 (hcp: 12 lp: 14 sp: 16), history: 1D P 1H P 1S P
 FAIL: None (expected 2H) for K873.86.QJ7432.9 (hcp: 6 lp: 8 sp: 10), history: 1S P 1N P 2D P
-WARNING: Multiple rules have maximal category for 2S: Default, [ResponderSignoffInPartnersSuit, ResponderReverse]
-WARNING: Multiple rules have maximal category for 2H: Default, [ResponderSignoffInPartnersSuit, RebidResponderSuitByResponder]
 FAIL: 3S (expected 2S) for KJ6.T.KQT97.KQ74 (hcp: 14 lp: 15 sp: 17), history: 1C P 1H P 1N P
-WARNING: Multiple rules have maximal category for 2S: Default, [ResponderSignoffInPartnersSuit, ResponderReverse]
-WARNING: Multiple rules have maximal category for 2H: Default, [ResponderSignoffInPartnersSuit, RebidResponderSuitByResponder]
-WARNING: Multiple rules have maximal category for 2S: Default, [ResponderSignoffInPartnersSuit, ResponderReverse]
-WARNING: Multiple rules have maximal category for 2H: Default, [ResponderSignoffInPartnersSuit, RebidResponderSuitByResponder]
 FAIL: 3C (expected 3N) for KJ64.JT.KQT9.KJ9 (hcp: 14 lp: 14 sp: 14), history: 1D P 1H P 1N P
 FAIL: 3S (expected 4S) for 2.KQ43.KQT8.QT98 (hcp: 12 lp: 12 sp: 15), history: 1D P 1H P 1S P
-WARNING: Multiple rules have maximal category for 2S: Default, [ResponderSignoffInPartnersSuit, ResponderReverse]
-WARNING: Multiple rules have maximal category for 2H: Default, [ResponderSignoffInPartnersSuit, RebidResponderSuitByResponder]
 FAIL: 3N (expected 5D) for 3.AQT743.AK95.65 (hcp: 13 lp: 15 sp: 17), history: 1D P 1H P 1N P
 FAIL: 2N (expected 2S) for KJ643.9863.A9.K9 (hcp: 11 lp: 12 sp: 13), history: 1S P 2C P 2H P
 FAIL: 3S (expected 2C) for KJ643.A874.T.K97 (hcp: 11 lp: 12 sp: 14), history: 1S P (subtest of 1S P 2C P 2H P)
