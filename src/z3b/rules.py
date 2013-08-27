@@ -1880,8 +1880,8 @@ class StandardAmericanYellowCard(object):
         opener_higher_level_new_suits,
     )
     rule_order.order(
-        RebidOneNotrumpByOpener,
         ForcedRebidOriginalSuitByOpener,
+        RebidOneNotrumpByOpener,
         UnforcedRebidOriginalSuitByOpener,
         InvitationalUnsupportedRebidByOpener,
         GameForcingUnsupportedRebidByOpener,
@@ -1916,4 +1916,10 @@ class StandardAmericanYellowCard(object):
         # If we see that game is remote, just stop.
         UnforcedRebidOriginalSuitByOpener,
         natural_passses,
+    )
+    rule_order.order(
+        # FIXME: This may be unecessary once we have responses to negative doubles.
+        # But we'd rather place the contract in a suited part score than in NT.
+        RebidOneNotrumpByOpener,
+        natural_suited_part_scores,
     )
