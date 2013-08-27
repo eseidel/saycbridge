@@ -258,7 +258,11 @@ class DefaultPass(Rule):
 
 
 class NaturalPass(Rule):
-    preconditions = LastBidWas(positions.RHO, 'P')
+    preconditions = [
+        LastBidWas(positions.RHO, 'P'),
+        # Natural passes do not apply when preempting.
+        WeHaveShownMorePointsThanThem(),
+    ]
     call_names = 'P'
     category = categories.NaturalPass
 
