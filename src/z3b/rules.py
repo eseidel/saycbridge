@@ -542,9 +542,28 @@ class UnsupportedRebid(RebidOriginalSuitByOpener):
     preconditions = MaxShownLength(positions.Partner, 0)
 
 
+opener_unsupported_rebids = enum.Enum(
+    "GameForcingMinor",
+    "InvitationalMajor",
+    "InvitationalMinor",
+)
+rule_order.order(*reversed(opener_unsupported_rebids))
+
+opener_unsupported_minor_rebid = set([
+    opener_unsupported_rebids.GameForcingMinor,
+    opener_unsupported_rebids.InvitationalMinor,
+])
+
+
+opener_unsupported_major_rebid = opener_unsupported_rebids.InvitationalMajor
+
+
 class InvitationalUnsupportedRebidByOpener(UnsupportedRebid):
     preconditions = JumpFromLastContract()
-    call_names = ['3C', '3D', '3H', '3S']
+    priorities_per_call = {
+        ('3C', '3D'): opener_unsupported_rebids.InvitationalMinor,
+        ('3H', '3S'): opener_unsupported_rebids.InvitationalMajor,
+    }
     shared_constraints = MinLength(6), points >= 16
 
 
@@ -556,6 +575,7 @@ class GameForcingUnsupportedRebidByOpener(UnsupportedRebid):
     # Maybe this is for extremely unbalanced hands, like 7+?
     call_names = ['4C', '4D']
     shared_constraints = MinLength(6), points >= 19
+    priority = opener_unsupported_rebids.GameForcingMinor
 
 
 class HelpSuitGameTry(RebidAfterOneLevelOpen):
@@ -1923,8 +1943,12 @@ class StandardAmericanYellowCard(object):
         ForcedRebidOriginalSuitByOpener,
         RebidOneNotrumpByOpener,
         UnforcedRebidOriginalSuitByOpener,
-        InvitationalUnsupportedRebidByOpener,
-        GameForcingUnsupportedRebidByOpener,
+    )
+    rule_order.order(
+        # Rebids will only ever consider one suit, so we won't be comparing majors/minors here.
+        ForcedRebidOriginalSuitByOpener,
+        UnforcedRebidOriginalSuitByOpener,
+        opener_unsupported_rebids,
     )
     rule_order.order(
         natural_suited_part_scores,
@@ -1962,4 +1986,15 @@ class StandardAmericanYellowCard(object):
         # But we'd rather place the contract in a suited part score than in NT.
         RebidOneNotrumpByOpener,
         natural_suited_part_scores,
+    )
+    rule_order.order(
+        # We'd rather disclose a 6-card major suit than just jump to NT.
+        # FIXME: It's possible this is only an issue due to NotrumpToPlay missing stoppers!
+        natural_exact_notrump_game,
+        opener_unsupported_major_rebid,
+    )
+    rule_order.order(
+        # Showing a second minor seems more useful than showing a longer one.
+        opener_unsupported_minor_rebid,
+        opener_reverse_to_a_minor,
     )
