@@ -395,15 +395,10 @@ class CheapestNotrumpByOpener(OpenerRebid):
 class NewOneLevelMajorByOpener(OpenerRebid):
     preconditions = OpenerRebid.preconditions + [MyLastBidWasOneOfASuit(), UnbidSuit()]
     priority = priorities.NewSuit
-
-    # FIXME: What is opener supposed to when 5/5 in clubs and spades and opens
-    # clubs planning to reverse? When partner responds 1D, can opener rebid 1S
-    # with five?
     implied_constraints = {
         "1H": [MaxLength(4, SPADES)],
         "1S": [MaxLength(3, HEARTS)],
     }
-
     shared_implied_constraints = [MaxHighCardPoints(18), Length(4)]
 
 

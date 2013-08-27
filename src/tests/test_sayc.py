@@ -258,9 +258,9 @@ class TestResult(object):
 
     def print_captured_logs(self):
         if self.stderr:
-            print self.stderr
+            sys.stderr.write(self.stderr)
         if self.stdout:
-            print self.stdout
+            sys.stdout.write(self.stdout)
 
 
 # This used to be a subclass of unittests.TestCase.
@@ -1357,7 +1357,7 @@ class SAYCBidderTest(object):
         ['KT94.83.AT9654.T', 'P', 'P P P 1C P 1H P 1S P 2H P 2N P', 'E-W'],  # 16-a27c2c91f869bd0343515df8ae, N cannot rebid hearts again w/o 7.
         ['AQ73.AT6.QJ.QJ63', 'P', '1H P 2H X P 3C P'],  # 11-93d3c46a1398dc2bb16a41cf5e, E passes after his takeout double, showing < 17 hcp.
         ["K83.54.8632.A643", "3C", "1S P 2H X P"],  # Responding to a two-suited takeout double, have to pick the lesser of evils.
-        ['K5.J86532.K6.AJ8', 'P', 'P P P 1D P 1S P 2D P 3D P', 'E-W'],  # 3-8da8bd165934e3c70a93c0da7d, E should just pass, 3N is unlikely to make.
+        ['K5.J86532.K6.AJ8', 'P', 'P P P 1D P 1S P', 'E-W'],  # 3-8da8bd165934e3c70a93c0da7d, W is already a passed hand, game is remote.
         ['AKQ76..AT32.AT84', 'X', 'P P 1N', 'N-S'],  # 2-b90e90257d67b07a61f38788dc, N needs to begin with a big-hand double.
         ['AT6.KJ864.A4.A42', 'X', 'P 2H', 'E-W'],  # 6-51d4cadbb32cc5caa28fb06553, W should takeout double.
         ['962.863.KQJ7.KJ7', '2N', 'P P 1D 1S X P 2C P', 'N-S'],  # 5-1f28db93c85ba5589c077a3933, N should probably bid 2N to show his invitational hand.  Or would that show 17+?

@@ -459,7 +459,7 @@ class Bidder(object):
             if len(maximal_calls) != 1:
                 rules = map(rule_selector.rule_for_call, maximal_calls)
                 call_names = map(lambda call: call.name, maximal_calls)
-                print "WARNING: Multiple calls match and have maximal priority: %s from rules: %s" % (call_names, rules)
+                print "WARNING: Unordered: %s from: %s" % (call_names, rules)
                 return None
             # print rule_selector.rule_for_call(maximal_calls[0])
             return maximal_calls[0]

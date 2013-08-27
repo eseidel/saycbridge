@@ -354,35 +354,6 @@ class NotrumpResponseToStrongTwoClubs(ResponseToStrongTwoClubs):
     priority = two_clubs_response_priorities.NoBiddableSuit
 
 
-opener_rebid_priorities = enum.Enum(
-    "SupportMajorMax",
-    "SupportMajorLimit",
-    "SupportMajorMin",
-
-    "NotrumpJumpRebid",
-    "JumpShiftByOpener",
-    "HelpSuitGameTry",
-
-    # FIXME: Why would we rather mention a new suit instead of reversing?
-    "NewSuitSpades",
-    "NewSuitHearts",
-    "NotrumpInvitationByOpener",
-    "NewSuitDiamonds",
-    "NewSuitClubs",
-
-    "ReverseSpades",
-    "ReverseHearts",
-    "ReverseDiamonds",
-
-    "GameForcingUnsupportedRebidByOpener",
-    "InvitationalUnsupportedRebidByOpener",
-    "UnforcedRebidOriginalSuit",
-    "RebidOneNotrump",
-    "ForcedRebidOriginalSuit",
-)
-rule_order.order(*reversed(opener_rebid_priorities))
-
-
 class OpenerRebid(Rule):
     preconditions = LastBidHasAnnotation(positions.Me, annotations.Opening)
 
@@ -403,13 +374,11 @@ class NotrumpJumpRebid(RebidAfterOneLevelOpen):
         points <= 19,
         balanced,
     ]
-    priority = opener_rebid_priorities.NotrumpJumpRebid
 
 
 class RebidOneNotrumpByOpener(RebidAfterOneLevelOpen):
     preconditions = InvertedPrecondition(LastBidWas(positions.Partner, 'P'))
     call_names = '1N'
-    priority = opener_rebid_priorities.RebidOneNotrump
     shared_constraints = NO_CONSTRAINTS
 
 
@@ -418,14 +387,23 @@ class NotrumpInvitationByOpener(RebidAfterOneLevelOpen):
     # If we're not balanced, than we'd have a HelpSuitGameTry to use instead.
     call_names = '2N'
     shared_constraints = [points >= 16, balanced]
-    priority = opener_rebid_priorities.NotrumpInvitationByOpener
+
+
+opener_one_level_new_major = enum.Enum(
+    # Up the line with 4s...
+    "NewSuitHearts",
+    "NewSuitSpades",
+)
+rule_order.order(*reversed(opener_one_level_new_major))
 
 
 class NewOneLevelMajorByOpener(RebidAfterOneLevelOpen):
     preconditions = UnbidSuit()
+    # FIXME: Should this prefer Hearts over Spades: 1C P 1D P 1H with 4-4 in majors?
+    # If partner is expected to prefer 4-card majors over minors then 1H seems impossible?
     priorities_per_call = {
-        '1H': opener_rebid_priorities.NewSuitHearts,
-        '1S': opener_rebid_priorities.NewSuitSpades,
+        '1H': opener_one_level_new_major.NewSuitHearts,
+        '1S': opener_one_level_new_major.NewSuitSpades,
     }
     shared_constraints = MinLength(4)
 
@@ -438,17 +416,32 @@ class SecondSuitFromOpener(RebidAfterOneLevelOpen):
     ]
 
 
+opener_higher_level_new_suits = enum.Enum(
+    "NewSuitHearts", # If you're 4.0.4.5, prefer the major, no?
+    "NewSuitClubs", # If you're 4.4.0.5, up the line...
+    "NewSuitDiamonds",
+)
+rule_order.order(*reversed(opener_higher_level_new_suits))
+
+
+opener_higher_level_new_minors = set([
+    opener_higher_level_new_suits.NewSuitClubs,
+    opener_higher_level_new_suits.NewSuitDiamonds,
+])
+
+
 class NewSuitByOpener(SecondSuitFromOpener):
     preconditions = SuitLowerThanMyLastSuit()
+    # If you're 4.4.0.5 and the bidding goes 1S P 1H P, do you prefer 2C or 2D?
     constraints = {
-        '2C': (NO_CONSTRAINTS, opener_rebid_priorities.NewSuitClubs),
-        '2D': (NO_CONSTRAINTS, opener_rebid_priorities.NewSuitDiamonds),
-        '2H': (NO_CONSTRAINTS, opener_rebid_priorities.NewSuitHearts),
+        '2C': (NO_CONSTRAINTS, opener_higher_level_new_suits.NewSuitClubs),
+        '2D': (NO_CONSTRAINTS, opener_higher_level_new_suits.NewSuitDiamonds),
+        '2H': (NO_CONSTRAINTS, opener_higher_level_new_suits.NewSuitHearts),
         # 2S would necessarily be a reverse, or a jump shift, and is not covered by this rule.
 
-        '3C': (MinimumCombinedPoints(25), opener_rebid_priorities.NewSuitClubs),
-        '3D': (MinimumCombinedPoints(25), opener_rebid_priorities.NewSuitDiamonds),
-        '3H': (MinimumCombinedPoints(25), opener_rebid_priorities.NewSuitHearts),
+        '3C': (MinimumCombinedPoints(25), opener_higher_level_new_suits.NewSuitClubs),
+        '3D': (MinimumCombinedPoints(25), opener_higher_level_new_suits.NewSuitDiamonds),
+        '3H': (MinimumCombinedPoints(25), opener_higher_level_new_suits.NewSuitHearts),
         # 3S would necessarily be a reverse, or a jump shift, and is not covered by this rule.
     }
     shared_constraints = MinLength(4)
@@ -462,18 +455,27 @@ reverse_preconditions = [
 ]
 
 
+opener_reverses = enum.Enum(
+    # FIXME: With 5.0.4.4 which do you reverse to?
+    "ReverseSpades",
+    "ReverseHearts",
+    "ReverseDiamonds",
+)
+rule_order.order(*reversed(opener_reverses))
+
+
 class ReverseByOpener(SecondSuitFromOpener):
     preconditions = reverse_preconditions
     constraints = {
         # 2C is never a reverse
-        '2D': (MinimumCombinedPoints(22), opener_rebid_priorities.ReverseDiamonds),
-        '2H': (MinimumCombinedPoints(22), opener_rebid_priorities.ReverseHearts),
-        '2S': (MinimumCombinedPoints(22), opener_rebid_priorities.ReverseSpades),
+        '2D': (MinimumCombinedPoints(22), opener_reverses.ReverseDiamonds),
+        '2H': (MinimumCombinedPoints(22), opener_reverses.ReverseHearts),
+        '2S': (MinimumCombinedPoints(22), opener_reverses.ReverseSpades),
 
         # 3C is also never a reverse
-        '3D': (MinimumCombinedPoints(25), opener_rebid_priorities.ReverseDiamonds),
-        '3H': (MinimumCombinedPoints(25), opener_rebid_priorities.ReverseHearts),
-        '3S': (MinimumCombinedPoints(25), opener_rebid_priorities.ReverseSpades),
+        '3D': (MinimumCombinedPoints(25), opener_reverses.ReverseDiamonds),
+        '3H': (MinimumCombinedPoints(25), opener_reverses.ReverseHearts),
+        '3S': (MinimumCombinedPoints(25), opener_reverses.ReverseSpades),
     }
     shared_constraints = MinLength(4)
 
@@ -485,11 +487,19 @@ class SupportPartnerSuit(RebidAfterOneLevelOpen):
     ]
 
 
+opener_support_majors = enum.Enum(
+    "MajorMax",
+    "MajorLimit",
+    "MajorMin",
+)
+rule_order.order(*reversed(opener_support_majors))
+
+
 class SupportPartnerMajorSuit(SupportPartnerSuit):
     constraints = {
-        ('2H', '2S'): (NO_CONSTRAINTS, opener_rebid_priorities.SupportMajorMin),
-        ('3H', '3S'): (MinimumCombinedPoints(22), opener_rebid_priorities.SupportMajorLimit),
-        ('4H', '4S'): (MinimumCombinedPoints(25), opener_rebid_priorities.SupportMajorMax),
+        ('2H', '2S'): (NO_CONSTRAINTS, opener_support_majors.MajorMin),
+        ('3H', '3S'): (MinimumCombinedPoints(22), opener_support_majors.MajorLimit),
+        ('4H', '4S'): (MinimumCombinedPoints(25), opener_support_majors.MajorMax),
     }
     shared_constraints = MinimumCombinedLength(8)
 
@@ -509,14 +519,13 @@ class UnforcedRebidOriginalSuitByOpener(MinimumRebidOriginalSuitByOpener):
     preconditions = InvertedPrecondition(ForcedToBid())
     call_names = ['2C', '2D', '2H', '2S']
     shared_constraints = MinLength(6)
-    priority = opener_rebid_priorities.UnforcedRebidOriginalSuit
 
 
 class ForcedRebidOriginalSuitByOpener(MinimumRebidOriginalSuitByOpener):
     preconditions = ForcedToBid()
     call_names = ['2C', '2D', '2H', '2S']
     conditional_priorities = [
-        (MinLength(6), opener_rebid_priorities.UnforcedRebidOriginalSuit),
+        (MinLength(6), UnforcedRebidOriginalSuitByOpener),
     ]
     shared_constraints = MinLength(5)
 
@@ -529,14 +538,16 @@ class InvitationalUnsupportedRebidByOpener(UnsupportedRebid):
     preconditions = JumpFromLastContract()
     call_names = ['3C', '3D', '3H', '3S']
     shared_constraints = MinLength(6), points >= 16
-    priority = opener_rebid_priorities.InvitationalUnsupportedRebidByOpener
 
 
+# Mentioned as "double jump rebid his own suit", p56.
+# Only thing close to an example is h19, p56 which has sufficient HCP for a game (even if not fit).
 class GameForcingUnsupportedRebidByOpener(UnsupportedRebid):
     preconditions = JumpFromLastContract()
-    call_names = ['4C', '4D', '4H', '4S']
+    # I doubt we want to jump to game w/o support from our partner.  He's shown 6 points...
+    # Maybe this is for extremely unbalanced hands, like 7+?
+    call_names = ['4C', '4D']
     shared_constraints = MinLength(6), points >= 19
-    priority = opener_rebid_priorities.GameForcingUnsupportedRebidByOpener
 
 
 class HelpSuitGameTry(RebidAfterOneLevelOpen):
@@ -552,7 +563,6 @@ class HelpSuitGameTry(RebidAfterOneLevelOpen):
     ]
     # Descriptive not placement bid hence points instead of MinimumCombinedPoints.
     shared_constraints = [MinLength(4), Stopper(), points >= 16]
-    priority = opener_rebid_priorities.HelpSuitGameTry
 
 
 class JumpShiftByOpener(RebidAfterOneLevelOpen):
@@ -566,7 +576,6 @@ class JumpShiftByOpener(RebidAfterOneLevelOpen):
     ]
     # FIXME: The book mentions that opener jumpshifts don't always promise 4, especially for 1C P MAJOR P 3D
     shared_constraints = (points >= 19, MinLength(4))
-    priority = opener_rebid_priorities.JumpShiftByOpener
 
 
 two_clubs_opener_rebid_priorities = enum.Enum(
@@ -627,13 +636,6 @@ responder_rebid_priorities = enum.Enum(
 rule_order.order(*reversed(responder_rebid_priorities))
 
 
-sign_off_priorities = enum.Enum(
-    "ResponderSignoffInMinorGame",
-    "ResponderSignoffInPartnersSuit",
-)
-rule_order.order(*reversed(sign_off_priorities))
-
-
 class ResponderRebid(Rule):
     preconditions = [
         Opened(positions.Partner),
@@ -674,7 +676,6 @@ class ResponderSignoffInPartnersSuit(OneLevelOpeningResponderRebid):
     ]
     call_names = ['2C', '2D', '2H', '2S']
     shared_constraints = MinimumCombinedLength(7)
-    priority = sign_off_priorities.ResponderSignoffInPartnersSuit
 
 
 # class ResponderSignoffInMinorGame(ResponderRebid):
@@ -687,7 +688,6 @@ class ResponderSignoffInPartnersSuit(OneLevelOpeningResponderRebid):
 #         '5D': MinimumCombinedPoints(25),
 #     }
 #     shared_constraints = [MinimumCombinedLength(8), NoMajorFit()]
-#     priority = sign_off_priorities.ResponderSignoffInMinorGame
 
 
 class ResponderReverse(OneLevelOpeningResponderRebid):
@@ -1811,7 +1811,6 @@ class StandardAmericanYellowCard(object):
     rule_order.order(response_priorities, jacoby_2n_response_priorities)
     rule_order.order(natrual_bids, overcall_priorities)
     rule_order.order(natrual_bids, response_priorities)
-    rule_order.order(natrual_bids, opener_rebid_priorities)
     rule_order.order(natural_games, nt_response_priorities, natural_slams)
     rule_order.order(natrual_bids, stayman_response_priorities)
     rule_order.order(natrual_bids, GarbagePassStaymanRebid)
@@ -1825,11 +1824,92 @@ class StandardAmericanYellowCard(object):
     rule_order.order(natrual_bids, NewSuitResponseToStandardOvercall, CuebidResponseToStandardOvercall)
     rule_order.order(RaiseResponseToStandardOvercall, natrual_bids, NewSuitResponseToStandardOvercall, CuebidResponseToStandardOvercall)
     rule_order.order(DefaultPass, RaiseResponseToStandardOvercall)
-    rule_order.order(sign_off_priorities, natrual_bids)
-    rule_order.order(DefaultPass, sign_off_priorities)
+    rule_order.order(ResponderSignoffInPartnersSuit, natrual_bids)
+    rule_order.order(DefaultPass, ResponderSignoffInPartnersSuit)
     rule_order.order(DefaultPass, opening_priorities)
     rule_order.order(rebids_after_takeout_double, natrual_bids)
     rule_order.order(natrual_bids, SecondNegative)
     rule_order.order(DefaultPass, rebids_after_takeout_double)
-    rule_order.order(natural_passses, DefaultPass)
+    rule_order.order(DefaultPass, natural_passses)
+    rule_order.order(natural_suited_part_scores, natural_passses)
+    rule_order.order(natural_passses, natural_games)
 
+    rule_order.order(
+        RebidOneNotrumpByOpener,
+        opener_one_level_new_major,
+        opener_support_majors,
+    )
+    rule_order.order(
+        RebidOneNotrumpByOpener,
+        opener_higher_level_new_suits,
+    )
+    rule_order.order(
+        ForcedRebidOriginalSuitByOpener,
+        opener_higher_level_new_suits,
+        opener_one_level_new_major,
+    )
+    rule_order.order(
+        DefaultPass,
+        opener_higher_level_new_suits,
+        JumpShiftByOpener,
+        # It's better to show a higher (major) if we have one than jump to a lower one.
+        opener_reverses,
+    )
+    rule_order.order(
+        NotrumpJumpRebid,
+        opener_support_majors,
+    )
+    rule_order.order(
+        # Don't jump to game immediately, even if we have the points for it.
+        natural_exact_notrump_game,
+        opener_one_level_new_major,
+        JumpShiftByOpener,
+    )
+    rule_order.order(
+        DefaultPass,
+        # Mention a 4-card major before rebidding a 6-card minor.
+        UnforcedRebidOriginalSuitByOpener,
+        opener_one_level_new_major,
+    )
+    rule_order.order(
+        ForcedRebidOriginalSuitByOpener,
+        opener_higher_level_new_suits,
+    )
+    rule_order.order(
+        RebidOneNotrumpByOpener,
+        ForcedRebidOriginalSuitByOpener,
+        UnforcedRebidOriginalSuitByOpener,
+        InvitationalUnsupportedRebidByOpener,
+        GameForcingUnsupportedRebidByOpener,
+    )
+    rule_order.order(
+        natural_suited_part_scores,
+        NotrumpInvitationByOpener,
+        HelpSuitGameTry,
+    )
+    rule_order.order(
+        # If we have a new suit to mention, we'd rather do that than sign off in game?
+        # Maybe game with stoppers should be higher priority and game without lower?
+        # 1S P 2C P 2H seems higher priority than a straight jump to game...
+        # but 1S P 2C P 2D doesn't seem very useful if we have everything stopped?
+        natural_exact_notrump_game,
+        opener_higher_level_new_suits,
+    )
+    rule_order.order(
+        opener_higher_level_new_suits,
+        opener_support_majors,
+    )
+    rule_order.order(
+        # Definitely rather jump to NT rather than mention a new minor.  Unclear about 2H vs. NT.
+        opener_higher_level_new_minors,
+        NotrumpJumpRebid,
+    )
+    rule_order.order(
+        ResponderSignoffInPartnersSuit,
+        ResponderReverse,
+    )
+    rule_order.order(
+        # If we see that game is remote, just stop.
+        UnforcedRebidOriginalSuitByOpener,
+        natural_passses,
+    )
