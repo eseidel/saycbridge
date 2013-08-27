@@ -429,6 +429,8 @@ opener_higher_level_new_minors = set([
     opener_higher_level_new_suits.NewSuitDiamonds,
 ])
 
+opener_higher_level_new_major = opener_higher_level_new_suits.NewSuitHearts
+
 
 class NewSuitByOpener(SecondSuitFromOpener):
     preconditions = SuitLowerThanMyLastSuit()
@@ -463,6 +465,12 @@ opener_reverses = enum.Enum(
 )
 rule_order.order(*reversed(opener_reverses))
 
+opener_reverse_to_a_minor = opener_reverses.ReverseDiamonds,
+
+opener_reverse_to_a_major = set([
+    opener_reverses.ReverseSpades,
+    opener_reverses.ReverseHearts,
+])
 
 class ReverseByOpener(SecondSuitFromOpener):
     preconditions = reverse_preconditions
@@ -565,15 +573,38 @@ class HelpSuitGameTry(RebidAfterOneLevelOpen):
     shared_constraints = [MinLength(4), Stopper(), points >= 16]
 
 
+opener_jumpshifts = enum.Enum(
+    # It's possible to have 0.4.4.5 and we'd rather jump-shift to hearts than diamonds, no?
+    "JumpShiftToSpades",
+    "JumpShiftToHearts",
+    "JumpShiftToDiamonds",
+    "JumpShiftToClubs",
+)
+rule_order.order(*reversed(opener_jumpshifts))
+
+
+opener_jumpshifts_to_minors = set([
+    opener_jumpshifts.JumpShiftToDiamonds,
+    opener_jumpshifts.JumpShiftToClubs,
+])
+
+
+opener_jumpshifts_to_majors = set([
+    opener_jumpshifts.JumpShiftToSpades,
+    opener_jumpshifts.JumpShiftToHearts,
+])
+
+
 class JumpShiftByOpener(RebidAfterOneLevelOpen):
     preconditions = JumpShift.preconditions
     # The lowest possible jumpshift is 1C P 1D P 2H.
     # The highest possible jumpshift is 1S P 2S P 4H
-    call_names = [
-                    '2H', '2S',
-        '3C', '3D', '3H', '3S',
-        '4C', '4D', '4H',
-    ]
+    priorities_per_call = {
+        (      '3C', '4C'): opener_jumpshifts.JumpShiftToClubs,
+        (      '3D', '4D'): opener_jumpshifts.JumpShiftToDiamonds,
+        ('2H', '3H', '4H'): opener_jumpshifts.JumpShiftToHearts,
+        ('2S', '3S',     ): opener_jumpshifts.JumpShiftToSpades,
+    }
     # FIXME: The book mentions that opener jumpshifts don't always promise 4, especially for 1C P MAJOR P 3D
     shared_constraints = (points >= 19, MinLength(4))
 
@@ -1848,16 +1879,26 @@ class StandardAmericanYellowCard(object):
         opener_higher_level_new_suits,
     )
     rule_order.order(
+        RebidOneNotrumpByOpener,
+        opener_reverses,
+    )
+    rule_order.order(
         ForcedRebidOriginalSuitByOpener,
         opener_higher_level_new_suits,
         opener_one_level_new_major,
     )
     rule_order.order(
         DefaultPass,
-        opener_higher_level_new_suits,
-        JumpShiftByOpener,
-        # It's better to show a higher (major) if we have one than jump to a lower one.
-        opener_reverses,
+        opener_higher_level_new_minors,
+        opener_jumpshifts_to_minors,
+        opener_higher_level_new_major,
+        opener_reverse_to_a_major,
+        opener_jumpshifts_to_majors,
+    )
+    rule_order.order(
+        opener_reverse_to_a_minor,
+        opener_one_level_new_major,
+        opener_jumpshifts_to_majors,
     )
     rule_order.order(
         NotrumpJumpRebid,
@@ -1867,7 +1908,6 @@ class StandardAmericanYellowCard(object):
         # Don't jump to game immediately, even if we have the points for it.
         natural_exact_notrump_game,
         opener_one_level_new_major,
-        JumpShiftByOpener,
     )
     rule_order.order(
         DefaultPass,
