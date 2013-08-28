@@ -254,6 +254,7 @@ class SufficientStoppers(Constraint):
 
 
 class NotrumpToPlay(SoundNaturalBid):
+    preconditions = WeHaveShownMorePointsThanThem()
     priorities_per_call = {
         '1N': natural.get('1N'),
         '2N': natural.get('2N'),
