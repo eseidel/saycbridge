@@ -89,7 +89,7 @@ class CompiledRule(object):
 
     def _constraint_exprs_for_call(self, history, call):
         exprs = []
-        per_call_constraints, _ = self.per_call_constraints_and_priority(call)
+        per_call_constraints, _ = self.per_call_constraints_and_priority(history, call)
         if per_call_constraints:
             exprs.extend(RuleCompiler.exprs_from_constraints(per_call_constraints, history, call))
         exprs.extend(RuleCompiler.exprs_from_constraints(self.shared_constraints, history, call))
@@ -107,7 +107,7 @@ class CompiledRule(object):
             condition_exprs = RuleCompiler.exprs_from_constraints(condition, history, call)
             yield priority, z3.And(exprs + condition_exprs)
 
-        _, priority = self.per_call_constraints_and_priority(call)
+        _, priority = self.per_call_constraints_and_priority(history, call)
         assert priority
         yield priority, z3.And(exprs)
 
@@ -117,7 +117,7 @@ class CompiledRule(object):
     # constraints = { ('1H', '2H'): hearts > 5 }
 
     # FIXME: Should we split this into two methods? on for priority and one for constraints?
-    def per_call_constraints_and_priority(self, call):
+    def per_call_constraints_and_priority(self, history, call):
         constraints_tuple = self.constraints.get(call.name)
         try:
             list(constraints_tuple)

@@ -133,6 +133,10 @@ class PositionView(object):
         return self.history.max_length_for_position(self.position, suit)
 
     @property
+    def is_balanced(self):
+        return self.history.is_balanced_for_position(self.position)
+
+    @property
     def unbid_suits(self):
         return set(suit.SUITS) - self.bid_suits
 
@@ -312,6 +316,16 @@ class History(object):
         if history:
             return history._solve_for_max_length(suit)
         return 13
+
+    @memoized
+    def _solve_for_is_balanced(self):
+        return is_certain(self._solver, model.balanced)
+
+    def is_balanced_for_position(self, position):
+        history = self._history_after_last_call_for(position)
+        if history:
+            return history._solve_for_is_balanced()
+        return False
 
     def _lower_bound(self, predicate, lo, hi):
         if lo == hi:

@@ -238,6 +238,21 @@ class LawOfTotalTricks(Rule):
     category = categories.LawOfTotalTricks
 
 
+class SufficientStoppers(Constraint):
+    def _is_jump(self, last_contract, call):
+        if not last_contract:
+            return call.level > 1
+        assert call.strain == suit.NOTRUMP
+        if last_contract.strain == suit.NOTRUMP:
+            return call.level > last_contract.level + 1
+        return call.level > last_contract.level
+
+    def expr(self, history, call):
+        if self._is_jump(history.last_contract, call) and not history.partner.is_balanced:
+            return StoppersInOpponentsSuits().expr(history, call)
+        return NO_CONSTRAINTS
+
+
 class NotrumpToPlay(SoundNaturalBid):
     priorities_per_call = {
         '1N': natural.get('1N'),
@@ -248,6 +263,7 @@ class NotrumpToPlay(SoundNaturalBid):
         '6N': natural.get('6N'),
         '7N': natural.get('7N'),
     }
+    shared_constraints = SufficientStoppers()
 
 
 class DefaultPass(Rule):
