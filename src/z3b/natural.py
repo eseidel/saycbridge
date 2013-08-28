@@ -14,13 +14,20 @@ from z3b.rule_compiler import Rule, rule_order, categories
 LEVELS = [1, 2, 3, 4, 5, 6, 7]
 
 
-def natural_calls():
-    for strain in suit.STRAINS:
+def suited_calls():
+    for strain in suit.SUITS:
         for level in LEVELS:
             yield "%s%s" % (level, suit.strain_char(strain))
 
 
-natural = enum.Enum(*natural_calls())
+def notrump_calls():
+    for level in LEVELS:
+        yield "%s%s" % (level, suit.strain_char(suit.NOTRUMP))
+
+
+natural = enum.Enum(*suited_calls())
+notrump_without_stoppers = enum.Enum(*notrump_calls())
+notrump_with_stoppers = enum.Enum(*notrump_calls())
 
 
 natural_slams = [
@@ -29,14 +36,16 @@ natural_slams = [
     natural.get('6H'),
     natural.get('6S'),
 
-    natural.get('6N'), 
+    notrump_without_stoppers.get('6N'), 
+    notrump_with_stoppers.get('6N'), 
 
     natural.get('7C'),
     natural.get('7D'),
     natural.get('7H'),
     natural.get('7S'),
 
-    natural.get('7N'), 
+    notrump_without_stoppers.get('7N'), 
+    notrump_with_stoppers.get('7N'), 
 ]
 rule_order.order(*natural_slams)
 
@@ -45,7 +54,8 @@ natural_exact_games = [
     natural.get('5C'),
     natural.get('5D'),
 
-    natural.get('3N'),
+    notrump_without_stoppers.get('3N'),
+    notrump_with_stoppers.get('3N'),
 
     natural.get('4H'),
     natural.get('4S'),
@@ -57,16 +67,21 @@ natural_overly_sufficient_games = [
     natural.get('5H'),
     natural.get('5S'),
 
-    natural.get('5N'),
+    notrump_without_stoppers.get('5N'),
+    notrump_with_stoppers.get('5N'),
 
-    natural.get('4N'),
+    notrump_without_stoppers.get('4N'),
+    notrump_with_stoppers.get('4N'),
 ]
 rule_order.order(*natural_overly_sufficient_games)
 
 
 natural_part_scores = [
-    natural.get('1N'),
-    natural.get('2N'),
+    notrump_without_stoppers.get('1N'),
+    notrump_with_stoppers.get('1N'),
+
+    notrump_without_stoppers.get('2N'),
+    notrump_with_stoppers.get('2N'),
     
     natural.get('2C'), natural.get('2D'), natural.get('2H'), natural.get('2S'),
     natural.get('3C'), natural.get('3D'), natural.get('3H'), natural.get('3S'),
@@ -83,7 +98,7 @@ rule_order.order(
 )
 
 
-natrual_bids = set(natural)
+natrual_bids = set(natural) | set(notrump_with_stoppers) | set(notrump_without_stoppers)
 
 natural_exact_minor_games = set([
     natural.get('4C'),
@@ -96,13 +111,14 @@ natural_exact_major_games = set([
 ])
 
 natural_exact_notrump_game = set([
-    natural.get('3N'),
+    notrump_with_stoppers.get('3N'),
+    notrump_without_stoppers.get('3N'),
 ])
 
 natural_games = set([
-                                                                                natural.get('3N'),
-                                          natural.get('4H'), natural.get('4S'), natural.get('4N'),
-    natural.get('5C'), natural.get('5D'), natural.get('5H'), natural.get('5S'), natural.get('5N'),
+                                                                                notrump_with_stoppers.get('3N'), notrump_without_stoppers.get('3N'),
+                                          natural.get('4H'), natural.get('4S'), notrump_with_stoppers.get('4N'), notrump_without_stoppers.get('4N'),
+    natural.get('5C'), natural.get('5D'), natural.get('5H'), natural.get('5S'), notrump_with_stoppers.get('5N'), notrump_without_stoppers.get('5N'),
 ])
 
 natural_suited_part_scores = set([
@@ -112,8 +128,8 @@ natural_suited_part_scores = set([
 ])
 
 natural_nt_part_scores = set([
-    natural.get('1N'),
-    natural.get('2N'),
+    notrump_with_stoppers.get('1N'), notrump_without_stoppers.get('1N'),
+    notrump_with_stoppers.get('2N'), notrump_without_stoppers.get('2N'),
 ])
 
 
@@ -256,15 +272,24 @@ class SufficientStoppers(Constraint):
 class NotrumpToPlay(SoundNaturalBid):
     preconditions = WeHaveShownMorePointsThanThem()
     priorities_per_call = {
-        '1N': natural.get('1N'),
-        '2N': natural.get('2N'),
-        '3N': natural.get('3N'),
-        '4N': natural.get('4N'),
-        '5N': natural.get('5N'),
-        '6N': natural.get('6N'),
-        '7N': natural.get('7N'),
+        '1N': notrump_without_stoppers.get('1N'),
+        '2N': notrump_without_stoppers.get('2N'),
+        '3N': notrump_without_stoppers.get('3N'),
+        '4N': notrump_without_stoppers.get('4N'),
+        '5N': notrump_without_stoppers.get('5N'),
+        '6N': notrump_without_stoppers.get('6N'),
+        '7N': notrump_without_stoppers.get('7N'),
     }
     shared_constraints = SufficientStoppers()
+    conditional_priorities_per_call = {
+        '1N': [(StoppersInOpponentsSuits(), notrump_with_stoppers.get('1N'))],
+        '2N': [(StoppersInOpponentsSuits(), notrump_with_stoppers.get('2N'))],
+        '3N': [(StoppersInOpponentsSuits(), notrump_with_stoppers.get('3N'))],
+        '4N': [(StoppersInOpponentsSuits(), notrump_with_stoppers.get('4N'))],
+        '5N': [(StoppersInOpponentsSuits(), notrump_with_stoppers.get('5N'))],
+        '6N': [(StoppersInOpponentsSuits(), notrump_with_stoppers.get('6N'))],
+        '7N': [(StoppersInOpponentsSuits(), notrump_with_stoppers.get('7N'))],
+    }
 
 
 class DefaultPass(Rule):
