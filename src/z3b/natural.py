@@ -79,16 +79,16 @@ rule_order.order(*natural_overly_sufficient_games)
 
 
 natural_part_scores = [
-    notrump_without_stoppers.get('1N'),
     notrump_without_stoppers.get('2N'),
+    notrump_without_stoppers.get('1N'),
 
     # FIXME: These should have higher priorities than the suited part scores.
-    notrump_with_stoppers.get('1N'),
     notrump_with_stoppers.get('2N'),
+    notrump_with_stoppers.get('1N'),
 
-    natural.get('2C'), natural.get('2D'), natural.get('2H'), natural.get('2S'),
-    natural.get('3C'), natural.get('3D'), natural.get('3H'), natural.get('3S'),
     natural.get('4C'), natural.get('4D'),
+    natural.get('3C'), natural.get('3D'), natural.get('3H'), natural.get('3S'),
+    natural.get('2C'), natural.get('2D'), natural.get('2H'), natural.get('2S'),
 ]
 rule_order.order(*natural_part_scores)
 
