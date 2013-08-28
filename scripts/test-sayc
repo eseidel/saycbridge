@@ -56,4 +56,8 @@ if __name__ == '__main__':
         profile.run("unittest2.main()", "profile")
         print "Use 'python -m pstats profile' to see results"
     else:
-        unittest2.main()
+        try:
+            unittest2.main()
+        except KeyboardInterrupt:
+            # Just quietly exit.
+            pass

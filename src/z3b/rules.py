@@ -78,37 +78,6 @@ class StrongTwoClubs(Opening):
     priority = opening_priorities.StrongTwoClubs
 
 
-response_priorities = enum.Enum(
-    "NegativeDouble",
-    "Jacoby2N",
-    "JumpShiftResponseToOpen",
-
-    "MajorJumpToGame",
-    "MajorLimitRaise",
-    "MajorMinimumRaise",
-
-    "LongestNewMajor",
-    "OneSpadeWithFiveResponse",
-    "OneHeartWithFiveResponse",
-    "OneDiamondResponse",
-    "OneHeartWithFourResponse",
-    "OneSpadeWithFourResponse",
-
-    "TwoHeartNewSuitResponse",
-    "TwoSpadeNewSuitResponse",
-    "TwoClubNewSuitResponse",
-    "TwoDiamondNewSuitResponse",
-
-    "MinorLimitRaise",
-    # FIXME: Jumping to 2N over a minor is prefered over mentioning a
-    # new minor or raising a minor but not over mentioning a new major.
-    "TwoNotrumpLimitResponse",
-    "MinorMinimumRaise",
-    "OneNotrumpResponse",
-)
-rule_order.order(*reversed(response_priorities))
-
-
 class Response(Rule):
     preconditions = [LastBidHasAnnotation(positions.Partner, annotations.Opening)]
 
@@ -119,27 +88,47 @@ class ResponseToOneLevelSuitedOpen(Response):
     ]
 
 
+new_one_level_suit_responses = enum.Enum(
+    "LongestNewMajor",
+    "OneSpadeWithFive",
+    "OneHeartWithFive",
+    "OneDiamond",
+    "OneHeartWithFour",
+    "OneSpadeWithFour",
+)
+rule_order.order(*reversed(new_one_level_suit_responses))
+
+new_one_level_major_responses = set([
+    "LongestNewMajor",
+    "OneSpadeWithFive",
+    "OneHeartWithFive",
+    "OneHeartWithFour",
+    "OneSpadeWithFour",
+])
+
+new_one_level_minor_responses = new_one_level_suit_responses.OneDiamond
+
+
 class OneLevelNewSuitResponse(ResponseToOneLevelSuitedOpen):
     shared_constraints = points >= 6
     constraints = {
-        '1D': (diamonds >= 4, response_priorities.OneDiamondResponse),
-        '1H': (hearts >= 4, response_priorities.OneHeartWithFourResponse),
-        '1S': (spades >= 4, response_priorities.OneSpadeWithFourResponse),
+        '1D': (diamonds >= 4, new_one_level_suit_responses.OneDiamond),
+        '1H': (hearts >= 4, new_one_level_suit_responses.OneHeartWithFour),
+        '1S': (spades >= 4, new_one_level_suit_responses.OneSpadeWithFour),
     }
     # FIXME: 4 should probably be the special case and 5+ be the default priority.
     conditional_priorities_per_call = {
         '1H': [
-            (z3.And(hearts >= 5, hearts > spades), response_priorities.LongestNewMajor),
-            (hearts >= 5, response_priorities.OneHeartWithFiveResponse),
+            (z3.And(hearts >= 5, hearts > spades), new_one_level_suit_responses.LongestNewMajor),
+            (hearts >= 5, new_one_level_suit_responses.OneHeartWithFive),
         ],
-        '1S': [(spades >= 5, response_priorities.OneSpadeWithFiveResponse)]
+        '1S': [(spades >= 5, new_one_level_suit_responses.OneSpadeWithFive)]
     }
 
 
 class OneNotrumpResponse(ResponseToOneLevelSuitedOpen):
     call_names = '1N'
     shared_constraints = points >= 6
-    priority = response_priorities.OneNotrumpResponse
 
 
 class RaiseResponse(ResponseToOneLevelSuitedOpen):
@@ -149,18 +138,39 @@ class RaiseResponse(ResponseToOneLevelSuitedOpen):
     ]
 
 
+raise_responses = enum.Enum(
+    "MajorLimit",
+    "MinorLimit",
+    "MajorMinimum",
+    "MinorMinimum",
+)
+rule_order.order(*reversed(raise_responses))
+
+
+major_raise_responses = set([
+    raise_responses.MajorLimit,
+    raise_responses.MajorMinimum,
+])
+
+
+minor_raise_responses = set([
+    raise_responses.MinorLimit,
+    raise_responses.MinorMinimum,
+])
+
+
 class MinimumRaise(RaiseResponse):
     priorities_per_call = {
-        ('2C', '2D'): response_priorities.MinorMinimumRaise,
-        ('2H', '2S'): response_priorities.MajorMinimumRaise,
+        ('2C', '2D'): raise_responses.MinorMinimum,
+        ('2H', '2S'): raise_responses.MajorMinimum,
     }
     shared_constraints = [MinimumCombinedLength(8), MinimumCombinedPoints(18)]
 
 
 class LimitRaise(RaiseResponse):
     priorities_per_call = {
-        ('3C', '3D'): response_priorities.MinorLimitRaise,
-        ('3H', '3S'): response_priorities.MajorLimitRaise,
+        ('3C', '3D'): raise_responses.MinorLimit,
+        ('3H', '3S'): raise_responses.MajorLimit,
     }
     shared_constraints = [MinimumCombinedLength(8), MinimumCombinedPoints(22)]
 
@@ -168,26 +178,43 @@ class LimitRaise(RaiseResponse):
 class MajorJumpToGame(RaiseResponse):
     call_names = ['4H', '4S']
     shared_constraints = [MinimumCombinedLength(10), points < 10]
-    priority = response_priorities.MajorJumpToGame
 
 
 class TwoNotrumpLimitResponse(ResponseToOneLevelSuitedOpen):
-    preconditions = LastBidHasStrain(positions.Partner, [suit.CLUBS, suit.DIAMONDS])
+    preconditions = LastBidHasStrain(positions.Partner, suit.MINORS)
     call_names = '2N'
     shared_constraints = [balanced, MinimumCombinedPoints(22)]
-    priority = response_priorities.TwoNotrumpLimitResponse
 
 
 # We should bid longer suits when possible, up the line for 4 cards.
 # we don't currently bid 2D over 2C when we have longer diamonds.
+new_two_level_suit_responses = enum.Enum(
+    "TwoClubs",
+    "TwoDiamonds",
+    "TwoHearts",
+    "TwoSpades",
+)
+
+
+new_two_level_minor_responses = set([
+    new_two_level_suit_responses.TwoClubs,
+    new_two_level_suit_responses.TwoDiamonds,
+])
+
+
+new_two_level_minor_responses = set([
+    new_two_level_suit_responses.TwoHearts,
+    new_two_level_suit_responses.TwoSpades,
+])
+
 
 class NewSuitAtTheTwoLevel(ResponseToOneLevelSuitedOpen):
     preconditions = [UnbidSuit(), NotJumpFromLastContract()]
     constraints = {
-        '2C' : (clubs >= 4, response_priorities.TwoClubNewSuitResponse),
-        '2D' : (diamonds >= 4, response_priorities.TwoDiamondNewSuitResponse),
-        '2H' : (hearts >= 5, response_priorities.TwoHeartNewSuitResponse),
-        '2S' : (spades >= 5, response_priorities.TwoSpadeNewSuitResponse),
+        '2C' : (clubs >= 4, new_two_level_suit_responses.TwoClubs),
+        '2D' : (diamonds >= 4, new_two_level_suit_responses.TwoDiamonds),
+        '2H' : (hearts >= 5, new_two_level_suit_responses.TwoHearts),
+        '2S' : (spades >= 5, new_two_level_suit_responses.TwoSpades),
     }
     shared_constraints = MinimumCombinedPoints(22)
 
@@ -203,8 +230,6 @@ class Jacoby2N(ResponseToMajorOpen):
     preconditions = LastBidWas(positions.RHO, 'P')
     call_names = '2N'
     shared_constraints = [points >= 14, SupportForPartnerLastBid(4)]
-    priority = response_priorities.Jacoby2N
-    annotations = annotations.Jacoby2N
 
 
 jacoby_2n_response_priorities = enum.Enum(
@@ -270,7 +295,6 @@ class JumpShiftResponseToOpen(ResponseToOneLevelSuitedOpen):
     call_names = ['2D', '2H', '2S', '3C', '3D', '3H']
     # FIXME: Shouldn't this be MinHighCardPoints?
     shared_constraints = [points >= 19, MinLength(5)]
-    priority = response_priorities.JumpShiftResponseToOpen
 
 
 class ShapeForNegativeDouble(Constraint):
@@ -308,7 +332,6 @@ class NegativeDouble(ResponseToOneLevelSuitedOpen):
         InvertedPrecondition(LastBidHasAnnotation(positions.RHO, annotations.Artificial)),
     ]
     shared_constraints = ShapeForNegativeDouble()
-    priority = response_priorities.NegativeDouble
     annotations = annotations.NegativeDouble
 
 
@@ -1857,15 +1880,9 @@ class StandardAmericanYellowCard(object):
     rules = [RuleCompiler.compile(description_class) for description_class in _concrete_rule_classes()]
     priority_ordering = rule_order
 
-    rule_order.order(response_priorities, relay_priorities)
-    rule_order.order(response_priorities, feature_response_priorities)
-    rule_order.order(response_priorities, relay_priorities)
     rule_order.order(preempt_priorities, opening_priorities)
     rule_order.order(natrual_bids, preempt_priorities)
-    rule_order.order(response_priorities, two_clubs_response_priorities)
-    rule_order.order(response_priorities, jacoby_2n_response_priorities)
     rule_order.order(natrual_bids, overcall_priorities)
-    rule_order.order(natrual_bids, response_priorities)
     rule_order.order(natural_games, nt_response_priorities, natural_slams)
     rule_order.order(natrual_bids, stayman_response_priorities)
     rule_order.order(natrual_bids, GarbagePassStaymanRebid)
@@ -1999,4 +2016,40 @@ class StandardAmericanYellowCard(object):
         # Showing a second minor seems more useful than showing a longer one.
         opener_unsupported_minor_rebid,
         opener_reverse_to_a_minor,
+    )
+    rule_order.order(
+        OneNotrumpResponse,
+        raise_responses,
+    )
+    rule_order.order(
+        DefaultPass,
+        raise_responses,
+    )
+    rule_order.order(
+        # We don't need to put this above all raise responses, but it shouldn't hurt.
+        raise_responses,
+        MajorJumpToGame,
+    )
+    rule_order.order(
+        DefaultPass,
+        OneNotrumpResponse, # Any time we can respond we should.
+        new_one_level_suit_responses, # But we prefer suits to NT.
+        major_raise_responses, # But we'd much rather support our partner's major!
+    )
+    rule_order.order(
+        # Relays are extremely high priority, this is likely redundant with other orderings.
+        DefaultPass,
+        relay_priorities
+    )
+    rule_order.order(
+        new_two_level_suit_responses,
+        major_raise_responses,
+    )
+    rule_order.order(
+        TwoNotrumpLimitResponse,
+        new_one_level_major_responses,
+    )
+    rule_order.order(
+        new_two_level_minor_responses,
+        new_one_level_major_responses,
     )
