@@ -31,30 +31,32 @@ notrump_with_stoppers = enum.Enum(*notrump_calls())
 
 
 natural_slams = [
+    notrump_without_stoppers.get('6N'), 
+
     natural.get('6C'),
     natural.get('6D'),
     natural.get('6H'),
     natural.get('6S'),
 
-    notrump_without_stoppers.get('6N'), 
     notrump_with_stoppers.get('6N'), 
+    notrump_without_stoppers.get('7N'), 
 
     natural.get('7C'),
     natural.get('7D'),
     natural.get('7H'),
     natural.get('7S'),
 
-    notrump_without_stoppers.get('7N'), 
     notrump_with_stoppers.get('7N'), 
 ]
 rule_order.order(*natural_slams)
 
 
 natural_exact_games = [
+    notrump_without_stoppers.get('3N'),
+
     natural.get('5C'),
     natural.get('5D'),
 
-    notrump_without_stoppers.get('3N'),
     notrump_with_stoppers.get('3N'),
 
     natural.get('4H'),
@@ -64,13 +66,13 @@ rule_order.order(*natural_exact_games)
 
 
 natural_overly_sufficient_games = [
+    notrump_without_stoppers.get('5N'),
+    notrump_without_stoppers.get('4N'),
+
     natural.get('5H'),
     natural.get('5S'),
 
-    notrump_without_stoppers.get('5N'),
     notrump_with_stoppers.get('5N'),
-
-    notrump_without_stoppers.get('4N'),
     notrump_with_stoppers.get('4N'),
 ]
 rule_order.order(*natural_overly_sufficient_games)
@@ -78,11 +80,12 @@ rule_order.order(*natural_overly_sufficient_games)
 
 natural_part_scores = [
     notrump_without_stoppers.get('1N'),
-    notrump_with_stoppers.get('1N'),
-
     notrump_without_stoppers.get('2N'),
+
+    # FIXME: These should have higher priorities than the suited part scores.
+    notrump_with_stoppers.get('1N'),
     notrump_with_stoppers.get('2N'),
-    
+
     natural.get('2C'), natural.get('2D'), natural.get('2H'), natural.get('2S'),
     natural.get('3C'), natural.get('3D'), natural.get('3H'), natural.get('3S'),
     natural.get('4C'), natural.get('4D'),
