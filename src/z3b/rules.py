@@ -2042,6 +2042,7 @@ class StandardAmericanYellowCard(object):
         relay_priorities
     )
     rule_order.order(
+        OneNotrumpResponse,
         new_two_level_suit_responses,
         major_raise_responses,
     )
@@ -2060,4 +2061,14 @@ class StandardAmericanYellowCard(object):
     rule_order.order(
         natrual_bids,
         feature_response_priorities,
+    )
+    rule_order.order(
+        # We want to start constructive, not just jump to slam.
+        natural_slams,
+        # FIXME: This should be a group of game-forcing responses, no?
+        JumpShiftResponseToOpen,
+    )
+    rule_order.order(
+        OneNoTrumpResponse,
+        OneLevelNegativeDouble,
     )
