@@ -2053,3 +2053,11 @@ class StandardAmericanYellowCard(object):
         new_two_level_minor_responses,
         new_one_level_major_responses,
     )
+    rule_order.order(
+        natrual_bids,
+        two_clubs_response_priorities,
+    )
+    rule_order.order(
+        natrual_bids,
+        feature_response_priorities,
+    )
