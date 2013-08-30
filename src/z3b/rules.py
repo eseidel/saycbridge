@@ -204,7 +204,7 @@ new_two_level_minor_responses = set([
 ])
 
 
-new_two_level_minor_responses = set([
+new_two_level_major_responses = set([
     new_two_level_suit_responses.TwoHearts,
     new_two_level_suit_responses.TwoSpades,
 ])
