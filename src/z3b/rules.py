@@ -98,12 +98,13 @@ new_one_level_suit_responses = enum.Enum(
 )
 rule_order.order(*reversed(new_one_level_suit_responses))
 
+
 new_one_level_major_responses = set([
-    "LongestNewMajor",
-    "OneSpadeWithFive",
-    "OneHeartWithFive",
-    "OneHeartWithFour",
-    "OneSpadeWithFour",
+    new_one_level_suit_responses.LongestNewMajor,
+    new_one_level_suit_responses.OneSpadeWithFive,
+    new_one_level_suit_responses.OneHeartWithFive,
+    new_one_level_suit_responses.OneHeartWithFour,
+    new_one_level_suit_responses.OneSpadeWithFour,
 ])
 
 new_one_level_minor_responses = new_one_level_suit_responses.OneDiamond
