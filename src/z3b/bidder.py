@@ -440,6 +440,11 @@ class PossibleCalls(object):
                 return True
         return False
 
+    def priority_for_call(self, call):
+        # FIXME: There must be a nicer way to do this.
+        return [pair for pair in self._calls_and_priorities if pair[0] == call][0][1]
+
+
     def calls_of_maximal_priority(self):
         maximal_calls_and_priorities = []
         for call, priority in self._calls_and_priorities:
@@ -461,8 +466,8 @@ class Bidder(object):
             rule_selector = RuleSelector(self.system, history, expected_call)
 
             # Compute inter-bid priorities (priority) for each using the hand.
-            maximal_calls = rule_selector.possible_calls_for_hand(hand, expected_call)
-
+            possible_calls = rule_selector.possible_calls_for_hand(hand, expected_call)
+            maximal_calls = possible_calls.calls_of_maximal_priority()
             # We don't currently support tie-breaking priorities, but we do have some bids that
             # we don't make without a planner
             maximal_calls = filter(
@@ -473,7 +478,7 @@ class Bidder(object):
             if len(maximal_calls) != 1:
                 rules = map(rule_selector.rule_for_call, maximal_calls)
                 call_names = map(lambda call: call.name, maximal_calls)
-                print "WARNING: Unordered: %s from: %s" % (call_names, rules)
+                print "WARNING: Unordered: %s from: %s (%s)" % (call_names, rules, map(possible_calls.priority_for_call, maximal_calls))
                 return None
             # print rule_selector.rule_for_call(maximal_calls[0])
             return maximal_calls[0]
@@ -561,7 +566,7 @@ class RuleSelector(object):
                 elif call == expected_call:
                     print "%s does not fit hand: %s" % (rule, z3_meaning)
 
-        return possible_calls.calls_of_maximal_priority()
+        return possible_calls
 
 
 class Interpreter(object):
