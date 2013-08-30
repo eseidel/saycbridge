@@ -186,7 +186,7 @@ class TwoNotrumpLimitResponse(ResponseToOneLevelSuitedOpen):
     shared_constraints = [balanced, MinimumCombinedPoints(22)]
 
 
-# We should bid longer suits when possible, up the line for 4 cards.
+# FIXME: We should bid longer suits when possible, up the line for 4 cards.
 # we don't currently bid 2D over 2C when we have longer diamonds.
 new_two_level_suit_responses = enum.Enum(
     "TwoClubs",
@@ -194,6 +194,7 @@ new_two_level_suit_responses = enum.Enum(
     "TwoHearts",
     "TwoSpades",
 )
+rule_order.order(*reversed(new_two_level_suit_responses))
 
 
 new_two_level_minor_responses = set([

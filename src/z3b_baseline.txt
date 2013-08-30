@@ -112,9 +112,7 @@ Pass 20 of 26 hands
 test_invitational_response_to_one_of_a_major:
 WARNING: Unordered: ['1S', '2D'] from: [OneLevelNewSuitResponse, NewSuitAtTheTwoLevel] ([OneSpadeWithFour, TwoDiamonds])
 FAIL: None (expected 1S) for 432.K765.K8.A753 (hcp: 10 lp: 10 sp: 11), history: 1H P
-WARNING: Unordered: ['2C', '2D'] from: [NewSuitAtTheTwoLevel, NewSuitAtTheTwoLevel] ([TwoClubs, TwoDiamonds])
-FAIL: None (expected 2C) for QJ54.J753.KT2.A4 (hcp: 11 lp: 11 sp: 12), history: 1S P
-Pass 2 of 4 hands
+Pass 3 of 4 hands
 
 test_invitational_response_to_one_of_a_minor:
 WARNING: Unordered: ['1S', '2N'] from: [OneLevelNewSuitResponse, TwoNotrumpLimitResponse] ([OneSpadeWithFour, <class 'z3b.rules.TwoNotrumpLimitResponse'>])
@@ -209,7 +207,7 @@ WARNING: Unordered: ['3N', '1H', '2N'] from: [NotrumpToPlay, OneLevelNewSuitResp
 FAIL: None (expected 1H) for KQ4.KT4.AJ32.954 (hcp: 13 lp: 13 sp: 13), history: P 1C P (subtest of P 1C P 1H P 1N P)
 FAIL: 3C (expected 1D) for AKQJ6.T863.9.J54 (hcp: 11 lp: 12 sp: 14), history: P 1C P (subtest of P 1C P 1D P 2N P)
 FAIL: P (expected 1S) for 432.AT.T95.AKT87 (hcp: 11 lp: 12 sp: 12), history: P P 1D P P
-WARNING: Unordered: ['2H', '2D', '3N'] from: [NewSuitAtTheTwoLevel, NewSuitAtTheTwoLevel, NotrumpToPlay] ([TwoHearts, TwoDiamonds, 3N])
+WARNING: Unordered: ['2D', '3N'] from: [NewSuitAtTheTwoLevel, NotrumpToPlay] ([TwoDiamonds, 3N])
 FAIL: None (expected 2H) for K9.AJT86.AKQT4.9 (hcp: 17 lp: 19 sp: 21), history: 1S P
 FAIL: None (expected P) for KT76.98.K8754.94 (hcp: 6 lp: 7 sp: 8), history: P 1H X 3H P 4H X P
 WARNING: Unordered: ['1H', '2C'] from: [OneLevelNewSuitResponse, MinimumRaise] ([LongestNewMajor, MinorMinimum])
@@ -539,16 +537,12 @@ FAIL: 3N (expected 5D) for 3.AQT743.AK95.65 (hcp: 13 lp: 15 sp: 17), history: 1D
 WARNING: Unordered: ['3D', '3N'] from: [LimitRaise, NotrumpToPlay] ([MinorLimit, 3N])
 FAIL: None (expected 1H) for 3.AQT743.AK95.65 (hcp: 13 lp: 15 sp: 17), history: 1D P (subtest of 1D P 1H P 1N P)
 FAIL: 2N (expected 2S) for KJ643.9863.A9.K9 (hcp: 11 lp: 12 sp: 13), history: 1S P 2C P 2H P
-WARNING: Unordered: ['2C', '2D'] from: [NewSuitAtTheTwoLevel, NewSuitAtTheTwoLevel] ([TwoClubs, TwoDiamonds])
-FAIL: None (expected 2C) for KJ643.9863.A9.K9 (hcp: 11 lp: 12 sp: 13), history: 1S P (subtest of 1S P 2C P 2H P)
-WARNING: Unordered: ['2C', '2D'] from: [NewSuitAtTheTwoLevel, NewSuitAtTheTwoLevel] ([TwoClubs, TwoDiamonds])
-FAIL: None (expected 2C) for AQ643.KQ75.763.5 (hcp: 11 lp: 12 sp: 14), history: 1S P (subtest of 1S P 2C P 2D P)
 FAIL: 3S (expected 2C) for KJ643.A874.T.K97 (hcp: 11 lp: 12 sp: 14), history: 1S P (subtest of 1S P 2C P 2H P)
 FAIL: 3S (expected 4S) for KJ643.A874.T.K97 (hcp: 11 lp: 12 sp: 14), history: 1S P 2C P 3C P
 FAIL: 3N (expected 3D) for AJ432.J85.QT7.AQ (hcp: 14 lp: 15 sp: 13), history: 1S P 2C P 2H P
 WARNING: Unordered: ['2C', '3N'] from: [NewSuitAtTheTwoLevel, NotrumpToPlay] ([TwoClubs, 3N])
 FAIL: None (expected 2C) for AJ432.J85.QT7.AQ (hcp: 14 lp: 15 sp: 13), history: 1S P (subtest of 1S P 2C P 2H P)
-Pass 27 of 51 hands
+Pass 29 of 51 hands
 
 test_third_and_fourth_seat_opens:
 FAIL: P (expected 1C) for AKT9.T87.QJ8.J32 (hcp: 11 lp: 11 sp: 11), history: P P
@@ -563,4 +557,4 @@ FAIL: 3S (expected 4S) for K74.9.J98.KJT742 (hcp: 8 lp: 10 sp: 11), history: 1N 
 FAIL: 2N (expected P) for Q87.J843.K65.Q93 (hcp: 8 lp: 8 sp: 8), history: 1N P
 Pass 1 of 3 hands
 
-Pass 772 (68%) of 1128 total hands
+Pass 775 (68%) of 1128 total hands
