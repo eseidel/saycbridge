@@ -2072,3 +2072,7 @@ class StandardAmericanYellowCard(object):
         OneNoTrumpResponse,
         OneLevelNegativeDouble,
     )
+    rule_order.order(
+        raise_responses,
+        JumpShiftResponseToOpen,
+    )
