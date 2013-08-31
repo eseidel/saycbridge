@@ -858,14 +858,13 @@ class NoTrumpResponse(Rule):
 class NotrumpGameInvitation(NoTrumpResponse):
     # This is an explicit descriptive rule, not a ToPlay rule.
     # ToPlay is 7-9, but 7 points isn't in game range.
-    constraints = { '2N': points >= 8 }
+    constraints = { '2N': MinimumCombinedPoints(23) }
     priority = nt_response_priorities.NotrumpGameInvitation
 
 
 class NotrumpGameAccept(NoTrumpResponse):
     # This is an explicit descriptive rule, not a ToPlay rule.
-    # ToPlay is 7-9, but 7 points isn't in game range.
-    constraints = { '3N': points >= 10 }
+    constraints = { '3N': MinimumCombinedPoints(25) }
     priority = nt_response_priorities.NotrumpGameAccept
 
 

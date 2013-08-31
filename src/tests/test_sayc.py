@@ -848,6 +848,8 @@ class SAYCBidderTest(object):
             ["JT65.764.72.KQ65", "4S", "2C P 2D P 2N P 3C P 3S P"], # p94, Responder
             ["6.AJ3.AK4.AKQJT6", "3S", "2C P 2D P 2S P 3C P"], # p94, Opener, FIXME: If this isn't a self-supporting spade suit, what is?
             ["T954.952.T863.82", "P", "2C P 2D P 2S P 3C P 3S P"], # p94, Responder
+
+            ["QT32.QT8.QJ4.T92", "3N", "P,2C,P,2D,P,2N,P"],
         ])
 
     def test_overcalls(self): # Chap 12
