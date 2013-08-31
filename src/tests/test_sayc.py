@@ -352,6 +352,12 @@ class SAYCBidderTest(object):
             ["A9.532.K32.KJ865", "3N", "1N P 2H P 2S P"],  # h19, p11
             # FIXME: It's unclear if h20 should have slam interest (thus 3H instead of 4H).
             ["A.32.KJ832.QT765", "4H", "1N P 2H P 2S P"],  # h20, p11
+
+            # FIXME: This sequence is awkward and likely to confuse many partners.
+            ["A.32.AKJ82.QT765", "3H", "1N P 2H P 2S P"],  # 29-31 combined hcp. Looks slammy.
+
+            ["A.3.KJ8532.JT764", "4H", "1N P 2D P 2H P"],  # With 6-5 and weak, no need to explore spades?
+
             # FIXME: h21 could also be bid with Texas transfers (because it has no slam interest).
             ["97.A2.KJ9832.J76", "4H", "1N P 2D P 2H P"],  # h21, p11
             ["97.AQ982.2.KJT76", "3D", "1N P 2H P 2S P"],  # h22, p11

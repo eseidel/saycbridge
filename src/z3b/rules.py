@@ -1089,6 +1089,38 @@ class ResponseAfterTransferToClubs(Rule):
     priority = relay_priorities.Accept # This priority is bogus.
 
 
+class RebidAfterJacobyTransfer(Rule):
+    preconditions = LastBidHasAnnotation(positions.Me, annotations.Transfer)
+    # Our initial transfer could have been with 0 points, rebidding shows points.
+    shared_constraints = points >= 8
+
+
+class SpadesRebidAfterHeartsTransfer(RebidAfterJacobyTransfer):
+    preconditions = LastBidWas(positions.Me, '2D')
+    # FIXME: We should not need to manually cap 2S.  We can infer that we have < 10 or we would have transfered to hearts first.
+    # FIXME: If we had a 6-5 we would raise directly to game instead of bothering to mention the other major?
+    constraints = { '2S': z3.And(spades >= 5, points >= 8, points <= 9) }
+
+
+hearts_rebids_after_spades_transfers = enum.Enum(
+    "SlamInterest",
+    "NoSlamInterest",
+)
+rule_order.order(*reversed(hearts_rebids_after_spades_transfers))
+
+
+class HeartsRebidAfterSpadesTransfer(RebidAfterJacobyTransfer):
+    preconditions = LastBidWas(positions.Me, '2H')
+    constraints = {
+        # A 3H rebid shows slam interest.  Currently assuming that's 13+?
+        # Maybe the 3H bid requires_planning?
+        '3H': (points >= 13, hearts_rebids_after_spades_transfers.SlamInterest),
+        # A jump to 4H and partner choses 4H or 4S, no slam interest. p11
+        '4H': (points >= 10, hearts_rebids_after_spades_transfers.NoSlamInterest),
+    }
+    shared_constraints = hearts >= 5
+
+
 stayman_response_priorities = enum.Enum(
     "HeartStaymanResponse",
     "SpadeStaymanResponse",
@@ -2211,4 +2243,13 @@ class StandardAmericanYellowCard(object):
         OneNotrumpResponse,
         NotrumpResponseToMinorOpen,
         defenses_against_takeout_double,
+    )
+    # The rebid-after-transfer bids are more descriptive than jumping to NT game.
+    rule_order.order(
+        natural_exact_notrump_game,
+        hearts_rebids_after_spades_transfers
+    )
+    rule_order.order(
+        natural_suited_part_scores,
+        SpadesRebidAfterHeartsTransfer
     )
