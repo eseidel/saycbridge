@@ -174,7 +174,7 @@ class LimitRaise(RaiseResponse):
         ('3C', '3D'): raise_responses.MinorLimit,
         ('3H', '3S'): raise_responses.MajorLimit,
     }
-    shared_constraints = [MinimumCombinedLength(8), MinimumCombinedPoints(22)]
+    shared_constraints = [MinimumCombinedLength(8), MinimumCombinedSupportPoints(22)]
 
 
 class MajorJumpToGame(RaiseResponse):

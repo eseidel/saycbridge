@@ -17,7 +17,7 @@ FAIL: P (expected 1S) for A73.7642.K7.Q986 (hcp: 9 lp: 9 sp: 10), history: 1D X 
 FAIL: P (expected 2S) for A73.7642.K7.KJ86 (hcp: 11 lp: 11 sp: 12), history: 1D X 1H
 FAIL: 1S (expected XX) for A87.KJ765.6.KJ76 (hcp: 12 lp: 13 sp: 15), history: 1H X
 FAIL: 1N (expected 3D) for Q3.KQT632.32.J86 (hcp: 8 lp: 10 sp: 8), history: 1H X
-FAIL: 2H (expected 2N) for K743.QJ96.Q865.5 (hcp: 8 lp: 8 sp: 11), history: 1H X
+FAIL: 3H (expected 2N) for K743.QJ96.Q865.5 (hcp: 8 lp: 8 sp: 11), history: 1H X
 FAIL: 2H (expected 3H) for Q864.A653.T987.5 (hcp: 6 lp: 6 sp: 9), history: 1H X
 FAIL: P (expected X) for 74.876.AKJ987.63 (hcp: 8 lp: 10 sp: 10), history: 1N P 2H
 FAIL: P (expected X) for AKQ83.95.97.Q986 (hcp: 11 lp: 12 sp: 13), history: 1N P 2C
@@ -136,7 +136,6 @@ Pass 13 of 13 hands
 
 test_misc_hands_from_play:
 FAIL: 3H (expected 2C) for AKJ52.J.J9743.54 (hcp: 10 lp: 12 sp: 13), history: 1H P
-FAIL: 2S (expected 3S) for AQJ5.QT42.74.T52 (hcp: 9 lp: 9 sp: 10), history: 1S P
 WARNING: Unordered: ['3H', '3N'] from: [LimitRaise, ThreeNotrumpResponse] ([MajorLimit, <class 'z3b.rules.ThreeNotrumpResponse'>])
 FAIL: None (expected 1S) for A2.T752.KQJ.AQ72 (hcp: 16 lp: 16 sp: 17), history: 1H P
 FAIL: 4C (expected 3N) for AKQ532.K8.K73.A9 (hcp: 19 lp: 21 sp: 21), history: P 1C P 1D P
@@ -184,7 +183,6 @@ FAIL: P (expected 2C) for AQT972.64.T6.K86 (hcp: 9 lp: 11 sp: 11), history: P P 
 FAIL: P (expected 1D) for 432.AKQJ.432.432 (hcp: 10 lp: 10 sp: 10), history: 1C
 FAIL: P (expected 4D) for AK.K83.QJT76.986 (hcp: 13 lp: 14 sp: 14), history: 3D P
 FAIL: None (expected P) for AJ64.Q962.T7.983 (hcp: 7 lp: 7 sp: 8), history: 1N P
-FAIL: 2H (expected 3H) for 3.KQ952.T732.A84 (hcp: 9 lp: 10 sp: 12), history: P 1H P (subtest of P 1H P 3H P 4H P)
 FAIL: 3N (expected 5C) for AKQJT4.2.KT2.J98 (hcp: 14 lp: 16 sp: 17), history: P 1D 2S 3C P 3D P
 FAIL: P (expected 3C) for AKQJT4.2.KT2.J98 (hcp: 14 lp: 16 sp: 17), history: P 1D 2S (subtest of P 1D 2S 3C P 3D P)
 FAIL: None (expected 3D) for .AQ986543.A74.74 (hcp: 10 lp: 14 sp: 16), history: P 1D 2S 3C P
@@ -235,7 +233,7 @@ FAIL: 3H (expected 2N) for K.K7.KJ98542.QT8 (hcp: 12 lp: 15 sp: 13), history: 1H
 FAIL: P (expected 1H) for AK.72.KT942.AQT5 (hcp: 16 lp: 17 sp: 18), history: P 1C
 FAIL: P (expected 1N) for AKT4.AT.A82.J876 (hcp: 16 lp: 16 sp: 17), history: 1C P P
 FAIL: 2N (expected 2H) for QJ86.K7.AKT53.T6 (hcp: 13 lp: 14 sp: 15), history: 1H P 2D P
-Pass 277 of 370 hands
+Pass 279 of 370 hands
 
 test_negative_double:
 FAIL: 3H (expected P) for 4.A3.KQ65.KJT865 (hcp: 13 lp: 15 sp: 17), history: 1C 1S P P X P
@@ -419,4 +417,4 @@ FAIL: 3S (expected 4S) for K74.9.J98.KJT742 (hcp: 8 lp: 10 sp: 11), history: 1N 
 FAIL: 2N (expected P) for Q87.J843.K65.Q93 (hcp: 8 lp: 8 sp: 8), history: 1N P
 Pass 1 of 3 hands
 
-Pass 848 (74%) of 1132 total hands
+Pass 850 (75%) of 1132 total hands
