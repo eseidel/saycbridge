@@ -1607,10 +1607,10 @@ class JumpSuitResponseToTakeoutDouble(ResponseToTakeoutDouble):
 class CuebidResponseToTakeoutDouble(ResponseToTakeoutDouble):
     preconditions = [CueBid(positions.LHO), NotJumpFromLastContract()]
     priority = takeout_double_responses.CuebidResponseToTakeoutDouble
-    call_names = (
+    call_names = [
         '2C', '2D', '2H', '2S',
         '3C', '3D', '3H', '3S'
-    )
+    ]
     # FIXME: 4+ in the available majors?
     shared_constraints = [points >= 13, SupportForUnbidSuits()]
 
@@ -1943,7 +1943,7 @@ class ResponseToTwoNotrumpFeatureRequest(Rule):
 class FeatureResponseToTwoNotrumpFeatureRequest(ResponseToTwoNotrumpFeatureRequest):
     preconditions = InvertedPrecondition(RebidSameSuit())
     annotations = annotations.Artificial
-    call_names = ('3C', '3D', '3H', '3S')
+    call_names = ['3C', '3D', '3H', '3S']
     # Note: We could have a protected outside honor with as few as 6 points,
     # (QJTxxx in our main suit + Qxx in our outside honor suit)
     # Unittests would suggest we should require 9+?
