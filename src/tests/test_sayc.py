@@ -982,6 +982,7 @@ class SAYCBidderTest(object):
             ["Q87.AQ62.3.AK874", "1S", "1H"],  # p118, h10
 
             ["KT843.AQ9.KT87.T", "X", "3S"],  # Takeout double of preempt.
+            ["2.AK742.KJ7.QJ64", "X", "3C P P"],
 
             # Doubling to show show strong holdings
             ["A87.AK96.8.AK875", "2S", "1H X P 1S P"],  # p118, h11

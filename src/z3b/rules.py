@@ -1417,10 +1417,19 @@ class TakeoutDouble(Rule):
     priority = overcall_priorities.TakeoutDouble
 
 
+takeout_double_after_preempt_precondition = AndPrecondition(
+    EitherPrecondition(
+        LastBidHasAnnotation(positions.RHO, annotations.Preemptive),
+        LastBidHasAnnotation(positions.LHO, annotations.Preemptive),
+    ),
+    InvertedPrecondition(HasBid(positions.Me)),
+)
+
+
 class OneLevelTakeoutDouble(TakeoutDouble):
     preconditions = [
         Level(1),
-        InvertedPrecondition(LastBidHasAnnotation(positions.RHO, annotations.Preemptive)),
+        InvertedPrecondition(takeout_double_after_preempt_precondition),
     ]
     # FIXME: Why isn't this 12?  SuitedToPlay can only respond to 12+ points currently.
     shared_constraints = points >= 11
@@ -1429,13 +1438,13 @@ class OneLevelTakeoutDouble(TakeoutDouble):
 class TwoLevelTakeoutDouble(TakeoutDouble):
     preconditions = [
         Level(2),
-        InvertedPrecondition(LastBidHasAnnotation(positions.RHO, annotations.Preemptive)),
+        InvertedPrecondition(takeout_double_after_preempt_precondition),
     ]
     shared_constraints = points >= 15
 
 
 class TakeoutDoubleAfterPreempt(TakeoutDouble):
-    preconditions = LastBidHasAnnotation(positions.RHO, annotations.Preemptive)
+    preconditions = takeout_double_after_preempt_precondition
     shared_constraints = points >= 11
 
 
