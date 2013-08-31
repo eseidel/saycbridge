@@ -154,15 +154,34 @@ class WeHaveShownMorePointsThanThem(Precondition):
 
 
 class SufficientCombinedPoints(Constraint):
+    def min_support_points(self, history, call, implied_min_points):
+        strain = call.strain
+        suit_expr = model.expr_for_suit(strain)
+        partner_promised_length = history.partner.min_length(strain)
+        # Only the short side gets to count support points.
+        if partner_promised_length >= 4:
+            return z3.Or(
+                z3.And(
+                    suit_expr >= partner_promised_length,
+                    points >= implied_min_points),
+                z3.And(
+                    suit_expr < partner_promised_length,
+                    support_points_expr_for_suit(strain) >= implied_min_points,
+                    fake_points >= implied_min_points))
+        return points >= implied_min_points
+
+    def implied_min_points(self, history, points_for_sound_bid):
+        return max(0, points_for_sound_bid - history.partner.min_points)
+
     def expr(self, history, call):
         strain = call.strain
         min_points = None
         if strain == suit.NOTRUMP:
-            min_points = points_for_sound_notrump_bid_at_level[call.level]
-        if strain in suit.SUITS:
-            min_points = points_for_sound_suited_bid_at_level[call.level]
-        assert min_points is not None
-        return points >= max(0, min_points - history.partner.min_points)
+            implied_min_points = self.implied_min_points(history, points_for_sound_notrump_bid_at_level[call.level])
+            return points >= implied_min_points
+        assert strain in suit.SUITS
+        implied_min_points = self.implied_min_points(history, points_for_sound_suited_bid_at_level[call.level])
+        return self.min_support_points(history, call, implied_min_points)
 
 
 class SufficientCombinedLength(MinimumCombinedLength):
