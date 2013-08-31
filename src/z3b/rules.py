@@ -244,6 +244,7 @@ class Jacoby2N(ResponseToMajorOpen):
     preconditions = LastBidWas(positions.RHO, 'P')
     call_names = '2N'
     shared_constraints = [points >= 14, SupportForPartnerLastBid(4)]
+    annotations = annotations.Jacoby2N
 
 
 jacoby_2n_response_priorities = enum.Enum(
@@ -2117,4 +2118,8 @@ class StandardAmericanYellowCard(object):
     rule_order.order(
         major_raise_responses,
         Jacoby2N,
+    )
+    rule_order.order(
+        natrual_bids,
+        jacoby_2n_response_priorities,
     )
