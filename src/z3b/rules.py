@@ -2108,3 +2108,7 @@ class StandardAmericanYellowCard(object):
         natrual_bids,
         new_one_level_suit_responses,
     )
+    rule_order.order(
+        DefaultPass,
+        TwoLevelNegativeDouble,
+    )
