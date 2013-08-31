@@ -2085,3 +2085,12 @@ class StandardAmericanYellowCard(object):
         # But we'd rather raise a major than mention a new one.
         major_raise_responses
     )
+    rule_order.order(
+        # NegativeDouble is more descriptive than any one-level new suit (when it fits).
+        new_one_level_suit_responses,
+        OneLevelNegativeDouble,
+    )
+    rule_order.order(
+        OneNotrumpResponse,
+        OneLevelNegativeDouble,
+    )
