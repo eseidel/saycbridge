@@ -190,11 +190,13 @@ class ThreeNotrumpResponse(ResponseToOneLevelSuitedOpen):
     shared_constraints = [balanced, points >= 15, points <= 17]
 
 
-# FIXME: This is wrong.  See page 50.
-class TwoNotrumpLimitResponse(ResponseToOneLevelSuitedOpen):
+class NotrumpResponseToMinorOpen(ResponseToOneLevelSuitedOpen):
     preconditions = LastBidHasStrain(positions.Partner, suit.MINORS)
-    call_names = '2N'
-    shared_constraints = [balanced, MinimumCombinedPoints(22)]
+    constraints = {
+        '2N': z3.And(points >= 13, points <= 15),
+        '3N': z3.And(points >= 16, points >= 17),
+    }
+    shared_constraints = balanced
 
 
 # FIXME: We should bid longer suits when possible, up the line for 4 cards.
@@ -2058,7 +2060,7 @@ class StandardAmericanYellowCard(object):
         relay_priorities
     )
     rule_order.order(
-        TwoNotrumpLimitResponse,
+        NotrumpResponseToMinorOpen,
         new_one_level_major_responses,
     )
     rule_order.order(

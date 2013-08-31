@@ -36,7 +36,11 @@ class RuleOrdering(object):
         self.ordering.order(*map(self._check_key, args))
 
     def lt(self, left, right):
-        return self.ordering.lt(left, right)
+        try:
+            return self.ordering.lt(left, right)
+        except TypeError, e:
+            print "Exception during lt(%s, %s)" % (left, right)
+            raise
 
 
 rule_order = RuleOrdering()
