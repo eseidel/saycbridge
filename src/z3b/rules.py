@@ -402,7 +402,7 @@ class RebidAfterOneLevelOpen(OpenerRebid):
 
 
 class NotrumpJumpRebid(RebidAfterOneLevelOpen):
-    # See KBB's NotrumpJumpRebid for dicusssion of cases for this bid.
+    # See KBB's NotrumpJumpRebid for discussion of cases for this bid.
     # Unclear how this is affected by competition?
     annotations = annotations.NoTrumpSystemsOn
     preconditions = JumpFromLastContract(exact_size=1)
@@ -1333,6 +1333,7 @@ class CuebidResponseToStandardOvercall(ResponseToStandardOvercall):
         '2C', '2D', '2H', '2S',
         '3C', '3D', '3H',
     ]
+    # FIXME: This should use support points.
     shared_constraints = [SupportForPartnerLastBid(3), points >= 11]
 
 
