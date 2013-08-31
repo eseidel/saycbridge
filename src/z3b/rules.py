@@ -181,6 +181,15 @@ class MajorJumpToGame(RaiseResponse):
     call_names = ['4H', '4S']
     shared_constraints = [MinimumCombinedLength(10), points < 10]
 
+
+class ThreeNotrumpResponse(ResponseToOneLevelSuitedOpen):
+    preconditions = LastBidHasStrain(positions.Partner, suit.MAJORS)
+    call_names = '3N'
+    # This is a very specific range per page 43.
+    # With 27+ points, do we need to worry about stoppers in RHO's suit?
+    shared_constraints = [balanced, points >= 15, points <= 17]
+
+
 # FIXME: This is wrong.  See page 50.
 class TwoNotrumpLimitResponse(ResponseToOneLevelSuitedOpen):
     preconditions = LastBidHasStrain(positions.Partner, suit.MINORS)
