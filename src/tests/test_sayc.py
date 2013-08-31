@@ -926,8 +926,18 @@ class SAYCBidderTest(object):
             [".54.KJT65.QJT875", "2D", "1D P P"],  # p105, h10
             ["QJ972.A3..AKT653", "3H", "2H"],  # p105, h11
 
+            # Michaels minor requests:
             ['KJ984.93.KJ986.K', '3C', '1S 2S P 2N P', 'N-S'],  # deal 6177852048991998477340369815114, N should respond with his minor when asked.
-            ['93.KJ984.KJ986.K', '3D', '1S 2S P 2N P', 'N-S'],    # modified from deal 6177852048991998477340369815114, N should respond with his minor when asked.
+            ['93.KJ984.KJ986.K', '3D', '1S 2S P 2N P', 'N-S'],  # modified from deal 6177852048991998477340369815114, N should respond with his minor when asked.
+            ['KJ984.93.KJ986.2', 'P', '1S 2S 3S 4C P'], # This is not covered in the book, but seems reasonable.
+            ['93.KJ984.KJ986.2', '4D', '1S 2S 3S 4C P'],
+            ['KJ984.93.KJ986.2', '5C', '1S 2S 4S 4N P'],
+            ['93.KJ984.KJ986.2', '5D', '1S 2S 4S 4N P'],
+
+            # FIXME: If we have a max-michaels, partner likely doesn't have much, jump to show him we want this?
+            # I can't find this in the book.  Maybe we invented it for the KBB?
+            ['KJ984.93.KJ986.2', '4C', '1S 2S P 2N P'],
+            ['Q3.AKJ94.AKJ86.2', '4D', '1S 2S P 2N P'],
             ['K9874.3.AQ.AKQ72', '4C', 'P 1H 2H P 2N P'],  # 14-0e3f5b9e514a9894a6cf10c93f, W should jump to show his max-michaels?
 
             # Unusual notrump

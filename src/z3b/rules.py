@@ -1484,6 +1484,51 @@ class BalancingMichaelsCuebid(MichaelsCuebid, BalancingOvercall):
     pass
 
 
+class MichaelsMinorRequest(Rule):
+    preconditions = [
+        LastBidHasAnnotation(positions.Partner, annotations.MichaelsCuebid),
+        # The minor is only ambigious if the cuebid was a major.
+        LastBidHasStrain(positions.Partner, suit.MAJORS),
+        NotJumpFromLastContract(),
+    ]
+    requires_planning = True
+    call_names = ['2N', '4C', '4N']
+    annotations = annotations.MichaelsMinorRequest
+    shared_constraints = NO_CONSTRAINTS
+
+
+class ResponseToMichaelsMinorRequest(Rule):
+    # FIXME: Should this be on if RHO bid?
+    # If RHO bid the other minor is it already obvious which we have?
+    preconditions = LastBidHasAnnotation(positions.Partner, annotations.MichaelsMinorRequest)
+
+
+class SuitResponseToMichaelsMinorRequest(ResponseToMichaelsMinorRequest):
+    preconditions = NotJumpFromLastContract()
+    call_names = (
+        '3C', '3D',
+              '4D',
+        '5C', '5D',
+    )
+    shared_constraints = MinLength(5)
+
+
+class PassResponseToMichaelsMinorRequest(ResponseToMichaelsMinorRequest):
+    # The book doesn't cover this, but if 4C was the minor request, lets interpret a pass
+    # as meaning "I have clubs" and am weak (game is already remote).
+    preconditions = LastBidWas(positions.Partner, '4C')
+    call_names = 'P'
+    shared_constraints = clubs >= 5
+
+
+# Pass instead of 5C when we can.
+rule_order.order(SuitResponseToMichaelsMinorRequest, PassResponseToMichaelsMinorRequest)
+
+
+# FIXME: Missing Jump responses to Michael's minor request.
+# They're used for showing that we're a big michaels.
+
+
 class Unusual2N(Rule):
     preconditions = [
         # Unusual2N only exists immediately after RHO opens.
