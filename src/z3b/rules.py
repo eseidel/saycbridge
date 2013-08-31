@@ -1088,18 +1088,18 @@ class StolenSpadeStaymanResponse(StaymanResponse):
     priority = stayman_response_priorities.SpadeStaymanResponse
 
 
-class OneNoTrumpResponse(NoTrumpResponse):
+class ResponseToOneNotrump(NoTrumpResponse):
     preconditions = LastBidWas(positions.Partner, '1N')
 
 
-class LongMinorGameInvitation(OneNoTrumpResponse):
+class LongMinorGameInvitation(ResponseToOneNotrump):
     call_names = ['3C', '3D']
     shared_constraints = [MinLength(6), TwoOfTheTopThree(), points >= 5]
     # FIXME: Should use the longer suit preference pattern.
     priority = nt_response_priorities.LongMinorGameInvitation
 
 
-class LongMajorSlamInvitation(OneNoTrumpResponse):
+class LongMajorSlamInvitation(ResponseToOneNotrump):
     call_names = ['3H', '3S']
     shared_constraints = [MinLength(6), TwoOfTheTopThree(), points >= 14]
     # FIXME: Should use the longer suit preference pattern.
@@ -2083,7 +2083,7 @@ class StandardAmericanYellowCard(object):
         JumpShiftResponseToOpen,
     )
     rule_order.order(
-        OneNoTrumpResponse,
+        OneNotrumpResponse,
         OneLevelNegativeDouble,
     )
     rule_order.order(
@@ -2122,4 +2122,8 @@ class StandardAmericanYellowCard(object):
     rule_order.order(
         natrual_bids,
         jacoby_2n_response_priorities,
+    )
+    rule_order.order(
+        OneNotrumpResponse,
+        NotrumpResponseToMinorOpen,
     )
