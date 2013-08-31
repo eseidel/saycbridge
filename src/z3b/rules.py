@@ -1286,9 +1286,13 @@ class StandardDirectOvercall(DirectOvercall):
         LastBidHasSuit(positions.RHO),
         NotJumpFromLastContract(),
         UnbidSuit(),
-        # FIXME: We should not bid if we have 4 cards in their suit.
     ]
-    shared_constraints = [MinLength(5), ThreeOfTheTopFiveOrBetter()]
+    shared_constraints = [
+        MinLength(5),
+        ThreeOfTheTopFiveOrBetter(),
+        # With 4 cards in RHO's suit, we're likely to be doubled.
+        MaxLengthInLastContractSuit(3),
+    ]
     annotations = annotations.StandardOvercall
 
 
