@@ -163,14 +163,7 @@ third_round_stopper_clubs = z3.Or(ace_of_clubs == 1, z3.And(king_of_clubs == 1, 
 number_of_aces = ace_of_spades + ace_of_hearts + ace_of_diamonds + ace_of_clubs
 number_of_kings = king_of_spades + king_of_hearts + king_of_diamonds + king_of_clubs
 
-balanced = z3.And(clubs >= 2, diamonds >= 2, hearts >= 2, spades >= 2,
-    z3.Or(
-        z3.And(hearts > 2, diamonds > 2, clubs > 2),
-        z3.And(spades > 2, diamonds > 2, clubs > 2),
-        z3.And(spades > 2, hearts > 2, clubs > 2),
-        z3.And(spades > 2, hearts > 2, diamonds > 2),
-    )
-)
+balanced = z3.And(doubletons <= 1, singletons == 0, voids == 0)
 
 stopper_spades = z3.Or(ace_of_spades == 1, z3.And(king_of_spades == 1, spades >= 2), z3.And(queen_of_spades == 1, spades >= 3), z3.And(jack_of_spades == 1, ten_of_spades == 1, spades >= 4))
 stopper_hearts = z3.Or(ace_of_hearts == 1, z3.And(king_of_hearts == 1, hearts >= 2), z3.And(queen_of_hearts == 1, hearts >= 3), z3.And(jack_of_hearts == 1, ten_of_hearts == 1, hearts >= 4))
