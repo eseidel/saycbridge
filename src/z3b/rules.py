@@ -2112,3 +2112,7 @@ class StandardAmericanYellowCard(object):
         DefaultPass,
         TwoLevelNegativeDouble,
     )
+    rule_order.order(
+        major_raise_responses,
+        Jacoby2N,
+    )
