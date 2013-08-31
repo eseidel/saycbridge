@@ -926,6 +926,10 @@ class SAYCBidderTest(object):
             [".54.KJT65.QJT875", "2D", "1D P P"],  # p105, h10
             ["QJ972.A3..AKT653", "3H", "2H"],  # p105, h11
 
+            ['KJ984.93.KJ986.K', '3C', '1S 2S P 2N P', 'N-S'],  # deal 6177852048991998477340369815114, N should respond with his minor when asked.
+            ['93.KJ984.KJ986.K', '3D', '1S 2S P 2N P', 'N-S'],    # modified from deal 6177852048991998477340369815114, N should respond with his minor when asked.
+            ['K9874.3.AQ.AKQ72', '4C', 'P 1H 2H P 2N P'],  # 14-0e3f5b9e514a9894a6cf10c93f, W should jump to show his max-michaels?
+
             # Unusual notrump
             ["QJ9864..KQT87.86", "2N", "1D"],  # p106, h12
             ["AJ986.KQT875..87", "2N", "1H"],  # p106, h13
@@ -1265,8 +1269,6 @@ class SAYCBidderTest(object):
         ['KJ3.T96.QT865.J4', '2D', '1D P 1H P 2C P'],  # deal 7051096585500849502473608601267, N is assuming that by mentioning Diamonds first South has more of them.  He happens to be right.
         ['Q632.JT52.743.86', 'P', '1S 2S P 2N P 3C P', 'N-S'],  # deal 6177852048991998477340369815114, S should ask for North to name his Minor, planning to pass him.
         ['Q632.JT52.743.86', 'P', '1S 2S P 2N P 3D P', 'N-S'],  # modified from deal 6177852048991998477340369815114, S should ask for North to name his Minor, planning to pass him.
-        ['KJ984.93.KJ986.K', '3C', '1S 2S P 2N P', 'N-S'],  # deal 6177852048991998477340369815114, N should respond with his minor when asked.
-        ['93.KJ984.KJ986.K', '3D', '1S 2S P 2N P', 'N-S'],  # modified from deal 6177852048991998477340369815114, N should respond with his minor when asked.
         ['K654.AQ.864.T653', '4H', '2D X P 3C P 3H P', 'N-S'],  # deal 13247511199031202103262541969417, N should bid game seeing 26 points and an 8-card fit.
         ['85.T.KJ43.KQ9752', '3H', '1D 2S P 2N P'],  # deal 10261368563172950620196330721081, N should show his protected K of hearts as his "feature".
         ['KQJT3.864.AQ9.AT', '4S', '1D 2S P 2N P 3H P'],  # deal 10261368563172950620196330721081, S should bid game, seeing N has a maximum.
@@ -1362,7 +1364,6 @@ class SAYCBidderTest(object):
         ['A72.QJ65.AJ.K875', '3N', '1N P 2C P 2D P'],  # 14-e87a95c4f12f51a603ae4cf61c, W shouldn't miss game.  Slam is remote with max 32 points.
         ['J98652.942.T.AKQ', '2S', 'P 1D 2D P'],  # 14-61451c9daa40eae3f7202ff2d5, E should pick spades.
         ['.T743.AKJ63.AQJ4', 'P', 'P 1H 4C P P', 'E-W'],  # 9-88eeaa25341e0df429d41bf35d, E should not double the 4-clubs preempt w/o more values?
-        ['K9874.3.AQ.AKQ72', '4C', 'P 1H 2H P 2N P'],  # 14-0e3f5b9e514a9894a6cf10c93f, W should jump to show his max-michaels?
         ['Q5.962.AKQ65.AQ2', '4S', '1N P 2H P 2S P 2N P', 'Both'],  # 13-58e7e18d893db7c3670069eac4, N should prefer 4S over 3N.
         ['T32.Q63.KQJ986.2', '3D', 'P 2H P 2N P', 'Both'],  # 13-58e04ce61e0da8e75d5d2383bb, E should bid 3D to show his protected queen.
         ['AJ532.KJT7..AQJ9', '1S', 'P P P 1C P 1H P', 'E-W'],  # 16-a27c2c91f869bd0343515df8ae, S should bid 1S, not 2D.
