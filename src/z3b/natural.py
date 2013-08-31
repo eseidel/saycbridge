@@ -314,7 +314,7 @@ class NaturalPass(Rule):
 
 class NaturalPassWithFit(NaturalPass):
     preconditions = LastBidHasSuit(positions.Partner)
-    shared_constraints = MinimumCombinedLength(7, use_last_call_suit=True)
+    shared_constraints = MinimumCombinedLength(7, use_partners_last_suit=True)
 
 
 class SuitGameIsRemote(NaturalPassWithFit):

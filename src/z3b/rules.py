@@ -170,6 +170,7 @@ class MinimumRaise(RaiseResponse):
 
 
 class LimitRaise(RaiseResponse):
+    # preconditions = InvertedPrecondition(LastBidHasAnnotation(positions.RHO, annotations.TakeoutDouble))
     priorities_per_call = {
         ('3C', '3D'): raise_responses.MinorLimit,
         ('3H', '3S'): raise_responses.MajorLimit,
@@ -191,12 +192,24 @@ class ThreeNotrumpResponse(ResponseToOneLevelSuitedOpen):
 
 
 class NotrumpResponseToMinorOpen(ResponseToOneLevelSuitedOpen):
-    preconditions = LastBidHasStrain(positions.Partner, suit.MINORS)
+    preconditions = [
+        LastBidHasStrain(positions.Partner, suit.MINORS),
+        InvertedPrecondition(LastBidHasAnnotation(positions.RHO, annotations.TakeoutDouble)),
+    ]
     constraints = {
         '2N': z3.And(points >= 13, points <= 15),
         '3N': z3.And(points >= 16, points >= 17),
     }
     shared_constraints = balanced
+
+
+class Jordan(ResponseToOneLevelSuitedOpen):
+    preconditions = LastBidHasAnnotation(positions.RHO, annotations.TakeoutDouble)
+    call_names = '2N'
+    shared_constraints = [
+        MinimumCombinedLength(8, use_partners_last_suit=True),
+        MinimumCombinedPoints(22),
+    ]
 
 
 # FIXME: We should bid longer suits when possible, up the line for 4 cards.
@@ -2082,6 +2095,7 @@ class StandardAmericanYellowCard(object):
     )
     rule_order.order(
         NotrumpResponseToMinorOpen,
+        Jordan,
         new_one_level_major_responses,
     )
     rule_order.order(
@@ -2146,4 +2160,5 @@ class StandardAmericanYellowCard(object):
     rule_order.order(
         OneNotrumpResponse,
         NotrumpResponseToMinorOpen,
+        Jordan,
     )
