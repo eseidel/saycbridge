@@ -125,10 +125,8 @@ test_minimum_rebid_by_opener:
 Pass 12 of 12 hands
 
 test_minimum_response_to_one_of_a_major:
-FAIL: None (expected 2H) for 753.97.Q753.K982 (hcp: 5 lp: 5 sp: 6), history: 1H P
-FAIL: None (expected 2S) for 753.97.Q753.K982 (hcp: 5 lp: 5 sp: 6), history: 1S P
 FAIL: None (expected 1N) for 742.J98.AT874.T6 (hcp: 5 lp: 6 sp: 6), history: 1S P
-Pass 4 of 7 hands
+Pass 6 of 7 hands
 
 test_minimum_response_to_one_of_a_minor:
 Pass 11 of 11 hands
@@ -421,4 +419,4 @@ FAIL: 3S (expected 4S) for K74.9.J98.KJT742 (hcp: 8 lp: 10 sp: 11), history: 1N 
 FAIL: 2N (expected P) for Q87.J843.K65.Q93 (hcp: 8 lp: 8 sp: 8), history: 1N P
 Pass 1 of 3 hands
 
-Pass 846 (74%) of 1132 total hands
+Pass 848 (74%) of 1132 total hands

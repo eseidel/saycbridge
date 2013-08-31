@@ -166,7 +166,7 @@ class MinimumRaise(RaiseResponse):
         ('2C', '2D'): raise_responses.MinorMinimum,
         ('2H', '2S'): raise_responses.MajorMinimum,
     }
-    shared_constraints = [MinimumCombinedLength(8), MinimumCombinedPoints(18)]
+    shared_constraints = [MinimumCombinedLength(8), MinimumCombinedSupportPoints(18)]
 
 
 class LimitRaise(RaiseResponse):

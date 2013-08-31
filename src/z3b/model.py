@@ -19,6 +19,18 @@ ace_of_clubs, king_of_clubs, queen_of_clubs, jack_of_clubs, ten_of_clubs = z3.In
 
 high_card_points, points, fake_points = z3.Ints('high_card_points points fake_points')
 
+points_supporting_spades, points_supporting_hearts, points_supporting_diamonds, points_supporting_clubs = z3.Ints(
+    'points_supporting_spades points_supporting_hearts points_supporting_diamonds points_supporting_clubs')
+
+void_in_spades, void_in_hearts, void_in_diamonds, void_in_clubs = z3.Ints(
+    'void_in_spades void_in_hearts void_in_diamonds void_in_clubs')
+singleton_in_spades, singleton_in_hearts, singleton_in_diamonds, singleton_in_clubs = z3.Ints(
+    'singleton_in_spades singleton_in_hearts singleton_in_diamonds singleton_in_clubs')
+doubleton_in_spades, doubleton_in_hearts, doubleton_in_diamonds, doubleton_in_clubs = z3.Ints(
+    'doubleton_in_spades doubleton_in_hearts doubleton_in_diamonds doubleton_in_clubs')
+
+voids, singletons, doubletons = z3.Ints('voids singletons doubletons')
+
 axioms = [
     spades + hearts + diamonds + clubs == 13,
     spades >= 0,
@@ -28,7 +40,25 @@ axioms = [
     0 <= high_card_points, high_card_points <= 37,
     points == high_card_points,
     high_card_points <= fake_points,
-    fake_points <= 37,
+    fake_points <= 55, # Just to make the model finite.
+
+    z3.Or(z3.And(spades   == 0, void_in_spades   == 1), z3.And(spades   != 0, void_in_spades   == 0)),
+    z3.Or(z3.And(hearts   == 0, void_in_hearts   == 1), z3.And(hearts   != 0, void_in_hearts   == 0)),
+    z3.Or(z3.And(diamonds == 0, void_in_diamonds == 1), z3.And(diamonds != 0, void_in_diamonds == 0)),
+    z3.Or(z3.And(clubs    == 0, void_in_clubs    == 1), z3.And(clubs    != 0, void_in_clubs    == 0)),
+    voids == void_in_spades + void_in_hearts + void_in_diamonds + void_in_clubs,
+
+    z3.Or(z3.And(spades   == 1, singleton_in_spades   == 1), z3.And(spades   != 1, singleton_in_spades   == 0)),
+    z3.Or(z3.And(hearts   == 1, singleton_in_hearts   == 1), z3.And(hearts   != 1, singleton_in_hearts   == 0)),
+    z3.Or(z3.And(diamonds == 1, singleton_in_diamonds == 1), z3.And(diamonds != 1, singleton_in_diamonds == 0)),
+    z3.Or(z3.And(clubs    == 1, singleton_in_clubs    == 1), z3.And(clubs    != 1, singleton_in_clubs    == 0)),
+    singletons == singleton_in_spades + singleton_in_hearts + singleton_in_diamonds + singleton_in_clubs,
+
+    z3.Or(z3.And(spades   == 2, doubleton_in_spades   == 1), z3.And(spades   != 2, doubleton_in_spades   == 0)),
+    z3.Or(z3.And(hearts   == 2, doubleton_in_hearts   == 1), z3.And(hearts   != 2, doubleton_in_hearts   == 0)),
+    z3.Or(z3.And(diamonds == 2, doubleton_in_diamonds == 1), z3.And(diamonds != 2, doubleton_in_diamonds == 0)),
+    z3.Or(z3.And(clubs    == 2, doubleton_in_clubs    == 1), z3.And(clubs    != 2, doubleton_in_clubs    == 0)),
+    doubletons == doubleton_in_spades + doubleton_in_hearts + doubleton_in_diamonds + doubleton_in_clubs,
 
     0 <= ace_of_spades, ace_of_spades <= 1,
     0 <= king_of_spades, king_of_spades <= 1,
@@ -37,12 +67,24 @@ axioms = [
     0 <= ten_of_spades, ten_of_spades <= 1,
     ace_of_spades + king_of_spades + queen_of_spades + jack_of_spades + ten_of_spades <= spades,
 
+    z3.Or(
+        z3.And(spades <= 2, points_supporting_spades == high_card_points),
+        z3.And(spades == 3, points_supporting_spades == high_card_points + doubletons + 2 * singletons + 3 * voids),
+        z3.And(spades >= 4, points_supporting_spades == high_card_points + doubletons + 3 * singletons + 5 * voids),
+    ),
+
     0 <= ace_of_hearts, ace_of_hearts <= 1,
     0 <= king_of_hearts, king_of_hearts <= 1,
     0 <= queen_of_hearts, queen_of_hearts <= 1,
     0 <= jack_of_hearts, jack_of_hearts <= 1,
     0 <= ten_of_hearts, ten_of_hearts <= 1,
     ace_of_hearts + king_of_hearts + queen_of_hearts + jack_of_hearts + ten_of_hearts <= hearts,
+
+    z3.Or(
+        z3.And(hearts <= 2, points_supporting_hearts == high_card_points),
+        z3.And(hearts == 3, points_supporting_hearts == high_card_points + doubletons + 2 * singletons + 3 * voids),
+        z3.And(hearts >= 4, points_supporting_hearts == high_card_points + doubletons + 3 * singletons + 5 * voids),
+    ),
 
     0 <= ace_of_diamonds, ace_of_diamonds <= 1,
     0 <= king_of_diamonds, king_of_diamonds <= 1,
@@ -51,12 +93,24 @@ axioms = [
     0 <= ten_of_diamonds, ten_of_diamonds <= 1,
     ace_of_diamonds + king_of_diamonds + queen_of_diamonds + jack_of_diamonds + ten_of_diamonds <= diamonds,
 
+    z3.Or(
+        z3.And(diamonds <= 2, points_supporting_diamonds == high_card_points),
+        z3.And(diamonds == 3, points_supporting_diamonds == high_card_points + doubletons + 2 * singletons + 3 * voids),
+        z3.And(diamonds >= 4, points_supporting_diamonds == high_card_points + doubletons + 3 * singletons + 5 * voids),
+    ),
+
     0 <= ace_of_clubs, ace_of_clubs <= 1,
     0 <= king_of_clubs, king_of_clubs <= 1,
     0 <= queen_of_clubs, queen_of_clubs <= 1,
     0 <= jack_of_clubs, jack_of_clubs <= 1,
     0 <= ten_of_clubs, ten_of_clubs <= 1,
     ace_of_clubs + king_of_clubs + queen_of_clubs + jack_of_clubs + ten_of_clubs <= clubs,
+
+    z3.Or(
+        z3.And(clubs <= 2, points_supporting_clubs == high_card_points),
+        z3.And(clubs == 3, points_supporting_clubs == high_card_points + doubletons + 2 * singletons + 3 * voids),
+        z3.And(clubs >= 4, points_supporting_clubs == high_card_points + doubletons + 3 * singletons + 5 * voids),
+    ),
 
     4 * ace_of_spades   + 3 * king_of_spades   + 2 * queen_of_spades   + 1 * jack_of_spades   +
     4 * ace_of_hearts   + 3 * king_of_hearts   + 2 * queen_of_hearts   + 1 * jack_of_hearts   +
@@ -136,6 +190,15 @@ def stopper_expr_for_suit(suit):
         stopper_diamonds,
         stopper_hearts,
         stopper_spades,
+    )[suit]
+
+
+def support_points_expr_for_suit(suit):
+    return (
+        points_supporting_clubs,
+        points_supporting_diamonds,
+        points_supporting_hearts,
+        points_supporting_spades,
     )[suit]
 
 
