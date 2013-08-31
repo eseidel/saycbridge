@@ -2103,3 +2103,8 @@ class StandardAmericanYellowCard(object):
         OneNotrumpResponse,
         OneLevelNegativeDouble,
     )
+    # Constructive responses are always better than placement responses.
+    rule_order.order(
+        natrual_bids,
+        new_one_level_suit_responses,
+    )
