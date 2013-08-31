@@ -230,10 +230,23 @@ class JumpRaiseResponseToAfterRHOTakeoutDouble(RaiseResponse):
     shared_constraints = [MinimumCombinedLength(9)]
 
 
+class JumpShift(object):
+    preconditions = [UnbidSuit(), JumpFromLastContract(exact_size=1)]
+
+
+class JumpShiftResponseToOpenAfterRHODouble(ResponseToOneLevelSuitedOpen):
+    preconditions = JumpShift.preconditions + [
+        LastBidHasAnnotation(positions.RHO, annotations.TakeoutDouble),
+    ]
+    call_names = ['2D', '2H', '2S', '3C', '3D', '3H']
+    shared_constraints = [points >= 5, MinLength(6), TwoOfTheTopThree()]
+
+
 defenses_against_takeout_double = [
     Jordan,
     RedoubleResponseRHOTakeoutDouble,
     JumpRaiseResponseToAfterRHOTakeoutDouble,
+    JumpShiftResponseToOpenAfterRHODouble,
 ]
 rule_order.order(*reversed(defenses_against_takeout_double))
 
@@ -338,12 +351,11 @@ class NotrumpResponseToJacoby2N(ResponseToJacoby2N):
     priority = jacoby_2n_response_priorities.Notrump
 
 
-class JumpShift(object):
-    preconditions = [UnbidSuit(), JumpFromLastContract(exact_size=1)]
-
-
 class JumpShiftResponseToOpen(ResponseToOneLevelSuitedOpen):
-    preconditions = JumpShift.preconditions
+    preconditions = JumpShift.preconditions + [
+        InvertedPrecondition(LastBidHasAnnotation(positions.RHO, annotations.TakeoutDouble)),
+    ]
+
     # Jumpshifts must be below game and are off in competition so
     # 1S P 3H is the highest available response jumpshift.
     call_names = ['2D', '2H', '2S', '3C', '3D', '3H']
