@@ -1967,26 +1967,26 @@ class StandardAmericanYellowCard(object):
     priority_ordering = rule_order
 
     rule_order.order(preempt_priorities, opening_priorities)
-    rule_order.order(natrual_bids, preempt_priorities)
-    rule_order.order(natrual_bids, overcall_priorities)
+    rule_order.order(natural_bids, preempt_priorities)
+    rule_order.order(natural_bids, overcall_priorities)
     rule_order.order(natural_games, nt_response_priorities, natural_slams)
-    rule_order.order(natrual_bids, stayman_response_priorities)
-    rule_order.order(natrual_bids, GarbagePassStaymanRebid)
-    rule_order.order(natrual_bids, PassAfterTakeoutDouble)
-    rule_order.order(natrual_bids, two_clubs_opener_rebid_priorities)
-    rule_order.order(natrual_bids, responder_rebid_priorities)
+    rule_order.order(natural_bids, stayman_response_priorities)
+    rule_order.order(natural_bids, GarbagePassStaymanRebid)
+    rule_order.order(natural_bids, PassAfterTakeoutDouble)
+    rule_order.order(natural_bids, two_clubs_opener_rebid_priorities)
+    rule_order.order(natural_bids, responder_rebid_priorities)
     rule_order.order(natural_exact_notrump_game, stayman_rebid_priorities.GameForcingOtherMajor, natural_exact_major_games)
     rule_order.order(natural_nt_part_scores, stayman_rebid_priorities.InvitationalOtherMajor, natural_suited_part_scores)
-    rule_order.order(takeout_double_responses, natrual_bids)
-    rule_order.order(ForcedRebidOriginalSuitByOpener, natrual_bids)
-    rule_order.order(natrual_bids, NewSuitResponseToStandardOvercall, CuebidResponseToStandardOvercall)
-    rule_order.order(RaiseResponseToStandardOvercall, natrual_bids, NewSuitResponseToStandardOvercall, CuebidResponseToStandardOvercall)
+    rule_order.order(takeout_double_responses, natural_bids)
+    rule_order.order(ForcedRebidOriginalSuitByOpener, natural_bids)
+    rule_order.order(natural_bids, NewSuitResponseToStandardOvercall, CuebidResponseToStandardOvercall)
+    rule_order.order(RaiseResponseToStandardOvercall, natural_bids, NewSuitResponseToStandardOvercall, CuebidResponseToStandardOvercall)
     rule_order.order(DefaultPass, RaiseResponseToStandardOvercall)
-    rule_order.order(ResponderSignoffInPartnersSuit, natrual_bids)
+    rule_order.order(ResponderSignoffInPartnersSuit, natural_bids)
     rule_order.order(DefaultPass, ResponderSignoffInPartnersSuit)
     rule_order.order(DefaultPass, opening_priorities)
-    rule_order.order(rebids_after_takeout_double, natrual_bids)
-    rule_order.order(natrual_bids, SecondNegative)
+    rule_order.order(rebids_after_takeout_double, natural_bids)
+    rule_order.order(natural_bids, SecondNegative)
     rule_order.order(DefaultPass, rebids_after_takeout_double)
     rule_order.order(DefaultPass, natural_passses)
     rule_order.order(natural_suited_part_scores, natural_passses)
@@ -2140,11 +2140,11 @@ class StandardAmericanYellowCard(object):
         new_one_level_major_responses,
     )
     rule_order.order(
-        natrual_bids,
+        natural_bids,
         two_clubs_response_priorities,
     )
     rule_order.order(
-        natrual_bids,
+        natural_bids,
         feature_response_priorities,
     )
     rule_order.order(
@@ -2179,7 +2179,7 @@ class StandardAmericanYellowCard(object):
     )
     # Constructive responses are always better than placement responses.
     rule_order.order(
-        natrual_bids,
+        natural_bids,
         new_one_level_suit_responses,
     )
     rule_order.order(
@@ -2191,7 +2191,7 @@ class StandardAmericanYellowCard(object):
         Jacoby2N,
     )
     rule_order.order(
-        natrual_bids,
+        natural_bids,
         jacoby_2n_response_priorities,
     )
     rule_order.order(
