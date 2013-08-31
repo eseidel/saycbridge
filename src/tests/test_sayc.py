@@ -361,6 +361,7 @@ class SAYCBidderTest(object):
             # FIXME: h21 could also be bid with Texas transfers (because it has no slam interest).
             ["97.A2.KJ9832.J76", "4H", "1N P 2D P 2H P"],  # h21, p11
             ["97.AQ982.2.KJT76", "3D", "1N P 2H P 2S P"],  # h22, p11
+            ["AQ982.97.2.KJT76", "3C", "1N P 2H P 2S P"],  # corollary to h22
             # Jacoby jump raise with 4c trump support.
             ["A9.AQ5.AQT4.J865", "3H", "1N P 2D P"], # p12
             # Jacoby with long weak minors

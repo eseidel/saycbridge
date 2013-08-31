@@ -1121,6 +1121,14 @@ class HeartsRebidAfterSpadesTransfer(RebidAfterJacobyTransfer):
     shared_constraints = hearts >= 5
 
 
+class NewMinorRebidAfterJacobyTransfer(RebidAfterJacobyTransfer):
+    call_names = '3C', '3D'
+    # Minors are not worth mentioning after a jacoby transfer unless we have 5 of them and game-going values.
+    # FIXME: It seems like this should imply some number of honors in the bid suit, but there may be times
+    # when we have 5+ spot cards in a minor and this looks better than bidding 3N.
+    shared_constraints = [MinLength(5), MinimumCombinedPoints(25)]
+
+
 stayman_response_priorities = enum.Enum(
     "HeartStaymanResponse",
     "SpadeStaymanResponse",
@@ -2252,4 +2260,8 @@ class StandardAmericanYellowCard(object):
     rule_order.order(
         natural_suited_part_scores,
         SpadesRebidAfterHeartsTransfer
+    )
+    rule_order.order(
+        natural_exact_notrump_game,
+        NewMinorRebidAfterJacobyTransfer
     )
