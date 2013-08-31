@@ -2124,6 +2124,13 @@ class StandardAmericanYellowCard(object):
         natural_exact_notrump_game,
         opener_one_level_new_major,
     )
+    # FIXME: This ordering is correct, but the problem is that this makes ThreeNotrumpResponse
+    #        lower priority than LimitRaise, which isn't correct. We need more conditional
+    #        priorities to resolve this issue.
+    # rule_order.order(
+    #     ThreeNotrumpResponse,
+    #     new_one_level_suit_responses,
+    # )
     rule_order.order(
         DefaultPass,
         # Mention a 4-card major before rebidding a 6-card minor.
