@@ -49,10 +49,8 @@ Pass 18 of 37 hands
 test_game_forcing_rebid_by_opener:
 FAIL: 1N (expected 1S) for KQ.AJT.K87.A9876 (hcp: 17 lp: 18 sp: 16), history:  (subtest of 1S P 2H P)
 FAIL: 3H (expected 4H) for K5.AJ9.AKJ984.A9 (hcp: 20 lp: 22 sp: 22), history: 1H P 1N P
-WARNING: Unordered: ['3C', '2N'] from: [JumpShiftByOpener, NotrumpJumpRebid] ([JumpShiftToClubs, <class 'z3b.rules.NotrumpJumpRebid'>])
-FAIL: None (expected 2N) for K765.AK87.KQ.A98 (hcp: 19 lp: 19 sp: 18), history: 1D P 1H P
 FAIL: 3D (expected 3N) for K4.AKQJ94.87.A96 (hcp: 17 lp: 19 sp: 19), history: 1D P 1H P
-Pass 8 of 12 hands
+Pass 9 of 12 hands
 
 test_game_forcing_resonse_to_one_of_a_major:
 FAIL: 3H (expected 2D) for 42.KJ653.KJ5.KJ7 (hcp: 12 lp: 13 sp: 13), history: 1H P
@@ -412,4 +410,4 @@ FAIL: 3S (expected 4S) for K74.9.J98.KJT742 (hcp: 8 lp: 10 sp: 11), history: 1N 
 FAIL: 2N (expected P) for Q87.J843.K65.Q93 (hcp: 8 lp: 8 sp: 8), history: 1N P
 Pass 1 of 3 hands
 
-Pass 870 (75%) of 1147 total hands
+Pass 871 (75%) of 1147 total hands
