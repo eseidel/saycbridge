@@ -141,8 +141,9 @@ class RaiseResponse(ResponseToOneLevelSuitedOpen):
 
 raise_responses = enum.Enum(
     "MajorLimit",
-    "MinorLimit",
     "MajorMinimum",
+
+    "MinorLimit",
     "MinorMinimum",
 )
 rule_order.order(*reversed(raise_responses))
@@ -180,7 +181,7 @@ class MajorJumpToGame(RaiseResponse):
     call_names = ['4H', '4S']
     shared_constraints = [MinimumCombinedLength(10), points < 10]
 
-
+# FIXME: This is wrong.  See page 50.
 class TwoNotrumpLimitResponse(ResponseToOneLevelSuitedOpen):
     preconditions = LastBidHasStrain(positions.Partner, suit.MINORS)
     call_names = '2N'
@@ -2035,18 +2036,17 @@ class StandardAmericanYellowCard(object):
     rule_order.order(
         DefaultPass,
         OneNotrumpResponse, # Any time we can respond we should.
-        new_one_level_suit_responses, # But we prefer suits to NT.
+        new_two_level_minor_responses, # But we prefer suits to NT.
         major_raise_responses, # But we'd much rather support our partner's major!
+    )
+    rule_order.order(
+        OneNotrumpResponse,
+        new_two_level_major_responses,
     )
     rule_order.order(
         # Relays are extremely high priority, this is likely redundant with other orderings.
         DefaultPass,
         relay_priorities
-    )
-    rule_order.order(
-        OneNotrumpResponse,
-        new_two_level_suit_responses,
-        major_raise_responses,
     )
     rule_order.order(
         TwoNotrumpLimitResponse,
@@ -2077,4 +2077,11 @@ class StandardAmericanYellowCard(object):
     rule_order.order(
         raise_responses,
         JumpShiftResponseToOpen,
+    )
+    rule_order.order(
+        # We'd rather mention a new major than raise partner's minor
+        minor_raise_responses,
+        new_one_level_major_responses,
+        # But we'd rather raise a major than mention a new one.
+        major_raise_responses
     )
