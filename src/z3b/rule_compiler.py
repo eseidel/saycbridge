@@ -23,8 +23,23 @@ categories = enum.Enum(
     "DefaultPass",
 )
 
+# This class exists so that we can add asserts specific to how how orderings work for saycbridge.
+class RuleOrdering(object):
+    def __init__(self):
+        self.ordering = ordering.Ordering()
 
-rule_order = ordering.Ordering()
+    def _check_key(self, key):
+        assert not hasattr(key, '__dict__') or not ('priority' in key.__dict__), "%s has a priority property and is being used as a priority" % key
+        return key
+
+    def order(self, *args):
+        self.ordering.order(*map(self._check_key, args))
+
+    def lt(self, left, right):
+        return self.ordering.lt(left, right)
+
+
+rule_order = RuleOrdering()
 
 
 # This is a public interface from RuleGenerators to the rest of the system.
