@@ -456,6 +456,7 @@ class NotrumpJumpRebid(RebidAfterOneLevelOpen):
     # See KBB's NotrumpJumpRebid for discussion of cases for this bid.
     # Unclear how this is affected by competition?
     annotations = annotations.NoTrumpSystemsOn
+    # FIXME: Does this only apply over minors?  What about 1H P 1S P 2N?
     preconditions = JumpFromLastContract(exact_size=1)
     call_names = '2N'
     shared_constraints = [
@@ -2309,4 +2310,9 @@ class StandardAmericanYellowCard(object):
     rule_order.order(
         natural_exact_notrump_game,
         NewMinorRebidAfterJacobyTransfer
+    )
+    rule_order.order(
+        # Even a jumpshift to a major seems less descriptive than a 2N rebid.
+        opener_jumpshifts,
+        NotrumpJumpRebid,
     )
