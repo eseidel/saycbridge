@@ -161,6 +161,12 @@ minor_raise_responses = set([
 ])
 
 
+minimum_raise_responses = set([
+    raise_responses.MinorMinimum,
+    raise_responses.MajorMinimum,
+])
+
+
 class MinimumRaise(RaiseResponse):
     priorities_per_call = {
         ('2C', '2D'): raise_responses.MinorMinimum,
@@ -170,7 +176,7 @@ class MinimumRaise(RaiseResponse):
 
 
 class LimitRaise(RaiseResponse):
-    # preconditions = InvertedPrecondition(LastBidHasAnnotation(positions.RHO, annotations.TakeoutDouble))
+    preconditions = InvertedPrecondition(LastBidHasAnnotation(positions.RHO, annotations.TakeoutDouble))
     priorities_per_call = {
         ('3C', '3D'): raise_responses.MinorLimit,
         ('3H', '3S'): raise_responses.MajorLimit,
@@ -210,6 +216,26 @@ class Jordan(ResponseToOneLevelSuitedOpen):
         MinimumCombinedLength(8, use_partners_last_suit=True),
         MinimumCombinedPoints(22),
     ]
+
+
+class RedoubleResponseRHOTakeoutDouble(ResponseToOneLevelSuitedOpen):
+    preconditions = LastBidHasAnnotation(positions.RHO, annotations.TakeoutDouble)
+    call_names = 'XX'
+    shared_constraints = MinimumCombinedPoints(22)
+
+
+class JumpRaiseResponseToAfterRHOTakeoutDouble(RaiseResponse):
+    preconditions = LastBidHasAnnotation(positions.RHO, annotations.TakeoutDouble)
+    call_names = ['3C', '3D', '3H', '3S']
+    shared_constraints = [MinimumCombinedLength(9)]
+
+
+defenses_against_takeout_double = [
+    Jordan,
+    RedoubleResponseRHOTakeoutDouble,
+    JumpRaiseResponseToAfterRHOTakeoutDouble,
+]
+rule_order.order(*reversed(defenses_against_takeout_double))
 
 
 # FIXME: We should bid longer suits when possible, up the line for 4 cards.
@@ -2095,7 +2121,6 @@ class StandardAmericanYellowCard(object):
     )
     rule_order.order(
         NotrumpResponseToMinorOpen,
-        Jordan,
         new_one_level_major_responses,
     )
     rule_order.order(
@@ -2158,7 +2183,16 @@ class StandardAmericanYellowCard(object):
         jacoby_2n_response_priorities,
     )
     rule_order.order(
+        new_one_level_suit_responses,
+        defenses_against_takeout_double,
+    )
+    rule_order.order(
+        minimum_raise_responses,
+        defenses_against_takeout_double,
+        MajorJumpToGame,
+    )
+    rule_order.order(
         OneNotrumpResponse,
         NotrumpResponseToMinorOpen,
-        Jordan,
+        defenses_against_takeout_double,
     )
