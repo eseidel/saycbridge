@@ -544,8 +544,8 @@ rule_order.order(*reversed(opener_support_majors))
 class SupportPartnerMajorSuit(SupportPartnerSuit):
     constraints = {
         ('2H', '2S'): (NO_CONSTRAINTS, opener_support_majors.MajorMin),
-        ('3H', '3S'): (MinimumCombinedPoints(22), opener_support_majors.MajorLimit),
-        ('4H', '4S'): (MinimumCombinedPoints(25), opener_support_majors.MajorMax),
+        ('3H', '3S'): (MinimumCombinedSupportPoints(22), opener_support_majors.MajorLimit),
+        ('4H', '4S'): (MinimumCombinedSupportPoints(25), opener_support_majors.MajorMax),
     }
     shared_constraints = MinimumCombinedLength(8)
 
