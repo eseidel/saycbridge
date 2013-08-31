@@ -1656,7 +1656,7 @@ class JumpNotrumpResponseToTakeoutDouble(ResponseToTakeoutDouble):
 
 
 class SuitResponseToTakeoutDouble(ResponseToTakeoutDouble):
-    preconditions = [UnbidSuit(), NotJumpFromLastContract()]
+    preconditions = [SuitUnbidByOpponents(), NotJumpFromLastContract()]
     # FIXME: Why is the min-length constraint necessary?
     shared_constraints = [MinLength(3), LongestSuitExceptOpponentSuits()]
     # Need conditional priorities to disambiguate cases like being 1.4.4.4 with 0 points after 1C X P
@@ -1676,7 +1676,7 @@ class SuitResponseToTakeoutDouble(ResponseToTakeoutDouble):
 
 
 class JumpSuitResponseToTakeoutDouble(ResponseToTakeoutDouble):
-    preconditions = [UnbidSuit(), JumpFromLastContract(exact_size=1)]
+    preconditions = [SuitUnbidByOpponents(), JumpFromLastContract(exact_size=1)]
     # You can have 10 points, but no stopper in opponents suit and only a 3 card suit to bid.
     # 1C X P, xxxx.Axx.Kxx.Kxx
     shared_constraints = [MinLength(3), LongestSuitExceptOpponentSuits(), points >= 10]

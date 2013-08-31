@@ -378,6 +378,13 @@ class UnbidSuit(Precondition):
         return history.is_unbid_suit(call.strain)
 
 
+class SuitUnbidByOpponents(Precondition):
+    def fits(self, history, call):
+        if call.strain not in suit.SUITS:
+            return False
+        return call.strain in history.them.unbid_suits
+
+
 class UnbidSuitCountRange(Precondition):
     def __init__(self, lower, upper):
         self.lower = lower
