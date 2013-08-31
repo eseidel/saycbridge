@@ -17,7 +17,7 @@ ace_of_diamonds, king_of_diamonds, queen_of_diamonds, jack_of_diamonds, ten_of_d
 ace_of_clubs, king_of_clubs, queen_of_clubs, jack_of_clubs, ten_of_clubs = z3.Ints(
     'ace_of_clubs king_of_clubs queen_of_clubs jack_of_clubs ten_of_clubs')
 
-high_card_points, points, fake_points = z3.Ints('high_card_points points fake_points')
+high_card_points, points, playing_points = z3.Ints('high_card_points points playing_points')
 
 points_supporting_spades, points_supporting_hearts, points_supporting_diamonds, points_supporting_clubs = z3.Ints(
     'points_supporting_spades points_supporting_hearts points_supporting_diamonds points_supporting_clubs')
@@ -39,8 +39,8 @@ axioms = [
     clubs >= 0,
     0 <= high_card_points, high_card_points <= 37,
     points == high_card_points,
-    high_card_points <= fake_points,
-    fake_points <= 55, # Just to make the model finite.
+    high_card_points <= playing_points,
+    playing_points <= 55, # Just to make the model finite.
 
     z3.Or(z3.And(spades   == 0, void_in_spades   == 1), z3.And(spades   != 0, void_in_spades   == 0)),
     z3.Or(z3.And(hearts   == 0, void_in_hearts   == 1), z3.And(hearts   != 0, void_in_hearts   == 0)),
@@ -123,7 +123,7 @@ min_hcp_for_open = 8
 def _expr_for_point_rule(count):
     return z3.And(
         high_card_points >= min_hcp_for_open,
-        fake_points >= 12,
+        playing_points >= 12,
         z3.Or(
             spades + hearts + high_card_points >= count,
             spades + diamonds + high_card_points >= count,
@@ -138,7 +138,7 @@ rule_of_twenty = _expr_for_point_rule(20)
 rule_of_nineteen = _expr_for_point_rule(19)
 
 # FIXME: This rule probably needs to consider min_hcp_for_open
-rule_of_fifteen = z3.And(spades + high_card_points >= 15, high_card_points >= min_hcp_for_open, fake_points >= 12)
+rule_of_fifteen = z3.And(spades + high_card_points >= 15, high_card_points >= min_hcp_for_open, playing_points >= 12)
 
 two_of_the_top_three_spades = ace_of_spades + king_of_spades + queen_of_spades >= 2
 two_of_the_top_three_hearts = ace_of_hearts + king_of_hearts + queen_of_hearts >= 2

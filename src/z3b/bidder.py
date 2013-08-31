@@ -339,7 +339,7 @@ class History(object):
     @memoized
     def _solve_for_min_points(self):
         solver = self._solver
-        predicate = lambda points: is_possible(solver, model.fake_points == points)
+        predicate = lambda points: is_possible(solver, model.playing_points == points)
         if predicate(0):
             return 0
         return self._lower_bound(predicate, 1, 37)

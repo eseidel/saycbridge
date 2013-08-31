@@ -59,7 +59,7 @@ class MinimumCombinedSupportPoints(Constraint):
     def expr(self, history, call):
         implied_min_points = max(0, self.min_points - history.partner.min_points)
         return z3.And(model.support_points_expr_for_suit(call.strain) >= implied_min_points,
-                      model.fake_points >= implied_min_points)
+                      model.playing_points >= implied_min_points)
 
 
 class MaximumCombinedPoints(Constraint):
