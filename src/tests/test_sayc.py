@@ -33,7 +33,7 @@ class CompiledTest(object):
     @classmethod
     def _identifier_for_test(cls, hand, history):
         # FIXME: Our "have we run this" check would be more powerful if we used a combinatics based identifier for the hands.
-        return "%s-%s" % (hand.reverse_pbn_string(), history.identifier())
+        return "%s-%s" % (hand.cdhs_dot_string(), history.identifier())
 
     @property
     def identifier(self):
