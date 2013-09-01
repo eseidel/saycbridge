@@ -861,6 +861,8 @@ class JumpShiftResponderRebid(OneLevelOpeningResponderRebid):
 
 class FourthSuitForcingPrecondition(Precondition):
     def fits(self, history, call):
+        if annotations.FourthSuitForcing in history.annotations:
+            return False
         return len(history.us.bid_suits) == 3 and len(history.them.bid_suits) == 0
 
 
@@ -900,6 +902,7 @@ fourth_suit_forcing_response_priorties = enum.Enum(
     "Notrump",
     "DelayedSupport",
     # "SecondSuit",
+    "FourthSuit",
     "Escape",
 )
 rule_order.order(*reversed(fourth_suit_forcing_response_priorties))
@@ -972,6 +975,25 @@ class EscapeResponseToFourthSuitForcing(ResponseToFourthSuitForcing):
 #     ]
 #     priority = fourth_suit_forcing_response_priorties.SecondSuit
 #     shared_constraints = AdditionalLength(1)
+
+
+class FourthSuitResponseToFourthSuitForcing(ResponseToFourthSuitForcing):
+    preconditions = [
+        NotJumpFromLastContract(),
+        UnbidSuit(),
+    ]
+    call_names = [
+        '3C', '3D', '3H', '3S',
+        '4C', '4D', '4H', '4S',
+    ]
+    priority = fourth_suit_forcing_response_priorties.FourthSuit
+    shared_constraints = [
+        MinLength(4),
+        # FIXME: We should include SufficientCombinedPoints here, but we'll
+        #        need partner to show some points when bidding fourth-suit
+        #        forcing for this to make sense.
+        # SufficientCombinedPoints(),
+    ]
 
 
 # FIXME: We should add an OpenerRebid of 3N over 2C P 2N P to show a minimum 22-24 HCP
