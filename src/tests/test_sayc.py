@@ -1143,6 +1143,12 @@ class SAYCBidderTest(object):
             ["32.432.432.AKQJ2", "1S", "1D 1H"],
             ["5432.2.5432.AKQJ", "X", "1C 1H"],
             ["5432.2.5432.AKQJ", "X", "1D 1H"],
+
+            # Prefer mentioning the new suit directly when we have 5.
+            ['Q832.QT.K4.AQT93', '2S', '1D 2H', 'N-S'],  # 2-f41c9d56243758ca09bae48fb3, W
+            ['Q832.QT2.K4.AQT9', 'X', '1D 2H'],
+            ['Q832.QT.AQT93.K4', '2H', '1D 1S'],
+            ['Q832.QT2.AQT9.K4', 'X', '1D 1S'],
         ])
 
     def test_reopening_double(self): # Chap 17
