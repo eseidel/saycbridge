@@ -859,6 +859,29 @@ class JumpShiftResponderRebid(OneLevelOpeningResponderRebid):
     priority = responder_rebid_priorities.JumpShiftResponderRebid
 
 
+class FourthSuitForcingPrecondition(Precondition):
+    def fits(self, history, call):
+        return len(history.us.bid_suits) == 3 and len(history.them.bid_suits) == 0
+
+
+class FourthSuitForcing(Rule):
+    category = categories.Gadget
+    preconditions = [
+        FourthSuitForcingPrecondition(),
+        UnbidSuit(),
+        NotJumpFromPartnerLastBid(),
+    ]
+    requires_planning = True
+    # Smallest: 1D,1H,1S,2C
+    # Largest: 1H,2D,3C,3S
+    call_names = [
+        '2C', '2D', '2H', '2S',
+        '3C', '3D', '3H', '3S',
+    ]
+    annotations = annotations.FourthSuitForcing
+    shared_constraints = NO_CONSTRAINTS
+
+
 # FIXME: We should add an OpenerRebid of 3N over 2C P 2N P to show a minimum 22-24 HCP
 # instead of jumping to 5N which just wastes bidding space.
 # This is not covered in the book or the SAYC pdf.

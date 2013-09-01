@@ -30,6 +30,8 @@ annotations = enum.Enum(
     # "Artificial" when encountering any annotations > Artificial.
     # This is a hack to avoid "forgot to add Artifical" bugs.
     "Blackwood",
+    "FeatureRequest",
+    "FourthSuitForcing",
     "Gerber",
     "Jacoby2N",
     "MichaelsCuebid",
@@ -39,7 +41,6 @@ annotations = enum.Enum(
     "TakeoutDouble",
     "Transfer",
     "Unusual2N",
-    "FeatureRequest",
 )
 
 # Used by RuleCompiler._compile_annotations.
