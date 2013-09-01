@@ -21,7 +21,7 @@ class Explore
         return [basePath, callHistory]
 
     pathForCallsString: (callsString) ->
-        return "/explore/" + callsString
+        return "/explore2/" + callsString
 
     saveState: ->
         callsString = @callHistory.identifier()

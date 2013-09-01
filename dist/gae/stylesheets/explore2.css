@@ -1,9 +1,14 @@
+body {
+    margin: 0px;
+    padding: 0px;
+}
+
 .call_menu {
     width: 100%;
 }
 
 .call_menu {
-    font-size: 18pt;
+    font-size: 16pt;
 }
 
 tr.call_description > td {
@@ -11,8 +16,8 @@ tr.call_description > td {
 }
 
 tr.call_description > td:first-child {
-    width: 80px;
-    height: 80px;
+    width: 75px;
+    height: 75px;
 }
 
 tr.call_description:nth-child(even) {
