@@ -1,0 +1,34 @@
+#!/usr/bin/env python
+# Copyright (c) 2013 The SAYCBridge Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import sys
+import find_src
+import collections
+
+from z3b.bidder import Bidder, Interpreter
+from core.callhistory import CallHistory
+from core.hand import Hand
+
+
+if __name__ == '__main__':
+    args = sys.argv[1:]
+    bidder = Bidder()
+    interpreter = Interpreter()
+    call_history = CallHistory.from_string(" ".join(args))
+
+    # FIXME: This re-interprets the base history every time!
+    call_counts = collections.Counter(bidder.find_call_for(Hand.random(), call_history) for _ in range(100))
+
+    for call_and_count in call_counts.most_common():
+        call, count = call_and_count
+        if not call:
+            print "%2s: %s (%s)" % (None, count, None)
+            continue
+
+        # FIXME: We would not need to re-interpret the bids if Bidder had a find_call_for which returned a History.
+        call_name = call.name
+        history = interpreter.create_history(call_history.copy_appending_call(call))
+        rule = history.rho.rule_for_last_call
+        print "%2s: %s (%s)" % (call_name, count, rule)
