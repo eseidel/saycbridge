@@ -1,5 +1,6 @@
 test_3c_stayman:
-Pass 5 of 5 hands
+FAIL: 3H (expected 3C) for Q.T43.JT92.KT863 (hcp: 6 lp: 7 sp: 7), history: P 2N P (subtest of P 2N P 3C P 3H P)
+Pass 4 of 5 hands
 
 test_doubles:
 FAIL: None (expected P) for T98.KQ4.863.Q875 (hcp: 7 lp: 7 sp: 7), history: 1N X P
@@ -87,7 +88,7 @@ FAIL: P (expected 2S) for 9.32.KJ832.QJ765 (hcp: 7 lp: 9 sp: 11), history: 1N P 
 FAIL: P (expected 3H) for J97.Q2.KJ9832.65 (hcp: 7 lp: 9 sp: 7), history: 1N P 2D P 2H P
 FAIL: 2S (expected 4H) for A.3.KJ8532.JT764 (hcp: 9 lp: 12 sp: 15), history: 1N P 2D P 2H P
 FAIL: 3H (expected 4H) for 97.A2.KJ9832.J76 (hcp: 9 lp: 11 sp: 11), history: 1N P 2D P 2H P
-Pass 28 of 32 hands
+Pass 34 of 38 hands
 
 test_jacoby_two_nt_response_to_one_of_a_major:
 FAIL: 3N (expected 3H) for AJ2.K7.KQT853.A5 (hcp: 17 lp: 19 sp: 19), history: 1H P 2N P
@@ -403,4 +404,4 @@ FAIL: 3S (expected 4S) for K74.9.J98.KJT742 (hcp: 8 lp: 10 sp: 11), history: 1N 
 FAIL: 2N (expected P) for Q87.J843.K65.Q93 (hcp: 8 lp: 8 sp: 8), history: 1N P
 Pass 1 of 3 hands
 
-Pass 880 (76%) of 1148 total hands
+Pass 885 (76%) of 1154 total hands

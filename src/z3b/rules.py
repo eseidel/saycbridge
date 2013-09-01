@@ -1140,21 +1140,29 @@ class NoTrumpTransferResponse(NoTrumpResponse):
 
 
 class JacobyTransferToHearts(NoTrumpTransferResponse):
-    call_names = '2D'
+    preconditions = NotJumpFromPartnerLastBid()
+    call_names = ['2D', '3D', '4D']
     shared_constraints = hearts >= 5
+    # Two-level transfers have special rules for setting up a game force sequence with 5-5
+    conditional_priorities_per_call = {
+        '2D': [(z3.And(hearts == spades, points >= 10), nt_response_priorities.JacobyTransferToHeartsWithGameForcingValues)],
+    }
     conditional_priorities = [
         (hearts > spades, nt_response_priorities.JacobyTransferToLongerMajor),
-        (z3.And(hearts == spades, points >= 10), nt_response_priorities.JacobyTransferToHeartsWithGameForcingValues),
     ]
     priority = nt_response_priorities.JacobyTransferToHearts
 
 
 class JacobyTransferToSpades(NoTrumpTransferResponse):
-    call_names = '2H'
+    preconditions = NotJumpFromPartnerLastBid()
+    call_names = ['2H', '3H', '4H']
     shared_constraints = spades >= 5
+    # Two-level transfers have special rules for setting up a game force sequence with 5-5
+    conditional_priorities_per_call = {
+        '2H': [(z3.And(hearts == spades, points >= 10), nt_response_priorities.JacobyTransferToSpadesWithGameForcingValues)],
+    }
     conditional_priorities = [
         (spades > hearts, nt_response_priorities.JacobyTransferToLongerMajor),
-        (z3.And(hearts == spades, points >= 10), nt_response_priorities.JacobyTransferToSpadesWithGameForcingValues),
     ]
     priority = nt_response_priorities.JacobyTransferToSpades
 

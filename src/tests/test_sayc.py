@@ -367,6 +367,12 @@ class SAYCBidderTest(object):
             # Jacoby with long weak minors
             ["JT98765.2.75.543", "P", "1N P 2S P 3C P"], # p12, h23
             ["5.QT87542.75.543", "3D", "1N P 2S P 3C P"], # p12, h24
+
+            # Transfers are on over higher level NT as well:
+            ['K83.852.5.QT9752', '3H', '2N P', 'Both'],  # 4-1bc6c9d271a2f39a0ef106751b, E
+            ['83.852.5.KQT9752', '4H', '2C P 2D P 3N P'],
+            ['K83.852.QT9752.5', '3D', '2N P', 'Both'],  # 4-1bc6c9d271a2f39a0ef106751b, E
+            ['83.852.KQT9752.5', '4D', '2C P 2D P 3N P'],
         ])
 
     def test_invitational_two_nt_over_one_nt(self):
