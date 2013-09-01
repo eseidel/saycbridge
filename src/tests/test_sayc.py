@@ -367,6 +367,12 @@ class SAYCBidderTest(object):
             # Jacoby with long weak minors
             ["JT98765.2.75.543", "P", "1N P 2S P 3C P"], # p12, h23
             ["5.QT87542.75.543", "3D", "1N P 2S P 3C P"], # p12, h24
+
+            # Transfers are on over higher level NT as well:
+            ['K83.852.5.QT9752', '3H', '2N P', 'Both'],  # 4-1bc6c9d271a2f39a0ef106751b, E
+            ['83.852.5.KQT9752', '4H', '2C P 2D P 3N P'],
+            ['K83.852.QT9752.5', '3D', '2N P', 'Both'],  # 4-1bc6c9d271a2f39a0ef106751b, E
+            ['83.852.KQT9752.5', '4D', '2C P 2D P 3N P'],
         ])
 
     def test_invitational_two_nt_over_one_nt(self):
@@ -801,6 +807,9 @@ class SAYCBidderTest(object):
             ["864.AKQT6.A2.K83", "5S", "3S P 4N P 5C P"], # p88, h24
             ["864.AKQT6.A2.K83", "6S", "3S P 4N P 5D P"], # p88, h24
 
+            # If he has an outside entry 3N is trivial.
+            ["AKQ83.AKT93..A85", "2N", "2H P"], # bidder-fight 13-245b5abb34a4a431f051f8ecde
+
             # Four level preempts
             ["KT3..74.AJT87432", "4S", ""], # p88, h25
             ["KT3..74.AJT87432", "4S", "P"], # p88, h25
@@ -889,6 +898,10 @@ class SAYCBidderTest(object):
             ["KQ4.AQ8.Q9873.K2", "1N", "1H"],
             ["KQ4.K98.KQ873.K2", "2H", "1S"],  # K2 is only a 66% stopper, so we can't bid 1N, but with only 16 points we shouldn't bid-hand double.
             ["KQ4.A98.QJ873.K2", "1N", "1C"],  # 1N overcalls are 15-18 according to p100.
+
+            # A 1NT overcall is more descriptive than a takeout double and should be prefered.
+            ['KQ97.JT3.AK65.A3', '1N', '1C'], # Big-hand-doublable (17hcp)
+            ['KT97.JT3.AK65.A3', '1N', '1C'], # non-big-hand (15hcp)
 
             # Responding to overcalls
             ["J63.Q843.KT87.J5", "3H", "1C 1H P"],  # p101, h9
@@ -1130,6 +1143,12 @@ class SAYCBidderTest(object):
             ["32.432.432.AKQJ2", "1S", "1D 1H"],
             ["5432.2.5432.AKQJ", "X", "1C 1H"],
             ["5432.2.5432.AKQJ", "X", "1D 1H"],
+
+            # Prefer mentioning the new suit directly when we have 5.
+            ['Q832.QT.K4.AQT93', '2S', '1D 2H', 'N-S'],  # 2-f41c9d56243758ca09bae48fb3, W
+            ['Q832.QT2.K4.AQT9', 'X', '1D 2H'],
+            ['Q832.QT.AQT93.K4', '2H', '1D 1S'],
+            ['Q832.QT2.AQT9.K4', 'X', '1D 1S'],
         ])
 
     def test_reopening_double(self): # Chap 17

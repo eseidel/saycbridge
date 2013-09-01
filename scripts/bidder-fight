@@ -38,7 +38,7 @@ class BidderFight(object):
                 vulnerability = board.call_history.vulnerability.name
                 optional_vulernability_string = "" if vulnerability == "None" else ", '%s'" % vulnerability
                 print "['%s', '%s', '%s'%s],  # %s, %s" % (
-                    hand.pbn_string(),
+                    hand.reverse_pbn_string(),
                     kbb_bid.name,
                     board.call_history.calls_string(),
                     optional_vulernability_string,
