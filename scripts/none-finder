@@ -20,6 +20,20 @@ def _print_usage_and_exit():
     sys.exit(1)
 
 
+def _decl_cmp(*args):
+    names = map(lambda key: key.name(), args)
+    # Sort names without _ in them to the top.
+    are_primary = map(lambda name: name.find("_") != -1, names)
+    cmp_result = cmp(*are_primary)
+    if cmp_result:
+        return cmp_result
+    return cmp(*names)
+
+def _pretty_print_model(model):
+    for decl in sorted(model.decls(), cmp=_decl_cmp):
+        print "%s: %s" % (decl, model[decl])
+
+
 class NoneFinder(object):
     def main(self):
         history_string = " ".join(sys.argv[1:])
@@ -45,7 +59,7 @@ class NoneFinder(object):
             print "Calls found for all possible hands."
         else:
             print "Unbiddable hand:"
-            print solver.model()
+            _pretty_print_model(solver.model())
 
 
 if __name__ == '__main__':
