@@ -866,13 +866,18 @@ class FourthSuitForcingPrecondition(Precondition):
         return len(history.us.bid_suits) == 3 and len(history.them.bid_suits) == 0
 
 
+class SufficientPointsForFourthSuitForcing(Constraint):
+    def expr(self, history, call):
+        return points >= max(0, points_for_sound_notrump_bid_at_level[call.level] - history.partner.min_points)
+
+
 class FourthSuitForcing(Rule):
     category = categories.Gadget
     requires_planning = True
     preconditions = [
+        NotJumpFromPartnerLastBid(),
         FourthSuitForcingPrecondition(),
         UnbidSuit(),
-        NotJumpFromPartnerLastBid(),
     ]
     # Smallest: 1D,1H,1S,2C
     # Largest: 1H,2D,3C,3S
@@ -881,7 +886,7 @@ class FourthSuitForcing(Rule):
         '3C', '3D', '3H', '3S',
     ]
     annotations = annotations.FourthSuitForcing
-    shared_constraints = NO_CONSTRAINTS
+    shared_constraints = SufficientPointsForFourthSuitForcing()
 
 
 class TwoSpadesJumpFourthSuitForcing(Rule):
@@ -894,11 +899,11 @@ class TwoSpadesJumpFourthSuitForcing(Rule):
     ]
     call_names = '2S'
     annotations = annotations.FourthSuitForcing
-    shared_constraints = NO_CONSTRAINTS
+    shared_constraints = SufficientPointsForFourthSuitForcing()
 
 
 fourth_suit_forcing_response_priorties = enum.Enum(
-    # "JumpToThreeNotrump",
+    "JumpToThreeNotrump",
     "Notrump",
     "DelayedSupport",
     # "SecondSuit",
@@ -926,11 +931,11 @@ class NotrumpResponseToFourthSuitForcing(ResponseToFourthSuitForcing):
     shared_constraints = StopperInFouthSuit()
 
 
-# class NotrumpJumpResponseToFourthSuitForcing(ResponseToFourthSuitForcing):
-#     preconditions = JumpFromLastContract()
-#     call_names = '3N'
-#     priority = fourth_suit_forcing_response_priorties.JumpToThreeNotrump
-#     shared_constraints = [StopperInFouthSuit(), MinimumCombinedPoints(25)]
+class NotrumpJumpResponseToFourthSuitForcing(ResponseToFourthSuitForcing):
+    preconditions = JumpFromLastContract()
+    call_names = '3N'
+    priority = fourth_suit_forcing_response_priorties.JumpToThreeNotrump
+    shared_constraints = [StopperInFouthSuit(), MinimumCombinedPoints(25)]
 
 
 class DelayedSupportResponseToFourthSuitForcing(ResponseToFourthSuitForcing):
@@ -989,10 +994,7 @@ class FourthSuitResponseToFourthSuitForcing(ResponseToFourthSuitForcing):
     priority = fourth_suit_forcing_response_priorties.FourthSuit
     shared_constraints = [
         MinLength(4),
-        # FIXME: We should include SufficientCombinedPoints here, but we'll
-        #        need partner to show some points when bidding fourth-suit
-        #        forcing for this to make sense.
-        # SufficientCombinedPoints(),
+        SufficientCombinedPoints(),
     ]
 
 
