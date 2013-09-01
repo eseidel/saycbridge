@@ -870,12 +870,17 @@ class SufficientPointsForFourthSuitForcing(Constraint):
     def expr(self, history, call):
         return points >= max(0, points_for_sound_notrump_bid_at_level[call.level] - history.partner.min_points)
 
+fourth_suit_forcing_priorties = enum.Enum(
+    "TwoLevel",
+    "ThreeLevel",
+)
+# No need for ordering because at most one is available at any time.
 
 class FourthSuitForcing(Rule):
     category = categories.Gadget
-    requires_planning = True
     preconditions = [
         NotJumpFromPartnerLastBid(),
+        LastBidHasSuit(positions.Partner),
         FourthSuitForcingPrecondition(),
         UnbidSuit(),
     ]
@@ -885,6 +890,10 @@ class FourthSuitForcing(Rule):
         '2C', '2D', '2H', '2S',
         '3C', '3D', '3H', '3S',
     ]
+    priorities_per_call = {
+        ('2C', '2D', '2H', '2S'): fourth_suit_forcing_priorties.TwoLevel,
+        ('3C', '3D', '3H', '3S'): fourth_suit_forcing_priorties.ThreeLevel,
+    }
     annotations = annotations.FourthSuitForcing
     shared_constraints = [
         SufficientPointsForFourthSuitForcing(),
@@ -2273,6 +2282,23 @@ class StandardAmericanYellowCard(object):
     #     ThreeNotrumpResponse,
     #     new_one_level_suit_responses,
     # )
+    rule_order.order(
+        natural_exact_notrump_game,
+        [fourth_suit_forcing_priorties.TwoLevel, fourth_suit_forcing_priorties.ThreeLevel],
+    )
+    rule_order.order(
+        natural_nt_part_scores,
+        fourth_suit_forcing_priorties.TwoLevel,
+    )
+    rule_order.order(
+        # FIXME: This seems backwards.
+        natural_suited_part_scores,
+        fourth_suit_forcing_priorties.TwoLevel,
+    )
+    rule_order.order(
+        [fourth_suit_forcing_priorties.TwoLevel, fourth_suit_forcing_priorties.ThreeLevel],
+        responder_rebid_priorities.ThreeLevelSuitRebidByResponder,
+    )
     rule_order.order(
         DefaultPass,
         # Mention a 4-card major before rebidding a 6-card minor.
