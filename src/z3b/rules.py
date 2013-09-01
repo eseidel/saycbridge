@@ -866,18 +866,31 @@ class FourthSuitForcingPrecondition(Precondition):
 
 class FourthSuitForcing(Rule):
     category = categories.Gadget
+    requires_planning = True
     preconditions = [
         FourthSuitForcingPrecondition(),
         UnbidSuit(),
         NotJumpFromPartnerLastBid(),
     ]
-    requires_planning = True
     # Smallest: 1D,1H,1S,2C
     # Largest: 1H,2D,3C,3S
     call_names = [
         '2C', '2D', '2H', '2S',
         '3C', '3D', '3H', '3S',
     ]
+    annotations = annotations.FourthSuitForcing
+    shared_constraints = NO_CONSTRAINTS
+
+
+class TwoSpadesJumpFourthSuitForcing(Rule):
+    category = categories.Gadget
+    requires_planning = True
+    preconditions = [
+        FourthSuitForcingPrecondition(),
+        UnbidSuit(),
+        JumpFromPartnerLastBid(exact_size=1),
+    ]
+    call_names = '2S'
     annotations = annotations.FourthSuitForcing
     shared_constraints = NO_CONSTRAINTS
 
