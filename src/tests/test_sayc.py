@@ -899,6 +899,10 @@ class SAYCBidderTest(object):
             ["KQ4.K98.KQ873.K2", "2H", "1S"],  # K2 is only a 66% stopper, so we can't bid 1N, but with only 16 points we shouldn't bid-hand double.
             ["KQ4.A98.QJ873.K2", "1N", "1C"],  # 1N overcalls are 15-18 according to p100.
 
+            # A 1NT overcall is more descriptive than a takeout double and should be prefered.
+            ['KQ97.JT3.AK65.A3', '1N', '1C'], # Big-hand-doublable (17hcp)
+            ['KT97.JT3.AK65.A3', '1N', '1C'], # non-big-hand (15hcp)
+
             # Responding to overcalls
             ["J63.Q843.KT87.J5", "3H", "1C 1H P"],  # p101, h9
             ["J63.Q843.KT8.J75", "2H", "1C 1H P"],  # p101 (my example)
