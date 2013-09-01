@@ -433,7 +433,7 @@ class WaitingResponseToStrongTwoClubs(ResponseToStrongTwoClubs):
 class SuitResponseToStrongTwoClubs(ResponseToStrongTwoClubs):
     call_names = ['2H', '2S', '3C', '3D']
     shared_constraints = [MinLength(5), TwoOfTheTopThree(), points >= 8]
-    # FIXME: These should have ordered conditional priorites, no?
+    # FIXME: These should have ordered conditional priorities, no?
     priority = two_clubs_response_priorities.SuitResponse
 
 
@@ -893,6 +893,38 @@ class TwoSpadesJumpFourthSuitForcing(Rule):
     call_names = '2S'
     annotations = annotations.FourthSuitForcing
     shared_constraints = NO_CONSTRAINTS
+
+
+fourth_suit_forcing_response_priorties = enum.Enum(
+    # "JumpToThreeNotrump",
+    "Notrump",
+)
+rule_order.order(*reversed(fourth_suit_forcing_response_priorties))
+
+
+class ResponseToFourthSuitForcing(Rule):
+    category = categories.Gadget
+    preconditions = LastBidHasAnnotation(positions.Partner, annotations.FourthSuitForcing)
+
+
+class StopperInFouthSuit(Constraint):
+    def expr(self, history, call):
+        strain = history.partner.last_call.strain
+        return stopper_expr_for_suit(strain)
+
+
+class NotrumpResponseToFourthSuitForcing(ResponseToFourthSuitForcing):
+    preconditions = NotJumpFromLastContract()
+    call_names = ['2N', '3N']
+    priority = fourth_suit_forcing_response_priorties.Notrump
+    shared_constraints = StopperInFouthSuit()
+
+
+# class NotrumpJumpResponseToFourthSuitForcing(ResponseToFourthSuitForcing):
+#     preconditions = JumpFromLastContract()
+#     call_names = '3N'
+#     priority = fourth_suit_forcing_response_priorties.JumpToThreeNotrump
+#     shared_constraints = [StopperInFouthSuit(), MinimumCombinedPoints(25)]
 
 
 # FIXME: We should add an OpenerRebid of 3N over 2C P 2N P to show a minimum 22-24 HCP
