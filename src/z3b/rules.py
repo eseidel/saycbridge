@@ -886,7 +886,10 @@ class FourthSuitForcing(Rule):
         '3C', '3D', '3H', '3S',
     ]
     annotations = annotations.FourthSuitForcing
-    shared_constraints = SufficientPointsForFourthSuitForcing()
+    shared_constraints = [
+        SufficientPointsForFourthSuitForcing(),
+        ConstraintNot(Stopper()),
+    ]
 
 
 class TwoSpadesJumpFourthSuitForcing(Rule):

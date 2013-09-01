@@ -29,6 +29,14 @@ class ConstraintOr(Constraint):
         return z3.Or([constraint.expr(history, call) if isinstance(constraint, Constraint) else constraint for constraint in self.constraints])
 
 
+class ConstraintNot(Constraint):
+    def __init__(self, constraint):
+        self.constraint = constraint
+
+    def expr(self, history, call):
+        return z3.Not(self.constraint.expr(history, call))
+
+
 class MinimumCombinedLength(Constraint):
     def __init__(self, min_count, use_partners_last_suit=False):
         self.min_count = min_count
