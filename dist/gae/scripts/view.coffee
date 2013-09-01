@@ -87,16 +87,16 @@ class StrainView extends SuitView
 
     @fragmentReplacingStrainChars: (string) ->
         fragment = document.createDocumentFragment()
-        currentSubstring = ""
+        currentSubstring = ''
         for char in string
             # FIXME: This is a horrible hack for the explorer page which uses "4rS" and expects the "S" not to be replaced.
-            if model.Strain.isKnownChar(char) and (not currentSubstring or currentSubstring[currentSubstring.length-1] != "r")
+            if model.Strain.isKnownChar(char) and currentSubstring and currentSubstring[currentSubstring.length-1].match /[-+0-9]/
                 if currentSubstring
                     fragment.appendChild document.createTextNode(currentSubstring)
-                    currentSubstring = ""
+                    currentSubstring = ''
                 fragment.appendChild StrainView.fromStrain(model.Strain.fromChar(char))
-            else
-                currentSubstring += char
+                continue
+            currentSubstring += char
         if currentSubstring
             fragment.appendChild document.createTextNode(currentSubstring)
         return fragment
@@ -1300,6 +1300,67 @@ class TrickList extends HTMLTableElement
         return alloc @, playHistory
 
 
+class CallInterpretation extends HTMLDivElement
+    constructor: (@interpretation) ->
+        @className = 'call_interpretation'
+        @setupView()
+
+    setupView: ->
+        constraintsString = @interpretation.constraintsString
+        if constraintsString == '? '
+            constraintsString = null
+        if constraintsString and @interpretation.ruleName
+            @appendChild RuleExplanation.fromInterpretation @interpretation
+        else
+            @textContent = '\u2014' # &emdash;
+
+    @from: (interpretation) ->
+        return alloc @, interpretation
+
+
+class CallDescription extends HTMLTableRowElement
+    constructor: (@call, @callHistory) ->
+        @className = 'call_description'
+        @setupView()
+
+    setupView: ->
+        @insertCell(-1).appendChild StrainView.fragmentReplacingStrainChars(@call.name)
+        @waitingImage = WaitingImage.new()
+        @interpretation = @insertCell(-1)
+        @interpretation.appendChild @waitingImage
+
+        calls = @callHistory.calls.slice()
+        calls.push @call
+        board = new model.Board(1) # This is a hack, we just want a non-vuln board to display.
+        controller.BidInterpreter.interpretLastCallInCallsFromBoard calls, board, (calls, interpretation) =>
+            @interpretation.replaceChild CallInterpretation.from(interpretation), @waitingImage
+
+    @fromCallAndHistory: (call, callHistory) ->
+        return alloc @, call, callHistory
+
+
+class CallMenu extends HTMLTableElement
+    constructor: (@callHistory) ->
+        @className = 'call_menu'
+        @setupView()
+
+    _rowForCall: (call) ->
+        for row in @rows
+            if row.cells[0].textContent == 'Bid'
+                continue
+            if row.cells[0].firstChild.firstChild.call.name == call.name
+                return row
+
+    setupView: ->
+        board = new model.Board(1) # This is a hack, we just want a non-vuln board to display.
+        for possibleCall in @callHistory.possibleNextCalls()
+            @appendChild CallDescription.fromCallAndHistory possibleCall, @callHistory
+
+    @fromCallHistory: (callHistory) ->
+        return alloc @, callHistory
+
+
+
 window.view = window.view or {}
 view = window.view
 view.AutobidResult = AutobidResult
@@ -1307,6 +1368,7 @@ view.BiddingBox = BiddingBox
 view.BiddingHandView = BiddingHandView
 view.CallExplorerTable = CallExplorerTable
 view.CallHistoryTable = CallHistoryTable
+view.CallMenu = CallMenu
 view.CallView = CallView
 view.CardHandView = CardHandView
 view.ContractAndDeclarerView = ContractAndDeclarerView
