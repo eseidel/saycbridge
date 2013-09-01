@@ -879,11 +879,19 @@ fourth_suit_forcing_priorties = enum.Enum(
 class FourthSuitForcing(Rule):
     category = categories.Gadget
     preconditions = [
-        NotJumpFromPartnerLastBid(),
         LastBidHasSuit(positions.Partner),
         FourthSuitForcingPrecondition(),
         UnbidSuit(),
     ]
+    annotations = annotations.FourthSuitForcing
+    shared_constraints = [
+        SufficientPointsForFourthSuitForcing(),
+        ConstraintNot(Stopper()),
+    ]
+
+
+class NonJumpFourthSuitForcing(FourthSuitForcing):
+    preconditions = NotJumpFromPartnerLastBid()
     # Smallest: 1D,1H,1S,2C
     # Largest: 1H,2D,3C,3S
     call_names = [
@@ -894,24 +902,12 @@ class FourthSuitForcing(Rule):
         ('2C', '2D', '2H', '2S'): fourth_suit_forcing_priorties.TwoLevel,
         ('3C', '3D', '3H', '3S'): fourth_suit_forcing_priorties.ThreeLevel,
     }
-    annotations = annotations.FourthSuitForcing
-    shared_constraints = [
-        SufficientPointsForFourthSuitForcing(),
-        ConstraintNot(Stopper()),
-    ]
 
 
-class TwoSpadesJumpFourthSuitForcing(Rule):
-    category = categories.Gadget
-    requires_planning = True
-    preconditions = [
-        FourthSuitForcingPrecondition(),
-        UnbidSuit(),
-        JumpFromPartnerLastBid(exact_size=1),
-    ]
+class TwoSpadesJumpFourthSuitForcing(FourthSuitForcing):
+    preconditions = JumpFromPartnerLastBid(exact_size=1)
     call_names = '2S'
-    annotations = annotations.FourthSuitForcing
-    shared_constraints = SufficientPointsForFourthSuitForcing()
+    priority = fourth_suit_forcing_priorties.TwoLevel
 
 
 fourth_suit_forcing_response_priorties = enum.Enum(
