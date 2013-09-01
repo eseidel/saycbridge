@@ -93,6 +93,15 @@ class MaxLengthInLastContractSuit(Constraint):
         return expr_for_suit(history.last_contract.strain) <= self.max_length
 
 
+# class AdditionalLength(Constraint):
+#     def __init__(self, additional_length):
+#         self.additional_length = additional_length
+
+#     def expr(self, history, call):
+#         strain = history.last_contract.strain
+#         return expr_for_suit(strain) >= history.me.min_length(strain) + self.additional_length
+
+
 class SupportForPartnerLastBid(Constraint):
     def __init__(self, min_count):
         self._min_count = min_count

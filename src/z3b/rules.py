@@ -899,6 +899,7 @@ fourth_suit_forcing_response_priorties = enum.Enum(
     # "JumpToThreeNotrump",
     "Notrump",
     "DelayedSupport",
+    # "SecondSuit",
     "Escape",
 )
 rule_order.order(*reversed(fourth_suit_forcing_response_priorties))
@@ -956,6 +957,21 @@ class EscapeResponseToFourthSuitForcing(ResponseToFourthSuitForcing):
     ]
     priority = fourth_suit_forcing_response_priorties.Escape
     shared_constraints = NO_CONSTRAINTS
+
+
+# class SecondSuitResponseToFourthSuitForcing(ResponseToFourthSuitForcing):
+#     preconditions = [
+#         NotJumpFromLastContract(),
+#         DidBidSuit(positions.Me),
+#         InvertedPrecondition(SuitLowerThanMyLastSuit()),
+#     ]
+#     call_names = [
+#               '2D', '2H', '2S',
+#         '3C', '3D', '3H', '3S',
+#         '4C', '4D', '4H',
+#     ]
+#     priority = fourth_suit_forcing_response_priorties.SecondSuit
+#     shared_constraints = AdditionalLength(1)
 
 
 # FIXME: We should add an OpenerRebid of 3N over 2C P 2N P to show a minimum 22-24 HCP
