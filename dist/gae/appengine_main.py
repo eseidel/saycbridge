@@ -36,5 +36,12 @@ routes = [
     (r'/new_bidder/.*', NewBidderHandler),
 ]
 
+try:
+    from handlers.priorities_handler import JSONPrioritiesHandler
+    routes.append(
+        (r'/json/priorities', JSONPrioritiesHandler)
+    )
+except:
+    pass
 
 app = webapp2.WSGIApplication(routes, debug=True)
