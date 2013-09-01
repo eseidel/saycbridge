@@ -433,7 +433,7 @@ class WaitingResponseToStrongTwoClubs(ResponseToStrongTwoClubs):
 class SuitResponseToStrongTwoClubs(ResponseToStrongTwoClubs):
     call_names = ['2H', '2S', '3C', '3D']
     shared_constraints = [MinLength(5), TwoOfTheTopThree(), points >= 8]
-    # FIXME: These should have ordered conditional priorites, no?
+    # FIXME: These should have ordered conditional priorities, no?
     priority = two_clubs_response_priorities.SuitResponse
 
 
@@ -857,6 +857,157 @@ class JumpShiftResponderRebid(OneLevelOpeningResponderRebid):
     ]
     shared_constraints = [MinLength(4), points >= 14]
     priority = responder_rebid_priorities.JumpShiftResponderRebid
+
+
+class FourthSuitForcingPrecondition(Precondition):
+    def fits(self, history, call):
+        if annotations.FourthSuitForcing in history.annotations:
+            return False
+        return len(history.us.bid_suits) == 3 and len(history.them.bid_suits) == 0
+
+
+class SufficientPointsForFourthSuitForcing(Constraint):
+    def expr(self, history, call):
+        return points >= max(0, points_for_sound_notrump_bid_at_level[call.level] - history.partner.min_points)
+
+fourth_suit_forcing_priorties = enum.Enum(
+    "TwoLevel",
+    "ThreeLevel",
+)
+# No need for ordering because at most one is available at any time.
+
+class FourthSuitForcing(Rule):
+    category = categories.Gadget
+    preconditions = [
+        NotJumpFromPartnerLastBid(),
+        LastBidHasSuit(positions.Partner),
+        FourthSuitForcingPrecondition(),
+        UnbidSuit(),
+    ]
+    # Smallest: 1D,1H,1S,2C
+    # Largest: 1H,2D,3C,3S
+    call_names = [
+        '2C', '2D', '2H', '2S',
+        '3C', '3D', '3H', '3S',
+    ]
+    priorities_per_call = {
+        ('2C', '2D', '2H', '2S'): fourth_suit_forcing_priorties.TwoLevel,
+        ('3C', '3D', '3H', '3S'): fourth_suit_forcing_priorties.ThreeLevel,
+    }
+    annotations = annotations.FourthSuitForcing
+    shared_constraints = [
+        SufficientPointsForFourthSuitForcing(),
+        ConstraintNot(Stopper()),
+    ]
+
+
+class TwoSpadesJumpFourthSuitForcing(Rule):
+    category = categories.Gadget
+    requires_planning = True
+    preconditions = [
+        FourthSuitForcingPrecondition(),
+        UnbidSuit(),
+        JumpFromPartnerLastBid(exact_size=1),
+    ]
+    call_names = '2S'
+    annotations = annotations.FourthSuitForcing
+    shared_constraints = SufficientPointsForFourthSuitForcing()
+
+
+fourth_suit_forcing_response_priorties = enum.Enum(
+    "JumpToThreeNotrump",
+    "Notrump",
+    "DelayedSupport",
+    # "SecondSuit",
+    "FourthSuit",
+    "Escape",
+)
+rule_order.order(*reversed(fourth_suit_forcing_response_priorties))
+
+
+class ResponseToFourthSuitForcing(Rule):
+    category = categories.Gadget
+    preconditions = LastBidHasAnnotation(positions.Partner, annotations.FourthSuitForcing)
+
+
+class StopperInFouthSuit(Constraint):
+    def expr(self, history, call):
+        strain = history.partner.last_call.strain
+        return stopper_expr_for_suit(strain)
+
+
+class NotrumpResponseToFourthSuitForcing(ResponseToFourthSuitForcing):
+    preconditions = NotJumpFromLastContract()
+    call_names = ['2N', '3N']
+    priority = fourth_suit_forcing_response_priorties.Notrump
+    shared_constraints = StopperInFouthSuit()
+
+
+class NotrumpJumpResponseToFourthSuitForcing(ResponseToFourthSuitForcing):
+    preconditions = JumpFromLastContract()
+    call_names = '3N'
+    priority = fourth_suit_forcing_response_priorties.JumpToThreeNotrump
+    shared_constraints = [StopperInFouthSuit(), MinimumCombinedPoints(25)]
+
+
+class DelayedSupportResponseToFourthSuitForcing(ResponseToFourthSuitForcing):
+    preconditions = [
+        NotJumpFromLastContract(),
+        DidBidSuit(positions.Partner),
+    ]
+    call_names = [
+              '2D', '2H', '2S',
+        '3C', '3D', '3H', '3S',
+        '4C', '4D', '4H',
+    ]
+    priority = fourth_suit_forcing_response_priorties.DelayedSupport
+    shared_constraints = MinimumCombinedLength(7)
+
+
+class EscapeResponseToFourthSuitForcing(ResponseToFourthSuitForcing):
+    preconditions = [
+        NotJumpFromLastContract(),
+        DidBidSuit(positions.Me),
+        SuitLowerThanMyLastSuit(),
+    ]
+    call_names = [
+              '2D', '2H', '2S',
+        '3C', '3D', '3H', '3S',
+        '4C', '4D', '4H',
+    ]
+    priority = fourth_suit_forcing_response_priorties.Escape
+    shared_constraints = NO_CONSTRAINTS
+
+
+# class SecondSuitResponseToFourthSuitForcing(ResponseToFourthSuitForcing):
+#     preconditions = [
+#         NotJumpFromLastContract(),
+#         DidBidSuit(positions.Me),
+#         InvertedPrecondition(SuitLowerThanMyLastSuit()),
+#     ]
+#     call_names = [
+#               '2D', '2H', '2S',
+#         '3C', '3D', '3H', '3S',
+#         '4C', '4D', '4H',
+#     ]
+#     priority = fourth_suit_forcing_response_priorties.SecondSuit
+#     shared_constraints = AdditionalLength(1)
+
+
+class FourthSuitResponseToFourthSuitForcing(ResponseToFourthSuitForcing):
+    preconditions = [
+        NotJumpFromLastContract(),
+        UnbidSuit(),
+    ]
+    call_names = [
+        '3C', '3D', '3H', '3S',
+        '4C', '4D', '4H', '4S',
+    ]
+    priority = fourth_suit_forcing_response_priorties.FourthSuit
+    shared_constraints = [
+        MinLength(4),
+        SufficientCombinedPoints(),
+    ]
 
 
 # FIXME: We should add an OpenerRebid of 3N over 2C P 2N P to show a minimum 22-24 HCP
@@ -1656,7 +1807,7 @@ class JumpNotrumpResponseToTakeoutDouble(ResponseToTakeoutDouble):
 
 
 class SuitResponseToTakeoutDouble(ResponseToTakeoutDouble):
-    preconditions = [UnbidSuit(), NotJumpFromLastContract()]
+    preconditions = [SuitUnbidByOpponents(), NotJumpFromLastContract()]
     # FIXME: Why is the min-length constraint necessary?
     shared_constraints = [MinLength(3), LongestSuitExceptOpponentSuits()]
     # Need conditional priorities to disambiguate cases like being 1.4.4.4 with 0 points after 1C X P
@@ -1676,7 +1827,7 @@ class SuitResponseToTakeoutDouble(ResponseToTakeoutDouble):
 
 
 class JumpSuitResponseToTakeoutDouble(ResponseToTakeoutDouble):
-    preconditions = [UnbidSuit(), JumpFromLastContract(exact_size=1)]
+    preconditions = [SuitUnbidByOpponents(), JumpFromLastContract(exact_size=1)]
     # You can have 10 points, but no stopper in opponents suit and only a 3 card suit to bid.
     # 1C X P, xxxx.Axx.Kxx.Kxx
     shared_constraints = [MinLength(3), LongestSuitExceptOpponentSuits(), points >= 10]
@@ -2123,6 +2274,30 @@ class StandardAmericanYellowCard(object):
         # Don't jump to game immediately, even if we have the points for it.
         natural_exact_notrump_game,
         opener_one_level_new_major,
+    )
+    # FIXME: This ordering is correct, but the problem is that this makes ThreeNotrumpResponse
+    #        lower priority than LimitRaise, which isn't correct. We need more conditional
+    #        priorities to resolve this issue.
+    # rule_order.order(
+    #     ThreeNotrumpResponse,
+    #     new_one_level_suit_responses,
+    # )
+    rule_order.order(
+        natural_exact_notrump_game,
+        [fourth_suit_forcing_priorties.TwoLevel, fourth_suit_forcing_priorties.ThreeLevel],
+    )
+    rule_order.order(
+        natural_nt_part_scores,
+        fourth_suit_forcing_priorties.TwoLevel,
+    )
+    rule_order.order(
+        # FIXME: This seems backwards.
+        natural_suited_part_scores,
+        fourth_suit_forcing_priorties.TwoLevel,
+    )
+    rule_order.order(
+        [fourth_suit_forcing_priorties.TwoLevel, fourth_suit_forcing_priorties.ThreeLevel],
+        responder_rebid_priorities.ThreeLevelSuitRebidByResponder,
     )
     rule_order.order(
         DefaultPass,

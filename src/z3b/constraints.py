@@ -29,6 +29,14 @@ class ConstraintOr(Constraint):
         return z3.Or([constraint.expr(history, call) if isinstance(constraint, Constraint) else constraint for constraint in self.constraints])
 
 
+class ConstraintNot(Constraint):
+    def __init__(self, constraint):
+        self.constraint = constraint
+
+    def expr(self, history, call):
+        return z3.Not(self.constraint.expr(history, call))
+
+
 class MinimumCombinedLength(Constraint):
     def __init__(self, min_count, use_partners_last_suit=False):
         self.min_count = min_count
@@ -91,6 +99,15 @@ class MaxLengthInLastContractSuit(Constraint):
 
     def expr(self, history, call):
         return expr_for_suit(history.last_contract.strain) <= self.max_length
+
+
+# class AdditionalLength(Constraint):
+#     def __init__(self, additional_length):
+#         self.additional_length = additional_length
+
+#     def expr(self, history, call):
+#         strain = history.last_contract.strain
+#         return expr_for_suit(strain) >= history.me.min_length(strain) + self.additional_length
 
 
 class SupportForPartnerLastBid(Constraint):
