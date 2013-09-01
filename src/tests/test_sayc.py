@@ -801,6 +801,9 @@ class SAYCBidderTest(object):
             ["864.AKQT6.A2.K83", "5S", "3S P 4N P 5C P"], # p88, h24
             ["864.AKQT6.A2.K83", "6S", "3S P 4N P 5D P"], # p88, h24
 
+            # If he has an outside entry 3N is trivial.
+            ["AKQ83.AKT93..A85", "2N", "2H P"], # bidder-fight 13-245b5abb34a4a431f051f8ecde
+
             # Four level preempts
             ["KT3..74.AJT87432", "4S", ""], # p88, h25
             ["KT3..74.AJT87432", "4S", "P"], # p88, h25

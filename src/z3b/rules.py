@@ -2066,6 +2066,7 @@ class NewSuitResponseToPreempt(ResponseToPreempt):
         UnbidSuit(),
         NotJumpFromLastContract()
     ]
+    # FIXME: These need some sort of priority ordering between the calls.
     call_names = [
               '2D', '2H', '2S',
         '3C', '3D', '3H', '3S',
