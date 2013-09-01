@@ -879,11 +879,19 @@ fourth_suit_forcing_priorties = enum.Enum(
 class FourthSuitForcing(Rule):
     category = categories.Gadget
     preconditions = [
-        NotJumpFromPartnerLastBid(),
         LastBidHasSuit(positions.Partner),
         FourthSuitForcingPrecondition(),
         UnbidSuit(),
     ]
+    annotations = annotations.FourthSuitForcing
+    shared_constraints = [
+        SufficientPointsForFourthSuitForcing(),
+        ConstraintNot(Stopper()),
+    ]
+
+
+class NonJumpFourthSuitForcing(FourthSuitForcing):
+    preconditions = NotJumpFromPartnerLastBid()
     # Smallest: 1D,1H,1S,2C
     # Largest: 1H,2D,3C,3S
     call_names = [
@@ -894,36 +902,30 @@ class FourthSuitForcing(Rule):
         ('2C', '2D', '2H', '2S'): fourth_suit_forcing_priorties.TwoLevel,
         ('3C', '3D', '3H', '3S'): fourth_suit_forcing_priorties.ThreeLevel,
     }
-    annotations = annotations.FourthSuitForcing
-    shared_constraints = [
-        SufficientPointsForFourthSuitForcing(),
-        ConstraintNot(Stopper()),
-    ]
 
 
-class TwoSpadesJumpFourthSuitForcing(Rule):
-    category = categories.Gadget
-    requires_planning = True
-    preconditions = [
-        FourthSuitForcingPrecondition(),
-        UnbidSuit(),
-        JumpFromPartnerLastBid(exact_size=1),
-    ]
+class TwoSpadesJumpFourthSuitForcing(FourthSuitForcing):
+    preconditions = JumpFromPartnerLastBid(exact_size=1)
     call_names = '2S'
-    annotations = annotations.FourthSuitForcing
-    shared_constraints = SufficientPointsForFourthSuitForcing()
+    priority = fourth_suit_forcing_priorties.TwoLevel
 
 
-fourth_suit_forcing_response_priorties = enum.Enum(
+fourth_suit_forcing_response_priorities = enum.Enum(
     "JumpToThreeNotrump",
     "Notrump",
     "DelayedSupport",
     # "SecondSuit",
     "FourthSuit",
-    "Escape",
 )
-rule_order.order(*reversed(fourth_suit_forcing_response_priorties))
+rule_order.order(*reversed(fourth_suit_forcing_response_priorities))
 
+rebid_response_to_fourth_suit_forcing_priorities = enum.Enum(*suited_calls())
+rule_order.order(*reversed(rebid_response_to_fourth_suit_forcing_priorities))
+
+rule_order.order(
+    rebid_response_to_fourth_suit_forcing_priorities,
+    fourth_suit_forcing_response_priorities
+)
 
 class ResponseToFourthSuitForcing(Rule):
     category = categories.Gadget
@@ -939,14 +941,14 @@ class StopperInFouthSuit(Constraint):
 class NotrumpResponseToFourthSuitForcing(ResponseToFourthSuitForcing):
     preconditions = NotJumpFromLastContract()
     call_names = ['2N', '3N']
-    priority = fourth_suit_forcing_response_priorties.Notrump
+    priority = fourth_suit_forcing_response_priorities.Notrump
     shared_constraints = StopperInFouthSuit()
 
 
 class NotrumpJumpResponseToFourthSuitForcing(ResponseToFourthSuitForcing):
     preconditions = JumpFromLastContract()
     call_names = '3N'
-    priority = fourth_suit_forcing_response_priorties.JumpToThreeNotrump
+    priority = fourth_suit_forcing_response_priorities.JumpToThreeNotrump
     shared_constraints = [StopperInFouthSuit(), MinimumCombinedPoints(25)]
 
 
@@ -960,38 +962,31 @@ class DelayedSupportResponseToFourthSuitForcing(ResponseToFourthSuitForcing):
         '3C', '3D', '3H', '3S',
         '4C', '4D', '4H',
     ]
-    priority = fourth_suit_forcing_response_priorties.DelayedSupport
+    priority = fourth_suit_forcing_response_priorities.DelayedSupport
     shared_constraints = MinimumCombinedLength(7)
 
 
-class EscapeResponseToFourthSuitForcing(ResponseToFourthSuitForcing):
+class RebidResponseToFourthSuitForcing(ResponseToFourthSuitForcing):
     preconditions = [
         NotJumpFromLastContract(),
         DidBidSuit(positions.Me),
-        SuitLowerThanMyLastSuit(),
     ]
-    call_names = [
-              '2D', '2H', '2S',
-        '3C', '3D', '3H', '3S',
-        '4C', '4D', '4H',
-    ]
-    priority = fourth_suit_forcing_response_priorties.Escape
+    # FIXME: The higher call should show additional length in that suit.
+    priorities_per_call = {
+        '2D': rebid_response_to_fourth_suit_forcing_priorities.get('2D'),
+        '2H': rebid_response_to_fourth_suit_forcing_priorities.get('2H'),
+        '2S': rebid_response_to_fourth_suit_forcing_priorities.get('2S'),
+
+        '3C': rebid_response_to_fourth_suit_forcing_priorities.get('3C'),
+        '3D': rebid_response_to_fourth_suit_forcing_priorities.get('3D'),
+        '3H': rebid_response_to_fourth_suit_forcing_priorities.get('3H'),
+        '3S': rebid_response_to_fourth_suit_forcing_priorities.get('3S'),
+
+        '4C': rebid_response_to_fourth_suit_forcing_priorities.get('4C'),
+        '4D': rebid_response_to_fourth_suit_forcing_priorities.get('4D'),
+        '4H': rebid_response_to_fourth_suit_forcing_priorities.get('4H'),
+    }
     shared_constraints = NO_CONSTRAINTS
-
-
-# class SecondSuitResponseToFourthSuitForcing(ResponseToFourthSuitForcing):
-#     preconditions = [
-#         NotJumpFromLastContract(),
-#         DidBidSuit(positions.Me),
-#         InvertedPrecondition(SuitLowerThanMyLastSuit()),
-#     ]
-#     call_names = [
-#               '2D', '2H', '2S',
-#         '3C', '3D', '3H', '3S',
-#         '4C', '4D', '4H',
-#     ]
-#     priority = fourth_suit_forcing_response_priorties.SecondSuit
-#     shared_constraints = AdditionalLength(1)
 
 
 class FourthSuitResponseToFourthSuitForcing(ResponseToFourthSuitForcing):
@@ -1003,7 +998,7 @@ class FourthSuitResponseToFourthSuitForcing(ResponseToFourthSuitForcing):
         '3C', '3D', '3H', '3S',
         '4C', '4D', '4H', '4S',
     ]
-    priority = fourth_suit_forcing_response_priorties.FourthSuit
+    priority = fourth_suit_forcing_response_priorities.FourthSuit
     shared_constraints = [
         MinLength(4),
         SufficientCombinedPoints(),
