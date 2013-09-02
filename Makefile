@@ -34,7 +34,8 @@ sayc-env:
 	@virtualenv sayc-env
 
 sayc-env/%.STAMP: sayc-env
-	@source sayc-env/bin/activate && easy_install $(patsubst sayc-env/%.STAMP,%,$@) && touch $@
+	# source doesn't seem to play nice with /bin/sh
+	@. sayc-env/bin/activate && easy_install $(patsubst sayc-env/%.STAMP,%,$@) && touch $@
 
 env: $(PYTHON_EGGS)
 ifndef VIRTUAL_ENV

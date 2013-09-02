@@ -386,6 +386,10 @@
     padding: 20px;
 }
 
+.rule_name {
+    font-weight: bold;
+}
+
 hr {
     visibility: hidden;
 }

@@ -732,13 +732,22 @@ class ConstraintsView extends HTMLDivElement
         return alloc @, constraintsString
 
 
+class RuleName extends HTMLDivElement
+    constructor: (@ruleName) ->
+        @className = 'rule_name'
+        @textContent = @ruleName.replace(/([A-Z])/g, " $1")
+
+    @fromRuleName: (ruleName) ->
+        return alloc @, ruleName
+
+
 class RuleExplanation extends HTMLDivElement
     constructor: (@interpretation) ->
         @setupView()
 
     setupView: ->
         if @interpretation.ruleName
-            @textContent = @interpretation.ruleName.replace(/([A-Z])/g, " $1")
+            @appendChild RuleName.fromRuleName @interpretation.ruleName
         else
             @textContent = "Sorry! I don't know what that bid means."
 
