@@ -189,7 +189,7 @@ class MajorJumpToGame(RaiseResponse):
     shared_constraints = [MinimumCombinedLength(10), points < 10]
 
 
-class ThreeNotrumpResponse(ResponseToOneLevelSuitedOpen):
+class ThreeNotrumpMajorResponse(ResponseToOneLevelSuitedOpen):
     preconditions = LastBidHasStrain(positions.Partner, suit.MAJORS)
     call_names = '3N'
     # This is a very specific range per page 43.
@@ -2281,13 +2281,10 @@ class StandardAmericanYellowCard(object):
         natural_exact_notrump_game,
         opener_one_level_new_major,
     )
-    # FIXME: This ordering is correct, but the problem is that this makes ThreeNotrumpResponse
-    #        lower priority than LimitRaise, which isn't correct. We need more conditional
-    #        priorities to resolve this issue.
-    # rule_order.order(
-    #     ThreeNotrumpResponse,
-    #     new_one_level_suit_responses,
-    # )
+    rule_order.order(
+        ThreeNotrumpMajorResponse,
+        new_one_level_major_responses,
+    )
     rule_order.order(
         natural_exact_notrump_game,
         [fourth_suit_forcing_priorties.TwoLevel, fourth_suit_forcing_priorties.ThreeLevel],
@@ -2503,9 +2500,9 @@ class StandardAmericanYellowCard(object):
         major_raise_responses,
     )
     rule_order.order(
-        # Better to show points for NT game than mention a second minor.
+        # Better to show points for NT game than mention a new minor?
         new_two_level_minor_responses,
-        ThreeNotrumpResponse,
+        ThreeNotrumpMajorResponse,
     )
     rule_order.order(
         natural_nt_part_scores,

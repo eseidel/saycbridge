@@ -125,8 +125,7 @@ Pass 13 of 13 hands
 
 test_misc_hands_from_play:
 FAIL: 3H (expected 2C) for AKJ52.J.J9743.54 (hcp: 10 lp: 12 sp: 13), history: 1H P
-WARNING: Unordered: ['3H', '3N'] from: [LimitRaise, ThreeNotrumpResponse] ([MajorLimit, <class 'z3b.rules.ThreeNotrumpResponse'>])
-FAIL: None (expected 1S) for A2.T752.KQJ.AQ72 (hcp: 16 lp: 16 sp: 17), history: 1H P
+FAIL: 3H (expected 1S) for A2.T752.KQJ.AQ72 (hcp: 16 lp: 16 sp: 17), history: 1H P
 FAIL: 4C (expected 3N) for AKQ532.K8.K73.A9 (hcp: 19 lp: 21 sp: 21), history: P 1C P 1D P
 FAIL: None (expected 4H) for Q9754.AJ8.A9653. (hcp: 11 lp: 13 sp: 16), history: 1H P 3H P
 FAIL: None (expected P) for A93.Q762.K832.J3 (hcp: 10 lp: 10 sp: 10), history: 1D P 1H P 1S P 2N P 3N P
@@ -183,8 +182,7 @@ FAIL: 3H (expected 4H) for J5.KJ7.AKQ74.963 (hcp: 14 lp: 15 sp: 14), history: 1H
 FAIL: None (expected 3H) for AT8.J965.K85.Q97 (hcp: 10 lp: 10 sp: 10), history: 1D 2N P
 FAIL: P (expected 2C) for A96432.5.KJ8.AQJ (hcp: 15 lp: 17 sp: 18), history: P 1D
 FAIL: P (expected X) for 84.KT9765.4.A763 (hcp: 7 lp: 9 sp: 11), history: 1H 2C
-WARNING: Unordered: ['3S', '3N'] from: [LimitRaise, ThreeNotrumpResponse] ([MajorLimit, <class 'z3b.rules.ThreeNotrumpResponse'>])
-FAIL: None (expected 3N) for KQ8.K62.Q432.AK8 (hcp: 17 lp: 17 sp: 17), history: P 1S P
+FAIL: 3S (expected 3N) for KQ8.K62.Q432.AK8 (hcp: 17 lp: 17 sp: 17), history: P 1S P
 FAIL: 2D (expected 3C) for AKT964.975.7.965 (hcp: 7 lp: 9 sp: 10), history: 2C P (subtest of 2C P 3C P 4N P)
 WARNING: Unordered: ['2S', '3N'] from: [NewSuitResponseToPreempt, NaturalNotrump] ([<class 'z3b.rules.NewSuitResponseToPreempt'>, 3N])
 FAIL: None (expected 2N) for AK.AK54.98.KQJ76 (hcp: 20 lp: 21 sp: 22), history: 2H P
@@ -199,8 +197,7 @@ FAIL: None (expected P) for A54.QT5.J743.QJ7 (hcp: 10 lp: 10 sp: 10), history: P
 FAIL: 3N (expected 2N) for A54.QT5.J743.QJ7 (hcp: 10 lp: 10 sp: 10), history: P P 1N P 2C P 2S P (subtest of P P 1N P 2C P 2S P 2N P 3N P)
 FAIL: None (expected P) for J.AQ972.T5.JT964 (hcp: 8 lp: 10 sp: 11), history: 1H 2H 3C 4S P
 FAIL: P (expected X) for 8532.A854.A74.AK (hcp: 15 lp: 15 sp: 16), history: P 1H 2S P 3S P 4C 4H P P 5C
-WARNING: Unordered: ['3H', '3N'] from: [LimitRaise, ThreeNotrumpResponse] ([MajorLimit, <class 'z3b.rules.ThreeNotrumpResponse'>])
-FAIL: None (expected P) for 8532.A854.A74.AK (hcp: 15 lp: 15 sp: 16), history: P 1H 2S (subtest of P 1H 2S P 3S P 4C 4H P P 5C)
+FAIL: 3H (expected P) for 8532.A854.A74.AK (hcp: 15 lp: 15 sp: 16), history: P 1H 2S (subtest of P 1H 2S P 3S P 4C 4H P P 5C)
 FAIL: P (expected 2D) for 83.KQ732.Q2.AKJ9 (hcp: 15 lp: 16 sp: 15), history: P 1C 1D P P 1H 1S P P X
 FAIL: P (expected 1S) for 83.KQ732.Q2.AKJ9 (hcp: 15 lp: 16 sp: 15), history: P 1C 1D P P 1H (subtest of P 1C 1D P P 1H 1S P P X)
 FAIL: 2S (expected 3S) for A853.K.K2.KJT943 (hcp: 14 lp: 16 sp: 15), history: P 1S P 2D P
