@@ -73,7 +73,7 @@ class Gib(object):
         self._write_line(command_text)
 
     def _double_dummy_command(self, board):
-        input_text = "\n".join([position_char(position) + " " + board.deal.hands[position].pbn_string() for position in POSITIONS])
+        input_text = "\n".join([position_char(position) + " " + board.deal.hands[position].shdc_dot_string() for position in POSITIONS])
         if board.call_history.is_complete():
             leader = lho_of(board.call_history.declarer())
             trump = board.call_history.last_contract().strain
@@ -101,7 +101,7 @@ class Gib(object):
 
     def _next_bid_command(self, hand, history):
         return "\n".join([
-            hand.pbn_string(),
+            hand.shdc_dot_string(),
             position_char(history.dealer),
             history.vulnerability.gib_name(),
             history.calls_string(),
@@ -127,7 +127,7 @@ class Gib(object):
         other_hand_position = playHistory.dummy() if position != play_history.dummy() else play_history.declarer()
         played_cards = played_cards_string.split(" ")
         git_input_lines = [
-            hand.pbn_string(),
+            hand.shdc_dot_string(),
             position_char(history.dealer),
             history.vulnerability.gib_name(),
             history.calls_string(),
@@ -155,7 +155,7 @@ class Gib(object):
         # requires all 4 hands, so we just pass the same hand 4 times. (it doesn't seem to care.)
         self._send_command("-H")  # We could pass -z here to always make the "book" bid, but that results in some crazy bids...
         for _ in range(4):
-            self._write_line(hand.pbn_string())
+            self._write_line(hand.shdc_dot_string())
         self._write_line(position_char(history.dealer))
         self._write_line(history.vulnerability.gib_name())
         if history.calls:

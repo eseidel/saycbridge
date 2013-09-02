@@ -29,10 +29,14 @@ class Hand(object):
     def _validate(self):
         assert sum(map(lambda suit: self.length_of_suit(suit), SUITS)) == 13, self.cards_by_suit
 
-    def pbn_string(self):
+    # This is also referred to as "pbn notation": http://www.tistis.nl/pbn/
+    # "The cards of each hand are given in the order:  spades, hearts, diamonds, clubs."
+    # Gib (and likely other bridge programs) use this notation.
+    def shdc_dot_string(self):
         return '.'.join([self.cards_by_suit[suit] for suit in (SPADES, HEARTS, DIAMONDS, CLUBS)])
 
-    def reverse_pbn_string(self):
+    # This is the notation we use throughout sayc bridge code.
+    def cdhs_dot_string(self):
         return '.'.join([self.cards_by_suit[suit] for suit in (CLUBS, DIAMONDS, HEARTS, SPADES)])
 
     def play_card(self, suit, card_value):

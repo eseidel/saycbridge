@@ -73,11 +73,11 @@ class HandTest(unittest2.TestCase):
         self._assert_stopper("J765", 4)
         self._assert_stopper("87654", 4)
 
-    def test_pbn_string(self):
-        reverse_pbn = "AKJ52.J.J9743.54"
-        hand = Hand.from_cdhs_string(reverse_pbn)
-        self.assertEquals(hand.reverse_pbn_string(), reverse_pbn)
-        self.assertEquals(hand.pbn_string(), "54.J9743.J.AKJ52")
+    def test_shdc_dot_string(self):
+        cdhs_dot_string = "AKJ52.J.J9743.54"
+        hand = Hand.from_cdhs_string(cdhs_dot_string)
+        self.assertEquals(hand.cdhs_dot_string(), cdhs_dot_string)
+        self.assertEquals(hand.shdc_dot_string(), "54.J9743.J.AKJ52")
 
 
 if __name__ == '__main__':

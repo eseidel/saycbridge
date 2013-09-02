@@ -527,7 +527,7 @@ class RuleSelector(object):
         for call, best in maximal.iteritems():
             category, rules = best
             if len(rules) > 1:
-                print "WARNING: Multiple rules have maximal category for %s: %s, %s" % (call, category, rules)
+                print "WARNING: Multiple rules have maximal category (%s) for %s: %s" % (category, call, rules)
             else:
                 result[call] = rules[0]
         return result

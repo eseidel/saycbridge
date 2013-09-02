@@ -30,7 +30,7 @@ class AutobidForNone(object):
                 vulnerability = board.call_history.vulnerability.name
                 optional_vulernability_string = "" if vulnerability == "None" else ", '%s'" % vulnerability
                 print "['%s', '%s'%s],  # %s, %s" % (
-                    hand.pbn_string(),
+                    hand.cdhs_dot_string(),
                     board.call_history.calls_string(),
                     optional_vulernability_string,
                     board.identifier().partition(":")[0], # remove the call history
