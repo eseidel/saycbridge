@@ -316,7 +316,6 @@ class SAYCBidderTest(object):
         ])
         # FIXME: We haven't implemented ResponseToResponseToStayman yet.
 
-
     def test_3c_stayman(self):
         self._assert_hands_match_calls([
             ["T9.AJ2.T652.T973", "3C", "2N P"],
@@ -380,6 +379,9 @@ class SAYCBidderTest(object):
             ["QT987.AJ4.75.J43", "2N", "1N P"],  # p13, h25
             ["T732.KJ95.J32.A5", "2N", "1N P"],  # p13, h26
             ["952.QT87.A86.Q52", "P", "1N P"],  # p13, h27
+
+            # With only 6 points, game is remote.  Pass.
+            ['K8732.J98.J5.JT8', 'P', 'P P 1N P', 'N-S'],  # 12-f87c17a2a7cc6139a714067be4, W
         ])
 
     def test_three_level_calls_over_one_nt(self):
@@ -486,6 +488,9 @@ class SAYCBidderTest(object):
             ["753.97.Q753.K982", "2S", "1S P"],  # p36, h6
             ["742.J98.AT874.T6", "1N", "1S P"],  # p36, h7
             ["742.J98.AT874.T6", "4H", "1H P"],  # p36, h7
+
+            # Game is remote with only 5 points.  Pass.
+            ['T53.QT93.972.QJ4', 'P', '1H P', 'Both'],  # 7-8c6f19b36d04e1a88e774e6d07, N
         ])
 
     def test_invitational_response_to_one_of_a_major(self):
@@ -550,6 +555,9 @@ class SAYCBidderTest(object):
             ["42.652.8643.KQJ4", "1H", "1C P"],  # p46, h6
 
             ["AQ87.AT9.K7.T973", "1S", "1C P 1H P"],  # p47
+
+            # Length points tell us we must mention our hearts.
+            ['T8.7.KQT862.9652', '1H', '1C P', 'N-S'],  # 5-14c98344f93dc85b98ae1ad9f3, S
         ])
 
     def test_invitational_response_to_one_of_a_minor(self):
@@ -689,6 +697,9 @@ class SAYCBidderTest(object):
             ["JT64.K532.8.A543", "P", "1H P 1S P 2C P"], # p70, h5
             ["K9.9732.K9.JT943", "2H", "1H P 1S P 2C P"], # p70, h6
 
+            # Game is very unlikely, but not impossible.  We'll have no trouble making 3C.
+            ['A873.QJ8643.T5.9', '3C', '1S P 1N P 2C P'],  # 1-60eb708ae67af767784c500bc5, S
+
             # Invitational rebids
             ["KJ64.652.KT.A754", "2N", "1H P 1S P 2D P"], # p70, h7
             ["K95.97.KQJ986.J9", "3H", "1C P 1H P 1S P"], # p70, h8
@@ -767,6 +778,10 @@ class SAYCBidderTest(object):
             ['Q3.AQ97632.8.J32', '3D', 'P'], # 2o3 is also valid.
             ['Q3.AQ987632.8.J2', '4D', 'P'], # 2o3 is also valid.
 
+            # Do not have a void or an outside major when preempting. p89
+            [".Q765.843.KQT932", "P", ""],
+            ["3.76.Q843.KQT932", "P", ""],
+
             # Responding to a new suit from partner after preempt
             ["9.QJ2.AQT984.986", "3S", "2H P 2S P"], # p85, h4
             ["Q9.QT82.AQT984.2", "3D", "2H P 2S P"], # p85, h5
@@ -814,6 +829,12 @@ class SAYCBidderTest(object):
 
             # If he has an outside entry 3N is trivial.
             ["AKQ83.AKT93..A85", "2N", "2H P"], # bidder-fight 13-245b5abb34a4a431f051f8ecde
+
+            # 10 clubs and all suits stopped, 3N should be easy.
+            ['A53.K5.AKJ72.QJ3', '3N', '3C P'],  # 8-d1be3f6a42806431fd944f2a5e, E
+
+            # This looks very slammy from our side.  We see 7 club QTs and at least 5-6 heart tricks from partner.
+            ['AKQJ852.KT2.Q96.', '2N', 'P 2H P'],  # 1-d38ebff0963ac68d71d690504a, W
 
             # Four level preempts
             ["KT3..74.AJT87432", "4S", ""], # p88, h25
