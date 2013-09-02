@@ -64,14 +64,14 @@ class JSONExplore2Handler(webapp2.RequestHandler):
         call_history = CallHistory.from_string(calls_string, dealer_char, vulnerability_string)
 
         interpretations = []
-        for call in CallExplorer().possible_calls_over(call_history):
-            future_call_history = call_history.copy_appending_call(call)
-            knowledge_string, rule = interpreter.knowledge_string_and_rule_for_last_call(future_call_history)
-            explore_dict = {
-                'knowledge_string': knowledge_string,
-            }
-            explore_dict.update(self._json_from_rule(rule, call))
-            interpretations.append(explore_dict)
+        with interpreter.create_history(call_history) as history:
+            for call in CallExplorer().possible_calls_over(call_history):
+                knowledge_string, rule = interpreter.knowledge_string_and_rule_for_additional_call(history, call)
+                explore_dict = {
+                    'knowledge_string': knowledge_string,
+                }
+                explore_dict.update(self._json_from_rule(rule, call))
+                interpretations.append(explore_dict)
 
         self.response.headers["Content-Type"] = "application/json"
         self.response.headers["Cache-Control"] = "public"

@@ -69,6 +69,15 @@ class InterpreterProxy(object):
         kbb_oneline = position_knowledge.pretty_one_line(include_last_call_name=False)
         return kbb_oneline + " " + ", ".join(map(str, position_view.annotations_for_last_call))
 
+    def knowledge_string_and_rule_for_additional_call(self, history, call):
+        knowledge_string = None
+        rule = None
+        if use_z3:
+            history = self.interpreter.extend_history(history, call)
+            return self._pretty_string_for_position_view(history.rho), history.rho.rule_for_last_call
+        else:
+            raise NotImplementedError
+
     def knowledge_string_and_rule_for_last_call(self, call_history):
         knowledge_string = None
         rule = None
@@ -81,8 +90,5 @@ class InterpreterProxy(object):
             knowledge_string = existing_knowledge.rho.pretty_one_line(include_last_call_name=False) if existing_knowledge else None,
             return knowledge_string, matched_rules[-1]
 
-    def knowledge_from_history(self, call_history, loose_constraints=None):
-        if use_z3:
-            return (None, None)
-        return self.interpreter.knowledge_from_history(call_history, loose_constraints)
-
+    def create_history(self, call_history):
+        return self.interpreter.create_history(call_history)

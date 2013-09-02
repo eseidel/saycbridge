@@ -574,7 +574,7 @@ class Interpreter(object):
         # Assuming SAYC for all sides.
         self.system = rules.StandardAmericanYellowCard
 
-    def extend_histroy(self, history, call, explain=False):
+    def extend_history(self, history, call, explain=False):
         if explain:
             print call.name
 
@@ -600,5 +600,5 @@ class Interpreter(object):
     def create_history(self, call_history, explain=False):
         history = History()
         for call in call_history.calls:
-            history = self.extend_histroy(history, call, explain=explain)
+            history = self.extend_history(history, call, explain=explain)
         return history
