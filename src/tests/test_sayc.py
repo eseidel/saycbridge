@@ -608,6 +608,9 @@ class SAYCBidderTest(object):
 
             # Rebid our 6-card (in this case 7!) suits in preference to nt-escape.
             ['95.85.K6.AKQ8764', '2S', 'P 1S P 2C P'],  # 1-39edeca8410afb072c9e115ed5, E
+
+            # Partner has denied support for hearts, NT slam is remote (max 30 hcp), Pass.
+            ['A4.Q2.J864.AJT63', 'P', 'P 1S P 3N P', 'Both'],  # 10-f970d1a53c42cdb89e43b6d286, S
         ])
 
     def test_invitational_rebid_by_opener(self):
@@ -647,6 +650,15 @@ class SAYCBidderTest(object):
             ["Q6.Q86.KT5.AQ982", "P", "1S P 3S P"],  # p55, h22
             ["6.KJ86.KT5.AQ982", "4S", "1S P 3S P"],  # p55, h23
             ["98.Q86.KT5.AKQJ8", "4S", "1S P 3S P"],  # p55, h24
+
+            # With length-points we have enough to justify game?
+            ['9.Q974.AJ852.AK9', '4H', '1H P 3H P', 'Both'],  # 10-eea930810769b79341c4f2b7b5, E
+
+            # We have unmentioned heart strength, game is ours.
+            ['J7.A.AJ87432.K92', '4H', 'P P 1H P 3H P'],  # 1-d46de04d1347ea928e0a53f8db, S
+
+            # We've got a part score and nothing more.
+            ['KQ98.98.KJ98.KT9', 'P', '1C P 3C P', 'E-W'],  # 9-a5e0a0bbdc3ad67708c56b50f1, N
         ])
 
     def test_reverses(self): # Chap 7
@@ -965,14 +977,6 @@ class SAYCBidderTest(object):
             [".54.KJT65.QJT875", "2D", "1D P P"],  # p105, h10
             ["QJ972.A3..AKT653", "3H", "2H"],  # p105, h11
 
-            # Michaels minor requests:
-            ['KJ984.93.KJ986.K', '3C', '1S 2S P 2N P', 'N-S'],  # deal 6177852048991998477340369815114, N should respond with his minor when asked.
-            ['93.KJ984.KJ986.K', '3D', '1S 2S P 2N P', 'N-S'],  # modified from deal 6177852048991998477340369815114, N should respond with his minor when asked.
-            ['KJ984.93.KJ986.2', 'P', '1S 2S 3S 4C P'], # This is not covered in the book, but seems reasonable.
-            ['93.KJ984.KJ986.2', '4D', '1S 2S 3S 4C P'],
-            ['KJ984.93.KJ986.2', '5C', '1S 2S 4S 4N P'],
-            ['93.KJ984.KJ986.2', '5D', '1S 2S 4S 4N P'],
-
             # FIXME: If we have a max-michaels, partner likely doesn't have much, jump to show him we want this?
             # I can't find this in the book.  Maybe we invented it for the KBB?
             ['KJ984.93.KJ986.2', '4C', '1S 2S P 2N P'],
@@ -1000,6 +1004,23 @@ class SAYCBidderTest(object):
             # Michaels/Unusual notrump in the balancing seat
             ["2.3.QJ8752.KT984", "2D", "1D P P"],  # p107 (BOOK_ERROR: The hand only has 12 cards in the book!)
             ["KQ4.AQ8.KQ873.K2", "2N", "1D P P"],  # (my example) p141 points out that 2N in the balancing seat is not Unusual.  Why would we ever jump to 2N instead of start with a double?
+        ])
+
+    def test_responses_to_michaels(self):
+        self._assert_hands_match_calls([
+            # Michaels minor request:
+            ['KJ984.93.KJ986.K', '3C', '1S 2S P 2N P', 'N-S'],  # deal 6177852048991998477340369815114, N should respond with his minor when asked.
+            ['93.KJ984.KJ986.K', '3D', '1S 2S P 2N P', 'N-S'],  # modified from deal 6177852048991998477340369815114, N should respond with his minor when asked.
+            ['KJ984.93.KJ986.2', 'P', '1S 2S 3S 4C P'], # This is not covered in the book, but seems reasonable.
+            ['93.KJ984.KJ986.2', '4D', '1S 2S 3S 4C P'],
+            ['KJ984.93.KJ986.2', '5C', '1S 2S 4S 4N P'],
+            ['93.KJ984.KJ986.2', '5D', '1S 2S 4S 4N P'],
+
+            # FIXME: Maybe we should use michaels minor request to get his point-range first?
+            ['K75.AQ5.542.T763', '3H', 'P 1S 2S P'],  # 11-c66f5e1c834268a144ccb69edf, S
+
+            # 2N is to play in response to a minor michaels.
+            ['AJT952.AJT9.53.9', '2N', '1D 2D P', 'N-S'],  # 12-b6feacbc53abe224151d4c3845, S
         ])
 
     def test_overcalling_one_notrump(self): # Chap 14
