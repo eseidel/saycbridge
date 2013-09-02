@@ -191,7 +191,7 @@ class SoundNaturalBid(Natural):
     shared_constraints = [SufficientCombinedLength(), SufficientCombinedPoints()]
 
 
-class SuitedToPlay(SoundNaturalBid):
+class NaturalSuited(SoundNaturalBid):
     preconditions = [
         InvertedPrecondition(LastBidHasAnnotation(positions.Partner, annotations.Preemptive)),
         WeHaveShownMorePointsThanThem(),
@@ -272,7 +272,7 @@ class SufficientStoppers(Constraint):
         return NO_CONSTRAINTS
 
 
-class NotrumpToPlay(SoundNaturalBid):
+class NaturalNotrump(SoundNaturalBid):
     preconditions = WeHaveShownMorePointsThanThem()
     priorities_per_call = {
         '1N': notrump_without_stoppers.get('1N'),

@@ -223,6 +223,6 @@ class MinCombinedPointsForPartnerMinimumSuitedRebid(Constraint):
         rebid_level = call.level
         if call.strain > partner_call.strain:
             rebid_level += 1
-        # NOTE: This math matches SuitedToPlay:
+        # NOTE: This math matches NaturalSuited (almost):
         expected_points = 19 + (rebid_level - 2) * 3
         return model.points >= expected_points - history.partner.min_points
