@@ -12,11 +12,11 @@ annotations = enum.Enum(
     "Opening",
 
     # FIXME: It's a bit odd that 1C, 1S, 2N can end up with both
-    # OneLevelSuitOpening and NoTrumpSystemsOn.
+    # OneLevelSuitOpening and NotrumpSystemsOn.
     # e.g. Does ResponderJumpShift apply after 2N?
     "OneLevelSuitOpening", # 1-level suited response opening book.
     "StrongTwoClubOpening", # 2C response opening book.
-    "NoTrumpSystemsOn", # NT response opening book.
+    "NotrumpSystemsOn", # NT response opening book.
     "StandardOvercall", # Overcall opening book.
     "Preemptive", # Preemptive opening book.
 
@@ -131,9 +131,9 @@ class TheyOpened(Precondition):
 
 
 # FIXME: Rename to NotrumpOpeningBook?
-class NoTrumpSystemsOn(Precondition):
+class NotrumpSystemsOn(Precondition):
     def fits(self, history, call):
-        return annotations.NoTrumpSystemsOn in history.us.annotations
+        return annotations.NotrumpSystemsOn in history.us.annotations
 
 
 class OneLevelSuitedOpeningBook(Precondition):

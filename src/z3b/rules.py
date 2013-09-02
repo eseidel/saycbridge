@@ -19,7 +19,7 @@ rule_order.order(*reversed(relay_priorities))
 
 opening_priorities = enum.Enum(
     "StrongTwoClubs",
-    "NoTrumpOpening",
+    "NotrumpOpening",
     "LongestMajor",
     "HigherMajor",
     "LowerMajor",
@@ -62,13 +62,13 @@ class OneLevelSuitOpening(Opening):
     }
 
 
-class NoTrumpOpening(Opening):
-    annotations = annotations.NoTrumpSystemsOn
+class NotrumpOpening(Opening):
+    annotations = annotations.NotrumpSystemsOn
     constraints = {
         '1N': z3.And(points >= 15, points <= 17, balanced),
         '2N': z3.And(points >= 20, points <= 21, balanced)
     }
-    priority = opening_priorities.NoTrumpOpening
+    priority = opening_priorities.NotrumpOpening
 
 
 class StrongTwoClubs(Opening):
@@ -458,7 +458,7 @@ class RebidAfterOneLevelOpen(OpenerRebid):
 class NotrumpJumpRebid(RebidAfterOneLevelOpen):
     # See KBB's NotrumpJumpRebid for discussion of cases for this bid.
     # Unclear how this is affected by competition?
-    annotations = annotations.NoTrumpSystemsOn
+    annotations = annotations.NotrumpSystemsOn
     # FIXME: Does this only apply over minors?  What about 1H P 1S P 2N?
     preconditions = JumpFromLastContract(exact_size=1)
     call_names = '2N'
@@ -738,7 +738,7 @@ class OpenerRebidAfterStrongTwoClubs(OpenerRebid):
 
 
 class NotrumpRebidOverTwoClubs(OpenerRebidAfterStrongTwoClubs):
-    annotations = annotations.NoTrumpSystemsOn
+    annotations = annotations.NotrumpSystemsOn
     # These bids are only systematic after a 2D response from partner.
     preconditions = LastBidWas(positions.Partner, '2D')
     constraints = {
@@ -1048,22 +1048,22 @@ nt_response_priorities = enum.Enum(
 rule_order.order(*reversed(nt_response_priorities))
 
 
-class NoTrumpResponse(Rule):
-    category = categories.NoTrumpSystem
+class NotrumpResponse(Rule):
+    category = categories.NotrumpSystem
     preconditions = [
         # 1N overcalls have systems on too, partner does not have to have opened
-        LastBidHasAnnotation(positions.Partner, annotations.NoTrumpSystemsOn),
+        LastBidHasAnnotation(positions.Partner, annotations.NotrumpSystemsOn),
     ]
 
 
-class NotrumpGameInvitation(NoTrumpResponse):
+class NotrumpGameInvitation(NotrumpResponse):
     # This is an explicit descriptive rule, not a ToPlay rule.
     # ToPlay is 7-9, but 7 points isn't in game range.
     constraints = { '2N': MinimumCombinedPoints(23) }
     priority = nt_response_priorities.NotrumpGameInvitation
 
 
-class NotrumpGameAccept(NoTrumpResponse):
+class NotrumpGameAccept(NotrumpResponse):
     # This is an explicit descriptive rule, not a ToPlay rule.
     constraints = { '3N': MinimumCombinedPoints(25) }
     priority = nt_response_priorities.NotrumpGameAccept
@@ -1089,7 +1089,7 @@ minor_game_force_stayman_constraints = z3.And(
 )
 
 # 2C is a very special snowflake and can lead into many sequences, thus it gets its own class.
-class TwoLevelStayman(NoTrumpResponse):
+class TwoLevelStayman(NotrumpResponse):
     annotations = annotations.Stayman
     call_names = '2C'
 
@@ -1112,7 +1112,7 @@ class TwoLevelStayman(NoTrumpResponse):
     priority = nt_response_priorities.GarbageStayman
 
 
-class BasicStayman(NoTrumpResponse):
+class BasicStayman(NotrumpResponse):
     annotations = annotations.Stayman
     priority = nt_response_priorities.Stayman
     shared_constraints = [z3.Or(hearts >= 4, spades >= 4)]
@@ -1133,11 +1133,11 @@ class StolenThreeClubStayman(BasicStayman):
     constraints = { 'X': MinimumCombinedPoints(25) }
 
 
-class NoTrumpTransferResponse(NoTrumpResponse):
+class NotrumpTransferResponse(NotrumpResponse):
     annotations = annotations.Transfer
 
 
-class JacobyTransferToHearts(NoTrumpTransferResponse):
+class JacobyTransferToHearts(NotrumpTransferResponse):
     preconditions = NotJumpFromPartnerLastBid()
     call_names = ['2D', '3D', '4D']
     shared_constraints = hearts >= 5
@@ -1151,7 +1151,7 @@ class JacobyTransferToHearts(NoTrumpTransferResponse):
     priority = nt_response_priorities.JacobyTransferToHearts
 
 
-class JacobyTransferToSpades(NoTrumpTransferResponse):
+class JacobyTransferToSpades(NotrumpTransferResponse):
     preconditions = NotJumpFromPartnerLastBid()
     call_names = ['2H', '3H', '4H']
     shared_constraints = spades >= 5
@@ -1165,7 +1165,7 @@ class JacobyTransferToSpades(NoTrumpTransferResponse):
     priority = nt_response_priorities.JacobyTransferToSpades
 
 
-class TwoSpadesRelay(NoTrumpTransferResponse):
+class TwoSpadesRelay(NotrumpTransferResponse):
     constraints = {
         '2S': z3.Or(diamonds >= 6, clubs >= 6),
     }
@@ -1178,7 +1178,7 @@ class QuantitativeFourNotrumpJumpConstraint(Constraint):
         return points + history.partner.max_points >= 33
 
 
-class QuantitativeFourNotrumpJump(NoTrumpResponse):
+class QuantitativeFourNotrumpJump(NotrumpResponse):
     call_names = '4N'
     preconditions = JumpFromLastContract()
     shared_constraints = QuantitativeFourNotrumpJumpConstraint()
@@ -1298,7 +1298,7 @@ rule_order.order(*reversed(stayman_response_priorities))
 
 class StaymanResponse(Rule):
     preconditions = LastBidHasAnnotation(positions.Partner, annotations.Stayman)
-    category = categories.NoTrumpSystem
+    category = categories.NotrumpSystem
 
 
 class NaturalStaymanResponse(StaymanResponse):
@@ -1336,7 +1336,7 @@ class StolenSpadeStaymanResponse(StaymanResponse):
     priority = stayman_response_priorities.SpadeStaymanResponse
 
 
-class ResponseToOneNotrump(NoTrumpResponse):
+class ResponseToOneNotrump(NotrumpResponse):
     preconditions = LastBidWas(positions.Partner, '1N')
 
 
@@ -1356,7 +1356,7 @@ class LongMajorSlamInvitation(ResponseToOneNotrump):
 
 class StaymanRebid(Rule):
     preconditions = LastBidHasAnnotation(positions.Me, annotations.Stayman)
-    category = categories.NoTrumpSystem
+    category = categories.NotrumpSystem
 
 
 class GarbagePassStaymanRebid(StaymanRebid):
@@ -1396,7 +1396,7 @@ class OtherMajorRebidAfterStayman(StaymanRebid):
     }
 
 
-class RedoubleTransferToMinor(NoTrumpResponse):
+class RedoubleTransferToMinor(NotrumpResponse):
     preconditions = [
         LastBidWas(positions.Partner, '1N'),
         LastBidWas(positions.RHO, 'X'),
@@ -1613,7 +1613,7 @@ class DirectOvercall1N(DirectOvercall):
     call_names = '1N'
     shared_constraints = [points >= 15, points <= 17, balanced, StopperInRHOSuit()]
     priority = overcall_priorities.DirectOvercall1N
-    annotations = annotations.NoTrumpSystemsOn
+    annotations = annotations.NotrumpSystemsOn
 
 
 class MichaelsCuebid(object):

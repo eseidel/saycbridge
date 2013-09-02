@@ -15,7 +15,7 @@ import z3
 categories = enum.Enum(
     "Relay",
     "Gadget",
-    "NoTrumpSystem",
+    "NotrumpSystem",
     "Default",
     "Natural",
     "LawOfTotalTricks",
