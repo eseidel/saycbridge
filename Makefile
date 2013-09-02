@@ -58,7 +58,7 @@ serve: clean
 	cd $(appengine_dir); python2.7 standalone_main.py
 
 serve-prod: clean compile
-	cd $(appengine_dir); python2.7 production_main.py
+	@. sayc-env/bin/activate && python2.7 $(appengine_dir)/production_main.py
 
 # Support for the old Knowledge Based Bidder:
 
