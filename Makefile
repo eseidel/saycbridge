@@ -81,6 +81,7 @@ publish: compile
 
 deploy:
 	git push origin origin/master:production
+	ssh serve@z3b.saycbridge.com 'killall python2.7 -INT'
 
 # FIXME: Need some way to make this work from a macro instead of an explicit list of files.
 closure:
