@@ -574,32 +574,31 @@ class Interpreter(object):
         # Assuming SAYC for all sides.
         self.system = rules.StandardAmericanYellowCard
 
+    def extend_histroy(self, history, call, explain=False):
+        if explain:
+            print call.name
+
+        expected_call = call if explain else None
+        selector = RuleSelector(self.system, history, expected_call=expected_call, explain=explain)
+
+        rule = selector.rule_for_call(call)
+
+        constraints = model.NO_CONSTRAINTS
+        annotations = []
+        if rule:
+            annotations = rule.annotations_for_call(call)
+            constraints = selector.constraints_for_call(call)
+            if not history.is_consistent(positions.Me, constraints):
+                if explain:
+                    print "WARNING: History is not consistent, ignoring %s from %s" % (call.name, rule)
+                    print constraints
+                constraints = model.NO_CONSTRAINTS
+                annotations = []
+
+        return history.extend_with(call, annotations, constraints, rule)
+
     def create_history(self, call_history, explain=False):
         history = History()
-
-        for partial_history in call_history.ascending_partial_histories(step=1):
-            if explain:
-                print partial_history.last_call.name
-
-            expected_call = partial_history.last_call if explain else None
-            selector = RuleSelector(self.system, history, expected_call=expected_call, explain=explain)
-
-            call = partial_history.last_call
-            rule = selector.rule_for_call(call)
-
-            constraints = model.NO_CONSTRAINTS
-            annotations = []
-            if rule:
-                annotations = rule.annotations_for_call(call)
-                constraints = selector.constraints_for_call(call)
-                if not history.is_consistent(positions.Me, constraints):
-                    if explain:
-                        print "WARNING: History is not consistent, ignoring %s from %s" % (call.name, rule)
-                        print constraints
-                    constraints = model.NO_CONSTRAINTS
-                    annotations = []
-
-            history = history.extend_with(call, annotations, constraints, rule)
-
+        for call in call_history.calls:
+            history = self.extend_histroy(history, call, explain=explain)
         return history
-
