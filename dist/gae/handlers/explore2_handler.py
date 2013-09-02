@@ -19,6 +19,11 @@ from proxy import InterpreterProxy
 
 import json
 
+def get_git_revision():
+    import subprocess
+    proc = subprocess.Popen(['git', 'rev-parse', 'HEAD'], stdout=subprocess.PIPE)
+    return proc.stdout.readline().rstrip()
+BIDDER_REVISION = get_git_revision()
 
 class Explore2Handler(webapp2.RequestHandler):
     def _history_from_calls_string(self, calls_string):
@@ -38,8 +43,8 @@ class Explore2Handler(webapp2.RequestHandler):
             self._redirect_to_history(history)
             return
 
-        self.response.out.write(jinja_environment.get_template('explore.html').render({}))
-
+        self.response.out.write(jinja_environment.get_template('explore.html').render(
+            dict(bidder_revision=BIDDER_REVISION)))
 
 class JSONExplore2Handler(webapp2.RequestHandler):
     def _json_from_rule(self, rule, call):

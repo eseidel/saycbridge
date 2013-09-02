@@ -61,7 +61,7 @@ class Autobidder
 
 class Interpretation
     constructor: (@board, @calls, @callName, @ruleName, @constraintsString, @explanation, @rulePriority, @saycPage) ->
-        
+
 
     @fromBoardAndCallsAndJSONDict: (board, calls, json) ->
         return new Interpretation board, calls, json['call_name'], json['rule_name'], json['knowledge_string'], json['explanation'], json['priority'], json['sayc_page']
@@ -121,13 +121,14 @@ class BidInterpreter
         jqxhr.error (jqXHR, textStatus, errorThrown) =>
             ErrorReporter.reportError("Error interpreting bids for board: " + board.identifier())
             ErrorReporter.alertError("Sorry there has been an error communicating with the bidding server.  Please skip to the next hand.")
- 
+
      @interpretNextCallsFromCallsAndBoard: (calls, board, callback) ->
         # FIXME: Add caching
         requestJSON = {
             'calls_string': (call.name for call in calls).join(','),
             'dealer': board.dealer.name,
             'vulnerability': board.vulnerability.name(),
+            'revision': bidder_revision,
         }
         if document.location.hostname == "localhost"
             requestJSON['cache_bust'] = new Date
@@ -171,7 +172,7 @@ class Autoplay
         callback(round, newPlayHistory)
 
     _remotePlayHandsUntil: (round, stopPositions, callback) ->
-        
+
 
     playHandsUntil: (round, stopPositions, callback) ->
         # Things that the player should be told:
@@ -317,7 +318,7 @@ class RoundController
             if callback
                 callback(@autobidContinuation)
             return
-        
+
         if callback
             @_autobidContinuationCallbacks.push callback
 
