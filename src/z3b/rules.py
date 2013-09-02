@@ -2508,3 +2508,14 @@ class StandardAmericanYellowCard(object):
         new_two_level_minor_responses,
         ThreeNotrumpResponse,
     )
+    rule_order.order(
+        natural_nt_part_scores,
+        negative_doubles,
+    )
+    rule_order.order(
+        # If we can rebid, that's always better than escaping to a NT partscore.
+        # FIXME: This should be escape_to_nt_partscore instead of natural_nt.
+        # This ordering is probably overbroad as written!
+        natural_nt_part_scores,
+        UnforcedRebidOriginalSuitByOpener,
+    )

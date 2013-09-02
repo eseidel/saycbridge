@@ -597,7 +597,10 @@ class SAYCBidderTest(object):
             ["QJ87.J6.AKJ75.K8", "2C", "1H P 1S P"],  # p52, h5
 
             ["K92.34.K4.AKQT87", "2S", "1S P 1N P"],
-        ])  # FIXME: Need new-suit bidding logic in the fallback bidder.
+
+            # Rebid our 6-card (in this case 7!) suits in preference to nt-escape.
+            ['95.85.K6.AKQ8764', '2S', 'P 1S P 2C P'],  # 1-39edeca8410afb072c9e115ed5, E
+        ])
 
     def test_invitational_rebid_by_opener(self):
         self._assert_hands_match_calls([
@@ -1157,6 +1160,9 @@ class SAYCBidderTest(object):
             ['52.A95.AT3.KT843', '3H', 'P P 1H 2C', 'E-W'],  # 16-e384a665c6ca37604d6ef9330d, W
             # We're too strong to limit-raise and have too many spades to negative double:
             ['Q2.A95.AT3.KT843', '2S', '1H 2C'],
+
+            # When negative doubles apply, they're more descriptive than placement bids:
+            ['K8732.J32.A.A942', 'X', '1H 2D', 'Both'],  # 4-5a96c9d60ac4cefae0359cc4cd, E
         ])
 
     def test_reopening_double(self): # Chap 17
