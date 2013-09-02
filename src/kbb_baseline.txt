@@ -2,18 +2,18 @@ WARNING : Multiple bids of priority Default:  ['2S from NewSuitAfterTakeoutDoubl
 WARNING : Rule SuitGameIsRemote() for bid P resulted in invalid knowledge: me: 12-6 hcp, 0-5C 3+D 5+H 0-5S (last: 1H opening, opened) partner: 10-18 hcp, 0-3C 4+D 0-3S (last: 2D) lho 12+ hcp, 3+C 3+D 0-2H 3+S (last: X takeout) rho: ? (last: P)
 WARNING : Multiple bids of priority Default:  ['2H from CueBidAfterTakeoutDouble()', '2N from JumpTwoNotrumpAfterTakeoutDouble()']  Choosing highest: 2N
 WARNING : Multiple bids of priority Default:  ['2C from CueBidAfterTakeoutDouble()', '2N from JumpTwoNotrumpAfterTakeoutDouble()', '3N from NotrumpAfterTakeoutDouble()']  Choosing highest: 3N
-WARNING : Multiple bids of priority Default:  ['1H from NewSuitAfterTakeoutDouble()', '1N from NotrumpAfterTakeoutDouble()']  Choosing highest: 1N
 WARNING : Multiple bids of priority Default:  ['2C from CueBidAfterTakeoutDouble()', '2N from JumpTwoNotrumpAfterTakeoutDouble()']  Choosing highest: 2N
+WARNING : Multiple bids of priority Default:  ['1H from NewSuitAfterTakeoutDouble()', '1N from NotrumpAfterTakeoutDouble()']  Choosing highest: 1N
 WARNING : Multiple bids of priority Default:  ['1N from NotrumpAfterTakeoutDouble()', '2S from RaiseAfterTakeoutDouble()']  Choosing highest: 2S
 WARNING : Multiple bids of priority Default:  ['2D from SuitResponseToTakeoutDouble()', '2H from SuitResponseToTakeoutDouble()', '3D from JumpSuitResponseToTakeoutDouble()', '3H from JumpSuitResponseToTakeoutDouble()']  Choosing highest: 3H
 WARNING : Multiple bids of priority Default:  ['2C from CueBidAfterTakeoutDouble()', '2N from JumpTwoNotrumpAfterTakeoutDouble()', '3H from JumpNewSuitAfterTakeoutDouble()', '3S from JumpRaiseAfterTakeoutDouble()']  Choosing highest: 3S
 WARNING : Multiple bids of priority Default:  ['1N from NotrumpAfterTakeoutDouble()', '2D from RaiseAfterTakeoutDouble()']  Choosing highest: 2D
-WARNING : Multiple bids of priority Default:  ['2C from CueBidAfterTakeoutDouble()', '2H from JumpNewSuitAfterTakeoutDouble()', '2N from JumpTwoNotrumpAfterTakeoutDouble()']  Choosing highest: 2N
-WARNING : Multiple bids of priority Default:  ['2C from SuitResponseToTakeoutDouble()', '2N from NotrumpResponseToTakeoutDouble()', '3C from JumpSuitResponseToTakeoutDouble()']  Choosing highest: 3C
 WARNING : Multiple bids of priority Default:  ['2C from CueBidAfterTakeoutDouble()', '2N from JumpTwoNotrumpAfterTakeoutDouble()', '3S from JumpRaiseAfterTakeoutDouble()']  Choosing highest: 3S
+WARNING : Multiple bids of priority Default:  ['2C from SuitResponseToTakeoutDouble()', '2N from NotrumpResponseToTakeoutDouble()', '3C from JumpSuitResponseToTakeoutDouble()']  Choosing highest: 3C
+WARNING : Multiple bids of priority Default:  ['2C from CueBidAfterTakeoutDouble()', '2H from JumpNewSuitAfterTakeoutDouble()', '2N from JumpTwoNotrumpAfterTakeoutDouble()']  Choosing highest: 2N
 WARNING : Multiple bids of priority Default:  ['1N from NotrumpAfterTakeoutDouble()', '2D from RaiseAfterTakeoutDouble()']  Choosing highest: 2D
-WARNING : Multiple bids of priority Default:  ['3D from CueBidAfterTakeoutDouble()', '4S from JumpRaiseAfterTakeoutDouble()']  Choosing highest: 4S
 WARNING : Multiple bids of priority Default:  ['2C from SuitResponseToTakeoutDouble()', '3N from NotrumpResponseToTakeoutDouble()']  Choosing highest: 3N
+WARNING : Multiple bids of priority Default:  ['3D from CueBidAfterTakeoutDouble()', '4S from JumpRaiseAfterTakeoutDouble()']  Choosing highest: 4S
 WARNING : Multiple bids of priority Default:  ['2C from CueBidAfterTakeoutDouble()', '2N from JumpTwoNotrumpAfterTakeoutDouble()', '3D from JumpRaiseAfterTakeoutDouble()']  Choosing highest: 3D
 WARNING : Multiple bids of priority Default:  ['1N from NotrumpAfterTakeoutDouble()', '2H from NewSuitAfterTakeoutDouble()', '2S from RaiseAfterTakeoutDouble()']  Choosing highest: 2S
 WARNING : Multiple bids of priority Default:  ['3H from CueBidAfterTakeoutDouble()', '5D from JumpRaiseAfterTakeoutDouble()']  Choosing highest: 5D
@@ -76,27 +76,28 @@ test_game_forcing_resonse_to_one_of_a_major:
 Pass 3 of 3 hands
 
 test_game_forcing_response_to_one_of_a_minor:
-Pass 6 of 6 hands
+FAIL: 2C (expected 3N) for QJ52.AKQ7.97.KJ2 (hcp: 16 lp: 16 sp: 17), history: 1H P
+Pass 6 of 7 hands
 
-test_interference_over_one_nt:
-FAIL: P (expected XX) for 987654.632.5.543 (hcp: 0 lp: 2 sp: 3), hWARNING : Multiple bids of priority Default:  ['3H from ResponseToJacoby2N()', '4D from ResponseToJacoby2N()']  Choosing highest: 4D
+test_interfereWARNING : Multiple bids of priority Default:  ['3C from ResponseToJacoby2N()', '4D from ResponseToJacoby2N()']  Choosing highest: 4D
+WARNING : Multiple bids of priority Default:  ['3H from ResponseToJacoby2N()', '4D from ResponseToJacoby2N()']  Choosing highest: 4D
 WARNING : Multiple bids of priority Default:  ['3C from ResponseToJacoby2N()', '4D from ResponseToJacoby2N()']  Choosing highest: 4D
 WARNING : Multiple bids of priority Default:  ['3C from ResponseToJacoby2N()', '4D from ResponseToJacoby2N()']  Choosing highest: 4D
-WARNING : Multiple bids of priority Default:  ['3C from ResponseToJacoby2N()', '4D from ResponseToJacoby2N()']  Choosing highest: 4D
-WARNING : Multiple bids of priority NewSuit:  ['2D from NewTwoLevelSuitByResponder()', '2H from NewTwoLevelSuitByResponder()']  Choosing highest: 2H
 WARNING : Rule OpenerRebidAfterLimitRaise() for bid 4H resulted in invalid knowledge: me: 24-21 hcp, 5+H (last: 1H opening, opened) partner: 0-9 hcp, 4+H (last: 3H) lho 12+ hcp, 3+C 3+D 0-2H 3+S (last: X takeout) rho: 0-12 hcp (last: P)
+WARNING : Multiple bids of priority NewSuit:  ['2D from NewTwoLevelSuitByResponder()', '2H from NewTwoLevelSuitByResponder()']  Choosing highest: 2H
 WARNING : Multiple bids of priority Default:  ['3C from SuitResponseToTakeoutDouble()', '3H from SuitResponseToTakeoutDouble()']  Choosing highest: 3H
 WARNING : Multiple bids of priority Default:  ['2S from SuitResponseToTakeoutDouble()', '3C from SuitResponseToTakeoutDouble()']  Choosing highest: 3C
 WARNING : Multiple bids of priority Default:  ['1N from NotrumpAfterTakeoutDouble()', '2D from NewSuitAfterTakeoutDouble()']  Choosing highest: 2D
-WARNING : Multiple bids of priority EscapeToSuitedContract:  ['3C from EscapeToSuitedContract()', '3H from EscapeToSuitedContract()']  Choosing highest: 3H
 WARNING : Multiple bids of priority Default:  ['3H from JumpRaiseResponseToDirectOvercall()', '4H from JumpRaiseResponseToDirectOvercall()']  Choosing highest: 4H
+WARNING : Multiple bids of priority EscapeToSuitedContract:  ['3C from EscapeToSuitedContract()', '3H from EscapeToSuitedContract()']  Choosing highest: 3H
 WARNING : Rule SuitGameIsRemote() for bid P resulted in invalid knowledge: me: 10-9 hcp, 4+C 2+D 0-3H 0-3S (last: 2C) partner: 10-15 hcp, 0-3C 5+D (last: 2D, opened) lho 0-12 hcp (last: P) rho: 0-12 hcp (last: P)
-WARNING : Multiple bids of priority EscapeToSuitedContract:  ['3D from EscapeToSuitedContract()', '3H from EscapeToSuitedContract()']  Choosing highest: 3H
 WARNING : Multiple bids of priority LawOfTotalTricks:  ['2S from LawOfTotalTricks()', '3S from LawOfTotalTricks()', '4S from LawOfTotalTricks()']  Choosing highest: 4S
 WARNING : Rule LawOfTotalTricks() for bid 5C resulted in invalid knowledge: me: 5-11 hcp, 11+C 0--4D 0--4H 6-2S(3o5) (last: 4C) partner: 6-10 hcp, 3+S (last: P) lho 13-20 hcp, 3+H (last: 4H) rho: 12 hcp, 5+H (last: P, opened)
+WARNING : Multiple bids of priority EscapeToSuitedContract:  ['3D from EscapeToSuitedContract()', '3H from EscapeToSuitedContract()']  Choosing highest: 3H
 WARNING : Multiple bids of priority DirectOvercall:  ['1D from DirectSuitedOvercall()', '1S from DirectSuitedOvercall()']  Choosing highest: 1S
 WARNING : Multiple bids of priority Default:  ['2C from ResponderSignoffInPartnersSuit()', '2H from RebidResponderSuitByResponder()']  Choosing highest: 2H
-istory: 1N X (subtest of 1N X XX P 2C P)
+nce_over_one_nt:
+FAIL: P (expected XX) for 987654.632.5.543 (hcp: 0 lp: 2 sp: 3), history: 1N X (subtest of 1N X XX P 2C P)
 FAIL: None (expected 2D) for 982.T75432.86.32 (hcp: 0 lp: 2 sp: 2), history: 1N X XX P 2C P
 FAIL: P (expected XX) for 982.T75432.86.32 (hcp: 0 lp: 2 sp: 2), history: 1N X (subtest of 1N X XX P 2C P)
 FAIL: 2D (expected P) for KT82.AKT8.Q8.A62 (hcp: 16 lp: 16 sp: 15), history: 1N P 2C X
@@ -133,7 +134,9 @@ Pass 3 of 3 hands
 
 test_jacoby_transfers:
 FAIL: P (expected 3H) for J97.Q2.KJ9832.65 (hcp: 7 lp: 9 sp: 7), history: 1N P 2D P 2H P
-Pass 31 of 32 hands
+FAIL: 2S (expected 2D) for 83.852.5.KQT9752 (hcp: 5 lp: 8 sp: 9), history: 2C P (subtest of 2C P 2D P 3N P)
+FAIL: 2H (expected 2D) for 83.852.KQT9752.5 (hcp: 5 lp: 8 sp: 9), history: 2C P (subtest of 2C P 2D P 3N P)
+Pass 35 of 38 hands
 
 test_jacoby_two_nt_response_to_one_of_a_major:
 FAIL: 3N (expected 3H) for AJ2.K7.KQT853.A5 (hcp: 17 lp: 19 sp: 19), history: 1H P 2N P
@@ -155,7 +158,7 @@ FAIL: X (expected 2N) for KQ4.AQ8.KQ873.K2 (hcp: 19 lp: 20 sp: 20), history: 1D 
 Pass 38 of 50 hands
 
 test_minimum_rebid_by_opener:
-Pass 12 of 12 hands
+Pass 14 of 14 hands
 
 test_minimum_response_to_one_of_a_major:
 FAIL: P (expected 1N) for 742.J98.AT874.T6 (hcp: 5 lp: 6 sp: 6), history: 1S P
@@ -212,12 +215,12 @@ FAIL: 3H (expected 3D) for AJ6532.T73.J6.86 (hcp: 6 lp: 8 sp: 7), history: 1C 2N
 FAIL: 2D (expected 2N) for .K54.A9842.Q9543 (hcp: 9 lp: 11 sp: 14), history: P P 1D P 1S P 2C P
 FAIL: 2N (expected 2S) for J98652.942.T.AKQ (hcp: 10 lp: 12 sp: 13), history: P 1D 2D P
 FAIL: 3N (expected 4S) for Q5.962.AKQ65.AQ2 (hcp: 17 lp: 18 sp: 16), history: 1N P 2H P 2S P 2N P
-FAIL: 3H (expected 3D) for T32.Q63.KQJ986.2 (hcp: 8 lp: 10 sp: 11), history: P 2H P 2N P
+FAIL: 3H (expected 3D) for T32.Q63.KQJ986.2 (hcp: 8 lp: 10 sp: 11), history: P 2H PWARNING : Multiple bids of priority Default:  ['2H from RaiseResponseToDirectOvercall()', '3H from JumpRaiseResponseToDirectOvercall()']  Choosing highest: 3H
+ 2N P
 FAIL: None (expected P) for KT94.83.AT9654.T (hcp: 7 lp: 9 sp: 11), history: P P P 1C P 1H P 1S P 2H P 2N P
 FAIL: None (expected 3C) for K83.54.8632.A643 (hcp: 7 lp: 7 sp: 8), history: 1S P 2H X P
 FAIL: 2D (expected P) for K5.J86532.K6.AJ8 (hcp: 12 lp: 14 sp: 14), history: P P P 1D P 1S P
-FAIWARNING : Multiple bids of priority Default:  ['2H from RaiseResponseToDirectOvercall()', '3H from JumpRaiseResponseToDirectOvercall()']  Choosing highest: 3H
-L: None (expected X) for AKQ76..AT32.AT84 (hcp: 17 lp: 18 sp: 22), history: P P 1N
+FAIL: None (expected X) for AKQ76..AT32.AT84 (hcp: 17 lp: 18 sp: 22), history: P P 1N
 FAIL: P (expected X) for AT6.KJ864.A4.A42 (hcp: 16 lp: 17 sp: 17), history: P 2H
 FAIL: None (expected 2N) for 962.863.KQJ7.KJ7 (hcp: 10 lp: 10 sp: 10), history: P P 1D 1S X P 2C P
 FAIL: None (expected 3N) for AKJ.T53.KQ65.KJ2 (hcp: 17 lp: 17 sp: 17), history: P 1N P 2C P 2H P 2N P
@@ -231,7 +234,10 @@ FAIL: 1N (expected 2D) for J5.AQ864.A54.K76 (hcp: 14 lp: 15 sp: 14), history: 1D
 FAIL: 2N (expected 3N) for KJ6.AQJ93.K5.AJ6 (hcp: 19 lp: 20 sp: 20), history: 1D 1S X P
 FAIL: 4H (expected 2S) for AQ6.KQJ97.AQ76.5 (hcp: 18 lp: 19 sp: 21), history: 1D 1S X P
 FAIL: P (expected X) for 5432.2.5432.AKQJ (hcp: 10 lp: 10 sp: 13), history: 1C 1H
-Pass 36 of 41 hands
+FAIL: X (expected 2S) for Q832.QT.K4.AQT93 (hcp: 13 lp: 14 sp: 13), history: 1D 2H
+FAIL: X (expected 2H) for Q832.QT.AQT93.K4 (hcp: 13 lp: 14 sp: 13), history: 1D 1S
+FAIL: 2S (expected 3H) for 52.A95.AT3.KT843 (hcp: 11 lp: 12 sp: 12), history: P P 1H 2C
+Pass 42 of 50 hands
 
 test_open_one_nt:
 Pass 7 of 7 hands
@@ -272,7 +278,9 @@ test_overcalls:
 FAIL: X (expected 1H) for AQJ6.K96.AKJ74.3 (hcp: 18 lp: 19 sp: 21), history: 1C
 FAIL: 2H (expected P) for QJT2.76.AQ953.K8 (hcp: 12 lp: 13 sp: 14), history: 1S
 FAIL: 2S (expected 2H) for KQ8765.8.AQT95.9 (hcp: 11 lp: 14 sp: 17), history: 1S
-Pass 27 of 30 hands
+FAIL: X (expected 1N) forWARNING : Multiple bids of priority Default:  ['3D from SuitResponseToTakeoutDouble()', '4D from JumpSuitResponseToTakeoutDouble()']  Choosing highest: 4D
+ KQ97.JT3.AK65.A3 (hcp: 17 lp: 17 sp: 18), history: 1C
+Pass 28 of 32 hands
 
 test_preemption:
 FAIL: P (expected 2S) for Q98.JT8.53.AKT95 (hcp: 10 lp: 11 sp: 11), history: P P
@@ -281,8 +289,7 @@ FAIL: 4S (expected 3S) for 9.QJ2.AQT984.986 (hcp: 9 lp: 11 sp: 12), history: 2H 
 FAIL: 3H (expected 3D) for Q9.QT82.AQT984.2 (hcp: 10 lp: 12 sp: 12), history: 2H P 2S P
 FAIL: 1H (expected 2H) for Q9.QT82.AQT984.2 (hcp: 10 lp: 12 sp: 12), history:  (subtest of 2H P 2S P)
 FAIL: 3S (expected P) for J4.T.QJT.AJT7653 (hcp: 9 lp: 12 sp: 12), history: 
-FAIL: 3S (expected P)WARNING : Multiple bids of priority Default:  ['3D from SuitResponseToTakeoutDouble()', '4D from JumpSuitResponseToTakeoutDouble()']  Choosing highest: 4D
- for J4.T.QJT.AJT7653 (hcp: 9 lp: 12 sp: 12), history: P
+FAIL: 3S (expected P) for J4.T.QJT.AJT7653 (hcp: 9 lp: 12 sp: 12), history: P
 FAIL: None (expected P) for .K5.A985.KJ76432 (hcp: 11 lp: 14 sp: 17), history: 3C P
 FAIL: P (expected 5C) for KJ74.JT95.9732.A (hcp: 9 lp: 9 sp: 12), history: 3C P
 FAIL: None (expected 3S) for Q4.A7.K84.AKJT74 (hcp: 17 lp: 19 sp: 17), history: 3C P
@@ -296,7 +303,7 @@ FAIL: 1H (expected 4H) for 8.9873.AKQT864.4 (hcp: 9 lp: 12 sp: 15), history:
 FAIL: 1H (expected 4H) for 8.9873.AKQT864.4 (hcp: 9 lp: 12 sp: 15), history: P
 FAIL: 1H (expected 4H) for 8.9873.AKQT864.4 (hcp: 9 lp: 12 sp: 15), history: P P
 FAIL: P (expected 4H) for 8.9873.AKQT864.4 (hcp: 9 lp: 12 sp: 15), history: P P P
-Pass 48 of 68 hands
+Pass 49 of 69 hands
 
 test_preemptive_overcalls:
 Pass 9 of 9 hands
@@ -331,7 +338,10 @@ FAIL: 3C (expected 2D) for AQT542.AQJ.A.987 (hcp: 17 lp: 19 sp: 20), history: 1C
 FAIL: None (expected 3S) for AQT542.AQJ.A.987 (hcp: 17 lp: 19 sp: 20), history: 1C P 1S P 2D P 3D P
 FAIL: 3C (expected 2N) for J932.QJ7.Q83.JT3 (hcp: 7 lp: 7 sp: 7), history: 1C P 1N P 2D P
 FAIL: None (expected 2S) for 8763.85.T8.AQ985 (hcp: 6 lp: 7 sp: 8), history: 1D P 1S P 2H P
-FAIL: None (expected 3C) for AKJ762.KQ72.K9.5 (hcp: 16 lp: 18 sp: 20), history: 1C P 1S P 2D P 2S P
+FAIL: None (expected 3C) for AKJ76WARNING : Multiple bids of priority Default:  ['2S from TwoSpadesPuppet()', '3C from LongMinorGameInvitation()']  Choosing highest: 3C
+WARNING : Multiple bids of priority Default:  ['2S from TwoSpadesPuppet()', '3D from LongMinorGameInvitation()']  Choosing highest: 3D
+WARNING : Multiple bids of priority Default:  ['2S from TwoSpadesPuppet()', '3D from LongMinorGameInvitation()']  Choosing highest: 3D
+2.KQ72.K9.5 (hcp: 16 lp: 18 sp: 20), history: 1C P 1S P 2D P 2S P
 FAIL: 4S (expected 3S) for AQJ76.AK72.J.K75 (hcp: 18 lp: 19 sp: 20), history: 1C P 1S P 2D P 2S P
 Pass 20 of 29 hands
 
@@ -348,10 +358,7 @@ Pass 27 of 27 hands
 test_slam_zone_response_to_one_of_a_minor:
 FAIL: 1S (expected 2S) for AT98.QJ72..AKQT9 (hcp: 16 lp: 17 sp: 21), history: 1D P
 FAIL: 1H (expected 2H) for K985.3.AKQ987.K2 (hcp: 15 lp: 17 sp: 19), history: 1C P
-PWARNING : Multiple bids of priority Default:  ['2S from TwoSpadesPuppet()', '3C from LongMinorGameInvitation()']  Choosing highest: 3C
-WARNING : Multiple bids of priority Default:  ['2S from TwoSpadesPuppet()', '3D from LongMinorGameInvitation()']  Choosing highest: 3D
-WARNING : Multiple bids of priority Default:  ['2S from TwoSpadesPuppet()', '3D from LongMinorGameInvitation()']  Choosing highest: 3D
-ass 1 of 3 hands
+Pass 1 of 3 hands
 
 test_slam_zone_responses_to_one_of_a_major:
 Pass 2 of 2 hands
@@ -384,4 +391,4 @@ Pass 2 of 3 hands
 test_weak_game_jump_over_one_nt:
 Pass 3 of 3 hands
 
-Pass 930 (81%) of 1147 total hands
+Pass 944 (80%) of 1168 total hands
