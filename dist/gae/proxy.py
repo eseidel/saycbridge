@@ -20,7 +20,7 @@ import core.call
 
 # We can't import z3 in GAE.
 if use_z3:
-    from z3b.bidder import Interpreter, Bidder
+    from z3b.bidder import Interpreter, Bidder, InconsistentHistoryException
     from z3b.model import positions
 
 
@@ -72,11 +72,13 @@ class InterpreterProxy(object):
     def knowledge_string_and_rule_for_additional_call(self, history, call):
         knowledge_string = None
         rule = None
-        if use_z3:
+        if not use_z3:
+            raise NotImplementedError
+        try:
             history = self.interpreter.extend_history(history, call)
             return self._pretty_string_for_position_view(history.rho), history.rho.rule_for_last_call
-        else:
-            raise NotImplementedError
+        except InconsistentHistoryException, e:
+            return None, None
 
     def knowledge_string_and_rule_for_last_call(self, call_history):
         knowledge_string = None

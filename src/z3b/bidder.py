@@ -569,6 +569,13 @@ class RuleSelector(object):
         return possible_calls
 
 
+class InconsistentHistoryException(Exception):
+    def __init__(self, annotations, constraints, rule):
+        self.annotations = annotations
+        self.constraints = constraints
+        self.rule = rule
+
+
 class Interpreter(object):
     def __init__(self):
         # Assuming SAYC for all sides.
@@ -589,16 +596,18 @@ class Interpreter(object):
             annotations = rule.annotations_for_call(call)
             constraints = selector.constraints_for_call(call)
             if not history.is_consistent(positions.Me, constraints):
-                if explain:
-                    print "WARNING: History is not consistent, ignoring %s from %s" % (call.name, rule)
-                    print constraints
-                constraints = model.NO_CONSTRAINTS
-                annotations = []
+                raise InconsistentHistoryException(annotations, constraints, rule)
 
         return history.extend_with(call, annotations, constraints, rule)
 
     def create_history(self, call_history, explain=False):
         history = History()
         for call in call_history.calls:
-            history = self.extend_history(history, call, explain=explain)
+            try:
+                history = self.extend_history(history, call, explain=explain)
+            except InconsistentHistoryException, e:
+                if explain:
+                    print "WARNING: History is not consistent, ignoring %s from %s" % (call.name, e.rule)
+                    print e.constraints
+                history = history.extend_with(call, [], model.NO_CONSTRAINTS, None)
         return history
