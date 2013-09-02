@@ -16,16 +16,6 @@ class Hand(object):
         self.cards_by_suit = map(hand_sorter, map(str.upper, cards_by_suit))
         self._validate()
 
-    @classmethod
-    def random(cls):
-        shuffled_cards = range(52)
-        random.shuffle(shuffled_cards)
-        cards_by_suit = ["" for suit in SUITS]
-        for card_identifier in shuffled_cards[:13]:
-            suit, card = Card.suit_and_value_from_identifier(card_identifier)
-            cards_by_suit[suit] += card
-        return Hand(cards_by_suit)
-
     def _validate(self):
         assert sum(map(lambda suit: self.length_of_suit(suit), SUITS)) == 13, self.cards_by_suit
 

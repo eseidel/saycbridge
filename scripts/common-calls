@@ -7,9 +7,11 @@ import sys
 import find_src
 import collections
 
-from z3b.bidder import Bidder, Interpreter
+from z3b.bidder import Bidder, Interpreter, InconsistentHistoryException
+from z3b.model import expr_for_hand, positions
 from core.callhistory import CallHistory
-from core.hand import Hand
+from core.deal import Deal
+from core.callexplorer import CallExplorer
 
 
 if __name__ == '__main__':
@@ -18,8 +20,24 @@ if __name__ == '__main__':
     interpreter = Interpreter()
     call_history = CallHistory.from_string(" ".join(args))
 
-    # FIXME: This re-interprets the base history every time!
-    call_counts = collections.Counter(bidder.find_call_for(Hand.random(), call_history) for _ in range(100))
+    history = interpreter.create_history(call_history)
+
+    possible_call_to_history = {}
+    for call in CallExplorer().possible_calls_over(call_history):
+        try:
+            possible_call_to_history[call] = interpreter.extend_history(history, call)
+        except InconsistentHistoryException:
+            continue
+
+    call_counts = collections.Counter()
+    for _ in range(100):
+        # Random is random.  We don't care which hand is which.
+        deal = Deal.random()
+        if all(history.is_consistent(position, expr_for_hand(hand)) for hand, position in zip(deal.hands, positions)):
+            hand_expr = expr_for_hand(deal.hands[positions.LHO.index])
+            for call, possible_history in possible_call_to_history.items():
+                if possible_history.is_consistent(positions.Me, hand_expr):
+                    call_counts[call] += 1
 
     for call_and_count in call_counts.most_common():
         call, count = call_and_count
