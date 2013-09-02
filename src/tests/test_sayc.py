@@ -569,6 +569,10 @@ class SAYCBidderTest(object):
             ["A643.KJ63.J7.J53", "2D", "1D P"],  # p48, h9 (Possibly 1N)
             ["KJ953.K76.K83.J7", "3C", "1C P"],  # p48, h10
             ["KJ953.K76.K83.J7", "2C", "1D P"],  # p48, h10
+
+            # In this hand we have 10 support points but only 5 HCP.
+            # FIXME: How does this interact with length points?
+            [".KT953.Q863.T742", "2D", "1D P"],
         ])
 
     def test_game_forcing_response_to_one_of_a_minor(self):
