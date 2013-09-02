@@ -2238,8 +2238,7 @@ class StandardAmericanYellowCard(object):
     rule_order.order(DefaultPass, rebids_after_takeout_double)
     rule_order.order(DefaultPass, natural_passses)
     rule_order.order(natural_suited_part_scores, natural_passses)
-    rule_order.order(natural_passses, natural_games)
-
+    rule_order.order(SuitGameIsRemote, natural_games, SuitSlamIsRemote, natural_slams)
     rule_order.order(
         RebidOneNotrumpByOpener,
         opener_one_level_new_major,
