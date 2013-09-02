@@ -186,7 +186,7 @@ FAIL: P (expected X) for 84.KT9765.4.A763 (hcp: 7 lp: 9 sp: 11), history: 1H 2C
 WARNING: Unordered: ['3S', '3N'] from: [LimitRaise, ThreeNotrumpResponse] ([MajorLimit, <class 'z3b.rules.ThreeNotrumpResponse'>])
 FAIL: None (expected 3N) for KQ8.K62.Q432.AK8 (hcp: 17 lp: 17 sp: 17), history: P 1S P
 FAIL: 2D (expected 3C) for AKT964.975.7.965 (hcp: 7 lp: 9 sp: 10), history: 2C P (subtest of 2C P 3C P 4N P)
-WARNING: Unordered: ['2S', '3N'] from: [NewSuitResponseToPreempt, NotrumpToPlay] ([<class 'z3b.rules.NewSuitResponseToPreempt'>, 3N])
+WARNING: Unordered: ['2S', '3N'] from: [NewSuitResponseToPreempt, NaturalNotrump] ([<class 'z3b.rules.NewSuitResponseToPreempt'>, 3N])
 FAIL: None (expected 2N) for AK.AK54.98.KQJ76 (hcp: 20 lp: 21 sp: 22), history: 2H P
 FAIL: P (expected 3S) for KJ64.9.K6.KT7542 (hcp: 10 lp: 12 sp: 14), history: 1S P 2C P 3C P (subtest of 1S P 2C P 3C P 3S P 4S P)
 FAIL: 3S (expected 2C) for KJ64.9.K6.KT7542 (hcp: 10 lp: 12 sp: 14), history: 1S P (subtest of 1S P 2C P 3C P 3S P 4S P)
@@ -301,7 +301,7 @@ FAIL: None (expected 4S) for A9432.A8652.AKQ. (hcp: 17 lp: 19 sp: 22), history: 
 FAIL: None (expected 5S) for 864.AKQT6.A2.K83 (hcp: 16 lp: 17 sp: 17), history: 3S P 4N P 5C P
 FAIL: 4S (expected 4N) for 864.AKQT6.A2.K83 (hcp: 16 lp: 17 sp: 17), history: 3S P (subtest of 3S P 4N P 5C P)
 FAIL: None (expected 6S) for 864.AKQT6.A2.K83 (hcp: 16 lp: 17 sp: 17), history: 3S P 4N P 5D P
-WARNING: Unordered: ['3C', '3D', '3N'] from: [NewSuitResponseToPreempt, NewSuitResponseToPreempt, NotrumpToPlay] ([<class 'z3b.rules.NewSuitResponseToPreempt'>, <class 'z3b.rules.NewSuitResponseToPreempt'>, 3N])
+WARNING: Unordered: ['3C', '3D', '3N'] from: [NewSuitResponseToPreempt, NewSuitResponseToPreempt, NaturalNotrump] ([<class 'z3b.rules.NewSuitResponseToPreempt'>, <class 'z3b.rules.NewSuitResponseToPreempt'>, 3N])
 FAIL: None (expected 2N) for AKQ83.AKT93..A85 (hcp: 20 lp: 22 sp: 25), history: 2H P
 FAIL: None (expected 3N) for A53.K5.AKJ72.QJ3 (hcp: 18 lp: 19 sp: 19), history: 3C P
 FAIL: 3H (expected 2N) for AKQJ852.KT2.Q96. (hcp: 15 lp: 18 sp: 20), history: P 2H P

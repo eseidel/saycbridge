@@ -1729,7 +1729,7 @@ class OneLevelTakeoutDouble(TakeoutDouble):
         Level(1),
         InvertedPrecondition(takeout_double_after_preempt_precondition),
     ]
-    # FIXME: Why isn't this 12?  SuitedToPlay can only respond to 12+ points currently.
+    # FIXME: Why isn't this 12?  NaturalSuited can only respond to 12+ points currently.
     shared_constraints = points >= 11
 
 
@@ -2238,8 +2238,7 @@ class StandardAmericanYellowCard(object):
     rule_order.order(DefaultPass, rebids_after_takeout_double)
     rule_order.order(DefaultPass, natural_passses)
     rule_order.order(natural_suited_part_scores, natural_passses)
-    rule_order.order(natural_passses, natural_games)
-
+    rule_order.order(SuitGameIsRemote, natural_games, SuitSlamIsRemote, natural_slams)
     rule_order.order(
         RebidOneNotrumpByOpener,
         opener_one_level_new_major,
@@ -2366,7 +2365,7 @@ class StandardAmericanYellowCard(object):
     )
     rule_order.order(
         # We'd rather disclose a 6-card major suit than just jump to NT.
-        # FIXME: It's possible this is only an issue due to NotrumpToPlay missing stoppers!
+        # FIXME: It's possible this is only an issue due to NaturalNotrump missing stoppers!
         natural_exact_notrump_game,
         opener_unsupported_major_rebid,
     )
