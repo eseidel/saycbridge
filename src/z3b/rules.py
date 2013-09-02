@@ -411,6 +411,9 @@ class TwoLevelNegativeDouble(NegativeDouble):
     shared_constraints = points >= 8
 
 
+negative_doubles = set([OneLevelNegativeDouble, TwoLevelNegativeDouble])
+
+
 two_clubs_response_priorities = enum.Enum(
     "SuitResponse",
     "NoBiddableSuit",
@@ -2494,4 +2497,14 @@ class StandardAmericanYellowCard(object):
         # Even a jumpshift to a major seems less descriptive than a 2N rebid.
         opener_jumpshifts,
         NotrumpJumpRebid,
+    )
+    rule_order.order(
+        # Better to raise partner's major than show minors.
+        negative_doubles,
+        major_raise_responses,
+    )
+    rule_order.order(
+        # Better to show points for NT game than mention a second minor.
+        new_two_level_minor_responses,
+        ThreeNotrumpResponse,
     )

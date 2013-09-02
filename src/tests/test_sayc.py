@@ -573,6 +573,8 @@ class SAYCBidderTest(object):
             ["98.J732.AQJ74.AQ", "1H", "1D P"],  # p49, h12
             ["QJ5.A75.KT87.A42", "1H", "1C P"],  # p49, h13
             ["QJ5.A75.KT87.A42", "1H", "1D P"],  # p49, h13
+
+            ['QJ52.AKQ7.97.KJ2', '3N', '1H P', 'Both'],  # 4-492cd4cb87895e311feda2b247, E
         ])
 
     def test_slam_zone_response_to_one_of_a_minor(self):
@@ -1149,6 +1151,12 @@ class SAYCBidderTest(object):
             ['Q832.QT2.K4.AQT9', 'X', '1D 2H'],
             ['Q832.QT.AQT93.K4', '2H', '1D 1S'],
             ['Q832.QT2.AQT9.K4', 'X', '1D 1S'],
+
+            # No need to search for minor fits when we already have a major fit.
+            ['J854.A64.A94.QT7', '3H', 'P 1H 1S', 'E-W'],  # 3-85c71e2998bbdc4e9ff4a24d10, E
+            ['52.A95.AT3.KT843', '3H', 'P P 1H 2C', 'E-W'],  # 16-e384a665c6ca37604d6ef9330d, W
+            # We're too strong to limit-raise and have too many spades to negative double:
+            ['Q2.A95.AT3.KT843', '2S', '1H 2C'],
         ])
 
     def test_reopening_double(self): # Chap 17

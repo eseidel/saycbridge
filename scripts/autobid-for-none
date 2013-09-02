@@ -29,7 +29,7 @@ class AutobidForNone(object):
                 print "z3b=%s with %s" % (None, board.deal.hands[position_to_call].pretty_one_line())
                 vulnerability = board.call_history.vulnerability.name
                 optional_vulernability_string = "" if vulnerability == "None" else ", '%s'" % vulnerability
-                print "['%s', '%s'%s],  # %s, %s" % (
+                print "['%s', '?', '%s'%s],  # %s, %s" % (
                     hand.cdhs_dot_string(),
                     board.call_history.calls_string(),
                     optional_vulernability_string,
