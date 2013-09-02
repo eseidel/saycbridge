@@ -58,7 +58,7 @@ serve: clean
 	cd $(appengine_dir); python2.7 standalone_main.py
 
 serve-prod: clean compile
-	@. sayc-env/bin/activate && python2.7 $(appengine_dir)/production_main.py
+	@. sayc-env/bin/activate && cd $(appengine_dir) && python2.7 production_main.py
 
 # Support for the old Knowledge Based Bidder:
 
@@ -78,6 +78,9 @@ compile:
 
 publish: compile
 	@appcfg.py --oauth2 update $(appengine_dir)
+
+deploy:
+	git push origin origin/master:production
 
 # FIXME: Need some way to make this work from a macro instead of an explicit list of files.
 closure:
