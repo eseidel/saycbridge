@@ -7,7 +7,7 @@ import webapp2
 
 from handlers.bidder_handler import JSONAutobidHandler
 from handlers.explore_handler import ExploreHandler, JSONExploreHandler
-from handlers.explore2_handler import Explore2Handler
+from handlers.explore2_handler import Explore2Handler, JSONExplore2Handler
 from handlers.new_bidder_handler import NewBidderHandler
 from handlers.scores_handler import ScoresHandler
 from handlers.score_flashcards_handler import ScoreFlashcardsHandler
@@ -23,6 +23,7 @@ routes = [
     (r'/unittests', UnittestHandler),
     (r'/json/autobid', JSONAutobidHandler),
     (r'/json/interpret', JSONExploreHandler),
+    (r'/json/interpret2', JSONExplore2Handler),
     (r'/bid', NewBidderHandler),
     (r'/bid/.*', NewBidderHandler),
     (r'/play', NewBidderHandler),

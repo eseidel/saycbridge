@@ -39,3 +39,45 @@ class Explore2Handler(webapp2.RequestHandler):
             return
 
         self.response.out.write(jinja_environment.get_template('explore.html').render({}))
+
+
+class JSONExplore2Handler(webapp2.RequestHandler):
+    def _json_from_rule(self, rule, call):
+        if not rule:
+            return {
+                'call_name': call.name
+            }
+
+        return {
+            'call_name': call.name,
+            'rule_name': rule.name,
+            'priority': rule.priority.index if hasattr(rule, 'priority') and rule.priority else None,
+            'explanation': rule.explanation_for_bid(call),
+            'sayc_page': rule.sayc_page_for_bid(call),
+        }
+
+    def get(self):
+        interpreter = InterpreterProxy()
+        calls_string = self.request.get('calls_string') or ''
+        dealer_char = self.request.get('dealer') or ''
+        vulnerability_string = self.request.get('vulnerability') or ''
+        call_history = CallHistory.from_string(calls_string, dealer_char, vulnerability_string)
+
+        interpretations = []
+        for call in CallExplorer().possible_calls_over(call_history):
+            future_call_history = call_history.copy_appending_call(call)
+            knowledge_string, rule = interpreter.knowledge_string_and_rule_for_last_call(future_call_history)
+            explore_dict = {
+                'knowledge_string': knowledge_string,
+            }
+            explore_dict.update(self._json_from_rule(rule, call))
+            interpretations.append(explore_dict)
+
+        self.response.headers["Content-Type"] = "application/json"
+        self.response.headers["Cache-Control"] = "public"
+
+        expires_date = datetime.datetime.utcnow() + datetime.timedelta(days=1)
+        expires_str = expires_date.strftime("%d %b %Y %H:%M:%S GMT")
+        self.response.headers.add_header("Expires", expires_str)
+
+        self.response.out.write(json.dumps(interpretations))

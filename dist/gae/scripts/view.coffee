@@ -1319,24 +1319,19 @@ class CallInterpretation extends HTMLDivElement
 
 
 class CallDescription extends HTMLTableRowElement
-    constructor: (@call, @callHistory) ->
+    constructor: (@call) ->
         @className = 'call_description'
         @setupView()
 
     setupView: ->
         @insertCell(-1).appendChild StrainView.fragmentReplacingStrainChars(@call.name)
-        @waitingImage = WaitingImage.new()
-        @interpretation = @insertCell(-1)
-        @interpretation.appendChild @waitingImage
+        @interpretationCell = @insertCell(-1)
 
-        calls = @callHistory.calls.slice()
-        calls.push @call
-        board = new model.Board(1) # This is a hack, we just want a non-vuln board to display.
-        controller.BidInterpreter.interpretLastCallInCallsFromBoard calls, board, (calls, interpretation) =>
-            @interpretation.replaceChild CallInterpretation.from(interpretation), @waitingImage
+    didDetermineInterpretation: (@interpretation) ->
+        @interpretationCell.appendChild CallInterpretation.from(@interpretation)
 
-    @fromCallAndHistory: (call, callHistory) ->
-        return alloc @, call, callHistory
+    @fromCall: (call) ->
+        return alloc @, call
 
 
 class CallMenu extends HTMLTableElement
@@ -1344,17 +1339,20 @@ class CallMenu extends HTMLTableElement
         @className = 'call_menu'
         @setupView()
 
-    _rowForCall: (call) ->
+    _rowForCall: (callName) ->
         for row in @rows
-            if row.cells[0].textContent == 'Bid'
-                continue
-            if row.cells[0].firstChild.firstChild.call.name == call.name
+            if row.call.name == callName
                 return row
 
     setupView: ->
-        board = new model.Board(1) # This is a hack, we just want a non-vuln board to display.
         for possibleCall in @callHistory.possibleNextCalls()
-            @appendChild CallDescription.fromCallAndHistory possibleCall, @callHistory
+            @appendChild CallDescription.fromCall possibleCall
+        board = new model.Board(1) # This is a hack, we just want a non-vuln board to display.
+        controller.BidInterpreter.interpretNextCallsFromCallsAndBoard @callHistory.calls, board, (interpretations) =>
+            @classList.add 'ready'
+            for interpretation in interpretations
+                row = @_rowForCall interpretation.callName
+                row.didDetermineInterpretation interpretation
 
     @fromCallHistory: (callHistory) ->
         return alloc @, callHistory

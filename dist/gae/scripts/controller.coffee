@@ -60,15 +60,16 @@ class Autobidder
 
 
 class Interpretation
-    constructor: (@board, @calls, @ruleName, @constraintsString, @explanation, @rulePriority, @saycPage) ->
+    constructor: (@board, @calls, @callName, @ruleName, @constraintsString, @explanation, @rulePriority, @saycPage) ->
         
 
     @fromBoardAndCallsAndJSONDict: (board, calls, json) ->
-        return new Interpretation board, calls, json['rule_name'], json['knowledge_string'], json['explanation'], json['priority'], json['sayc_page']
+        return new Interpretation board, calls, json['call_name'], json['rule_name'], json['knowledge_string'], json['explanation'], json['priority'], json['sayc_page']
 
     @fromBoardAndCallsAndJSONTuple: (board, calls, jsonTuple) ->
         [bidName, ruleName, constraintsString, explanation, priority, saycPage] = jsonTuple
-        return new Interpretation board, calls, ruleName, constraintsString, explanation, priority, saycPage
+        callName = '?'
+        return new Interpretation board, calls, callName, ruleName, constraintsString, explanation, priority, saycPage
 
 
 class InterpretationCache
@@ -94,7 +95,7 @@ class InterpretationCache
 
 class BidInterpreter
     @interpretURL = "/json/interpret"
-    @exploreURL = "/json/explore"
+    @interpret2URL = "/json/interpret2"
     @cache = new InterpretationCache
 
     @cachedInterpretationForLastCallInCallsFromBoard: (calls, board) ->
@@ -121,6 +122,23 @@ class BidInterpreter
             ErrorReporter.reportError("Error interpreting bids for board: " + board.identifier())
             ErrorReporter.alertError("Sorry there has been an error communicating with the bidding server.  Please skip to the next hand.")
  
+     @interpretNextCallsFromCallsAndBoard: (calls, board, callback) ->
+        # FIXME: Add caching
+        requestJSON = {
+            'calls_string': (call.name for call in calls).join(','),
+            'dealer': board.dealer.name,
+            'vulnerability': board.vulnerability.name(),
+        }
+        if document.location.hostname == "localhost"
+            requestJSON['cache_bust'] = new Date
+
+        jqxhr = $.getJSON BidInterpreter.interpret2URL, requestJSON, (data, textStatus, jqXHR) =>
+            interpretations = (Interpretation.fromBoardAndCallsAndJSONDict(board, calls, jsonDict) for jsonDict in data)
+            callback(interpretations)
+        jqxhr.error (jqXHR, textStatus, errorThrown) =>
+            ErrorReporter.reportError("Error interpreting bids for board: " + board.identifier())
+            ErrorReporter.alertError("Sorry there has been an error communicating with the bidding server.  Please skip to the next hand.")
+
 
 class Autoplay
     constructor: (useRemote) ->
