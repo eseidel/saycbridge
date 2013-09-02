@@ -24,6 +24,7 @@ SCRIPTS = \
 	recap.js \
 
 PYTHON_PACKAGES=networkx unittest2 werkzeug webapp2 webob jinja2
+# Prod packages: cherrypy
 
 PYTHON_EGGS=$(patsubst %,sayc-env/%.STAMP,$(PYTHON_PACKAGES))
 
@@ -55,6 +56,9 @@ serve: clean
 	coffee --watch --compile $(appengine_scripts_dir)/*.coffee &
 	# FIXME: Doesn't python just have a -C to change CWD before executing?
 	cd $(appengine_dir); python2.7 standalone_main.py
+
+serve-prod: clean compile
+	cd $(appengine_dir); python2.7 production_main.py
 
 # Support for the old Knowledge Based Bidder:
 
