@@ -454,7 +454,7 @@ class SAYCBidderTest(object):
             # Do I open 1D or 1C?
             ["J73.AQ5.Q83.AJ75", "1C"],  # p27, h9
             ["J8.AQ2.Q873.AJT9", "1D"],  # p27, h10
-            ["KQ84.AQ98.QJ8.A4", "1D"],  # p27, h11
+            ["KQ84.AQ98.QJ8.A4", "1D"],  # p27, h11 # The book says 1C but is contradicting itself.
 
             # More Rule-of-20
             ["4.Q65.K873.AK975", "1S"],  # p29, h12
