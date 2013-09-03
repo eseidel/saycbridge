@@ -197,7 +197,7 @@ class History(object):
         history = self._history_after_last_call_for(position)
         if not history:
             return _solver_pool.borrow()
-        return history._solver
+        return history._solver()
 
     def __enter__(self):
         return self
@@ -206,7 +206,6 @@ class History(object):
         for position in positions:
             _solver_pool.restore(self._solver_for_position.take(position))
 
-    @property
     def _solver(self):
         return self._solver_for_position(positions.RHO)
 
@@ -285,11 +284,11 @@ class History(object):
 
     # can't memoize due to unhashable parameter
     def _solve_for_consistency(self, constraints):
-        return is_possible(self._solver, constraints)
+        return is_possible(self._solver(), constraints)
 
     @memoized
     def _solve_for_min_length(self, suit):
-        solver = self._solver
+        solver = self._solver()
         suit_expr = expr_for_suit(suit)
         for length in range(0, 13):
             if is_possible(solver, suit_expr == length):
@@ -304,7 +303,7 @@ class History(object):
 
     @memoized
     def _solve_for_max_length(self, suit):
-        solver = self._solver
+        solver = self._solver()
         suit_expr = expr_for_suit(suit)
         for length in range(13, 0, -1):
             if is_possible(solver, suit_expr == length):
@@ -319,7 +318,7 @@ class History(object):
 
     @memoized
     def _solve_for_is_balanced(self):
-        return is_certain(self._solver, model.balanced)
+        return is_certain(self._solver(), model.balanced)
 
     def is_balanced_for_position(self, position):
         history = self._history_after_last_call_for(position)
@@ -338,7 +337,7 @@ class History(object):
 
     @memoized
     def _solve_for_min_points(self):
-        solver = self._solver
+        solver = self._solver()
         predicate = lambda points: is_possible(solver, model.playing_points == points)
         if predicate(0):
             return 0
@@ -352,7 +351,7 @@ class History(object):
 
     @memoized
     def _solve_for_max_points(self):
-        solver = self._solver
+        solver = self._solver()
         for cap in range(37, 0, -1):
             if is_possible(solver, cap == model.points):
                 return cap
@@ -366,7 +365,7 @@ class History(object):
 
     @memoized
     def _solve_for_more_points_than(self, points):
-        return is_possible(self._solver, model.points >= points)
+        return is_possible(self._solver(), model.points >= points)
 
     def could_have_more_points_than(self, position, points):
         history = self._history_after_last_call_for(position)
