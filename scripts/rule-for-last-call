@@ -25,9 +25,8 @@ def silence_kbb_logging():
     logger.setLevel(logging.CRITICAL) # Only the worst will get through.
 
 
-# FIXME: It's possible the glob should be separated out into its own tool.
 def _print_usage_and_exit():
-    print "USAGE: rule-regexp HISTORY_GLOB"
+    print "USAGE: rule-for-last-call HISTORY_GLOB"
     print " HISTORY_GLOB is space or comma separated, * means 'any call'"
     print "Will list the rule used for the last call in each possible history."
     sys.exit(1)
