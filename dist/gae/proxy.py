@@ -74,8 +74,6 @@ class InterpreterProxy(object):
         return "%s %s" % (kbb_oneline, ", ".join(map(str, annotations_for_last_call)))
 
     def knowledge_string_and_rule_for_additional_call(self, history, call):
-        knowledge_string = None
-        rule = None
         if not use_z3:
             raise NotImplementedError
         try:
@@ -85,8 +83,6 @@ class InterpreterProxy(object):
             return None, None
 
     def knowledge_string_and_rule_for_last_call(self, call_history):
-        knowledge_string = None
-        rule = None
         if use_z3:
             with self.interpreter.create_history(call_history) as history:
                 return self._pretty_string_for_position_view(history.rho), history.rho.rule_for_last_call
