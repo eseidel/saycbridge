@@ -47,19 +47,20 @@ class Explore2Handler(webapp2.RequestHandler):
 
 
 class JSONExplore2Handler(webapp2.RequestHandler):
-    def _json_from_rule(self, rule, call):
-        if not rule:
-            return {
-                'call_name': call.name
-            }
+    def _set_if_not_none(self, dictionary, key, value):
+        if value is not None:
+            dictionary[key] = value
 
-        return {
-            'call_name': call.name,
-            'rule_name': rule.name,
-            'priority': rule.priority.index if hasattr(rule, 'priority') and rule.priority else None,
-            'explanation': rule.explanation_for_bid(call),
-            'sayc_page': rule.sayc_page_for_bid(call),
-        }
+    def _json_from_rule(self, knowledge_string, rule, call):
+        explore_dict = { 'call_name': call.name }
+        self._set_if_not_none(explore_dict, 'knowledge_string', knowledge_string)
+        if rule:
+            explore_dict['rule_name'] = rule.name
+            priority = rule.priority.index if hasattr(rule, 'priority') and rule.priority else None
+            self._set_if_not_none(explore_dict, 'priority', priority)
+            self._set_if_not_none(explore_dict, 'explanation', rule.explanation_for_bid(call))
+            self._set_if_not_none(explore_dict, 'sayc_page', rule.sayc_page_for_bid(call))
+        return explore_dict
 
     def get(self):
         interpreter = InterpreterProxy()
@@ -72,10 +73,7 @@ class JSONExplore2Handler(webapp2.RequestHandler):
         with interpreter.create_history(call_history) as history:
             for call in CallExplorer().possible_calls_over(call_history):
                 knowledge_string, rule = interpreter.knowledge_string_and_rule_for_additional_call(history, call)
-                explore_dict = {
-                    'knowledge_string': knowledge_string,
-                }
-                explore_dict.update(self._json_from_rule(rule, call))
+                explore_dict = self._json_from_rule(knowledge_string, rule, call)
                 interpretations.append(explore_dict)
 
         self.response.headers["Content-Type"] = "application/json"
