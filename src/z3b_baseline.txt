@@ -42,7 +42,7 @@ test_game_forcing_rebid_by_opener:
 FAIL: 1N (expected 1S) for KQ.AJT.K87.A9876 (hcp: 17 lp: 18 sp: 16), history:  (subtest of 1S P 2H P)
 FAIL: 3H (expected 4H) for K5.AJ9.AKJ984.A9 (hcp: 20 lp: 22 sp: 22), history: 1H P 1N P
 FAIL: 3D (expected 3N) for K4.AKQJ94.87.A96 (hcp: 17 lp: 19 sp: 19), history: 1D P 1H P
-Pass 9 of 12 hands
+Pass 11 of 14 hands
 
 test_game_forcing_resonse_to_one_of_a_major:
 FAIL: 3H (expected 2D) for 42.KJ653.KJ5.KJ7 (hcp: 12 lp: 13 sp: 13), history: 1H P
@@ -119,7 +119,8 @@ Pass 6 of 8 hands
 
 test_minimum_response_to_one_of_a_minor:
 FAIL: None (expected 1H) for T8.7.KQT862.9652 (hcp: 5 lp: 7 sp: 9), history: 1C P
-Pass 11 of 12 hands
+FAIL: None (expected P) for 954.5.QJT8.J9853 (hcp: 4 lp: 5 sp: 7), history: 1D P
+Pass 11 of 13 hands
 
 test_minimum_stayman:
 Pass 13 of 13 hands
@@ -305,12 +306,13 @@ FAIL: None (expected 6S) for 864.AKQT6.A2.K83 (hcp: 16 lp: 17 sp: 17), history: 
 WARNING: Unordered: ['3C', '3D', '3N'] from: [NewSuitResponseToPreempt, NewSuitResponseToPreempt, NaturalNotrump] ([<class 'z3b.rules.NewSuitResponseToPreempt'>, <class 'z3b.rules.NewSuitResponseToPreempt'>, 3N])
 FAIL: None (expected 2N) for AKQ83.AKT93..A85 (hcp: 20 lp: 22 sp: 25), history: 2H P
 FAIL: None (expected 3N) for A53.K5.AKJ72.QJ3 (hcp: 18 lp: 19 sp: 19), history: 3C P
+FAIL: None (expected 3N) for Q.A652.AQ962.AK9 (hcp: 19 lp: 20 sp: 20), history: P 3C P
 FAIL: 3H (expected 2N) for AKQJ852.KT2.Q96. (hcp: 15 lp: 18 sp: 20), history: P 2H P
 FAIL: 1H (expected 4H) for 8.9873.AKQT864.4 (hcp: 9 lp: 12 sp: 15), history: 
 FAIL: 1H (expected 4H) for 8.9873.AKQT864.4 (hcp: 9 lp: 12 sp: 15), history: P
 FAIL: 1H (expected 4H) for 8.9873.AKQT864.4 (hcp: 9 lp: 12 sp: 15), history: P P
 FAIL: P (expected 4H) for 8.9873.AKQT864.4 (hcp: 9 lp: 12 sp: 15), history: P P P
-Pass 47 of 73 hands
+Pass 47 of 74 hands
 
 test_preemptive_overcalls:
 FAIL: 2H (expected 1H) for KQ.QT82.AQJ984.2 (hcp: 14 lp: 16 sp: 16), history: 1D
@@ -417,4 +419,4 @@ FAIL: 3S (expected 4S) for K74.9.J98.KJT742 (hcp: 8 lp: 10 sp: 11), history: 1N 
 FAIL: 2N (expected P) for Q87.J843.K65.Q93 (hcp: 8 lp: 8 sp: 8), history: 1N P
 Pass 1 of 3 hands
 
-Pass 906 (76%) of 1190 total hands
+Pass 908 (76%) of 1194 total hands

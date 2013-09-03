@@ -560,6 +560,9 @@ class SAYCBidderTest(object):
 
             # Length points tell us we must mention our hearts.
             ['T8.7.KQT862.9652', '1H', '1C P', 'N-S'],  # 5-14c98344f93dc85b98ae1ad9f3, S
+
+            # Too weak, pass.
+            ['954.5.QJT8.J9853', 'P', '1D P', 'Both'],  # 4-85c1fb3f6ca8b02c657077964a, E
         ])
 
     def test_invitational_response_to_one_of_a_minor(self):
@@ -649,6 +652,9 @@ class SAYCBidderTest(object):
             ["K5.AJ9.AKJ984.A9", "4H", "1H P 1N P"],  # p54, h19 (Maybe 3H?)
             ["K765.AK87.KQ.A98", "2N", "1D P 1H P"],  # p54, h20
             ["K4.AKQJ94.87.A96", "3N", "1D P 1H P"],  # p54, h21
+
+            # JumpShift is forcing and thus better than rebidding to show 6 hearts.
+            ['AKJ5.Q2.AQ9842.A', '3C', 'P 1H P 1S P'],  # 8-7855840deedca11a0d32bf79b8, N
         ])
 
     def test_opener_rebid_after_a_limit_raise(self):
@@ -850,6 +856,8 @@ class SAYCBidderTest(object):
 
             # 10 clubs and all suits stopped, 3N should be easy.
             ['A53.K5.AKJ72.QJ3', '3N', '3C P'],  # 8-d1be3f6a42806431fd944f2a5e, E
+            # Same idea, everything stopped, and have at least one club to lead to partner.
+            ['Q.A652.AQ962.AK9', '3N', 'P 3C P', 'Both'],  # 13-6a465d32f4817dae76ee040e0f, W
 
             # This looks very slammy from our side.  We see 7 club QTs and at least 5-6 heart tricks from partner.
             ['AKQJ852.KT2.Q96.', '2N', 'P 2H P'],  # 1-d38ebff0963ac68d71d690504a, W

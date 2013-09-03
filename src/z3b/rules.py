@@ -2520,3 +2520,7 @@ class StandardAmericanYellowCard(object):
         natural_nt_part_scores,
         UnforcedRebidOriginalSuitByOpener,
     )
+    rule_order.order(
+        opener_unsupported_major_rebid,
+        opener_jumpshifts,
+    )
