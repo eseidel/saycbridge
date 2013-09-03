@@ -183,31 +183,22 @@ class History(object):
             return None
         return self._previous_history._history_after_last_call_for(self._previous_position(position))
 
-    @memoized
-    def _solver_for_position(self, position):
-        if not self._previous_history:
-            return _solver_pool.borrow()
-        if position == positions.RHO:
-            # The RHO just made a call, so we need to add the constraints from
-            # that caller to that player's solver.
-            previous_position = self._previous_position(position)
-            solver = self._previous_history._solver_for_position.take(previous_position)
-            solver.add(self._constraints_for_last_call)
-            return solver
-        history = self._history_after_last_call_for(position)
-        if not history:
-            return _solver_pool.borrow()
-        return history._solver()
-
     def __enter__(self):
         return self
 
     def __exit__(self, exc_type, exc_value, traceback):
         for position in positions:
-            _solver_pool.restore(self._solver_for_position.take(position))
+            previous_history = self._history_after_last_call_for(position)
+            if not previous_history:
+                continue
+            _solver_pool.restore(previous_history._solver.take())
 
+    @memoized
     def _solver(self):
-        return self._solver_for_position(positions.RHO)
+        previous_history = self._four_calls_ago
+        solver = previous_history._solver.take() if previous_history else _solver_pool.borrow()
+        solver.add(self._constraints_for_last_call)
+        return solver
 
     @property
     def _four_calls_ago(self):
@@ -378,8 +369,11 @@ class History(object):
         # Look for the annotation of bidding a suit.
         if did_bid_annotation(suit) in self.annotations_for_position(position):
             return True
+        previous_history = self._history_after_last_call_for(position)
+        if not previous_history:
+            return False
         # Check for the a length of 4 or more.
-        return is_certain(self._solver_for_position(position), expr_for_suit(suit) >= 4)
+        return is_certain(previous_history._solver(), expr_for_suit(suit) >= 4)
 
     def is_unbid_suit(self, suit):
         return not any(self.is_bid_suit(suit, position) for position in positions)
