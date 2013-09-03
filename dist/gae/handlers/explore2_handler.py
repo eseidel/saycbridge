@@ -36,7 +36,6 @@ class Explore2Handler(webapp2.RequestHandler):
     def get(self, calls_string=None):
         calls_string = calls_string or ""
         calls_string = urllib.unquote(calls_string)
-        calls_string = calls_string.upper()
         history = self._history_from_calls_string(calls_string)
         # This automatically cleans up our urls for us, which is nice when copy/pasting from unit tests:
         if calls_string and history.comma_separated_calls() != calls_string:
@@ -46,20 +45,22 @@ class Explore2Handler(webapp2.RequestHandler):
         self.response.out.write(jinja_environment.get_template('explore.html').render(
             dict(bidder_revision=BIDDER_REVISION)))
 
-class JSONExplore2Handler(webapp2.RequestHandler):
-    def _json_from_rule(self, rule, call):
-        if not rule:
-            return {
-                'call_name': call.name
-            }
 
-        return {
-            'call_name': call.name,
-            'rule_name': rule.name,
-            'priority': rule.priority.index if hasattr(rule, 'priority') and rule.priority else None,
-            'explanation': rule.explanation_for_bid(call),
-            'sayc_page': rule.sayc_page_for_bid(call),
-        }
+class JSONExplore2Handler(webapp2.RequestHandler):
+    def _set_if_not_none(self, dictionary, key, value):
+        if value is not None:
+            dictionary[key] = value
+
+    def _json_from_rule(self, knowledge_string, rule, call):
+        explore_dict = { 'call_name': call.name }
+        self._set_if_not_none(explore_dict, 'knowledge_string', knowledge_string)
+        if rule:
+            explore_dict['rule_name'] = rule.name
+            priority = rule.priority.index if hasattr(rule, 'priority') and rule.priority else None
+            self._set_if_not_none(explore_dict, 'priority', priority)
+            self._set_if_not_none(explore_dict, 'explanation', rule.explanation_for_bid(call))
+            self._set_if_not_none(explore_dict, 'sayc_page', rule.sayc_page_for_bid(call))
+        return explore_dict
 
     def get(self):
         interpreter = InterpreterProxy()
@@ -72,10 +73,7 @@ class JSONExplore2Handler(webapp2.RequestHandler):
         with interpreter.create_history(call_history) as history:
             for call in CallExplorer().possible_calls_over(call_history):
                 knowledge_string, rule = interpreter.knowledge_string_and_rule_for_additional_call(history, call)
-                explore_dict = {
-                    'knowledge_string': knowledge_string,
-                }
-                explore_dict.update(self._json_from_rule(rule, call))
+                explore_dict = self._json_from_rule(knowledge_string, rule, call)
                 interpretations.append(explore_dict)
 
         self.response.headers["Content-Type"] = "application/json"

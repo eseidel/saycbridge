@@ -22,6 +22,7 @@ import core.call
 if use_z3:
     from z3b.bidder import Interpreter, Bidder, InconsistentHistoryException
     from z3b.model import positions
+    from z3b.preconditions import annotations
 
 
 # FIXME: This is a horrible hack.  Callers should move off of the KBB HandConstraints API.
@@ -67,11 +68,12 @@ class InterpreterProxy(object):
         # kbb HandConstraints just so we can use it's pretty_print function.
         position_knowledge = _position_knowledge_from_position_view(position_view)
         kbb_oneline = position_knowledge.pretty_one_line(include_last_call_name=False)
-        return kbb_oneline + " " + ", ".join(map(str, position_view.annotations_for_last_call))
+        # FIXME: Annotation filtering belongs on the client, not here!
+        annotations_whitelist = set([annotations.Artificial, annotations.NotrumpSystemsOn])
+        annotations_for_last_call = set(position_view.annotations_for_last_call) & annotations_whitelist
+        return "%s %s" % (kbb_oneline, ", ".join(map(str, annotations_for_last_call)))
 
     def knowledge_string_and_rule_for_additional_call(self, history, call):
-        knowledge_string = None
-        rule = None
         if not use_z3:
             raise NotImplementedError
         try:
@@ -81,8 +83,6 @@ class InterpreterProxy(object):
             return None, None
 
     def knowledge_string_and_rule_for_last_call(self, call_history):
-        knowledge_string = None
-        rule = None
         if use_z3:
             with self.interpreter.create_history(call_history) as history:
                 return self._pretty_string_for_position_view(history.rho), history.rho.rule_for_last_call

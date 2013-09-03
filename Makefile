@@ -24,6 +24,7 @@ SCRIPTS = \
 	recap.js \
 
 PYTHON_PACKAGES=networkx unittest2 werkzeug webapp2 webob jinja2
+# Prod packages: cherrypy
 
 PYTHON_EGGS=$(patsubst %,sayc-env/%.STAMP,$(PYTHON_PACKAGES))
 
@@ -34,7 +35,8 @@ sayc-env:
 	@virtualenv sayc-env
 
 sayc-env/%.STAMP: sayc-env
-	@source sayc-env/bin/activate && easy_install $(patsubst sayc-env/%.STAMP,%,$@) && touch $@
+	# source doesn't seem to play nice with /bin/sh
+	@. sayc-env/bin/activate && easy_install $(patsubst sayc-env/%.STAMP,%,$@) && touch $@
 
 env: $(PYTHON_EGGS)
 ifndef VIRTUAL_ENV
@@ -55,6 +57,9 @@ serve: clean
 	# FIXME: Doesn't python just have a -C to change CWD before executing?
 	cd $(appengine_dir); python2.7 standalone_main.py
 
+serve-prod: clean compile
+	@. sayc-env/bin/activate && cd $(appengine_dir) && python2.7 production_main.py
+
 # Support for the old Knowledge Based Bidder:
 
 accept-kbb:
@@ -73,6 +78,10 @@ compile:
 
 publish: compile
 	@appcfg.py --oauth2 update $(appengine_dir)
+
+deploy:
+	git push origin origin/master:production
+	ssh serve@z3b.saycbridge.com 'killall python2.7 -INT'
 
 # FIXME: Need some way to make this work from a macro instead of an explicit list of files.
 closure:

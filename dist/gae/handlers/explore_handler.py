@@ -31,7 +31,6 @@ class ExploreHandler(webapp2.RequestHandler):
     def get(self, calls_string=None):
         calls_string = calls_string or ""
         calls_string = urllib.unquote(calls_string)
-        calls_string = calls_string.upper()
         history = self._history_from_calls_string(calls_string)
         # This automatically cleans up our urls for us, which is nice when copy/pasting from unit tests:
         if calls_string and history.comma_separated_calls() != calls_string:

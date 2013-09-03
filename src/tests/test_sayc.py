@@ -456,7 +456,7 @@ class SAYCBidderTest(object):
             # Do I open 1D or 1C?
             ["J73.AQ5.Q83.AJ75", "1C"],  # p27, h9
             ["J8.AQ2.Q873.AJT9", "1D"],  # p27, h10
-            ["KQ84.AQ98.QJ8.A4", "1D"],  # p27, h11
+            ["KQ84.AQ98.QJ8.A4", "1D"],  # p27, h11 # The book says 1C but is contradicting itself.
 
             # More Rule-of-20
             ["4.Q65.K873.AK975", "1S"],  # p29, h12
@@ -571,6 +571,10 @@ class SAYCBidderTest(object):
             ["A643.KJ63.J7.J53", "2D", "1D P"],  # p48, h9 (Possibly 1N)
             ["KJ953.K76.K83.J7", "3C", "1C P"],  # p48, h10
             ["KJ953.K76.K83.J7", "2C", "1D P"],  # p48, h10
+
+            # In this hand we have 10 support points but only 5 HCP.
+            # FIXME: How does this interact with length points?
+            [".KT953.Q863.T742", "2D", "1D P"],
         ])
 
     def test_game_forcing_response_to_one_of_a_minor(self):

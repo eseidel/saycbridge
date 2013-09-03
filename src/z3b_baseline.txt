@@ -73,7 +73,7 @@ Pass 4 of 4 hands
 
 test_invitational_response_to_one_of_a_minor:
 FAIL: 2C (expected 2D) for A643.KJ63.J7.J53 (hcp: 10 lp: 10 sp: 10), history: 1D P
-Pass 5 of 6 hands
+Pass 6 of 7 hands
 
 test_invitational_stayman:
 Pass 8 of 8 hands
@@ -417,4 +417,4 @@ FAIL: 3S (expected 4S) for K74.9.J98.KJT742 (hcp: 8 lp: 10 sp: 11), history: 1N 
 FAIL: 2N (expected P) for Q87.J843.K65.Q93 (hcp: 8 lp: 8 sp: 8), history: 1N P
 Pass 1 of 3 hands
 
-Pass 905 (76%) of 1189 total hands
+Pass 906 (76%) of 1190 total hands

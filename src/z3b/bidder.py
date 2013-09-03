@@ -570,7 +570,7 @@ class RuleSelector(object):
 
 
 class InconsistentHistoryException(Exception):
-    def __init__(self, annotations, constraints, rule):
+    def __init__(self, annotations=None, constraints=None, rule=None):
         self.annotations = annotations
         self.constraints = constraints
         self.rule = rule
@@ -589,14 +589,13 @@ class Interpreter(object):
         selector = RuleSelector(self.system, history, expected_call=expected_call, explain=explain)
 
         rule = selector.rule_for_call(call)
+        if not rule:
+            raise InconsistentHistoryException()
 
-        constraints = model.NO_CONSTRAINTS
-        annotations = []
-        if rule:
-            annotations = rule.annotations_for_call(call)
-            constraints = selector.constraints_for_call(call)
-            if not history.is_consistent(positions.Me, constraints):
-                raise InconsistentHistoryException(annotations, constraints, rule)
+        annotations = rule.annotations_for_call(call)
+        constraints = selector.constraints_for_call(call)
+        if not history.is_consistent(positions.Me, constraints):
+            raise InconsistentHistoryException(annotations, constraints, rule)
 
         return history.extend_with(call, annotations, constraints, rule)
 

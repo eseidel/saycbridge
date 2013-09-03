@@ -181,8 +181,13 @@ class LimitRaise(RaiseResponse):
         ('3C', '3D'): raise_responses.MinorLimit,
         ('3H', '3S'): raise_responses.MajorLimit,
     }
-    shared_constraints = [MinimumCombinedLength(8), MinimumCombinedSupportPoints(22)]
-
+    shared_constraints = [
+        MinimumCombinedLength(8),
+        # We shouldn't make a limit raise with less than 6 HCP\
+        # even with a large number of support points.
+        points >= 6,
+        MinimumCombinedSupportPoints(22),
+    ]
 
 class MajorJumpToGame(RaiseResponse):
     call_names = ['4H', '4S']
