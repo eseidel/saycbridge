@@ -133,10 +133,10 @@ class ResultsAggregator(object):
             result = self._results_by_identifier[test.identifier]
             result.print_captured_logs()
 
-            if result.exc_info:
+            if result.exc_str:
                 _log.error("Exception during find_call_for %s %s: %s" % (test.hand.pretty_one_line(), test.call_history.calls_string(), result.call))
-                _log.error(''.join(traceback.format_exception(*result.exc_info)))
-                raise result.exc_info[1]
+                _log.error(result.exc_str)
+                raise StopIteration
 
             if result.call and result.call == test.expected_call:
                 _log.info("PASS: %s for %s" % (test.expected_call, test.test_string))
@@ -179,7 +179,7 @@ def _run_test(test):
     try:
         result.call = bidder.find_call_for(test.hand, test.call_history)
     except Exception:
-        result.exc_info = sys.exc_info()
+        result.exc_str = ''.join(traceback.format_exception(*sys.exc_info()))
     output.restore_output()
     result.save_captured_logs(stdout, stderr)
     return result
@@ -250,7 +250,7 @@ class TestResult(object):
     def __init__(self):
         self.test = None
         self.call = None
-        self.exc_info = None
+        self.exc_str = None
         self.stdout = None
         self.stderr = None
 
