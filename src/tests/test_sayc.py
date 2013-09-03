@@ -2,10 +2,11 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import inspect
 import logging
 import unittest2
 import sys
-import inspect
+import traceback
 
 from core.position import *
 from core.callhistory import CallHistory, Vulnerability
@@ -132,9 +133,10 @@ class ResultsAggregator(object):
             result = self._results_by_identifier[test.identifier]
             result.print_captured_logs()
 
-            if result.exception:
+            if result.exc_info:
                 _log.error("Exception during find_call_for %s %s: %s" % (test.hand.pretty_one_line(), test.call_history.calls_string(), result.call))
-                raise result.exception
+                _log.error(''.join(traceback.format_exception(*result.exc_info)))
+                raise result.exc_info[1]
 
             if result.call and result.call == test.expected_call:
                 _log.info("PASS: %s for %s" % (test.expected_call, test.test_string))
@@ -176,8 +178,8 @@ def _run_test(test):
     stdout, stderr = output.capture_output()
     try:
         result.call = bidder.find_call_for(test.hand, test.call_history)
-    except Exception, e:
-        result.exception = e
+    except Exception:
+        result.exc_info = sys.exc_info()
     output.restore_output()
     result.save_captured_logs(stdout, stderr)
     return result
@@ -248,7 +250,7 @@ class TestResult(object):
     def __init__(self):
         self.test = None
         self.call = None
-        self.exception = None
+        self.exc_info = None
         self.stdout = None
         self.stderr = None
 
