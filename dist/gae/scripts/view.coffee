@@ -1315,10 +1315,8 @@ class CallInterpretation extends HTMLDivElement
         @setupView()
 
     setupView: ->
-        constraintsString = @interpretation.constraintsString
-        if constraintsString == '? '
-            constraintsString = null
-        if constraintsString and @interpretation.ruleName
+        console.log @interpretation
+        if @interpretation.constraintsString and @interpretation.ruleName
             @appendChild RuleExplanation.fromInterpretation @interpretation
         else
             @textContent = '\u2014' # &emdash;
