@@ -511,6 +511,8 @@ class SAYCBidderTest(object):
             ["K84.AKQ9.76.J984", "1S", "1H P"],  # p38, h12
             ["987.Q732.QJ743.9", "4H", "1H P"],  # p38, h13
             ["42.KJ653.KJ5.KJ7", "2D", "1H P"],  # p38, h14
+
+            ['QJ52.AKQ7.97.KJ2', '3N', '1H P', 'Both'],  # 4-492cd4cb87895e311feda2b247, E
         ])
 
     def test_jacoby_two_nt_response_to_one_of_a_major(self):
@@ -591,7 +593,8 @@ class SAYCBidderTest(object):
             ["QJ5.A75.KT87.A42", "1H", "1C P"],  # p49, h13
             ["QJ5.A75.KT87.A42", "1H", "1D P"],  # p49, h13
 
-            ['QJ52.AKQ7.97.KJ2', '3N', '1H P', 'Both'],  # 4-492cd4cb87895e311feda2b247, E
+            ['QJ52.AKQ7.97.KJ2', '3N', '1D P'],  # 16 hcp
+            ['QJ52.AKQ7.97.KQ2', '3N', '1D P'],  # 17 hcp
         ])
 
     def test_slam_zone_response_to_one_of_a_minor(self):

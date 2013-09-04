@@ -46,11 +46,11 @@ Pass 11 of 14 hands
 
 test_game_forcing_resonse_to_one_of_a_major:
 FAIL: 3H (expected 2D) for 42.KJ653.KJ5.KJ7 (hcp: 12 lp: 13 sp: 13), history: 1H P
-Pass 2 of 3 hands
+Pass 3 of 4 hands
 
 test_game_forcing_response_to_one_of_a_minor:
 FAIL: 1D (expected 2N) for Q73.KJ65.KJ3.K75 (hcp: 13 lp: 13 sp: 13), history: 1C P
-Pass 6 of 7 hands
+Pass 7 of 8 hands
 
 test_interference_over_one_nt:
 FAIL: 2D (expected P) for KT82.AKT8.Q8.A62 (hcp: 16 lp: 16 sp: 15), history: 1N P 2C X
@@ -419,4 +419,4 @@ FAIL: 3S (expected 4S) for K74.9.J98.KJT742 (hcp: 8 lp: 10 sp: 11), history: 1N 
 FAIL: 2N (expected P) for Q87.J843.K65.Q93 (hcp: 8 lp: 8 sp: 8), history: 1N P
 Pass 1 of 3 hands
 
-Pass 910 (76%) of 1196 total hands
+Pass 912 (76%) of 1198 total hands

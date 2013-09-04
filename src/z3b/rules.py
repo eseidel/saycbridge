@@ -209,7 +209,7 @@ class NotrumpResponseToMinorOpen(ResponseToOneLevelSuitedOpen):
     ]
     constraints = {
         '2N': z3.And(points >= 13, points <= 15),
-        '3N': z3.And(points >= 16, points >= 17),
+        '3N': z3.And(points >= 16, points <= 17),
     }
     shared_constraints = balanced
 
@@ -2405,6 +2405,7 @@ class StandardAmericanYellowCard(object):
         relay_priorities
     )
     rule_order.order(
+        new_two_level_minor_responses,
         NotrumpResponseToMinorOpen,
         new_one_level_major_responses,
     )
