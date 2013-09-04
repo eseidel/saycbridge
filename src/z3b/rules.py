@@ -183,9 +183,9 @@ class LimitRaise(RaiseResponse):
     }
     shared_constraints = [
         MinimumCombinedLength(8),
-        # We shouldn't make a limit raise with less than 6 HCP\
+        # We shouldn't make a limit raise with less than 6 HCP
         # even with a large number of support points.
-        points >= 6,
+        points >= 6, # FIXME: This leaves a hole with PassResponse.
         MinimumCombinedSupportPoints(22),
     ]
 
@@ -295,6 +295,13 @@ class ResponseToMajorOpen(ResponseToOneLevelSuitedOpen):
         LastBidHasStrain(positions.Partner, suit.MAJORS),
         InvertedPrecondition(LastBidHasAnnotation(positions.Partner, annotations.Artificial))
     ]
+
+
+class PassResponse(ResponseToOneLevelSuitedOpen):
+    preconditions = LastBidWas(positions.RHO, 'P')
+    call_names = 'P'
+    # SuitGameIsRemote would imply that we have < 4 hcp, but conventionally we may pass with 5 hcp.
+    shared_constraints = MaximumSupportPointsForPartnersLastSuit(5)
 
 
 class Jacoby2N(ResponseToMajorOpen):
