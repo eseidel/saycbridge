@@ -952,8 +952,11 @@ class SAYCBidderTest(object):
             ["KQ4.A98.QJ873.K2", "1N", "1C"],  # 1N overcalls are 15-18 according to p100.
 
             # A 1NT overcall is more descriptive than a takeout double and should be prefered.
-            ['KQ97.JT3.AK65.A3', '1N', '1C'], # Big-hand-doublable (17hcp)
-            ['KT97.JT3.AK65.A3', '1N', '1C'], # non-big-hand (15hcp)
+            ['A3.KT97.JT3.AQ65', 'X', '1C'], # non-big-hand (14hcp)
+            ['A3.KT97.JT3.AK65', '1N', '1C'], # non-big-hand (15hcp)
+            ['A3.KQ97.QT3.AK65', '1N', '1C'], # Big-hand-doublable (18hcp)
+            # At 19 points we're too big to overcall NT
+            ['A3.KQ97.KT3.AK65', 'X', '1C'], # Big-hand-doublable (19hcp)
 
             # Responding to overcalls
             ["J63.Q843.KT87.J5", "3H", "1C 1H P"],  # p101, h9
@@ -1110,14 +1113,14 @@ class SAYCBidderTest(object):
             ["KQ8.AQJ9.AQ7.KQ4", "3N", "1H X P 1S P"], # 23 hcp
 
             # Prefer majors over nt over minors for rasises:
-            ["A8.AKQ.J763.KJ84", "2S", "1C X P 1S P"],
-            ["A8.KQJ9.AJ7.K984", "1N", "1C X P 1D P"],
+            ["A.AKJ8.Q763.KJ84", "2S", "1C X P 1S P"],
+            ["A8.KQJ9.AQ7.K984", "1N", "1C X P 1D P"],
             ["98.KQJ9.AJ7.AK84", "2D", "1C X P 1D P"],
 
             # Prefer support over majors over NT.
             ["A.A43.KQJ32.KJ84", "2S", "1C X P 1S P"],
-            ["A8.KQ8.AQ732.K98", "1H", "1C X P 1D P"],
-            ["A8.KJ4.AK73.K982", "1N", "1C X P 1D P"],
+            ["AJ.KQ8.AQ732.K98", "1H", "1C X P 1D P"],
+            ["AJ.KJ4.AK73.K982", "1N", "1C X P 1D P"],
 
             # majors > nt > minors for jump rasises too:
             ["A8.AKQ.A976.KJ84", "3S", "1C X P 1S P"],
@@ -1374,7 +1377,7 @@ class SAYCBidderTest(object):
         ['KQJT3.864.AQ9.AT', '4S', '1D 2S P 2N P 3N P'],  # modified deal 10261368563172950620196330721081, S should bid game, seeing N has a maximum.
         ['QT8.KQ632.86.T97', '1N', 'P P 1C P 1D P 1H P', 'N-S'],  # deal 18461602223397807530713780374231, N should bid 1D.  An earlier version of the bidder failed to.
         ['JT87.A732..KQJ72', '3S', '1D 1S P 2D P'],  # deal 15141057107213075875501235469840, W should overcall 1S rather than pass.
-        ['AJT95.AK4.K93.K6', 'X', '1S', 'Both'],  # deal 16428150251578352755575396243774, N was failing to double due to a bug in the big-double planner.
+        ['AJT95.AK4.K93.K6', '1N', '1S', 'Both'],  # deal 16428150251578352755575396243774, N could big-hand double if we use length-points for big-hand doubles?
         ['AQJT9.AQT3.5.T52', '5N', '2S X P 3C P 3H P', 'E-W'],  # deal 5046897236076953230543124332887, S shouldn't pass.  Our current behavior of 5N is better than nothing (they make 6N cold).
         ['KQ986.K.AK7.J942', 'P', '1N P P', 'Both'],  # deal 14701784778261743532608945607084, E likely has to pass, but mostly the bidder shouldn't crash.
         ['K83.Q.K75432.QJ6', 'P', '1D P 1H P 1S P 3H P 3N P'],  # deal c5e1e879669c60049dcf78fe0a, N shouldn't jump rebid his suit again

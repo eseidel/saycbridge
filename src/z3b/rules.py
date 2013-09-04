@@ -1616,7 +1616,7 @@ class NewSuitResponseToStandardOvercall(ResponseToStandardOvercall):
 
 class DirectOvercall1N(DirectOvercall):
     call_names = '1N'
-    shared_constraints = [points >= 15, points <= 17, balanced, StopperInRHOSuit()]
+    shared_constraints = [points >= 15, points <= 18, balanced, StopperInRHOSuit()]
     priority = overcall_priorities.DirectOvercall1N
     annotations = annotations.NotrumpSystemsOn
 
