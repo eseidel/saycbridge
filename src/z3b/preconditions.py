@@ -183,6 +183,9 @@ class ForcedToBid(Precondition):
         # Artificial bids are always forcing. We use explicit pass rules to convert them into natural bids.
         if self._partner_last_call_was_artificial(history):
             return True
+        # FIXME: This is a lame hack.  Natural NT bids are never forcing.
+        if history.partner.last_call.strain == suit.NOTRUMP:
+            return False
         # FIXME: We're attempting to express that partner is unbounded but
         # partner is never truly unbounded if other players have bid.
         # "Game is not remote" might be better?

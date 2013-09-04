@@ -185,7 +185,7 @@ class LimitRaise(RaiseResponse):
         MinimumCombinedLength(8),
         # We shouldn't make a limit raise with less than 6 HCP
         # even with a large number of support points.
-        points >= 6, # FIXME: This leaves a hole with PassResponse.
+        points >= 6, # FIXME: This leaves a hole with PassResponseToSuitedOpen.
         MinimumCombinedSupportPoints(22),
     ]
 
@@ -297,7 +297,7 @@ class ResponseToMajorOpen(ResponseToOneLevelSuitedOpen):
     ]
 
 
-class PassResponse(ResponseToOneLevelSuitedOpen):
+class PassResponseToSuitedOpen(ResponseToOneLevelSuitedOpen):
     preconditions = LastBidWas(positions.RHO, 'P')
     call_names = 'P'
     # SuitGameIsRemote would imply that we have < 4 hcp, but conventionally we may pass with 5 hcp.
