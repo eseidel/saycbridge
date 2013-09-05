@@ -9,8 +9,8 @@ from z3b.preconditions import *
 from z3b.rules import *
 
 
-# Cappalletti may promise < 15 hcp, since 3-level overcalls are also on and may be preferred.
-class Cappalletti(Rule):
+# Cappelletti may promise < 15 hcp, since 3-level overcalls are also on and may be preferred.
+class Cappelletti(Rule):
     preconditions = [
         LastBidHasAnnotation(positions.RHO, annotations.Opening),
         LastBidWas(positions.RHO, '1N'),
@@ -25,40 +25,40 @@ class Cappalletti(Rule):
     annotations_per_call = {
         ('2C', '2D', '2N'): annotations.Artificial
     }
-    annotations = annotations.Cappalletti
+    annotations = annotations.Cappelletti
     # The book suggests "decent strength".
-    # The book bids Cappalletti with 11 hcp, but seems to want 12 hcp when responding.
+    # The book bids Cappelletti with 11 hcp, but seems to want 12 hcp when responding.
     shared_constraints = points >= 11
 
 
 rule_order.order(
     DefaultPass,
-    Cappalletti,
+    Cappelletti,
 )
 
 
-class ResponseToCappalletti(Rule):
-    preconditions = LastBidHasAnnotation(positions.Partner, annotations.Cappalletti)
+class ResponseToCappelletti(Rule):
+    preconditions = LastBidHasAnnotation(positions.Partner, annotations.Cappelletti)
 
 
-cappalletti_two_club_responses = enum.Enum(
+cappelletti_two_club_responses = enum.Enum(
     "StrongSpades",
     "StrongHearts",
     "LongClubs",
     "BalancedWithPoints",
     "Waiting",
 )
-rule_order.order(*reversed(cappalletti_two_club_responses))
+rule_order.order(*reversed(cappelletti_two_club_responses))
 
 
-class ResponseToCappallettiTwoClubs(ResponseToCappalletti):
+class ResponseToCappellettiTwoClubs(ResponseToCappelletti):
     preconditions = LastBidWas(positions.Partner, '2C')
     constraints = {
-        'P':  [(clubs >= 6, ThreeOfTheTopFiveOrBetter(suit.CLUBS)), cappalletti_two_club_responses.LongClubs],
-        '2D': [NO_CONSTRAINTS, cappalletti_two_club_responses.Waiting],
-        '2H': [(hearts >= 5, ThreeOfTheTopFiveOrBetter()), cappalletti_two_club_responses.StrongHearts],
-        '2S': [(spades >= 5, ThreeOfTheTopFiveOrBetter()), cappalletti_two_club_responses.StrongSpades],
-        '2N': [(points >= 11, balanced), cappalletti_two_club_responses.BalancedWithPoints],
+        'P':  [(clubs >= 6, ThreeOfTheTopFiveOrBetter(suit.CLUBS)), cappelletti_two_club_responses.LongClubs],
+        '2D': [NO_CONSTRAINTS, cappelletti_two_club_responses.Waiting],
+        '2H': [(hearts >= 5, ThreeOfTheTopFiveOrBetter()), cappelletti_two_club_responses.StrongHearts],
+        '2S': [(spades >= 5, ThreeOfTheTopFiveOrBetter()), cappelletti_two_club_responses.StrongSpades],
+        '2N': [(points >= 11, balanced), cappelletti_two_club_responses.BalancedWithPoints],
         # Could 3C be strong long clubs?
         # And 3D be long diamonds?
     }
@@ -67,7 +67,7 @@ class ResponseToCappallettiTwoClubs(ResponseToCappalletti):
     }
 
 
-cappalletti_two_diamonds_responses = enum.Enum(
+cappelletti_two_diamonds_responses = enum.Enum(
     "InvitationalHeartSupport",
     "InvitationalSpadeSupport",
     "HeartPreference",
@@ -76,65 +76,65 @@ cappalletti_two_diamonds_responses = enum.Enum(
     "LongDiamonds",
     "MinorEscape",
 )
-rule_order.order(*reversed(cappalletti_two_diamonds_responses))
+rule_order.order(*reversed(cappelletti_two_diamonds_responses))
 
-cappalletti_two_diamonds_invitational_responses = set([
-    cappalletti_two_diamonds_responses.InvitationalHeartSupport,
-    cappalletti_two_diamonds_responses.InvitationalSpadeSupport,
+cappelletti_two_diamonds_invitational_responses = set([
+    cappelletti_two_diamonds_responses.InvitationalHeartSupport,
+    cappelletti_two_diamonds_responses.InvitationalSpadeSupport,
 ])
 
 # Law bids (supporting a major) are better than MinorEscape
-rule_order.order(cappalletti_two_diamonds_responses.MinorEscape, natural_suited_part_scores)
+rule_order.order(cappelletti_two_diamonds_responses.MinorEscape, natural_suited_part_scores)
 # We'd rather be invitational to game than just a law bid.
-rule_order.order(natural_suited_part_scores, cappalletti_two_diamonds_invitational_responses)
+rule_order.order(natural_suited_part_scores, cappelletti_two_diamonds_invitational_responses)
 
 
-class ResponseToCappallettiTwoDiamonds(ResponseToCappalletti):
+class ResponseToCappellettiTwoDiamonds(ResponseToCappelletti):
     preconditions = LastBidWas(positions.Partner, '2D')
     constraints = {
-        'P':  [(diamonds >= 6, ThreeOfTheTopFiveOrBetter(suit.DIAMONDS)), cappalletti_two_diamonds_responses.LongDiamonds],
-        '2N': (NO_CONSTRAINTS, cappalletti_two_diamonds_responses.MinorEscape),
-        '3C':  [(clubs >= 6, ThreeOfTheTopFiveOrBetter(suit.CLUBS)), cappalletti_two_diamonds_responses.LongClubs],
+        'P':  [(diamonds >= 6, ThreeOfTheTopFiveOrBetter(suit.DIAMONDS)), cappelletti_two_diamonds_responses.LongDiamonds],
+        '2N': (NO_CONSTRAINTS, cappelletti_two_diamonds_responses.MinorEscape),
+        '3C':  [(clubs >= 6, ThreeOfTheTopFiveOrBetter(suit.CLUBS)), cappelletti_two_diamonds_responses.LongClubs],
 
         # Could these be natural too?  They imply invitational points?  But how many does partner have?
-        '3H': [(MinimumCombinedLength(9), MinimumCombinedPoints(22)), cappalletti_two_diamonds_responses.InvitationalHeartSupport], 
-        '3S': [(MinimumCombinedLength(9), MinimumCombinedPoints(22)), cappalletti_two_diamonds_responses.InvitationalSpadeSupport],
+        '3H': [(MinimumCombinedLength(9), MinimumCombinedPoints(22)), cappelletti_two_diamonds_responses.InvitationalHeartSupport], 
+        '3S': [(MinimumCombinedLength(9), MinimumCombinedPoints(22)), cappelletti_two_diamonds_responses.InvitationalSpadeSupport],
     }
     annotations_per_call = {
         '2N': annotations.Artificial,
     }
 
 
-class ResponseToCappallettiTwoDiamonds(ResponseToCappalletti):
+class ResponseToCappellettiTwoDiamonds(ResponseToCappelletti):
     preconditions = LastBidWas(positions.Partner, '2D')
     constraints = {
-        'P':  [(diamonds >= 6, ThreeOfTheTopFiveOrBetter(suit.DIAMONDS)), cappalletti_two_diamonds_responses.LongDiamonds],
-        '2N': (NO_CONSTRAINTS, cappalletti_two_diamonds_responses.MinorEscape),
-        '3C':  [(clubs >= 6, ThreeOfTheTopFiveOrBetter(suit.CLUBS)), cappalletti_two_diamonds_responses.LongClubs],
+        'P':  [(diamonds >= 6, ThreeOfTheTopFiveOrBetter(suit.DIAMONDS)), cappelletti_two_diamonds_responses.LongDiamonds],
+        '2N': (NO_CONSTRAINTS, cappelletti_two_diamonds_responses.MinorEscape),
+        '3C':  [(clubs >= 6, ThreeOfTheTopFiveOrBetter(suit.CLUBS)), cappelletti_two_diamonds_responses.LongClubs],
 
         # Could these be natural too?  They imply invitational points?  But how many does partner have?
-        '3H': [(MinimumCombinedLength(9), MinimumCombinedPoints(22)), cappalletti_two_diamonds_responses.InvitationalHeartSupport], 
-        '3S': [(MinimumCombinedLength(9), MinimumCombinedPoints(22)), cappalletti_two_diamonds_responses.InvitationalSpadeSupport],
+        '3H': [(MinimumCombinedLength(9), MinimumCombinedPoints(22)), cappelletti_two_diamonds_responses.InvitationalHeartSupport], 
+        '3S': [(MinimumCombinedLength(9), MinimumCombinedPoints(22)), cappelletti_two_diamonds_responses.InvitationalSpadeSupport],
     }
     annotations_per_call = {
         '2N': annotations.Artificial,
     }
 
 
-cappalletti_major_raise_responses = enum.Enum(
+cappelletti_major_raise_responses = enum.Enum(
     "InvitationalHeartSupport",
     "InvitationalSpadeSupport"
 )
 
 
-class RaiseResponseToMajorCappalletti(ResponseToCappalletti):
+class RaiseResponseToMajorCappelletti(ResponseToCappelletti):
     preconditions = [
         LastBidHasStrain(positions.Partner, suit.MAJORS),
         RaiseOfPartnersLastSuit(),
     ]
     priorities_per_call = {
-        '3H': cappalletti_major_raise_responses.InvitationalHeartSupport, 
-        '3S': cappalletti_major_raise_responses.InvitationalSpadeSupport,
+        '3H': cappelletti_major_raise_responses.InvitationalHeartSupport, 
+        '3S': cappelletti_major_raise_responses.InvitationalSpadeSupport,
     }
     shared_constraints = [
         MinimumCombinedLength(8),
