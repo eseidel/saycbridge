@@ -25,8 +25,8 @@ annotations = enum.Enum(
     "BidHearts",
     "BidSpades",
 
-    # Not all Cappalletti bids are artificial, some can be treated as to-play.
-    "Cappalletti",
+    # Not all Cappelletti bids are artificial, some can be treated as to-play.
+    "Cappelletti",
 
     "Artificial",
     # NOTE: RuleCompiler._compile_annotations will automatically imply
@@ -39,7 +39,7 @@ annotations = enum.Enum(
     "Jacoby2N",
     "MichaelsCuebid",
     "MichaelsMinorRequest",
-    "CappallettiMinorRequest",
+    "CappellettiMinorRequest",
     "NegativeDouble",
     "Stayman",
     "TakeoutDouble",
