@@ -1538,6 +1538,21 @@ class DirectNotrumpDouble(DirectOvercall):
     priority = overcall_priorities.DirectNotrumpDouble
 
 
+class Cappalletti(Rule):
+    preconditions = [
+        LastBidHasAnnotation(positions.RHO, annotations.Opening),
+        LastBidWas(positions.RHO, '1N'),
+    ]
+    annotations = annotations.Cappalletti
+    constraints = {
+        '2C': z3.Or(clubs >= 6, diamonds >= 6, hearts >= 6, spades >= 6),
+        '2D': z3.And(hearts >= 5, spades >= 5),
+        '2H': z3.And(hearts >= 5, z3.Or(clubs >= 5, diamonds >= 5)),
+        '2S': z3.And(spades >= 5, z3.Or(clubs >= 5, diamonds >= 5)),
+        '2N': z3.And(clubs >= 5, diamonds >= 5),
+    }
+
+
 class TwoLevelStandardOvercall(StandardDirectOvercall):
     shared_constraints = points >= 10
 
@@ -1647,11 +1662,11 @@ class MichaelsCuebid(object):
 
 
 class DirectMichaelsCuebid(MichaelsCuebid, DirectOvercall):
-    pass
+    preconditions = CueBid(positions.RHO)
 
 
 class BalancingMichaelsCuebid(MichaelsCuebid, BalancingOvercall):
-    pass
+    preconditions = CueBid(positions.LHO)
 
 
 class MichaelsMinorRequest(Rule):
@@ -2531,4 +2546,8 @@ class StandardAmericanYellowCard(object):
     rule_order.order(
         opener_unsupported_major_rebid,
         opener_jumpshifts,
+    )
+    rule_order.order(
+        DefaultPass,
+        Cappalletti,
     )

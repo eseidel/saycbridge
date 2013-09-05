@@ -41,6 +41,7 @@ annotations = enum.Enum(
     "TakeoutDouble",
     "Transfer",
     "Unusual2N",
+    "Cappalletti",
 )
 
 # Used by RuleCompiler._compile_annotations.
