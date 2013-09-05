@@ -25,6 +25,9 @@ annotations = enum.Enum(
     "BidHearts",
     "BidSpades",
 
+    # Not all Cappalletti bids are artificial, some can be treated as to-play.
+    "Cappalletti",
+
     "Artificial",
     # NOTE: RuleCompiler._compile_annotations will automatically imply
     # "Artificial" when encountering any annotations > Artificial.
@@ -42,7 +45,6 @@ annotations = enum.Enum(
     "TakeoutDouble",
     "Transfer",
     "Unusual2N",
-    "Cappalletti",
 )
 
 # Used by RuleCompiler._compile_annotations.

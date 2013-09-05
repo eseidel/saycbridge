@@ -1538,12 +1538,12 @@ class DirectNotrumpDouble(DirectOvercall):
     priority = overcall_priorities.DirectNotrumpDouble
 
 
+# Cappalletti may promise < 15 hcp, since 3-level overcalls are also on and may be preferred.
 class Cappalletti(Rule):
     preconditions = [
         LastBidHasAnnotation(positions.RHO, annotations.Opening),
         LastBidWas(positions.RHO, '1N'),
     ]
-    annotations = annotations.Cappalletti
     constraints = {
         '2C': z3.Or(clubs >= 6, diamonds >= 6, hearts >= 6, spades >= 6),
         '2D': z3.And(hearts >= 5, spades >= 5),
@@ -1551,6 +1551,10 @@ class Cappalletti(Rule):
         '2S': z3.And(spades >= 5, z3.Or(clubs >= 5, diamonds >= 5)),
         '2N': z3.And(clubs >= 5, diamonds >= 5),
     }
+    annotations_per_call = {
+        ('2C', '2D', '2N'): annotations.Artificial
+    }
+    annotations = annotations.Cappalletti
     # The book suggests "decent strength".
     # The book bids Cappalletti with 11 hcp, but seems to want 12 hcp when responding.
     shared_constraints = points >= 11
@@ -1622,6 +1626,44 @@ class ResponseToCappallettiTwoDiamonds(ResponseToCappalletti):
     annotations_per_call = {
         '2N': annotations.Artificial,
     }
+
+
+class ResponseToCappallettiTwoDiamonds(ResponseToCappalletti):
+    preconditions = LastBidWas(positions.Partner, '2D')
+    constraints = {
+        'P':  [(diamonds >= 6, ThreeOfTheTopFiveOrBetter(suit.DIAMONDS)), cappalletti_two_diamonds_responses.LongDiamonds],
+        '2N': (NO_CONSTRAINTS, cappalletti_two_diamonds_responses.MinorEscape),
+        '3C':  [(clubs >= 6, ThreeOfTheTopFiveOrBetter(suit.CLUBS)), cappalletti_two_diamonds_responses.LongClubs],
+
+        # Could these be natural too?  They imply invitational points?  But how many does partner have?
+        '3H': [(MinimumCombinedLength(9), MinimumCombinedPoints(22)), cappalletti_two_diamonds_responses.InvitationalHeartSupport], 
+        '3S': [(MinimumCombinedLength(9), MinimumCombinedPoints(22)), cappalletti_two_diamonds_responses.InvitationalSpadeSupport],
+    }
+    annotations_per_call = {
+        '2N': annotations.Artificial,
+    }
+
+
+cappalletti_major_raise_responses = enum.Enum(
+    "InvitationalHeartSupport",
+    "InvitationalSpadeSupport"
+)
+
+
+class RaiseResponseToMajorCappalletti(ResponseToCappalletti):
+    preconditions = [
+        LastBidHasStrain(positions.Partner, suit.MAJORS),
+        RaiseOfPartnersLastSuit(),
+    ]
+    priorities_per_call = {
+        '3H': cappalletti_major_raise_responses.InvitationalHeartSupport, 
+        '3S': cappalletti_major_raise_responses.InvitationalSpadeSupport,
+    }
+    shared_constraints = [
+        MinimumCombinedLength(8),
+        # Should this be support points?
+        MinimumCombinedPoints(18)
+    ]
 
 
 class TwoLevelStandardOvercall(StandardDirectOvercall):
