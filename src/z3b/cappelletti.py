@@ -84,9 +84,9 @@ cappelletti_two_diamonds_responses = enum.Enum(
     "InvitationalSpadeSupport",
     "HeartPreference",
     "SpadePreference",
+    "BothMinors",
     "LongClubs",
     "LongDiamonds",
-    "MinorEscape",
 )
 rule_order.order(*reversed(cappelletti_two_diamonds_responses))
 
@@ -95,8 +95,8 @@ cappelletti_two_diamonds_invitational_responses = set([
     cappelletti_two_diamonds_responses.InvitationalSpadeSupport,
 ])
 
-# Law bids (supporting a major) are better than MinorEscape
-rule_order.order(cappelletti_two_diamonds_responses.MinorEscape, natural_suited_part_scores)
+# Law bids (supporting a major) are better than BothMinors
+rule_order.order(cappelletti_two_diamonds_responses.BothMinors, natural_suited_part_scores)
 # We'd rather be invitational to game than just a law bid.
 rule_order.order(natural_suited_part_scores, cappelletti_two_diamonds_invitational_responses)
 
@@ -105,8 +105,9 @@ class ResponseToCappellettiTwoDiamonds(ResponseToCappelletti):
     preconditions = LastBidWas(positions.Partner, '2D')
     constraints = {
         'P':  [(diamonds >= 6, ThreeOfTheTopFiveOrBetter(suit.DIAMONDS)), cappelletti_two_diamonds_responses.LongDiamonds],
-        '2N': (NO_CONSTRAINTS, cappelletti_two_diamonds_responses.MinorEscape),
-        '3C':  [(clubs >= 6, ThreeOfTheTopFiveOrBetter(suit.CLUBS)), cappelletti_two_diamonds_responses.LongClubs],
+        # Partner has already said he's 5-5 in the majors, so he has at most 3 in the minors.
+        '2N': [(clubs >= 5, diamonds >= 5), cappelletti_two_diamonds_responses.BothMinors],
+        '3C': [(clubs >= 6, ThreeOfTheTopFiveOrBetter(suit.CLUBS)), cappelletti_two_diamonds_responses.LongClubs],
 
         # Could these be natural too?  They imply invitational points?  But how many does partner have?
         '3H': [(MinimumCombinedLength(9), MinimumCombinedPoints(22)), cappelletti_two_diamonds_responses.InvitationalHeartSupport], 
@@ -140,6 +141,7 @@ class RaiseResponseToMajorCappelletti(ResponseToCappelletti):
     shared_constraints = [
         MinimumCombinedLength(8),
         # Should this be support points?
+        # Partner could have as few as 10 points!
         MinimumCombinedPoints(18)
     ]
 
