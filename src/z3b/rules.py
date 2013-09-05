@@ -1538,134 +1538,6 @@ class DirectNotrumpDouble(DirectOvercall):
     priority = overcall_priorities.DirectNotrumpDouble
 
 
-# Cappalletti may promise < 15 hcp, since 3-level overcalls are also on and may be preferred.
-class Cappalletti(Rule):
-    preconditions = [
-        LastBidHasAnnotation(positions.RHO, annotations.Opening),
-        LastBidWas(positions.RHO, '1N'),
-    ]
-    constraints = {
-        '2C': z3.Or(clubs >= 6, diamonds >= 6, hearts >= 6, spades >= 6),
-        '2D': z3.And(hearts >= 5, spades >= 5),
-        '2H': z3.And(hearts >= 5, z3.Or(clubs >= 5, diamonds >= 5)),
-        '2S': z3.And(spades >= 5, z3.Or(clubs >= 5, diamonds >= 5)),
-        '2N': z3.And(clubs >= 5, diamonds >= 5),
-    }
-    annotations_per_call = {
-        ('2C', '2D', '2N'): annotations.Artificial
-    }
-    annotations = annotations.Cappalletti
-    # The book suggests "decent strength".
-    # The book bids Cappalletti with 11 hcp, but seems to want 12 hcp when responding.
-    shared_constraints = points >= 11
-
-
-class ResponseToCappalletti(Rule):
-    preconditions = LastBidHasAnnotation(positions.Partner, annotations.Cappalletti)
-
-
-cappalletti_two_club_responses = enum.Enum(
-    "StrongSpades",
-    "StrongHearts",
-    "LongClubs",
-    "BalancedWithPoints",
-    "Waiting",
-)
-rule_order.order(*reversed(cappalletti_two_club_responses))
-
-
-class ResponseToCappallettiTwoClubs(ResponseToCappalletti):
-    preconditions = LastBidWas(positions.Partner, '2C')
-    constraints = {
-        'P':  [(clubs >= 6, ThreeOfTheTopFiveOrBetter(suit.CLUBS)), cappalletti_two_club_responses.LongClubs],
-        '2D': [NO_CONSTRAINTS, cappalletti_two_club_responses.Waiting],
-        '2H': [(hearts >= 5, ThreeOfTheTopFiveOrBetter()), cappalletti_two_club_responses.StrongHearts],
-        '2S': [(spades >= 5, ThreeOfTheTopFiveOrBetter()), cappalletti_two_club_responses.StrongSpades],
-        '2N': [(points >= 11, balanced), cappalletti_two_club_responses.BalancedWithPoints],
-        # Could 3C be strong long clubs?
-        # And 3D be long diamonds?
-    }
-    annotations_per_call = {
-        '2D': annotations.Artificial,
-    }
-
-
-cappalletti_two_diamonds_responses = enum.Enum(
-    "InvitationalHeartSupport",
-    "InvitationalSpadeSupport",
-    "HeartPreference",
-    "SpadePreference",
-    "LongClubs",
-    "LongDiamonds",
-    "MinorEscape",
-)
-rule_order.order(*reversed(cappalletti_two_diamonds_responses))
-
-cappalletti_two_diamonds_invitational_responses = set([
-    cappalletti_two_diamonds_responses.InvitationalHeartSupport,
-    cappalletti_two_diamonds_responses.InvitationalSpadeSupport,
-])
-
-# Law bids (supporting a major) are better than MinorEscape
-rule_order.order(cappalletti_two_diamonds_responses.MinorEscape, natural_suited_part_scores)
-# We'd rather be invitational to game than just a law bid.
-rule_order.order(natural_suited_part_scores, cappalletti_two_diamonds_invitational_responses)
-
-
-class ResponseToCappallettiTwoDiamonds(ResponseToCappalletti):
-    preconditions = LastBidWas(positions.Partner, '2D')
-    constraints = {
-        'P':  [(diamonds >= 6, ThreeOfTheTopFiveOrBetter(suit.DIAMONDS)), cappalletti_two_diamonds_responses.LongDiamonds],
-        '2N': (NO_CONSTRAINTS, cappalletti_two_diamonds_responses.MinorEscape),
-        '3C':  [(clubs >= 6, ThreeOfTheTopFiveOrBetter(suit.CLUBS)), cappalletti_two_diamonds_responses.LongClubs],
-
-        # Could these be natural too?  They imply invitational points?  But how many does partner have?
-        '3H': [(MinimumCombinedLength(9), MinimumCombinedPoints(22)), cappalletti_two_diamonds_responses.InvitationalHeartSupport], 
-        '3S': [(MinimumCombinedLength(9), MinimumCombinedPoints(22)), cappalletti_two_diamonds_responses.InvitationalSpadeSupport],
-    }
-    annotations_per_call = {
-        '2N': annotations.Artificial,
-    }
-
-
-class ResponseToCappallettiTwoDiamonds(ResponseToCappalletti):
-    preconditions = LastBidWas(positions.Partner, '2D')
-    constraints = {
-        'P':  [(diamonds >= 6, ThreeOfTheTopFiveOrBetter(suit.DIAMONDS)), cappalletti_two_diamonds_responses.LongDiamonds],
-        '2N': (NO_CONSTRAINTS, cappalletti_two_diamonds_responses.MinorEscape),
-        '3C':  [(clubs >= 6, ThreeOfTheTopFiveOrBetter(suit.CLUBS)), cappalletti_two_diamonds_responses.LongClubs],
-
-        # Could these be natural too?  They imply invitational points?  But how many does partner have?
-        '3H': [(MinimumCombinedLength(9), MinimumCombinedPoints(22)), cappalletti_two_diamonds_responses.InvitationalHeartSupport], 
-        '3S': [(MinimumCombinedLength(9), MinimumCombinedPoints(22)), cappalletti_two_diamonds_responses.InvitationalSpadeSupport],
-    }
-    annotations_per_call = {
-        '2N': annotations.Artificial,
-    }
-
-
-cappalletti_major_raise_responses = enum.Enum(
-    "InvitationalHeartSupport",
-    "InvitationalSpadeSupport"
-)
-
-
-class RaiseResponseToMajorCappalletti(ResponseToCappalletti):
-    preconditions = [
-        LastBidHasStrain(positions.Partner, suit.MAJORS),
-        RaiseOfPartnersLastSuit(),
-    ]
-    priorities_per_call = {
-        '3H': cappalletti_major_raise_responses.InvitationalHeartSupport, 
-        '3S': cappalletti_major_raise_responses.InvitationalSpadeSupport,
-    }
-    shared_constraints = [
-        MinimumCombinedLength(8),
-        # Should this be support points?
-        MinimumCombinedPoints(18)
-    ]
-
-
 class TwoLevelStandardOvercall(StandardDirectOvercall):
     shared_constraints = points >= 10
 
@@ -2338,329 +2210,309 @@ class FeatureResponseToTwoNotrumpFeatureRequest(ResponseToTwoNotrumpFeatureReque
     shared_constraints = [points >= 9, ThirdRoundStopper()]
 
 
-# FIXME: This is wrong as soon as we try to support more than one system.
-def _get_subclasses(base_class):
-    subclasses = base_class.__subclasses__()
-    for subclass in list(subclasses):
-        subclasses.extend(_get_subclasses(subclass))
-    return subclasses
-
-def _concrete_rule_classes():
-    return filter(lambda cls: not cls.__subclasses__(), _get_subclasses(Rule))
-
-
-class StandardAmericanYellowCard(object):
-    # Rule ordering does not matter.  We could have python crawl the files to generate this list instead.
-    rules = [RuleCompiler.compile(description_class) for description_class in _concrete_rule_classes()]
-    priority_ordering = rule_order
-
-    rule_order.order(preempt_priorities, opening_priorities)
-    rule_order.order(natural_bids, preempt_priorities)
-    rule_order.order(natural_bids, overcall_priorities)
-    rule_order.order(natural_games, nt_response_priorities, natural_slams)
-    rule_order.order(natural_bids, stayman_response_priorities)
-    rule_order.order(natural_bids, GarbagePassStaymanRebid)
-    rule_order.order(natural_bids, PassAfterTakeoutDouble)
-    rule_order.order(natural_bids, two_clubs_opener_rebid_priorities)
-    rule_order.order(natural_bids, responder_rebid_priorities)
-    rule_order.order(natural_exact_notrump_game, stayman_rebid_priorities.GameForcingOtherMajor, natural_exact_major_games)
-    rule_order.order(natural_nt_part_scores, stayman_rebid_priorities.InvitationalOtherMajor, natural_suited_part_scores)
-    rule_order.order(takeout_double_responses, natural_bids)
-    rule_order.order(ForcedRebidOriginalSuitByOpener, natural_bids)
-    rule_order.order(natural_bids, NewSuitResponseToStandardOvercall, CuebidResponseToStandardOvercall)
-    rule_order.order(RaiseResponseToStandardOvercall, natural_bids, NewSuitResponseToStandardOvercall, CuebidResponseToStandardOvercall)
-    rule_order.order(DefaultPass, RaiseResponseToStandardOvercall)
-    rule_order.order(ResponderSignoffInPartnersSuit, natural_bids)
-    rule_order.order(DefaultPass, ResponderSignoffInPartnersSuit)
-    rule_order.order(DefaultPass, opening_priorities)
-    rule_order.order(rebids_after_takeout_double, natural_bids)
-    rule_order.order(natural_bids, SecondNegative)
-    rule_order.order(DefaultPass, rebids_after_takeout_double)
-    rule_order.order(DefaultPass, natural_passses)
-    rule_order.order(natural_suited_part_scores, natural_passses)
-    rule_order.order(SuitGameIsRemote, natural_games, SuitSlamIsRemote, natural_slams)
-    rule_order.order(
-        RebidOneNotrumpByOpener,
-        opener_one_level_new_major,
-        opener_support_majors,
-    )
-    rule_order.order(
-        RebidOneNotrumpByOpener,
-        opener_higher_level_new_suits,
-    )
-    rule_order.order(
-        RebidOneNotrumpByOpener,
-        opener_reverses,
-    )
-    rule_order.order(
-        ForcedRebidOriginalSuitByOpener,
-        opener_higher_level_new_suits,
-        opener_one_level_new_major,
-    )
-    rule_order.order(
-        DefaultPass,
-        opener_higher_level_new_minors,
-        opener_jumpshifts_to_minors,
-    )
-    rule_order.order(
-        opener_higher_level_new_major,
-        opener_reverse_to_a_major,
-        opener_jumpshifts_to_majors,
-    )
-    rule_order.order(
-        opener_reverse_to_a_minor,
-        opener_one_level_new_major,
-        opener_jumpshifts_to_majors,
-    )
-    rule_order.order(
-        NotrumpJumpRebid,
-        opener_support_majors,
-    )
-    rule_order.order(
-        # Don't jump to game immediately, even if we have the points for it.
-        natural_exact_notrump_game,
-        opener_one_level_new_major,
-    )
-    rule_order.order(
-        ThreeNotrumpMajorResponse,
-        new_one_level_major_responses,
-    )
-    rule_order.order(
-        natural_exact_notrump_game,
-        [fourth_suit_forcing_priorties.TwoLevel, fourth_suit_forcing_priorties.ThreeLevel],
-    )
-    rule_order.order(
-        natural_nt_part_scores,
-        fourth_suit_forcing_priorties.TwoLevel,
-    )
-    rule_order.order(
-        # FIXME: This seems backwards.
-        natural_suited_part_scores,
-        fourth_suit_forcing_priorties.TwoLevel,
-    )
-    rule_order.order(
-        [fourth_suit_forcing_priorties.TwoLevel, fourth_suit_forcing_priorties.ThreeLevel],
-        responder_rebid_priorities.ThreeLevelSuitRebidByResponder,
-    )
-    rule_order.order(
-        DefaultPass,
-        # Mention a 4-card major before rebidding a 6-card minor.
-        UnforcedRebidOriginalSuitByOpener,
-        opener_one_level_new_major,
-    )
-    rule_order.order(
-        ForcedRebidOriginalSuitByOpener,
-        opener_higher_level_new_suits,
-    )
-    rule_order.order(
-        ForcedRebidOriginalSuitByOpener,
-        RebidOneNotrumpByOpener,
-        UnforcedRebidOriginalSuitByOpener,
-    )
-    rule_order.order(
-        # Rebids will only ever consider one suit, so we won't be comparing majors/minors here.
-        ForcedRebidOriginalSuitByOpener,
-        UnforcedRebidOriginalSuitByOpener,
-        opener_unsupported_rebids,
-    )
-    rule_order.order(
-        natural_suited_part_scores,
-        NotrumpInvitationByOpener,
-        HelpSuitGameTry,
-    )
-    rule_order.order(
-        # If we have a new suit to mention, we'd rather do that than sign off in game?
-        # Maybe game with stoppers should be higher priority and game without lower?
-        # 1S P 2C P 2H seems higher priority than a straight jump to game...
-        # but 1S P 2C P 2D doesn't seem very useful if we have everything stopped?
-        natural_exact_notrump_game,
-        opener_higher_level_new_suits,
-    )
-    rule_order.order(
-        opener_higher_level_new_suits,
-        opener_support_majors,
-    )
-    rule_order.order(
-        # Definitely rather jump to NT rather than mention a new minor.  Unclear about 2H vs. NT.
-        opener_higher_level_new_minors,
-        NotrumpJumpRebid,
-    )
-    rule_order.order(
-        ResponderSignoffInPartnersSuit,
-        responder_rebid_priorities.ResponderReverse,
-    )
-    rule_order.order(
-        # If we see that game is remote, just stop.
-        UnforcedRebidOriginalSuitByOpener,
-        natural_passses,
-    )
-    rule_order.order(
-        # FIXME: This may be unecessary once we have responses to negative doubles.
-        # But we'd rather place the contract in a suited part score than in NT.
-        RebidOneNotrumpByOpener,
-        natural_suited_part_scores,
-    )
-    rule_order.order(
-        # We'd rather disclose a 6-card major suit than just jump to NT.
-        # FIXME: It's possible this is only an issue due to NaturalNotrump missing stoppers!
-        natural_exact_notrump_game,
-        opener_unsupported_major_rebid,
-    )
-    rule_order.order(
-        # Showing a second minor seems more useful than showing a longer one.
-        opener_unsupported_minor_rebid,
-        opener_reverse_to_a_minor,
-    )
-    rule_order.order(
-        OneNotrumpResponse,
-        raise_responses,
-    )
-    rule_order.order(
-        DefaultPass,
-        raise_responses,
-    )
-    rule_order.order(
-        # We don't need to put this above all raise responses, but it shouldn't hurt.
-        raise_responses,
-        MajorJumpToGame,
-    )
-    rule_order.order(
-        DefaultPass,
-        OneNotrumpResponse, # Any time we can respond we should.
-        new_two_level_minor_responses, # But we prefer suits to NT.
-        major_raise_responses, # But we'd much rather support our partner's major!
-    )
-    rule_order.order(
-        OneNotrumpResponse,
-        new_two_level_major_responses,
-    )
-    rule_order.order(
-        # Relays are extremely high priority, this is likely redundant with other orderings.
-        DefaultPass,
-        relay_priorities
-    )
-    rule_order.order(
-        new_two_level_minor_responses,
-        NotrumpResponseToMinorOpen,
-        new_one_level_major_responses,
-    )
-    rule_order.order(
-        new_two_level_minor_responses,
-        new_one_level_major_responses,
-    )
-    rule_order.order(
-        natural_bids,
-        two_clubs_response_priorities,
-    )
-    rule_order.order(
-        natural_bids,
-        feature_response_priorities,
-    )
-    rule_order.order(
-        # We want to start constructive, not just jump to slam.
-        natural_slams,
-        # FIXME: This should be a group of game-forcing responses, no?
-        JumpShiftResponseToOpen,
-    )
-    rule_order.order(
-        OneNotrumpResponse,
-        OneLevelNegativeDouble,
-    )
-    rule_order.order(
-        raise_responses,
-        JumpShiftResponseToOpen,
-    )
-    rule_order.order(
-        # We'd rather mention a new major than raise partner's minor
-        minor_raise_responses,
-        new_one_level_major_responses,
-        # But we'd rather raise a major than mention a new one.
-        major_raise_responses
-    )
-    rule_order.order(
-        # NegativeDouble is more descriptive than any one-level new suit (when it fits).
-        new_one_level_suit_responses,
-        OneLevelNegativeDouble,
-    )
-    rule_order.order(
-        OneNotrumpResponse,
-        OneLevelNegativeDouble,
-    )
-    # Constructive responses are always better than placement responses.
-    rule_order.order(
-        natural_bids,
-        new_one_level_suit_responses,
-    )
-    rule_order.order(
-        DefaultPass,
-        TwoLevelNegativeDouble,
-    )
-    rule_order.order(
-        major_raise_responses,
-        Jacoby2N,
-    )
-    rule_order.order(
-        natural_bids,
-        jacoby_2n_response_priorities,
-    )
-    rule_order.order(
-        new_one_level_suit_responses,
-        defenses_against_takeout_double,
-    )
-    rule_order.order(
-        minimum_raise_responses,
-        defenses_against_takeout_double,
-        MajorJumpToGame,
-    )
-    rule_order.order(
-        OneNotrumpResponse,
-        NotrumpResponseToMinorOpen,
-        defenses_against_takeout_double,
-    )
-    # The rebid-after-transfer bids are more descriptive than jumping to NT game.
-    rule_order.order(
-        natural_exact_notrump_game,
-        hearts_rebids_after_spades_transfers
-    )
-    rule_order.order(
-        natural_suited_part_scores,
-        SpadesRebidAfterHeartsTransfer
-    )
-    rule_order.order(
-        natural_exact_notrump_game,
-        NewMinorRebidAfterJacobyTransfer
-    )
-    rule_order.order(
-        # Even a jumpshift to a major seems less descriptive than a 2N rebid.
-        opener_jumpshifts,
-        NotrumpJumpRebid,
-    )
-    rule_order.order(
-        # Better to raise partner's major than show minors.
-        negative_doubles,
-        major_raise_responses,
-    )
-    rule_order.order(
-        # Better to show points for NT game than mention a new minor?
-        new_two_level_minor_responses,
-        ThreeNotrumpMajorResponse,
-    )
-    rule_order.order(
-        natural_nt_part_scores,
-        negative_doubles,
-    )
-    rule_order.order(
-        # If we can rebid, that's always better than escaping to a NT partscore.
-        # FIXME: This should be escape_to_nt_partscore instead of natural_nt.
-        # This ordering is probably overbroad as written!
-        natural_nt_part_scores,
-        UnforcedRebidOriginalSuitByOpener,
-    )
-    rule_order.order(
-        opener_unsupported_major_rebid,
-        opener_jumpshifts,
-    )
-    rule_order.order(
-        DefaultPass,
-        Cappalletti,
-    )
+rule_order.order(preempt_priorities, opening_priorities)
+rule_order.order(natural_bids, preempt_priorities)
+rule_order.order(natural_bids, overcall_priorities)
+rule_order.order(natural_games, nt_response_priorities, natural_slams)
+rule_order.order(natural_bids, stayman_response_priorities)
+rule_order.order(natural_bids, GarbagePassStaymanRebid)
+rule_order.order(natural_bids, PassAfterTakeoutDouble)
+rule_order.order(natural_bids, two_clubs_opener_rebid_priorities)
+rule_order.order(natural_bids, responder_rebid_priorities)
+rule_order.order(natural_exact_notrump_game, stayman_rebid_priorities.GameForcingOtherMajor, natural_exact_major_games)
+rule_order.order(natural_nt_part_scores, stayman_rebid_priorities.InvitationalOtherMajor, natural_suited_part_scores)
+rule_order.order(takeout_double_responses, natural_bids)
+rule_order.order(ForcedRebidOriginalSuitByOpener, natural_bids)
+rule_order.order(natural_bids, NewSuitResponseToStandardOvercall, CuebidResponseToStandardOvercall)
+rule_order.order(RaiseResponseToStandardOvercall, natural_bids, NewSuitResponseToStandardOvercall, CuebidResponseToStandardOvercall)
+rule_order.order(DefaultPass, RaiseResponseToStandardOvercall)
+rule_order.order(ResponderSignoffInPartnersSuit, natural_bids)
+rule_order.order(DefaultPass, ResponderSignoffInPartnersSuit)
+rule_order.order(DefaultPass, opening_priorities)
+rule_order.order(rebids_after_takeout_double, natural_bids)
+rule_order.order(natural_bids, SecondNegative)
+rule_order.order(DefaultPass, rebids_after_takeout_double)
+rule_order.order(DefaultPass, natural_passses)
+rule_order.order(natural_suited_part_scores, natural_passses)
+rule_order.order(SuitGameIsRemote, natural_games, SuitSlamIsRemote, natural_slams)
+rule_order.order(
+    RebidOneNotrumpByOpener,
+    opener_one_level_new_major,
+    opener_support_majors,
+)
+rule_order.order(
+    RebidOneNotrumpByOpener,
+    opener_higher_level_new_suits,
+)
+rule_order.order(
+    RebidOneNotrumpByOpener,
+    opener_reverses,
+)
+rule_order.order(
+    ForcedRebidOriginalSuitByOpener,
+    opener_higher_level_new_suits,
+    opener_one_level_new_major,
+)
+rule_order.order(
+    DefaultPass,
+    opener_higher_level_new_minors,
+    opener_jumpshifts_to_minors,
+)
+rule_order.order(
+    opener_higher_level_new_major,
+    opener_reverse_to_a_major,
+    opener_jumpshifts_to_majors,
+)
+rule_order.order(
+    opener_reverse_to_a_minor,
+    opener_one_level_new_major,
+    opener_jumpshifts_to_majors,
+)
+rule_order.order(
+    NotrumpJumpRebid,
+    opener_support_majors,
+)
+rule_order.order(
+    # Don't jump to game immediately, even if we have the points for it.
+    natural_exact_notrump_game,
+    opener_one_level_new_major,
+)
+rule_order.order(
+    ThreeNotrumpMajorResponse,
+    new_one_level_major_responses,
+)
+rule_order.order(
+    natural_exact_notrump_game,
+    [fourth_suit_forcing_priorties.TwoLevel, fourth_suit_forcing_priorties.ThreeLevel],
+)
+rule_order.order(
+    natural_nt_part_scores,
+    fourth_suit_forcing_priorties.TwoLevel,
+)
+rule_order.order(
+    # FIXME: This seems backwards.
+    natural_suited_part_scores,
+    fourth_suit_forcing_priorties.TwoLevel,
+)
+rule_order.order(
+    [fourth_suit_forcing_priorties.TwoLevel, fourth_suit_forcing_priorties.ThreeLevel],
+    responder_rebid_priorities.ThreeLevelSuitRebidByResponder,
+)
+rule_order.order(
+    DefaultPass,
+    # Mention a 4-card major before rebidding a 6-card minor.
+    UnforcedRebidOriginalSuitByOpener,
+    opener_one_level_new_major,
+)
+rule_order.order(
+    ForcedRebidOriginalSuitByOpener,
+    opener_higher_level_new_suits,
+)
+rule_order.order(
+    ForcedRebidOriginalSuitByOpener,
+    RebidOneNotrumpByOpener,
+    UnforcedRebidOriginalSuitByOpener,
+)
+rule_order.order(
+    # Rebids will only ever consider one suit, so we won't be comparing majors/minors here.
+    ForcedRebidOriginalSuitByOpener,
+    UnforcedRebidOriginalSuitByOpener,
+    opener_unsupported_rebids,
+)
+rule_order.order(
+    natural_suited_part_scores,
+    NotrumpInvitationByOpener,
+    HelpSuitGameTry,
+)
+rule_order.order(
+    # If we have a new suit to mention, we'd rather do that than sign off in game?
+    # Maybe game with stoppers should be higher priority and game without lower?
+    # 1S P 2C P 2H seems higher priority than a straight jump to game...
+    # but 1S P 2C P 2D doesn't seem very useful if we have everything stopped?
+    natural_exact_notrump_game,
+    opener_higher_level_new_suits,
+)
+rule_order.order(
+    opener_higher_level_new_suits,
+    opener_support_majors,
+)
+rule_order.order(
+    # Definitely rather jump to NT rather than mention a new minor.  Unclear about 2H vs. NT.
+    opener_higher_level_new_minors,
+    NotrumpJumpRebid,
+)
+rule_order.order(
+    ResponderSignoffInPartnersSuit,
+    responder_rebid_priorities.ResponderReverse,
+)
+rule_order.order(
+    # If we see that game is remote, just stop.
+    UnforcedRebidOriginalSuitByOpener,
+    natural_passses,
+)
+rule_order.order(
+    # FIXME: This may be unecessary once we have responses to negative doubles.
+    # But we'd rather place the contract in a suited part score than in NT.
+    RebidOneNotrumpByOpener,
+    natural_suited_part_scores,
+)
+rule_order.order(
+    # We'd rather disclose a 6-card major suit than just jump to NT.
+    # FIXME: It's possible this is only an issue due to NaturalNotrump missing stoppers!
+    natural_exact_notrump_game,
+    opener_unsupported_major_rebid,
+)
+rule_order.order(
+    # Showing a second minor seems more useful than showing a longer one.
+    opener_unsupported_minor_rebid,
+    opener_reverse_to_a_minor,
+)
+rule_order.order(
+    OneNotrumpResponse,
+    raise_responses,
+)
+rule_order.order(
+    DefaultPass,
+    raise_responses,
+)
+rule_order.order(
+    # We don't need to put this above all raise responses, but it shouldn't hurt.
+    raise_responses,
+    MajorJumpToGame,
+)
+rule_order.order(
+    DefaultPass,
+    OneNotrumpResponse, # Any time we can respond we should.
+    new_two_level_minor_responses, # But we prefer suits to NT.
+    major_raise_responses, # But we'd much rather support our partner's major!
+)
+rule_order.order(
+    OneNotrumpResponse,
+    new_two_level_major_responses,
+)
+rule_order.order(
+    # Relays are extremely high priority, this is likely redundant with other orderings.
+    DefaultPass,
+    relay_priorities
+)
+rule_order.order(
+    new_two_level_minor_responses,
+    NotrumpResponseToMinorOpen,
+    new_one_level_major_responses,
+)
+rule_order.order(
+    new_two_level_minor_responses,
+    new_one_level_major_responses,
+)
+rule_order.order(
+    natural_bids,
+    two_clubs_response_priorities,
+)
+rule_order.order(
+    natural_bids,
+    feature_response_priorities,
+)
+rule_order.order(
+    # We want to start constructive, not just jump to slam.
+    natural_slams,
+    # FIXME: This should be a group of game-forcing responses, no?
+    JumpShiftResponseToOpen,
+)
+rule_order.order(
+    OneNotrumpResponse,
+    OneLevelNegativeDouble,
+)
+rule_order.order(
+    raise_responses,
+    JumpShiftResponseToOpen,
+)
+rule_order.order(
+    # We'd rather mention a new major than raise partner's minor
+    minor_raise_responses,
+    new_one_level_major_responses,
+    # But we'd rather raise a major than mention a new one.
+    major_raise_responses
+)
+rule_order.order(
+    # NegativeDouble is more descriptive than any one-level new suit (when it fits).
+    new_one_level_suit_responses,
+    OneLevelNegativeDouble,
+)
+rule_order.order(
+    OneNotrumpResponse,
+    OneLevelNegativeDouble,
+)
+# Constructive responses are always better than placement responses.
+rule_order.order(
+    natural_bids,
+    new_one_level_suit_responses,
+)
+rule_order.order(
+    DefaultPass,
+    TwoLevelNegativeDouble,
+)
+rule_order.order(
+    major_raise_responses,
+    Jacoby2N,
+)
+rule_order.order(
+    natural_bids,
+    jacoby_2n_response_priorities,
+)
+rule_order.order(
+    new_one_level_suit_responses,
+    defenses_against_takeout_double,
+)
+rule_order.order(
+    minimum_raise_responses,
+    defenses_against_takeout_double,
+    MajorJumpToGame,
+)
+rule_order.order(
+    OneNotrumpResponse,
+    NotrumpResponseToMinorOpen,
+    defenses_against_takeout_double,
+)
+# The rebid-after-transfer bids are more descriptive than jumping to NT game.
+rule_order.order(
+    natural_exact_notrump_game,
+    hearts_rebids_after_spades_transfers
+)
+rule_order.order(
+    natural_suited_part_scores,
+    SpadesRebidAfterHeartsTransfer
+)
+rule_order.order(
+    natural_exact_notrump_game,
+    NewMinorRebidAfterJacobyTransfer
+)
+rule_order.order(
+    # Even a jumpshift to a major seems less descriptive than a 2N rebid.
+    opener_jumpshifts,
+    NotrumpJumpRebid,
+)
+rule_order.order(
+    # Better to raise partner's major than show minors.
+    negative_doubles,
+    major_raise_responses,
+)
+rule_order.order(
+    # Better to show points for NT game than mention a new minor?
+    new_two_level_minor_responses,
+    ThreeNotrumpMajorResponse,
+)
+rule_order.order(
+    natural_nt_part_scores,
+    negative_doubles,
+)
+rule_order.order(
+    # If we can rebid, that's always better than escaping to a NT partscore.
+    # FIXME: This should be escape_to_nt_partscore instead of natural_nt.
+    # This ordering is probably overbroad as written!
+    natural_nt_part_scores,
+    UnforcedRebidOriginalSuitByOpener,
+)
+rule_order.order(
+    opener_unsupported_major_rebid,
+    opener_jumpshifts,
+)

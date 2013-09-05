@@ -15,6 +15,7 @@ import core.suit as suit
 import z3
 import z3b.model as model
 import z3b.rules as rules
+import z3b.sayc as sayc
 
 
 class SolverPool(object):
@@ -451,7 +452,7 @@ class PossibleCalls(object):
 class Bidder(object):
     def __init__(self):
         # Assuming SAYC for all sides.
-        self.system = rules.StandardAmericanYellowCard
+        self.system = sayc.StandardAmericanYellowCard
 
     def find_call_for(self, hand, call_history, expected_call=None):
         with Interpreter().create_history(call_history) as history:
@@ -572,7 +573,7 @@ class InconsistentHistoryException(Exception):
 class Interpreter(object):
     def __init__(self):
         # Assuming SAYC for all sides.
-        self.system = rules.StandardAmericanYellowCard
+        self.system = sayc.StandardAmericanYellowCard
 
     def extend_history(self, history, call, explain=False):
         if explain:

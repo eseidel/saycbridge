@@ -5,7 +5,8 @@
 import json
 import networkx.readwrite.json_graph
 import webapp2
-from z3b.rules import StandardAmericanYellowCard, Rule
+from z3b.rules import Rule
+from z3b.sayc import StandardAmericanYellowCard
 
 
 class JSONPrioritiesHandler(webapp2.RequestHandler):
