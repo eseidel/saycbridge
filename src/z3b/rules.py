@@ -2078,6 +2078,41 @@ class ResponseToPreempt(Rule):
     preconditions = LastBidHasAnnotation(positions.Partner, annotations.Preemptive)
 
 
+class ForcedRebidAfterPreempt(Rule):
+    preconditions = [
+        LastBidHasAnnotation(positions.Me, annotations.Preemptive),
+        ForcedToBid(),  # aka, partner mentioned a new suit.
+        LastBidWasBelowGame(), # RHO must have passed for us to be forced.
+    ]
+
+
+class MinimumRebidOfPreemptSuit(ForcedRebidAfterPreempt):
+    preconditions = [
+        RebidSameSuit(),
+        NotJumpFromLastContract(),
+    ]
+    # Min: 1S 2D P 2H P 3D
+    call_names = (
+        '      3D', '3H', '3S',
+        '4C', '4D'
+    )
+    shared_constraints = NO_CONSTRAINTS
+
+
+class RaiseOfPartnersPreemptResponse(ForcedRebidAfterPreempt):
+    preconditions = [
+        RaiseOfPartnersLastSuit(),
+        NotJumpFromLastContract(),
+    ]
+    # Min: 1S 2D P 2H P 3D, Unclear what the max is.
+    call_names = (
+        '      3D', '3H', '3S',
+        '4C', '4D'
+    )
+    # FIXME: This can also be made with doubleton honors according to p85
+    shared_constraints = MinimumCombinedLength(8)
+
+
 class NewSuitResponseToPreempt(ResponseToPreempt):
     preconditions = [
         UnbidSuit(),
@@ -2089,7 +2124,12 @@ class NewSuitResponseToPreempt(ResponseToPreempt):
         '3C', '3D', '3H', '3S',
         '4C', '4D',
     ]
-    shared_constraints = [MinLength(5), MinCombinedPointsForPartnerMinimumSuitedRebid()]
+    shared_constraints = [
+        MinLength(5),
+        # Should this deny support for partner's preempt suit?
+        # Does this really need 17+ points?
+        MinCombinedPointsForPartnerMinimumSuitedRebid(),
+    ]
 
 
 feature_asking_priorities = enum.Enum(
@@ -2200,6 +2240,7 @@ class ResponseToTwoNotrumpFeatureRequest(Rule):
 
 
 class FeatureResponseToTwoNotrumpFeatureRequest(ResponseToTwoNotrumpFeatureRequest):
+    category = categories.Gadget
     preconditions = InvertedPrecondition(RebidSameSuit())
     annotations = annotations.Artificial
     call_names = ['3C', '3D', '3H', '3S']
@@ -2208,6 +2249,11 @@ class FeatureResponseToTwoNotrumpFeatureRequest(ResponseToTwoNotrumpFeatureReque
     # Unittests would suggest we should require 9+?
     shared_constraints = [points >= 9, ThirdRoundStopper()]
 
+
+rule_order.order(
+    MinimumRebidOfPreemptSuit,
+    feature_response_priorities.TwoNotrumpFeatureResponse,
+)
 
 rule_order.order(preempt_priorities, opening_priorities)
 rule_order.order(natural_bids, preempt_priorities)
