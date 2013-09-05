@@ -2127,7 +2127,9 @@ class NewSuitResponseToPreempt(ResponseToPreempt):
     shared_constraints = [
         MinLength(5),
         # Should this deny support for partner's preempt suit?
-        # Does this really need 17+ points?
+        # Does this really need 17+ points for a 2-level contract and 20+ for a 3-level?
+        # It seems this bid should be more "we have the majority of the points"
+        # than that a particular level is safe.  Responding to a 2-level 15+ should be sufficient?
         MinCombinedPointsForPartnerMinimumSuitedRebid(),
     ]
 
