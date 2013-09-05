@@ -10,6 +10,7 @@ from z3b import enum
 from third_party.memoized import memoized
 from z3b.model import positions, expr_for_suit, is_possible, is_certain
 from z3b.preconditions import did_bid_annotation
+import collections
 import copy
 import core.suit as suit
 import z3
@@ -570,6 +571,35 @@ class InconsistentHistoryException(Exception):
         self.rule = rule
 
 
+class HistoryCache(object):
+    def __init__(self, size_limit=100):
+        self.lru = collections.deque(maxlen=size_limit)
+
+    # Python 3.2's functools has an @lru_cache decorator, but we can't use that yet.
+    def lookup(self, call_history):
+        calls_string = call_history.calls_string()
+        best_match = ""
+        best_history = None
+        for call_string_and_history in self.lru:
+            key = call_string_and_history[0]
+            if len(key) > len(best_match) and calls_string.startswith(key):
+                best_match = key
+                best_history = call_string_and_history[1]
+
+        if len(best_match):
+            calls_matched = best_match.count(' ') + 1
+            return best_history, call_history.calls[calls_matched:]
+
+        return History(), call_history.calls
+
+    def add(self, history):
+        call_string_and_history = (history.call_history.calls_string(), history)
+        self.lru.append(call_string_and_history)
+
+
+history_cache = HistoryCache()
+
+
 class Interpreter(object):
     def __init__(self):
         # Assuming SAYC for all sides.
@@ -591,11 +621,13 @@ class Interpreter(object):
         if not history.is_consistent(positions.Me, constraints):
             raise InconsistentHistoryException(annotations, constraints, rule)
 
-        return history.extend_with(call, annotations, constraints, rule)
+        new_history = history.extend_with(call, annotations, constraints, rule)
+        history_cache.add(new_history)
+        return new_history
 
     def create_history(self, call_history, explain=False):
-        history = History()
-        for call in call_history.calls:
+        history, remaining_calls = history_cache.lookup(call_history)
+        for call in remaining_calls:
             try:
                 history = self.extend_history(history, call, explain=explain)
             except InconsistentHistoryException, e:
