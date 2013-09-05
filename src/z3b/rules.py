@@ -1453,7 +1453,6 @@ overcall_priorities = enum.Enum(
     "MichaelsCuebid",
     "Unusual2N",
     "DirectOvercall1N",
-    "DirectNotrumpDouble",
     "TakeoutDouble",
 
     "WeakFourLevelPremptive",
@@ -1531,11 +1530,11 @@ class OneSpadeOvercall(OneLevelStandardOvercall):
     priority = overcall_priorities.DirectOvercallMajor
 
 
-class DirectNotrumpDouble(DirectOvercall):
-    preconditions = LastBidWas(positions.RHO, '1N')
-    call_names = 'X'
-    shared_constraints = z3.And(points >= 15, points <= 17, balanced)
-    priority = overcall_priorities.DirectNotrumpDouble
+# This is replaced by Cappelletti for now.  We could do that with a category instead.
+# class DirectNotrumpDouble(DirectOvercall):
+#     preconditions = LastBidWas(positions.RHO, '1N')
+#     call_names = 'X'
+#     shared_constraints = z3.And(points >= 15, points <= 17, balanced)
 
 
 class TwoLevelStandardOvercall(StandardDirectOvercall):

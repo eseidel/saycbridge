@@ -9,6 +9,14 @@ from z3b.preconditions import *
 from z3b.rules import *
 
 
+cappelletti_calls = enum.Enum(
+    "PenaltyDouble",
+    "TwoSuits",
+    "LongSuit",
+)
+rule_order.order(*reversed(cappelletti_calls))
+
+
 # Cappelletti may promise < 15 hcp, since 3-level overcalls are also on and may be preferred.
 class Cappelletti(Rule):
     preconditions = [
@@ -16,11 +24,14 @@ class Cappelletti(Rule):
         LastBidWas(positions.RHO, '1N'),
     ]
     constraints = {
-        '2C': z3.Or(clubs >= 6, diamonds >= 6, hearts >= 6, spades >= 6),
-        '2D': z3.And(hearts >= 5, spades >= 5),
-        '2H': z3.And(hearts >= 5, z3.Or(clubs >= 5, diamonds >= 5)),
-        '2S': z3.And(spades >= 5, z3.Or(clubs >= 5, diamonds >= 5)),
-        '2N': z3.And(clubs >= 5, diamonds >= 5),
+        '2C': [z3.Or(clubs >= 6, diamonds >= 6, hearts >= 6, spades >= 6), cappelletti_calls.LongSuit],
+        '2D': [z3.And(hearts >= 5, spades >= 5), cappelletti_calls.TwoSuits],
+        '2H': [z3.And(hearts >= 5, z3.Or(clubs >= 5, diamonds >= 5)), cappelletti_calls.TwoSuits],
+        '2S': [z3.And(spades >= 5, z3.Or(clubs >= 5, diamonds >= 5)), cappelletti_calls.TwoSuits],
+        '2N': [z3.And(clubs >= 5, diamonds >= 5), cappelletti_calls.TwoSuits],
+        # I think the logic here is that with such an uneven distribution of points
+        # in the opponents, we don't really want to play a game anyway, so we just penalize them.
+        'X': [points >= 15, cappelletti_calls.PenaltyDouble],
     }
     annotations_per_call = {
         ('2C', '2D', '2N'): annotations.Artificial
@@ -28,12 +39,13 @@ class Cappelletti(Rule):
     annotations = annotations.Cappelletti
     # The book suggests "decent strength".
     # The book bids Cappelletti with 11 hcp, but seems to want 12 hcp when responding.
+    # Wikipedia says Cappelletti is 9-14 hcp.
     shared_constraints = points >= 11
 
 
 rule_order.order(
     DefaultPass,
-    Cappelletti,
+    cappelletti_calls,
 )
 
 
@@ -124,6 +136,11 @@ class ResponseToCappellettiTwoDiamonds(ResponseToCappelletti):
 cappelletti_major_raise_responses = enum.Enum(
     "InvitationalHeartSupport",
     "InvitationalSpadeSupport"
+)
+
+rule_order.order(
+    DefaultPass,
+    cappelletti_major_raise_responses,
 )
 
 
