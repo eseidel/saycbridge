@@ -572,6 +572,7 @@ class InconsistentHistoryException(Exception):
 
 
 class HistoryCache(object):
+    # FIXME: size_limit has not been tuned at all.
     def __init__(self, size_limit=100):
         self.lru = collections.deque(maxlen=size_limit)
 
@@ -595,7 +596,6 @@ class HistoryCache(object):
     def add(self, history):
         call_string_and_history = (history.call_history.calls_string(), history)
         self.lru.append(call_string_and_history)
-
 
 history_cache = HistoryCache()
 
