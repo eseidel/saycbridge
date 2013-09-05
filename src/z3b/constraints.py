@@ -194,13 +194,17 @@ class TwoOfTheTopThree(Constraint):
 
 
 class ThreeOfTheTopFiveOrBetter(Constraint):
+    def __init__(self, suit=None):
+        self.suit = suit
+
     def expr(self, history, call):
+        strain = self.suit if self.suit is not None else call.strain
         return (
             model.three_of_the_top_five_clubs_or_better,
             model.three_of_the_top_five_diamonds_or_better,
             model.three_of_the_top_five_hearts_or_better,
             model.three_of_the_top_five_spades_or_better,
-        )[call.strain]
+        )[strain]
 
 
 class ThirdRoundStopper(Constraint):

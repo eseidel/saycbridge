@@ -245,10 +245,7 @@ test_overcalling_one_notrump:
 FAIL: None (expected 2S) for Q52.K97.3.AQJ764 (hcp: 12 lp: 14 sp: 15), history: 1N 2C P 2D P
 WARNING: Unordered: ['2C', '2N'] from: [Cappalletti, Cappalletti] ([<class 'z3b.rules.Cappalletti'>, <class 'z3b.rules.Cappalletti'>])
 FAIL: None (expected 2N) for KJT643.AQT62..87 (hcp: 10 lp: 13 sp: 16), history: 1N
-FAIL: None (expected 3C) for AKJT742.Q97.65.5 (hcp: 10 lp: 13 sp: 14), history: 1N 2C P
-FAIL: None (expected P) for AQJ7642.T9.3.852 (hcp: 7 lp: 10 sp: 11), history: 1N 2C P
-FAIL: None (expected 2D) for 865.96.J984.Q632 (hcp: 3 lp: 3 sp: 4), history: 1N 2C P
-FAIL: None (expected 2H) for 542.T9.AQJT65.53 (hcp: 7 lp: 9 sp: 9), history: 1N 2C P
+FAIL: P (expected 3C) for AKJT742.Q97.65.5 (hcp: 10 lp: 13 sp: 14), history: 1N 2C P
 FAIL: None (expected P) for 872.AQJT73.42.84 (hcp: 7 lp: 9 sp: 9), history: 1N 2D P
 FAIL: 2H (expected 3H) for 9742.QJ7.QJ65.A3 (hcp: 10 lp: 10 sp: 11), history: 1N 2D P
 FAIL: None (expected 2N) for T76432.QJT732.4. (hcp: 3 lp: 7 sp: 11), history: 1N 2D P
@@ -257,7 +254,7 @@ FAIL: None (expected P) for Q872.T73.742.842 (hcp: 2 lp: 2 sp: 2), history: 1N 2
 FAIL: None (expected 2N) for QT643.T962.4.965 (hcp: 2 lp: 3 sp: 5), history: 1N 2H P
 FAIL: None (expected 2S) for 76.72.42.KQT9843 (hcp: 5 lp: 8 sp: 8), history: 1N 2H P
 FAIL: 3H (expected 2N) for AK43.T62.KT43.73 (hcp: 10 lp: 10 sp: 11), history: 1N 2H P (subtest of 1N 2H P 2N P 3C P)
-Pass 8 of 22 hands
+Pass 11 of 22 hands
 
 test_overcalls:
 FAIL: X (expected 1H) for AQJ6.K96.AKJ74.3 (hcp: 18 lp: 19 sp: 21), history: 1C
@@ -402,4 +399,4 @@ FAIL: 3S (expected 4S) for K74.9.J98.KJT742 (hcp: 8 lp: 10 sp: 11), history: 1N 
 FAIL: 2N (expected P) for Q87.J843.K65.Q93 (hcp: 8 lp: 8 sp: 8), history: 1N P
 Pass 1 of 3 hands
 
-Pass 930 (77%) of 1198 total hands
+Pass 933 (77%) of 1198 total hands

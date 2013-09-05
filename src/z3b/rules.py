@@ -1552,6 +1552,33 @@ class Cappalletti(Rule):
         '2N': z3.And(clubs >= 5, diamonds >= 5),
     }
 
+class ResponseToCappalletti(Rule):
+    preconditions = LastBidHasAnnotation(positions.Partner, annotations.Cappalletti)
+
+
+cappalletti_responses = enum.Enum(
+    "StrongSpades",
+    "StrongHearts",
+    "LongClubs",
+    "BalancedWithPoints",
+    "Waiting",
+) 
+rule_order.order(*reversed(cappalletti_responses))
+
+
+class ResponseToCappallettiTwoClubs(ResponseToCappalletti):
+    preconditions = LastBidWas(positions.Partner, '2C')
+    constraints = {
+        'P':  [(clubs >= 6, ThreeOfTheTopFiveOrBetter(suit.CLUBS)), cappalletti_responses.LongClubs],
+        '2D': [NO_CONSTRAINTS, cappalletti_responses.Waiting],
+        '2H': [(hearts >= 5, ThreeOfTheTopFiveOrBetter()), cappalletti_responses.StrongHearts],
+        '2S': [(spades >= 5, ThreeOfTheTopFiveOrBetter()), cappalletti_responses.StrongSpades],
+        '2N': [(points >= 11, balanced), cappalletti_responses.BalancedWithPoints],
+    }
+    annotations_per_call = {
+        '2D': annotations.Artificial,
+    }
+
 
 class TwoLevelStandardOvercall(StandardDirectOvercall):
     shared_constraints = points >= 10
