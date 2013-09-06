@@ -53,6 +53,29 @@ class ResponseToCappelletti(Rule):
     preconditions = LastBidHasAnnotation(positions.Partner, annotations.Cappelletti)
 
 
+class PassResponseToOneNotrumpPenaltyDouble(ResponseToCappelletti):
+    preconditions = LastBidWas(positions.Partner, 'X')
+    constraints = {
+        'P': MinimumCombinedPoints(21), # We have a point majority and should penalize 1N.
+    }
+
+
+class NewSuitResponseToOneNotrumpPenaltyDouble(ResponseToCappelletti):
+    preconditions = [
+        LastBidWas(positions.Partner, 'X'),
+        UnbidSuit(),
+        NotJumpFromLastContract(),
+    ]
+    call_names = ['2C', '2D', '2H', '2S']
+    shared_constraints = [MinLength(4), LongestSuitExceptOpponentSuits()]
+
+
+rule_order.order(
+    NewSuitResponseToOneNotrumpPenaltyDouble,
+    PassResponseToOneNotrumpPenaltyDouble,
+)
+
+
 cappelletti_two_club_responses = enum.Enum(
     "StrongSpades",
     "StrongHearts",
