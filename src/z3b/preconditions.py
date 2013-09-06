@@ -235,6 +235,8 @@ class LastBidHasAnnotation(Precondition):
     def __init__(self, position, annotation):
         self.position = position
         self.annotation = annotation
+        # This assert is likely incompatible with module based development, but is nice for catching typos.
+        assert self.annotation in annotations
 
     @property
     def repr_args(self):

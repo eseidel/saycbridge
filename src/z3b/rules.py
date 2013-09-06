@@ -1628,7 +1628,7 @@ class DirectOvercall1N(DirectOvercall):
 
 
 class BalancingOvercallOverSuitedOpen(BalancingOvercall):
-    preconditions = LastBidHasAnnotation(positions.LHO, OneLevelSuitOpening)
+    preconditions = LastBidHasAnnotation(positions.LHO, annotations.OneLevelSuitOpening)
 
 
 class BalancingNotrumpOvercall(BalancingOvercallOverSuitedOpen):
@@ -1642,14 +1642,17 @@ class BalancingNotrumpOvercall(BalancingOvercallOverSuitedOpen):
 
 
 # class BalancingSuitedOvercall(BalancingOvercallOverSuitedOpen):
-#     preconditions = [IsSuit(), LastBidWasSuit(), NotJumpFromLastContract()]
+#     preconditions = NotJumpFromLastContract()
 #     constraints = {
-#         # Unlike DirectSuitedOvercall, we're requiring 5 at the one level.  Unclear if that's correct.
-#         Rule.LEVEL_1: [HighCardPointRange(5, 13), MinLength(5), MaximumLengthInLastBidSuit(3)],
-#         Rule.LEVEL_2: [HighCardPointRange(7, 13), MinLength(5), MaximumLengthInLastBidSuit(5)],
-#         Rule.LEVEL_3: [HighCardPointRange(10, 13), MinLength(6), MaximumLengthInLastBidSuit(5)],
+#         (      '1D', '1H', '1S'): points >= 5,
+#         ('2C', '2D', '2H', '2S'): points >= 7,
 #     }
-#     shared_constraints = ThreeOfTheTopFiveOrBetter()
+#     shared_constraints = [
+#         MinLength(5),
+#         ThreeOfTheTopFiveOrBetter(),
+#         # Even when balancing, we should not have strength in their suit.
+#         MaxLengthInLastContractSuit(3),
+#     ]
 
 
 # class BalancingJumpOvercall(BalancingOvercallOverSuitedOpen):
