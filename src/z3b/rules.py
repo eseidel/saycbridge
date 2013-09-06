@@ -426,6 +426,26 @@ class TwoLevelNegativeDouble(NegativeDouble):
 negative_doubles = set([OneLevelNegativeDouble, TwoLevelNegativeDouble])
 
 
+# aka OpenerRebidAfterNegativeDouble.
+class ResponseToNegativeDouble(Rule):
+    preconditions = LastBidHasAnnotation(positions.Partner, annotations.NegativeDouble)
+
+
+class CuebidReponseToNegativeDouble(ResponseToNegativeDouble):
+    preconditions = [
+        CueBid(positions.LHO),
+        NotJumpFromLastContract(),
+    ]
+    # Min: 1C 1D X P 2D, Max: 1S 2H X 3H
+    call_names = (
+        # Unclear if a cuebid of 2D ever makes sense since
+        # we'll know they're 4-4 in the majors and can choose between a minor game and NT?
+              '2D', '2H', '2S',
+        '3C', '3D', '3H'
+    )
+    shared_constraints = points >= 19
+
+
 two_clubs_response_priorities = enum.Enum(
     "SuitResponse",
     "NoBiddableSuit",
@@ -1928,7 +1948,10 @@ class JumpSuitResponseToTakeoutDouble(ResponseToTakeoutDouble):
 
 
 class CuebidResponseToTakeoutDouble(ResponseToTakeoutDouble):
-    preconditions = [CueBid(positions.LHO), NotJumpFromLastContract()]
+    preconditions = [
+        CueBid(positions.LHO),
+        NotJumpFromLastContract(),
+    ]
     priority = takeout_double_responses.CuebidResponseToTakeoutDouble
     call_names = [
         '2C', '2D', '2H', '2S',

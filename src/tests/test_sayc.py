@@ -1200,6 +1200,8 @@ class SAYCBidderTest(object):
             ["AQ6.KQJ97.AQ76.5", "2S", "1D 1S X P"],  # p131, h14
             ["J43.KJ97.AQ76.Q7", "2H", "1D 1S X P"],  # p131, h15
 
+            ["KQJ6.AQ6.A7.QJ75", "2H", "1C 1H X P"],
+
             ["62.AQ876.KJ97.A8", "2H", "1D 1S X P"],  # p132, West
             ["KQ8.J9.Q8653.753", "X", "1D 1S"],  # p132, East
             ["A864.863.AQ.KT32", "2S", "1C 1D X 2D"],  # p132, West
