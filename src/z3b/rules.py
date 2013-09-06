@@ -1481,13 +1481,14 @@ class DirectOvercall(Rule):
             )
         )
 
+balancing_precondition = AndPrecondition(
+    LastBidHasAnnotation(positions.LHO, annotations.Opening),
+    LastBidWas(positions.Partner, 'P'),
+    LastBidWas(positions.RHO, 'P'),
+)
 
 class BalancingOvercall(Rule):
-    preconditions = [
-        LastBidHasAnnotation(positions.LHO, annotations.Opening),
-        LastBidWas(positions.Partner, 'P'),
-        LastBidWas(positions.RHO, 'P'),
-    ]
+    preconditions = balancing_precondition
 
 
 class StandardDirectOvercall(DirectOvercall):
@@ -1792,6 +1793,7 @@ class OneLevelTakeoutDouble(TakeoutDouble):
     preconditions = [
         Level(1),
         InvertedPrecondition(takeout_double_after_preempt_precondition),
+        InvertedPrecondition(balancing_precondition),
     ]
     # FIXME: Why isn't this 12?  NaturalSuited can only respond to 12+ points currently.
     shared_constraints = points >= 11
@@ -1801,6 +1803,7 @@ class TwoLevelTakeoutDouble(TakeoutDouble):
     preconditions = [
         Level(2),
         InvertedPrecondition(takeout_double_after_preempt_precondition),
+        InvertedPrecondition(balancing_precondition),
     ]
     shared_constraints = points >= 15
 
@@ -1808,6 +1811,15 @@ class TwoLevelTakeoutDouble(TakeoutDouble):
 class TakeoutDoubleAfterPreempt(TakeoutDouble):
     preconditions = takeout_double_after_preempt_precondition
     shared_constraints = points >= 11
+
+
+class BalancingDouble(TakeoutDouble):
+    preconditions = [
+        Level(1),
+        balancing_precondition,
+        InvertedPrecondition(takeout_double_after_preempt_precondition),
+    ]
+    shared_constraints = points >= 8
 
 
 takeout_double_responses = enum.Enum(
@@ -2622,6 +2634,8 @@ rule_order.order(
     DefaultPass,
     BalancingSuitedOvercall,
     BalancingMichaelsCuebid,
-    balancing_notrumps,
+    balancing_notrumps.OneNotrump,
+    overcall_priorities.TakeoutDouble,
+    balancing_notrumps.TwoNotrumpJump,
     BalancingJumpSuitedOvercall,
 )
