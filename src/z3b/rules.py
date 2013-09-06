@@ -1631,41 +1631,53 @@ class BalancingOvercallOverSuitedOpen(BalancingOvercall):
     preconditions = LastBidHasAnnotation(positions.LHO, annotations.OneLevelSuitOpening)
 
 
+balancing_notrumps = enum.Enum(
+    "OneNotrump",
+    "TwoNotrumpJump",
+)
+
 class BalancingNotrumpOvercall(BalancingOvercallOverSuitedOpen):
     constraints = {
-        '1N': z3.And(points >= 12, points <= 14),
-        '2N': z3.And(points >= 19, points <= 21),
+        '1N': (z3.And(points >= 12, points <= 14), balancing_notrumps.OneNotrump),
+        '2N': (z3.And(points >= 19, points <= 21), balancing_notrumps.TwoNotrumpJump),
     }
     shared_constraints = [balanced, StoppersInOpponentsSuits()] # Only RHO has a suit.
     priority = overcall_priorities.DirectOvercall1N
     annotations = annotations.NotrumpSystemsOn
 
 
-# class BalancingSuitedOvercall(BalancingOvercallOverSuitedOpen):
-#     preconditions = NotJumpFromLastContract()
-#     constraints = {
-#         (      '1D', '1H', '1S'): points >= 5,
-#         ('2C', '2D', '2H', '2S'): points >= 7,
-#     }
-#     shared_constraints = [
-#         MinLength(5),
-#         ThreeOfTheTopFiveOrBetter(),
-#         # Even when balancing, we should not have strength in their suit.
-#         MaxLengthInLastContractSuit(3),
-#     ]
+class BalancingSuitedOvercall(BalancingOvercallOverSuitedOpen):
+    preconditions = [
+        NotJumpFromLastContract(),
+        UnbidSuit(),
+    ]
+    constraints = {
+        (      '1D', '1H', '1S'): points >= 5,
+        ('2C', '2D', '2H', '2S'): points >= 7,
+    }
+    shared_constraints = [
+        MinLength(5),
+        ThreeOfTheTopFiveOrBetter(),
+        # Even when balancing, we should not have strength in their suit.
+        MaxLengthInLastContractSuit(3),
+    ]
 
-
-# class BalancingJumpOvercall(BalancingOvercallOverSuitedOpen):
-#     preconditions = [IsSuit(), LastBidWasSuit(), JumpFromLastContract(exact_size=1)]
-#     constraints = {
-#         # Balancing Jump Overcalls show:
-#         # - "Opening count" -- currently interpreting this as 12 points (likely 12-16, since otherwise bid-hand double?)
-#         # - Usually a 6+ card suit (p140, h2)
-#         Rule.LEVEL_2: [MinHighCardPoints(12), MinLength(6)],
-#         Rule.LEVEL_3: [MinHighCardPoints(12), MinLength(6)],
-#     }
-#     # Should these indicate < 4 in LHO's suit like DirectOvercalls do?
-#     shared_constraints = [MaximumLengthInLastBidSuit(3), MinHonors(HonorConstraint.THREE_OF_TOP_FIVE)]
+class BalancingJumpSuitedOvercall(BalancingOvercallOverSuitedOpen):
+    preconditions = [
+        JumpFromLastContract(exact_size=1),
+        UnbidSuit(),
+    ]
+    call_names =[
+              '2D', '2H', '2S',
+        '3C', '3D', '3H',
+    ]
+    shared_constraints = [
+        points >= 12,
+        MinLength(6),
+        ThreeOfTheTopFiveOrBetter(),
+        # Even when balancing, we should not have strength in their suit.
+        MaxLengthInLastContractSuit(3),
+    ]
 
 
 class MichaelsCuebid(object):
@@ -2603,4 +2615,13 @@ rule_order.order(
 rule_order.order(
     opener_unsupported_major_rebid,
     opener_jumpshifts,
+)
+# FIXME: This is a very rough approximation, and needs much more refinement
+# particularly in the ordering of new majors vs. notrump.
+rule_order.order(
+    DefaultPass,
+    BalancingSuitedOvercall,
+    BalancingMichaelsCuebid,
+    balancing_notrumps,
+    BalancingJumpSuitedOvercall,
 )
