@@ -122,8 +122,7 @@ FAIL: 3D (expected 4D) for Q3.AKJ94.AKJ86.2 (hcp: 18 lp: 20 sp: 20), history: 1S
 FAIL: 3C (expected 4C) for K9874.3.AQ.AKQ72 (hcp: 18 lp: 20 sp: 20), history: P 1H 2H P 2N P
 FAIL: 2N (expected 4N) for AQT987.AKQT8.4.A (hcp: 19 lp: 22 sp: 25), history: 1H
 FAIL: 2N (expected 4N) for AQT987.AKQT8.4.A (hcp: 19 lp: 22 sp: 25), history: 1S
-FAIL: X (expected 2N) for KQ4.AQ8.KQ873.K2 (hcp: 19 lp: 20 sp: 20), history: 1D P P
-Pass 29 of 41 hands
+Pass 30 of 41 hands
 
 test_minimum_rebid_by_opener:
 Pass 16 of 16 hands
@@ -399,4 +398,4 @@ FAIL: 3S (expected 4S) for K74.9.J98.KJT742 (hcp: 8 lp: 10 sp: 11), history: 1N 
 FAIL: 2N (expected P) for Q87.J843.K65.Q93 (hcp: 8 lp: 8 sp: 8), history: 1N P
 Pass 1 of 3 hands
 
-Pass 943 (78%) of 1202 total hands
+Pass 944 (78%) of 1202 total hands
