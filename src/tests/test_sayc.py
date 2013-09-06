@@ -1243,58 +1243,57 @@ class SAYCBidderTest(object):
             ["KT6.AQJ74.874.T2", "P", "P 1S 2D P P X P"],  # p138, East
         ])
 
-    remaining_bidding_tests_from_book = [
-        # Balancing (Chap 18)
-        # Balancing Overcalls (p140)
-        ["974.J85.AJT872.9", "2H", "1S P P"],  # p140, h1
-        ["9.KQ5.AKT872.J65", "2H", "1C P P"],  # p140, h2
-        ["KJ8.A74.JT874.86", "2H", "1D P 2D P P"],  # p140, h3
-        ["Q98.K74.43.QJ874", "2S", "1H P 2H P P"],  # p140, h4
-        ["QJ98.84.43.KQT87", "1S", "1H P P"],  # p140, h5
-        ["K98.K974.QJ7.987", "P", "1H P 2H P P"],  # p140, h6
+    def test_balancing(self): # Balancing (Chap 18)
+        self._assert_hands_match_calls([
+            # Balancing Overcalls (p140)
+            ["974.J85.AJT872.9", "2H", "1S P P"],  # p140, h1
+            ["9.KQ5.AKT872.J65", "2H", "1C P P"],  # p140, h2
+            ["KJ8.A74.JT874.86", "2H", "1D P 2D P P"],  # p140, h3
+            ["Q98.K74.43.QJ874", "2S", "1H P 2H P P"],  # p140, h4
+            ["QJ98.84.43.KQT87", "1S", "1H P P"],  # p140, h5
+            ["K98.K974.QJ7.987", "P", "1H P 2H P P"],  # p140, h6
 
-        # Balancing Notrump
-        ["JT43.KJ4.KT8.KQ6", "1N", "1S P P"],  # p141, You
+            # Balancing Notrump
+            ["JT43.KJ4.KT8.KQ6", "1N", "1S P P"],  # p141, You
 
-        # Balancing Doubles
-        ["42.AJ3.K954.QT87", "X", "1C P P"],  # p142, h7
-        ["42.AJ3.K954.QT87", "P", "1C"],  # p142, h7-alt
-        ["QT752.73.A94.AT6", "X", "1D P P"],  # p142, h8
-        ["QT752.73.A94.AT6", "P", "1D"],  # p142, h8-alt
-        ["KT6.QT87.84.AT84", "X", "1H P 2H P P"],  # p142, h9
-        ["K87.AJ76.65.Q863", "X", "1H P P"],  # p142, h10
+            # Balancing Doubles
+            ["42.AJ3.K954.QT87", "X", "1C P P"],  # p142, h7
+            ["42.AJ3.K954.QT87", "P", "1C"],  # p142, h7-alt
+            ["QT752.73.A94.AT6", "X", "1D P P"],  # p142, h8
+            ["QT752.73.A94.AT6", "P", "1D"],  # p142, h8-alt
+            ["KT6.QT87.84.AT84", "X", "1H P 2H P P"],  # p142, h9
+            ["K87.AJ76.65.Q863", "X", "1H P P"],  # p142, h10
 
-        # Balancing with strong hands
-        ["AKQ5.84.72.AQJ93", "X", "1H P P"],  # p142, h11
-        ["AKQ5.84.72.AQJ93", "1S", "1H"],  # p142, h11-alt
-        ["K92.QJT7.KQ4.AJ7", "X", "1H P P"],  # p142, h12
-        ["K92.QJT7.KQ4.AJ7", "2N", "1H P P X P 2C P"],  # p142, h12 (continuation)
+            # Balancing with strong hands
+            ["AKQ5.84.72.AQJ93", "X", "1H P P"],  # p142, h11
+            ["AKQ5.84.72.AQJ93", "1S", "1H"],  # p142, h11-alt
+            ["K92.QJT7.KQ4.AJ7", "X", "1H P P"],  # p142, h12
+            ["K92.QJT7.KQ4.AJ7", "2N", "1H P P X P 2C P"],  # p142, h12 (continuation)
 
-        # Balancing Michaels
-        ["QJ875.A.KT9854.9", "2S", "1S P P"],  # p142, h13
+            # Balancing Michaels
+            ["QJ875.A.KT9854.9", "2S", "1S P P"],  # p142, h13
 
-        # When not to balance
-        ["4.QJ96.KQ65.Q865", "P", "1H P P"],  # p142, h14
-        ["J87.T9652.A43.98", "P", "1C P P"],  # p142, h15
+            # When not to balance
+            ["4.QJ96.KQ65.Q865", "P", "1H P P"],  # p142, h14
+            ["J87.T9652.A43.98", "P", "1C P P"],  # p142, h15
+        ])
 
-        # FIXME: Need tests for pages 144-155!
+    def test_remaining_hands_from_book(self):
+        self._assert_hands_match_calls([
+            # FIXME: Need tests for pages 144-155!
 
-        # 4NT Quantitative (invitational)
-        ["QT64.AK8.KT6.A62", "4N", "1N P"],  # p156, East
-        ["KJ.QJT9.A873.KQ3", "6N", "1N P 4N P"], # p156, West, # FIXME: Why is 16 the "top end" of the 15-17 range?
-        ["JT64.AK8.KQ6.A62", "4N", "1N P"],  # p156, East
-        ["KQ.QJT9.A87.QJ73", "P", "1N P 4N P"], # p156, West
-    ]
+            # 4NT Quantitative (invitational)
+            ["QT64.AK8.KT6.A62", "4N", "1N P"],  # p156, East
+            ["KJ.QJT9.A873.KQ3", "6N", "1N P 4N P"], # p156, West, # FIXME: Why is 16 the "top end" of the 15-17 range?
+            ["JT64.AK8.KQ6.A62", "4N", "1N P"],  # p156, East
+            ["KQ.QJT9.A87.QJ73", "P", "1N P 4N P"], # p156, West
+        ])
 
 
     def test_slam_biding(self):
         self._assert_hands_match_calls([
             ["A63.J43.AKQJT.A2", "5S", "1H P 2N P 3H P 4N P"], # 4N is blackwood after Jacoby2N
         ])
-
-
-    def test_remaining_hands_from_book(self):
-        self._assert_hands_match_calls(self.remaining_bidding_tests_from_book)
 
     misc_hands_from_play = [
         ["A852.K6.T3.A8732", "2C", "1S P 1N P"], # deal 2055120848382729270948723852852, N interpreted my 1N as an opening and bid 2H. (like h5, p52)
