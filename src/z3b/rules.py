@@ -1627,7 +1627,11 @@ class DirectOvercall1N(DirectOvercall):
     annotations = annotations.NotrumpSystemsOn
 
 
-class BalancingNotrumpOvercall(BalancingOvercall):
+class BalancingOvercallOverSuitedOpen(BalancingOvercall):
+    preconditions = LastBidHasAnnotation(positions.LHO, OneLevelSuitOpening)
+
+
+class BalancingNotrumpOvercall(BalancingOvercallOverSuitedOpen):
     constraints = {
         '1N': z3.And(points >= 12, points <= 14),
         '2N': z3.And(points >= 19, points <= 21),
@@ -1637,7 +1641,7 @@ class BalancingNotrumpOvercall(BalancingOvercall):
     annotations = annotations.NotrumpSystemsOn
 
 
-# class BalancingSuitedOvercall(BalancingOvercall):
+# class BalancingSuitedOvercall(BalancingOvercallOverSuitedOpen):
 #     preconditions = [IsSuit(), LastBidWasSuit(), NotJumpFromLastContract()]
 #     constraints = {
 #         # Unlike DirectSuitedOvercall, we're requiring 5 at the one level.  Unclear if that's correct.
@@ -1648,7 +1652,7 @@ class BalancingNotrumpOvercall(BalancingOvercall):
 #     shared_constraints = ThreeOfTheTopFiveOrBetter()
 
 
-# class BalancingJumpOvercall(BalancingOvercall):
+# class BalancingJumpOvercall(BalancingOvercallOverSuitedOpen):
 #     preconditions = [IsSuit(), LastBidWasSuit(), JumpFromLastContract(exact_size=1)]
 #     constraints = {
 #         # Balancing Jump Overcalls show:
