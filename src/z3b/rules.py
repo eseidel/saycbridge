@@ -1627,12 +1627,38 @@ class DirectOvercall1N(DirectOvercall):
     annotations = annotations.NotrumpSystemsOn
 
 
-class BalancingOvercall1N(BalancingOvercall):
-    call_names = '1N'
-    # FIXME: Why is this 12-14 instead of 12-15?
-    shared_constraints = [points >= 12, points <= 14, balanced, StoppersInOpponentsSuits()] # Only RHO has a suit.
+class BalancingNotrumpOvercall(BalancingOvercall):
+    constraints = {
+        '1N': z3.And(points >= 12, points <= 14),
+        '2N': z3.And(points >= 19, points <= 21),
+    }
+    shared_constraints = [balanced, StoppersInOpponentsSuits()] # Only RHO has a suit.
     priority = overcall_priorities.DirectOvercall1N
     annotations = annotations.NotrumpSystemsOn
+
+
+# class BalancingSuitedOvercall(BalancingOvercall):
+#     preconditions = [IsSuit(), LastBidWasSuit(), NotJumpFromLastContract()]
+#     constraints = {
+#         # Unlike DirectSuitedOvercall, we're requiring 5 at the one level.  Unclear if that's correct.
+#         Rule.LEVEL_1: [HighCardPointRange(5, 13), MinLength(5), MaximumLengthInLastBidSuit(3)],
+#         Rule.LEVEL_2: [HighCardPointRange(7, 13), MinLength(5), MaximumLengthInLastBidSuit(5)],
+#         Rule.LEVEL_3: [HighCardPointRange(10, 13), MinLength(6), MaximumLengthInLastBidSuit(5)],
+#     }
+#     shared_constraints = ThreeOfTheTopFiveOrBetter()
+
+
+# class BalancingJumpOvercall(BalancingOvercall):
+#     preconditions = [IsSuit(), LastBidWasSuit(), JumpFromLastContract(exact_size=1)]
+#     constraints = {
+#         # Balancing Jump Overcalls show:
+#         # - "Opening count" -- currently interpreting this as 12 points (likely 12-16, since otherwise bid-hand double?)
+#         # - Usually a 6+ card suit (p140, h2)
+#         Rule.LEVEL_2: [MinHighCardPoints(12), MinLength(6)],
+#         Rule.LEVEL_3: [MinHighCardPoints(12), MinLength(6)],
+#     }
+#     # Should these indicate < 4 in LHO's suit like DirectOvercalls do?
+#     shared_constraints = [MaximumLengthInLastBidSuit(3), MinHonors(HonorConstraint.THREE_OF_TOP_FIVE)]
 
 
 class MichaelsCuebid(object):
