@@ -1627,6 +1627,14 @@ class DirectOvercall1N(DirectOvercall):
     annotations = annotations.NotrumpSystemsOn
 
 
+class BalancingOvercall1N(BalancingOvercall):
+    call_names = '1N'
+    # FIXME: Why is this 12-14 instead of 12-15?
+    shared_constraints = [points >= 12, points <= 14, balanced, StoppersInOpponentsSuits()] # Only RHO has a suit.
+    priority = overcall_priorities.DirectOvercall1N
+    annotations = annotations.NotrumpSystemsOn
+
+
 class MichaelsCuebid(object):
     preconditions = [
         NotJumpFromLastContract(),

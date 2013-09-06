@@ -1256,6 +1256,11 @@ class SAYCBidderTest(object):
             # Balancing Notrump
             ["JT43.KJ4.KT8.KQ6", "1N", "1S P P"],  # p141, You
 
+            # Systems are on.  Does stayman require 11+?
+            ["JT4.K4.KJT8.K864", "2C", "1S P P 1N P"],
+            # 2N raise definitely requires 11.
+            ["KJT8.K864.K4.JT4", "2N", "1S P P 1N P"],
+
             # Balancing Doubles
             ["42.AJ3.K954.QT87", "X", "1C P P"],  # p142, h7
             ["42.AJ3.K954.QT87", "P", "1C"],  # p142, h7-alt
