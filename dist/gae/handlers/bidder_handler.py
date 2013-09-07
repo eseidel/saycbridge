@@ -41,21 +41,20 @@ class JSONAutobidHandler(webapp2.RequestHandler):
         history = CallHistory.from_string(calls_string, dealer_char, vulnerability_string)
         return Board(board_number, deal, history)
 
-    def _json_tuple(self, bid, rule, hand_knowledge):
+    def _json_tuple(self, selection):
         json_tuple = [None, None, None, None, None]
-        if bid:
-            json_tuple[0] = bid.name
+        if not selection:
+            return json_tuple
+        if selection.call:
+            json_tuple[0] = selection.call.name
         if rule:
-            json_tuple[1] = rule.name
+            json_tuple[1] = selection.rule.name
         if hand_knowledge:
-            json_tuple[2] = hand_knowledge.pretty_one_line(include_last_call_name=False)
+            json_tuple[2] = selection.hand_knowledge.pretty_one_line(include_last_call_name=False)
         if rule and bid:
-            json_tuple[3] = rule.explanation_for_bid(bid)
-            json_tuple[4] = rule.sayc_page_for_bid(bid)
+            json_tuple[3] = selection.rule.explanation_for_bid(bid)
+            json_tuple[4] = selection.rule.sayc_page_for_bid(bid)
         return json_tuple
-
-    def _json_for_interpretations(self, bids_and_rules_and_hand_knowledges):
-        return [self._json_tuple(bid, rule, hand_knowledge) for bid, rule, hand_knowledge in bids_and_rules_and_hand_knowledges]
 
     def get(self):
         bidder = BidderProxy()
@@ -63,15 +62,15 @@ class JSONAutobidHandler(webapp2.RequestHandler):
         board = self._board_from_request()
         until_position_string = self.request.get('until_position')
         until_position = position_from_char(until_position_string) if until_position_string else None
-        bids_and_rules_and_hand_knowledges = autobidder.bid_all_hands(board, until_position=until_position)
+        call_selections = autobidder.bid_all_hands(board, until_position=until_position)
         current_history = copy.deepcopy(board.call_history)
-        bids_and_rules_and_hand_knowledges += autobidder.bid_all_hands(board)
+        call_selections += autobidder.bid_all_hands(board)
         # Callers might want to know what the full history would look like if autobid.
         board_dict = {
             'board_number': board.number,
             'calls_string': current_history.calls_string(),
             'autobid_continuation': board.call_history.calls_string(),
-            'autobid_interpretations': self._json_for_interpretations(bids_and_rules_and_hand_knowledges),
+            'autobid_interpretations': map(self._json_tuple, call_selections),
         }
         self.response.headers["Content-Type"] = "application/json"
         self.response.headers["Cache-Control"] = "public"

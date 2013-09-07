@@ -278,21 +278,28 @@ class ConsistencyOracle(object):
         return consuming_rule.priority_for_bid(self.hand, new_bid), new_bid, consuming_rule, new_knowledge.me
 
 
+# This class originated with the z3b, and was back-ported to the kbb.
+# It's not quite the same as the z3b's (which doesn't include a history/hand_knowledge)
+# but it's similar enough to make API unification between the two easier.
+class CallSelection(object):
+    def __init__(self, call, rule, hand_knowledge):
+        self.call = call
+        self.rule = rule
+        # FIXME: It's a bit odd to include the hand_knowledge here.
+        self.hand_knowledge = hand_knowledge
+
+
 class KnowledgeBasedBidder(object):
     def __init__(self):
         self.explorer = CallExplorer()
 
     def find_call_for(self, hand, history):
-        bid, rule, hand_knowledge = self.find_call_and_rule_and_hand_knowledge_for(hand, history)
-        return bid
+        selection = self.call_selection_for(hand, history)
+        if not selection:
+            return None
+        return selection.call
 
-    def reasons_for_not_calling(self, call, hand, history):
-        # Two possibilities:
-        # - Your bid was valid, just not high enough priority
-        # - Your bid was invalid (for N reasons) and there are other generators for that bid which would fit.
-        pass
-
-    def find_call_and_rule_and_hand_knowledge_for(self, hand, history):
+    def call_selection_for(self, hand, history):
         oracle = ConsistencyOracle(history, hand)
         # Generate all priority/bid/rule/knowledge tuples which are consistent
         # with the bid + history in question:
@@ -301,14 +308,14 @@ class KnowledgeBasedBidder(object):
             # We've exhausted all possible bids.  This could only happen over 7NT-redoubled.
             # FIXME: This could become an OutOfSpacePass instead of being a manual hack here?
             assert history.last_contract().name == '7N' and history.last_non_pass().is_redouble()
-            return Pass(), None, oracle.existing_knowledge.me
+            return CallSelection(Pass(), None, oracle.existing_knowledge.me)
 
         all_priorities, _, _, _ = zip(*prioritiy_bid_rule_hand_knowledge_tuples)
         highest_priority = min(all_priorities)
         if highest_priority == priorities.InvalidBid:
             # Everything we found was invalid, we have nothing to say, sorry.
             # FIXME: Eventually we'll want to _log.warn here.
-            return None, None, oracle.existing_knowledge.me
+            return CallSelection(None, None, oracle.existing_knowledge.me)
 
         highest_priority_tuples = [priority_tuple for priority_tuple in prioritiy_bid_rule_hand_knowledge_tuples if priority_tuple[0] == highest_priority]
         if len(highest_priority_tuples) > 1:
@@ -316,4 +323,4 @@ class KnowledgeBasedBidder(object):
             _log.warn("Multiple bids of priority %s:  %s  Choosing highest: %s" % (highest_priority, bid_and_rule_strings, highest_priority_tuples[-1][1]))
         # The knowledge based bidder should always use the exact same rule for bidding as it would for interpret
         priority, bid, rule, hand_knowledge = highest_priority_tuples[-1]
-        return bid, rule, hand_knowledge
+        return CallSelection(bid, rule, hand_knowledge)
