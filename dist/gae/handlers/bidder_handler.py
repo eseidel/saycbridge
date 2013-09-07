@@ -16,6 +16,7 @@ from core.callhistory import CallHistory
 from core.board import Board
 from core.deal import Deal
 from core.position import position_from_char
+from core.call import Pass
 
 from proxy import BidderProxy
 
@@ -61,7 +62,7 @@ class JSONAutobidHandler(webapp2.RequestHandler):
             position_to_call = board.call_history.position_to_call()
             hand = board.deal.hands[position_to_call]
             selection = bidder.call_selection_for(hand, board.call_history)
-            call = selection.call if selection else Pass()
+            call = selection.call if selection and selection.call else Pass()
             board.call_history.calls.append(call)
             call_selections.append(selection)
         return call_selections
