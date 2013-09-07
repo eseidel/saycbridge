@@ -162,6 +162,8 @@ class ResultsAggregator(object):
     @property
     def interpreted_rule_names(self):
         rule_name_tuples = map(lambda result: result.last_three_rule_names, self._results_by_identifier.values())
+        # result.last_three_rule_names can be None.
+        rule_name_tuples = filter(None, rule_name_tuples)
         rule_names = itertools.chain.from_iterable(rule_name_tuples)
         return set(map(str, filter(None, rule_names)))
 
@@ -188,6 +190,9 @@ def _run_test(test):
             result.call = call_selection.call
             result.rule_name = str(call_selection.rule)
             result.fill_last_three_rule_names(call_selection)
+
+            if result.last_three_rule_names and result.last_three_rule_names[-2] is None:
+                print "WARNING: Failed to interpret partner's last bid: %s" % test.call_history.copy_with_partial_history(-2)
 
     except Exception:
         result.exc_str = ''.join(traceback.format_exception(*sys.exc_info()))
@@ -248,7 +253,7 @@ class TestHarness(unittest2.TestCase):
         try:
             all_rules = BidderFactory.default_bidder().system.rules
         except:
-            print "Ignoring coverage summary, failed to find rules"
+            print "Ignoring coverage summary, failed to find rules."
             return
 
         # Don't expect to see rules which are marked "requires_planning".
@@ -294,7 +299,7 @@ class TestResult(object):
         self.call = None
         self.rule_name = None
         # We only bother to store the last 3, as the subtest system will have handled all calls before that.
-        self.last_three_rule_names = [None for _ in range(3)]
+        self.last_three_rule_names = None
         self.exc_str = None
         self.stdout = None
         self.stderr = None
