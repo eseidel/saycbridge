@@ -235,21 +235,21 @@ sayc_expectations = {
     "test_jacoby_two_nt_response_to_one_of_a_major": [
         # Jacoby 2N
         ["QJ5.A75.KT8.AT42", "2N", "1S P"],  # p39, h15
-        ["87.AQJT9.8.AKJT9", "4D", "1S P 2NT P"],  # p40, h16
+        ["87.AQJT9.8.AKJT9", "4D", "1S P 2N P"],  # p40, h16
         # FIXME: The book favors 3H instead of 3S for h17, even though 3S shows 18+ points
         # and slam interest.  Maybe features are higher priority than slam interest?
-        ["AQ.Q9763.8.AKQJ8", "3H", "1S P 2NT P"],  # p40, h17
-        ["J32.K7.KQT83.A75", "4H", "1H P 2NT P"],  # p40, h18
-        ["2.KJ72.KQT83.A75", "3C", "1H P 2NT P"],  # p40, h19
+        ["AQ.Q9763.8.AKQJ8", "3H", "1S P 2N P"],  # p40, h17
+        ["J32.K7.KQT83.A75", "4H", "1H P 2N P"],  # p40, h18
+        ["2.KJ72.KQT83.A75", "3C", "1H P 2N P"],  # p40, h19
         # FIXME: For h20, the book suggests 3H to show slam interest, even though
         # there are only 19 support points in this hand.
         # Perhaps the support point algorithm is wrong (since it doesn't recognize the 6-card trump support).
-        ["AJ2.K7.KQT853.A5", "3H", "1H P 2NT P"],  # p40, h20
-        ["K3.KJ.KQT83.A754", "3N", "1H P 2NT P"],  # p40, h21
-        ["8.KQJ72.AJ973.K9", "4D", "1H P 2NT P"],  # p40, h22
+        ["AJ2.K7.KQT853.A5", "3H", "1H P 2N P"],  # p40, h20
+        ["K3.KJ.KQT83.A754", "3N", "1H P 2N P"],  # p40, h21
+        ["8.KQJ72.AJ973.K9", "4D", "1H P 2N P"],  # p40, h22
 
         # 2o3 is also sufficient for a "strong 5c suit", but is it sufficient to prefer it over 3C?
-        ["2.AQ976.98.AKJT8", "4D", "1S P 2NT P"],
+        ["2.AQ976.98.AKJT8", "4D", "1S P 2N P"],
     ],
 
     "test_slam_zone_responses_to_one_of_a_major": [

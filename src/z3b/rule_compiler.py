@@ -251,20 +251,24 @@ class RuleCompiler(object):
 
     @classmethod
     def compile(cls, dsl_rule):
-        cls._validate_rule(dsl_rule)
-        constraints = cls._flatten_tuple_keyed_dict(dsl_rule.constraints)
-        priorities_per_call = cls._flatten_tuple_keyed_dict(dsl_rule.priorities_per_call)
-        # Unclear if compiled results should be memoized on the rule?
-        return CompiledRule(dsl_rule,
-            known_calls=cls._compile_known_calls(dsl_rule, constraints, priorities_per_call),
-            annotations=cls._compile_annotations(dsl_rule),
-            preconditions=cls._joined_list_from_ancestors(dsl_rule, 'preconditions'),
-            shared_constraints=cls._joined_list_from_ancestors(dsl_rule, 'shared_constraints'),
-            constraints=constraints,
-            default_priority=cls._default_priority(dsl_rule),
-            conditional_priorities_per_call=cls._flatten_tuple_keyed_dict(dsl_rule.conditional_priorities_per_call),
-            priorities_per_call=priorities_per_call,
-        )
+        try:
+            cls._validate_rule(dsl_rule)
+            constraints = cls._flatten_tuple_keyed_dict(dsl_rule.constraints)
+            priorities_per_call = cls._flatten_tuple_keyed_dict(dsl_rule.priorities_per_call)
+            # Unclear if compiled results should be memoized on the rule?
+            return CompiledRule(dsl_rule,
+                known_calls=cls._compile_known_calls(dsl_rule, constraints, priorities_per_call),
+                annotations=cls._compile_annotations(dsl_rule),
+                preconditions=cls._joined_list_from_ancestors(dsl_rule, 'preconditions'),
+                shared_constraints=cls._joined_list_from_ancestors(dsl_rule, 'shared_constraints'),
+                constraints=constraints,
+                default_priority=cls._default_priority(dsl_rule),
+                conditional_priorities_per_call=cls._flatten_tuple_keyed_dict(dsl_rule.conditional_priorities_per_call),
+                priorities_per_call=priorities_per_call,
+            )
+        except:
+            print "Exception compiling %s" % dsl_rule
+            raise
 
 
 # The rules of SAYC are all described in terms of Rule.

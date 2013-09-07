@@ -87,7 +87,11 @@ class TestGroup(object):
         self.tests.append(test)
 
     def add_expectation_line(self, expectation):
-        test = CompiledTest.from_expectation_tuple_in_group(expectation, self)
+        try:
+            test = CompiledTest.from_expectation_tuple_in_group(expectation, self)
+        except:
+            print "Exception compiling: %s in group %s" % (expectation, self.name)
+            raise
         self.add_test(test)
         for test in test.subtests:
             self.add_test(test)

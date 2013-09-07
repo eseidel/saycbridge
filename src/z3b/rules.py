@@ -2201,8 +2201,8 @@ class MinimumRebidOfPreemptSuit(ForcedRebidAfterPreempt):
     ]
     # Min: 1S 2D P 2H P 3D
     call_names = (
-        '      3D', '3H', '3S',
-        '4C', '4D'
+              '3D', '3H', '3S',
+        '4C', '4D',
     )
     shared_constraints = NO_CONSTRAINTS
 
@@ -2214,8 +2214,8 @@ class RaiseOfPartnersPreemptResponse(ForcedRebidAfterPreempt):
     ]
     # Min: 1S 2D P 2H P 3D, Unclear what the max is.
     call_names = (
-        '      3D', '3H', '3S',
-        '4C', '4D'
+              '3D', '3H', '3S',
+        '4C', '4D',
     )
     # FIXME: This can also be made with doubleton honors according to p85
     shared_constraints = MinimumCombinedLength(8)

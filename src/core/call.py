@@ -26,18 +26,9 @@ class Call(object):
         else:
             assert self.name in ('P', 'X', 'XX'), "%s is not a valid call name" % self.name
 
-    # It's unclear how forgiving we should be with this method.
-    # We may want to split this into different methods for different
-    # input sources.
     @classmethod
     @memoized
     def from_string(self, string):
-        string = string.upper()
-        string = string.replace("NT", "N")
-        string = string.replace("PASS", "P")
-        string = string.replace("DOUBLE", "X")
-        if len(string) != 2 and string not in ("P", "X"):
-            return None
         return Call(string)
 
     @classmethod
