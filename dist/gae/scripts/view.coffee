@@ -735,7 +735,11 @@ class ConstraintsView extends HTMLDivElement
 class RuleName extends HTMLDivElement
     constructor: (@ruleName) ->
         @className = 'rule_name'
-        @textContent = @ruleName.replace(/([A-Z])/g, " $1")
+        @ruleName = @ruleName.replace(/([A-Z])/g, " $1")
+        # A couple exceptions to the spacing rules:
+        @ruleName = @ruleName.replace(/R H O/g, "RHO")
+        @ruleName = @ruleName.replace(/L H O/g, "LHO")
+        @textContent = @ruleName
 
     @fromRuleName: (ruleName) ->
         return alloc @, ruleName
