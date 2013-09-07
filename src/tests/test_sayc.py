@@ -627,7 +627,10 @@ sayc_expectations = {
         ["6.AJ3.AK4.AKQJT6", "3S", "2C P 2D P 2S P 3C P"], # p94, Opener, FIXME: If this isn't a self-supporting spade suit, what is?
         ["T954.952.T863.82", "P", "2C P 2D P 2S P 3C P 3S P"], # p94, Responder
 
-        ["QT32.QT8.QJ4.T92", "3N", "P,2C,P,2D,P,2N,P"],
+        # A jump is game forcing with a self-supporting holding.
+        ["K8.AK.A2.AKQT987", "3S", "2C P 2D P"],
+
+        ["QT32.QT8.QJ4.T92", "3N", "P 2C P 2D P 2N P"],
     ],
 
     "test_overcalls": [ # Chap 12
