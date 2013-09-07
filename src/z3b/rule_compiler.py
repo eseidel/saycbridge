@@ -60,7 +60,8 @@ class CompiledRule(object):
         self.conditional_priorities_per_call = conditional_priorities_per_call
         self.priorities_per_call = priorities_per_call
 
-    def requires_planning(self, history):
+    @property
+    def requires_planning(self):
         return self.dsl_rule.requires_planning
 
     def annotations_for_call(self, call):

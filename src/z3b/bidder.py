@@ -439,7 +439,6 @@ class PossibleCalls(object):
         # FIXME: There must be a nicer way to do this.
         return [pair for pair in self._calls_and_priorities if pair[0] == call][0][1]
 
-
     def calls_of_maximal_priority(self):
         maximal_calls_and_priorities = []
         for call, priority in self._calls_and_priorities:
@@ -450,12 +449,24 @@ class PossibleCalls(object):
         return [call for call, _ in maximal_calls_and_priorities]
 
 
+# CallSelection exposes similar information to a History object, but not connected in a History chain.
+# It also comes from the *bidding* process and thus can contain more information (since it had access to the hand).
+class CallSelection(object):
+    def __init__(self, call, rule_selector):
+        self.call = call
+        self.rule_selector = rule_selector
+
+    @property
+    def rule(self):
+        return self.rule_selector.rule_for_call(self.call)
+
+
 class Bidder(object):
     def __init__(self):
         # Assuming SAYC for all sides.
         self.system = sayc.StandardAmericanYellowCard
 
-    def find_call_for(self, hand, call_history, expected_call=None):
+    def call_selection_for(self, hand, call_history, expected_call=None):
         with Interpreter().create_history(call_history) as history:
             # Select highest-intra-bid-priority (category) rules for all possible bids
             rule_selector = RuleSelector(self.system, history, expected_call)
@@ -466,17 +477,23 @@ class Bidder(object):
             # We don't currently support tie-breaking priorities, but we do have some bids that
             # we don't make without a planner
             maximal_calls = filter(
-                    lambda call: not rule_selector.rule_for_call(call).requires_planning(history), maximal_calls)
+                    lambda call: not rule_selector.rule_for_call(call).requires_planning, maximal_calls)
             if not maximal_calls:
-                # If we failed to find a single maximal bid, this is an error.
-                return None
+                return None # If we failed to find any call, this is an error.
             if len(maximal_calls) != 1:
                 rules = map(rule_selector.rule_for_call, maximal_calls)
                 call_names = map(lambda call: call.name, maximal_calls)
                 print "WARNING: Unordered: %s from: %s (%s)" % (call_names, rules, map(possible_calls.priority_for_call, maximal_calls))
                 return None
-            # print rule_selector.rule_for_call(maximal_calls[0])
-            return maximal_calls[0]
+
+            call = maximal_calls[0]
+            return CallSelection(call, rule_selector)
+
+    def find_call_for(self, hand, call_history, expected_call=None):
+        call_selection = self.call_selection_for(hand, call_history, expected_call)
+        if not call_selection:
+            return None
+        return call_selection.call
 
 
 class RuleSelector(object):
@@ -596,6 +613,7 @@ class HistoryCache(object):
     def add(self, history):
         call_string_and_history = (history.call_history.calls_string(), history)
         self.lru.append(call_string_and_history)
+
 
 history_cache = HistoryCache()
 
