@@ -29,7 +29,7 @@ class CompiledTest(object):
         self.parent_test = parent_test
 
     @classmethod
-    def from_expectation_tuple_in_group(csl, expectation_line, test_group):
+    def from_expectation_tuple_in_group(cls, expectation, test_group):
         hand_string = expectation[0]
         assert '.' in hand_string, "_split_expectation expectes C.D.H.S formatted hands, missing '.': %s" % hand_string
         expected_call = Call.from_string(expectation[1])
@@ -152,10 +152,18 @@ class ResultsAggregator(object):
             self._results_count_by_group[result.test.group.name] += 1
         self._print_completed_groups()
 
+    # These were explicitly tested and matched some hand.
     @property
-    def seen_rule_names(self):
-        all_rule_names = map(lambda result: result.rule_name, self._results_by_identifier.values())
-        return set(map(str, filter(None, all_rule_names)))
+    def called_rule_names(self):
+        rule_names = map(lambda result: result.rule_name, self._results_by_identifier.values())
+        return set(map(str, filter(None, rule_names)))
+
+    # These were tested via interpretation of a call_history.
+    @property
+    def interpreted_rule_names(self):
+        rule_name_tuples = map(lambda result: result.last_three_rule_names, self._results_by_identifier.values())
+        rule_names = itertools.chain.from_iterable(rule_name_tuples)
+        return set(map(str, filter(None, rule_names)))
 
     def print_summary(self):
         total_tests = len(self._results_by_identifier)
@@ -179,6 +187,8 @@ def _run_test(test):
         if call_selection:
             result.call = call_selection.call
             result.rule_name = str(call_selection.rule)
+            result.fill_last_three_rule_names(call_selection)
+
     except Exception:
         result.exc_str = ''.join(traceback.format_exception(*sys.exc_info()))
     output.restore_output()
@@ -243,13 +253,28 @@ class TestHarness(unittest2.TestCase):
 
         # Don't expect to see rules which are marked "requires_planning".
         non_planned_rules = filter(lambda rule: not rule.requires_planning, all_rules)
-        all_rule_names = set(map(str, non_planned_rules))
-        seen_rule_names = self.results.seen_rule_names
-        print "Tested bid generation from %s rules of %s total." % (len(seen_rule_names), len(all_rule_names))
-        untested_rule_names = all_rule_names - seen_rule_names
-        if untested_rule_names:
-            print "Never selected bid from:"
-            print "\n".join(sorted(untested_rule_names))
+        non_planned_rule_names = set(map(str, non_planned_rules))
+        called_rule_names = self.results.called_rule_names
+        print "Tested call generation of %s rules of %s total (requires_planning ignored)." % (len(called_rule_names), len(non_planned_rule_names))
+        uncalled_rule_names = non_planned_rule_names - called_rule_names
+        # FIXME: We should print these but we have too many right now!
+        # if uncalled_rule_names:
+        #     print "Never selected call from:"
+        #     print "\n".join(sorted(uncalled_rule_names))
+
+        all_rule_names = set(map(str, all_rules))
+        interpreted_rule_names = self.results.interpreted_rule_names
+        print "\nTested interpretation of %s rules of %s total." % (len(interpreted_rule_names), len(all_rule_names))
+        uninterpreted_rule_names = all_rule_names - interpreted_rule_names
+        # FIXME: We should print these, but we have too many right now!
+        # if uninterpreted_rule_names:
+        #     print "Never interpreted call with:"
+        #     print "\n".join(sorted(uninterpreted_rule_names))
+
+        never_tested_rule_names = uncalled_rule_names & uninterpreted_rule_names
+        if uninterpreted_rule_names:
+            print "\n%s rules were never used for either bidding or interpretation:" % len(never_tested_rule_names)
+            print "\n".join(sorted(never_tested_rule_names))
 
     def test_main(self):
         self.collect_test_groups()
@@ -268,9 +293,22 @@ class TestResult(object):
         self.test = None
         self.call = None
         self.rule_name = None
+        # We only bother to store the last 3, as the subtest system will have handled all calls before that.
+        self.last_three_rule_names = [None for _ in range(3)]
         self.exc_str = None
         self.stdout = None
         self.stderr = None
+
+    def fill_last_three_rule_names(self, call_selection):
+        # FIXME: This is kinda an ugly z3b-dependant hack.
+        if not hasattr(call_selection, "rule_selector"):
+            return
+        from z3b.model import positions
+        # These are in call-order, so we'd access partner's via names[-2].
+        last_three_positions = (positions.LHO, positions.Partner, positions.RHO)
+        # This history is prior to the call_selection's call.
+        history = call_selection.rule_selector.history
+        self.last_three_rule_names = map(str, map(history.rule_for_last_call, last_three_positions))
 
     def save_captured_logs(self, stdout, stderr):
         self.stdout = stdout.getvalue()
