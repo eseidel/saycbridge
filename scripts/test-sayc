@@ -20,7 +20,6 @@ from core.tests.test_board import *
 from core.tests.test_deal import *
 from core.tests.test_hand import *
 from core.tests.test_position import *
-from tests.test_autobid import *
 from tests.harness import TestHarness
 
 # FIXME: These only apply if we're running the kbb tests
