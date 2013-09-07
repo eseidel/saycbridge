@@ -50,6 +50,7 @@ sayc_expectations = {
     "test_3c_stayman": [
         ["T9.AJ2.T652.T973", "3C", "2N P"],
         ["AQ.AQ2.AK52.Q973", "3H", "2N P 3C P"],
+        ["T9.AJ2.T652.T973", "X", "2N 3C"], # Stolen stayman works too.
         ['Q.T43.JT92.KT863', '4H', 'P 2N P 3C P 3H P'],  # 14-59d6f2b05f85e1f680b938c4a3, N, 3C is never garbage stayman.
     ],
 
