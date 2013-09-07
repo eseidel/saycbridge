@@ -390,3 +390,16 @@ FAIL: 2N (expected P) for Q87.J843.K65.Q93 (hcp: 8 lp: 8 sp: 8), history: 1N P
 Pass 1 of 3 hands
 
 Pass 955 (79%) of 1204 total hands
+
+Tested call generation of 137 rules of 148 total (requires_planning ignored).
+
+Tested interpretation of 91 rules of 154 total.
+
+7 rules were never used for either bidding or interpretation:
+FourthSuitResponseToFourthSuitForcing
+JumpNotrumpResponseToNegativeDouble
+NewSuitResponseToPreempt
+NotrumpJumpResponseToFourthSuitForcing
+OpenerSuitedJumpRebidAfterStrongTwoClubs
+RaiseOfPartnersPreemptResponse
+StolenThreeClubStayman
