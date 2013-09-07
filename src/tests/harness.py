@@ -29,13 +29,20 @@ class CompiledTest(object):
         self.parent_test = parent_test
 
     @classmethod
-    def _identifier_for_test(cls, hand, history):
-        # FIXME: Our "have we run this" check would be more powerful if we used a combinatics based identifier for the hands.
-        return "%s-%s" % (hand.cdhs_dot_string(), history.identifier())
+    def from_expectation_tuple_in_group(csl, expectation_line, test_group):
+        hand_string = expectation[0]
+        assert '.' in hand_string, "_split_expectation expectes C.D.H.S formatted hands, missing '.': %s" % hand_string
+        expected_call = Call.from_string(expectation[1])
+        history_string = expectation[2] if len(expectation) > 2 else ""
+        vulnerability_string = expectation[3] if len(expectation) > 3 else None
+        hand = Hand.from_cdhs_string(hand_string)
+        call_history = CallHistory.from_string(history_string, vulnerability_string=vulnerability_string)
+        return cls(test_group, hand, call_history, expected_call)
 
     @property
     def identifier(self):
-        return self._identifier_for_test(self.hand, self.call_history)
+        # FIXME: Our "have we run this" check would be more powerful if we used a combinatics based identifier for the hands.
+        return "%s-%s" % (self.hand.cdhs_dot_string(), self.call_history.identifier())
 
     @property
     def subtest_string(self):
@@ -64,17 +71,6 @@ class TestGroup(object):
         self._seen_expectations = {}
         self.tests = []
 
-    @classmethod
-    def _parse_expectation(cls, expectation):
-        hand_string = expectation[0]
-        assert '.' in hand_string, "_split_expectation expectes C.D.H.S formatted hands, missing '.': %s" % hand_string
-        expected_call = Call.from_string(expectation[1])
-        history_string = expectation[2] if len(expectation) > 2 else ""
-        vulnerability_string = expectation[3] if len(expectation) > 3 else None
-        hand = Hand.from_cdhs_string(hand_string)
-        call_history = CallHistory.from_string(history_string, vulnerability_string=vulnerability_string)
-        return expected_call, hand, call_history
-
     def add_test(self, test):
         # Sanity check to make sure we're not running a test twice.
         test_identifier = test.identifier
@@ -91,8 +87,7 @@ class TestGroup(object):
         self.tests.append(test)
 
     def add_expectation_line(self, expectation):
-        expected_call, hand, call_history = self._parse_expectation(expectation)
-        test = CompiledTest(self, hand, call_history, expected_call)
+        test = CompiledTest.from_expectation_tuple_in_group(expectation, self)
         self.add_test(test)
         for test in test.subtests:
             self.add_test(test)
@@ -170,6 +165,7 @@ class ResultsAggregator(object):
 
 
 # Pickle gets mad at us if we make this a member or even static function.
+# This call is executed in a different process when running tests in parallel.
 def _run_test(test):
     # FIXME: There is no need to lookup the bidder every time.
     bidder = BidderFactory.default_bidder()
