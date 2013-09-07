@@ -488,6 +488,9 @@ sayc_expectations = {
         ["K732.84.KJ6.AQ72", "2N", "1C P 1D P 1S P 2H P"], # p77, h9
         ["AJT6.AK972.92.K5", "3N", "1C P 1D P 1S P 2H P 2N P"], # p78, h9-partner
         ["J5.Q2.K874.QJ943", "2D", "1D P 1S P 2C P"], # p78 (Cannot bid 2H, as that would be forcing.  Some might bid 2S instead.)
+
+        # Permitted to raise the 4th suit with four (unstopped).
+        ["KJ632.8432..AKQ2", "3D", "1C P 1H P 1S P 2D P"],
     ],
 
     "test_preemption": [ # Chap 10
