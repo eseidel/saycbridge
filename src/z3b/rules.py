@@ -446,6 +446,13 @@ class CuebidReponseToNegativeDouble(ResponseToNegativeDouble):
     shared_constraints = points >= 19
 
 
+class JumpNotrumpResponseToNegativeDouble(ResponseToNegativeDouble):
+    preconditions = JumpFromLastContract(exact_size=1)
+    call_names = '2N'
+    shared_constraints = points >= 16
+
+
+
 two_clubs_response_priorities = enum.Enum(
     "SuitResponse",
     "NoBiddableSuit",
