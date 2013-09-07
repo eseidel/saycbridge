@@ -484,7 +484,9 @@ sayc_expectations = {
         ["AK83.83.KQ974.82", "2H", "1H P 1S P 2C P 2D P"], # p77, h6
         ["QT72.742.A8.AK97", "4H", "1H P 1S P 2C P 2D P 2H P"], # p77, h6-partner
         ["AQJ754.K7.QJ72.6", "3C", "1C P 1D P 1H P 2S P"], # p77, h7
-        ["A643.JT7.QJ64.AQ", "3N", "1C P 1D P 1H P 2S P"], # p77, h8
+        ["A643.JT7.QJ64.AQ", "3N", "1C P 1D P 1H P 2S P"], # p77, h8 -- FIXME: We have a minimum, why jump to 3N? is 2S FSF a game force?
+        # p77, h8 seems a bit light on points, but certainly with 15 we can jump to 3N.
+        ["AK43.JT7.QJ64.AQ", "3N", "1C P 1D P 1H P 2S P"], # Modified p77, h8
         ["K732.84.KJ6.AQ72", "2N", "1C P 1D P 1S P 2H P"], # p77, h9
         ["AJT6.AK972.92.K5", "3N", "1C P 1D P 1S P 2H P 2N P"], # p78, h9-partner
         ["J5.Q2.K874.QJ943", "2D", "1D P 1S P 2C P"], # p78 (Cannot bid 2H, as that would be forcing.  Some might bid 2S instead.)

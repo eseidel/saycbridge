@@ -925,6 +925,7 @@ class SufficientPointsForFourthSuitForcing(Constraint):
     def expr(self, history, call):
         return points >= max(0, points_for_sound_notrump_bid_at_level[call.level] - history.partner.min_points)
 
+
 fourth_suit_forcing_priorties = enum.Enum(
     "TwoLevel",
     "ThreeLevel",
