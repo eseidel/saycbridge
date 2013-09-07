@@ -223,18 +223,15 @@ FAIL: 5D (expected 3H) for KJ52.K9864..AQ64 (hcp: 13 lp: 14 sp: 18), history: 1C
 WARNING: Unordered: ['X', '2N'] from: [TwoLevelNegativeDouble, NotrumpResponseToMinorOpen] ([<class 'z3b.rules.TwoLevelNegativeDouble'>, <class 'z3b.rules.NotrumpResponseToMinorOpen'>])
 FAIL: None (expected X) for KJ3.86.AQT7.K963 (hcp: 13 lp: 13 sp: 14), history: 1D 2C (subtest of 1D 2C X P 2D P)
 FAIL: 1N (expected 2D) for J5.AQ864.A54.K76 (hcp: 14 lp: 15 sp: 14), history: 1D 1S X P
-WARNING: Unordered: ['2N', '2S'] from: [NotrumpJumpRebid, CuebidReponseToNegativeDouble] ([<class 'z3b.rules.NotrumpJumpRebid'>, <class 'z3b.rules.CuebidReponseToNegativeDouble'>])
-FAIL: None (expected 3N) for KJ6.AQJ93.K5.AJ6 (hcp: 19 lp: 20 sp: 20), history: 1D 1S X P
+FAIL: 2S (expected 3N) for KJ6.AQJ93.K5.AJ6 (hcp: 19 lp: 20 sp: 20), history: 1D 1S X P
 FAIL: 2H (expected 2S) for AQ6.KQJ97.AQ76.5 (hcp: 18 lp: 19 sp: 21), history: 1D 1S X P
-WARNING: Unordered: ['2N', '4S', '2H'] from: [NotrumpJumpRebid, NaturalSuited, CuebidReponseToNegativeDouble] ([<class 'z3b.rules.NotrumpJumpRebid'>, 4S, <class 'z3b.rules.CuebidReponseToNegativeDouble'>])
-FAIL: None (expected 2H) for KQJ6.AQ6.A7.QJ75 (hcp: 19 lp: 19 sp: 20), history: 1C 1H X P
 WARNING: Unordered: ['2S', 'X'] from: [NewSuitAtTheTwoLevel, TwoLevelNegativeDouble] ([TwoSpades, <class 'z3b.rules.TwoLevelNegativeDouble'>])
 FAIL: None (expected 2S) for Q832.QT.K4.AQT93 (hcp: 13 lp: 14 sp: 13), history: 1D 2H
 WARNING: Unordered: ['2N', 'X'] from: [NotrumpResponseToMinorOpen, TwoLevelNegativeDouble] ([<class 'z3b.rules.NotrumpResponseToMinorOpen'>, <class 'z3b.rules.TwoLevelNegativeDouble'>])
 FAIL: None (expected X) for Q832.QT2.K4.AQT9 (hcp: 13 lp: 13 sp: 14), history: 1D 2H
 FAIL: X (expected 2H) for Q832.QT.AQT93.K4 (hcp: 13 lp: 14 sp: 13), history: 1D 1S
 FAIL: 3H (expected 2S) for Q2.A95.AT3.KT843 (hcp: 13 lp: 14 sp: 12), history: 1H 2C
-Pass 38 of 52 hands
+Pass 39 of 52 hands
 
 test_open_one_nt:
 Pass 7 of 7 hands
@@ -392,4 +389,4 @@ FAIL: 3S (expected 4S) for K74.9.J98.KJT742 (hcp: 8 lp: 10 sp: 11), history: 1N 
 FAIL: 2N (expected P) for Q87.J843.K65.Q93 (hcp: 8 lp: 8 sp: 8), history: 1N P
 Pass 1 of 3 hands
 
-Pass 954 (79%) of 1204 total hands
+Pass 955 (79%) of 1204 total hands

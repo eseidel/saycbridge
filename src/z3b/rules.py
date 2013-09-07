@@ -448,9 +448,22 @@ class CuebidReponseToNegativeDouble(ResponseToNegativeDouble):
 
 class JumpNotrumpResponseToNegativeDouble(ResponseToNegativeDouble):
     preconditions = JumpFromLastContract(exact_size=1)
+    category = categories.Gadget # FIXME: Is this right?
     call_names = '2N'
-    shared_constraints = points >= 16
+    # FIXME: Why does adding "balanced" here make this exactly 18?
+    shared_constraints = (points >= 16, balanced)
 
+
+rule_order.order(
+    JumpNotrumpResponseToNegativeDouble,
+    CuebidReponseToNegativeDouble,
+)
+
+# Cuebid response is for when we're going to at least game and possibly slam and is basically our highest priority.
+rule_order.order(
+    natural_bids,
+    CuebidReponseToNegativeDouble,
+)
 
 
 two_clubs_response_priorities = enum.Enum(
