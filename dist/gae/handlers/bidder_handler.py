@@ -16,7 +16,6 @@ from core.callhistory import CallHistory
 from core.board import Board
 from core.deal import Deal
 from core.position import position_from_char
-from core.autobidder import Autobidder
 
 from proxy import BidderProxy
 
@@ -56,15 +55,25 @@ class JSONAutobidHandler(webapp2.RequestHandler):
             json_tuple[4] = selection.rule.sayc_page_for_bid(bid)
         return json_tuple
 
+    def _bid_all_hands(self, bidder, board, until_position=None):
+        call_selections = []
+        while not board.call_history.is_complete() and board.call_history.position_to_call() != until_position:
+            position_to_call = board.call_history.position_to_call()
+            hand = board.deal.hands[position_to_call]
+            selection = self.bidder.call_selection_for(hand, board.call_history)
+            call = selection.call if selection else Pass()
+            board.call_history.calls.append(call)
+            call_selections.append(selection)
+        return call_selections
+
     def get(self):
         bidder = BidderProxy()
-        autobidder = Autobidder(bidder)
         board = self._board_from_request()
         until_position_string = self.request.get('until_position')
         until_position = position_from_char(until_position_string) if until_position_string else None
-        call_selections = autobidder.bid_all_hands(board, until_position=until_position)
+        call_selections = self._bid_all_hands(bidder, board, until_position=until_position)
         current_history = copy.deepcopy(board.call_history)
-        call_selections += autobidder.bid_all_hands(board)
+        call_selections += self._bid_all_hands(bidder, board)
         # Callers might want to know what the full history would look like if autobid.
         board_dict = {
             'board_number': board.number,
