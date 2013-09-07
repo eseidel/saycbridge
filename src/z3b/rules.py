@@ -462,14 +462,32 @@ class NewSuitResponseToNegativeDouble(ResponseToNegativeDouble):
 
 
 class RaiseResponseToNegativeDouble(ResponseToNegativeDouble):
-    preconditions = PartnerHasAtLeastLengthInSuit(4)
+    preconditions = [
+        PartnerHasAtLeastLengthInSuit(4),
+        NotJumpFromLastContract(),
+    ]
     # Min: 1C 1D X P 1H, Max: 1C 2S X P 3H
-    call_names = (
-                    '1H', '1S',
-        '2C', '2D', '2H', '2S',
-        '3C', '3D', '3H',
-    )
+    priorities_per_call = {
+        ('2C', '2D', 
+         '3C', '3D'): raise_responses.MajorMinimum,
+        ('1H', '1S',
+         '2H', '2S',
+         '3H'      ): raise_responses.MinorMinimum,
+    }
     shared_constraints = MinimumCombinedLength(8)
+
+
+# class RebidResponseToNegativeDouble(ResponseToNegativeDouble):
+#     preconditions = [
+#         RebidSameSuit(),
+#         NotJumpFromLastContract(),
+#     ]
+#     # Min: 1C 1D X P 2C, Max: 1H 2S X P 3H
+#     call_names = (
+#         '2C', '2D', '2H', '2S',
+#         '3C', '3D', '3H',
+#     )
+#     shared_constraints = MinLength(5)
 
 
 class NotrumpResponseToNegativeDouble(ResponseToNegativeDouble):
@@ -491,6 +509,16 @@ class JumpNewSuitResponseToNegativeDouble(JumpResponseToNegativeDouble):
         '3C', '3D', '3H', '3S',
     )
     shared_constraints = MinLength(4)
+
+
+class JumpRaiseResponseToNegativeDouble(JumpResponseToNegativeDouble):
+    preconditions = PartnerHasAtLeastLengthInSuit(4),
+    # Min: 1C 1D X P 3D, Max: 1C 2S X P 4H
+    call_names = (
+              '3D', '3H', '3S',
+        '4C', '4D', '4H'
+    )
+    shared_constraints = MinimumCombinedLength(8)
 
 
 class JumpNotrumpResponseToNegativeDouble(JumpResponseToNegativeDouble):
@@ -705,7 +733,7 @@ class SupportPartnerMajorSuit(SupportPartnerSuit):
 
 class RebidOriginalSuitByOpener(RebidAfterOneLevelOpen):
     preconditions = [
-        LastBidHasLevel(positions.Me, 1),
+        LastBidHasAnnotation(positions.Me, annotations.OneLevelSuitOpening),
         RebidSameSuit(),
     ]
 
@@ -2734,4 +2762,9 @@ rule_order.order(
     NewSuitResponseToNegativeDouble,
     JumpNewSuitResponseToNegativeDouble,
     CuebidReponseToNegativeDouble,
+)
+
+rule_order.order(
+    RaiseResponseToNegativeDouble,
+    JumpRaiseResponseToNegativeDouble,
 )
