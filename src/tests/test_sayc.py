@@ -160,6 +160,11 @@ class ResultsAggregator(object):
             self._results_count_by_group[result.test.group.name] += 1
         self._print_completed_groups()
 
+    @property
+    def seen_rule_names(self):
+        all_rule_names = map(lambda result: result.rule_name, self._results_by_identifier.values())
+        return set(map(str, filter(None, all_rule_names)))
+
     def print_summary(self):
         total_tests = len(self._results_by_identifier)
         total_pass = total_tests - self._total_failures
@@ -177,7 +182,10 @@ def _run_test(test):
     output = outputcapture.OutputCapture()
     stdout, stderr = output.capture_output()
     try:
-        result.call = bidder.find_call_for(test.hand, test.call_history)
+        call_selection = bidder.call_selection_for(test.hand, test.call_history)
+        if call_selection:
+            result.call = call_selection.call
+            result.rule_name = str(call_selection.rule)
     except Exception:
         result.exc_str = ''.join(traceback.format_exception(*sys.exc_info()))
     output.restore_output()
@@ -236,6 +244,24 @@ class TestHarness(unittest2.TestCase):
 
         pool.terminate()
 
+    def _print_coverage_summary(self):
+        # FIXME: This need not depend on z3 specifically.
+        try:
+            all_rules = BidderFactory.default_bidder().system.rules
+        except:
+            print "Ignoring coverage summary, failed to find rules"
+            return
+
+        # Don't expect to see rules which are marked "requires_planning".
+        non_planned_rules = filter(lambda rule: not rule.requires_planning, all_rules)
+        all_rule_names = set(map(str, non_planned_rules))
+        seen_rule_names = self.results.seen_rule_names
+        print "Tested bid generation from %s rules of %s total." % (len(seen_rule_names), len(all_rule_names))
+        untested_rule_names = all_rule_names - seen_rule_names
+        if untested_rule_names:
+            print "Never selected bid from:"
+            print "\n".join(sorted(untested_rule_names))
+
     def test_main(self):
         self.collect_test_groups()
         self.results = ResultsAggregator(self.groups)
@@ -244,12 +270,15 @@ class TestHarness(unittest2.TestCase):
         else:
             self.run_tests_single_process()
         self.results.print_summary()
+        print
+        self._print_coverage_summary()
 
 
 class TestResult(object):
     def __init__(self):
         self.test = None
         self.call = None
+        self.rule_name = None
         self.exc_str = None
         self.stdout = None
         self.stderr = None
