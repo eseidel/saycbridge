@@ -891,6 +891,9 @@ sayc_expectations = {
         ["J5.AQ864.A54.K76", "2D", "1D 1S X P"],  # p131, h10 (1NT is also valid)
         ["KJ43.KQJ97.K5.87", "2C", "1D 1S X P"],  # p131, h11
         ["A94.KQ87.874.KJ6", "1N", "1D 1S X P"],  # p131, h12
+        # Jump rebids are 16-18hcp p133
+        ["A94.KQ87.K74.KJ6", "2N", "1D 1S X P"],
+
         ["KJ6.AQJ93.K5.AJ6", "3N", "1D 1S X P"],  # p131, h13, Why 3N instead of 2N?  Minor followed by 2N show 18-19 points?  A Cuebid would also show 19+ points.
         ["AQ6.KQJ97.AQ76.5", "2S", "1D 1S X P"],  # p131, h14
         ["J43.KJ97.AQ76.Q7", "2H", "1D 1S X P"],  # p131, h15

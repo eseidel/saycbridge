@@ -428,6 +428,7 @@ negative_doubles = set([OneLevelNegativeDouble, TwoLevelNegativeDouble])
 
 # aka OpenerRebidAfterNegativeDouble.
 class ResponseToNegativeDouble(Rule):
+    category = categories.Gadget # FIXME: Is this right?
     preconditions = LastBidHasAnnotation(positions.Partner, annotations.NegativeDouble)
 
 
@@ -436,25 +437,70 @@ class CuebidReponseToNegativeDouble(ResponseToNegativeDouble):
         CueBid(positions.LHO),
         NotJumpFromLastContract(),
     ]
-    # Min: 1C 1D X P 2D, Max: 1S 2H X 3H
+    # Min: 1C 1D X P 2D, Max: 1C 2S X 3S
     call_names = (
         # Unclear if a cuebid of 2D ever makes sense since
         # we'll know they're 4-4 in the majors and can choose between a minor game and NT?
               '2D', '2H', '2S',
-        '3C', '3D', '3H'
+        '3C', '3D', '3H', '3S',
     )
     shared_constraints = points >= 19
 
 
-class JumpNotrumpResponseToNegativeDouble(ResponseToNegativeDouble):
+class NewSuitResponseToNegativeDouble(ResponseToNegativeDouble):
+    preconditions = [
+        NotJumpFromLastContract(),
+        UnbidSuit(),
+    ]
+    # Min: 1C 1D X P 1H, Max: 1C 2S X P 3H
+    call_names = (
+                    '1H', '1S',
+        '2C', '2D', '2H', '2S',
+        '3C', '3D', '3H',
+    )
+    shared_constraints = MinLength(4)
+
+
+class RaiseResponseToNegativeDouble(ResponseToNegativeDouble):
+    preconditions = PartnerHasAtLeastLengthInSuit(4)
+    # Min: 1C 1D X P 1H, Max: 1C 2S X P 3H
+    call_names = (
+                    '1H', '1S',
+        '2C', '2D', '2H', '2S',
+        '3C', '3D', '3H',
+    )
+    shared_constraints = MinimumCombinedLength(8)
+
+
+class NotrumpResponseToNegativeDouble(ResponseToNegativeDouble):
+    preconditions = NotJumpFromLastContract()
+    call_names = '1N'
+    shared_constraints = balanced
+
+
+class JumpResponseToNegativeDouble(ResponseToNegativeDouble):
     preconditions = JumpFromLastContract(exact_size=1)
-    category = categories.Gadget # FIXME: Is this right?
+    shared_constraints = points >= 16
+
+
+class JumpNewSuitResponseToNegativeDouble(JumpResponseToNegativeDouble):
+    preconditions = UnbidSuit()
+    # Min: 1C 1D X P 2H, Max: 1C 2H X P 3S
+    call_names = (
+                    '2H', '2S',
+        '3C', '3D', '3H', '3S',
+    )
+    shared_constraints = MinLength(4)
+
+
+class JumpNotrumpResponseToNegativeDouble(JumpResponseToNegativeDouble):
     call_names = '2N'
     # FIXME: Why does adding "balanced" here make this exactly 18?
-    shared_constraints = (points >= 16, balanced)
+    shared_constraints = balanced
 
 
 rule_order.order(
+    NotrumpResponseToNegativeDouble,
     JumpNotrumpResponseToNegativeDouble,
     CuebidReponseToNegativeDouble,
 )
@@ -2681,4 +2727,11 @@ rule_order.order(
     overcall_priorities.TakeoutDouble,
     balancing_notrumps.TwoNotrumpJump,
     BalancingJumpSuitedOvercall,
+)
+
+rule_order.order(
+    ForcedRebidOriginalSuitByOpener,
+    NewSuitResponseToNegativeDouble,
+    JumpNewSuitResponseToNegativeDouble,
+    CuebidReponseToNegativeDouble,
 )
