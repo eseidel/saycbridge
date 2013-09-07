@@ -46,13 +46,13 @@ class JSONAutobidHandler(webapp2.RequestHandler):
             return json_tuple
         if selection.call:
             json_tuple[0] = selection.call.name
-        if rule:
+        if selection.rule:
             json_tuple[1] = selection.rule.name
-        if hand_knowledge:
+        if selection.hand_knowledge:
             json_tuple[2] = selection.hand_knowledge.pretty_one_line(include_last_call_name=False)
-        if rule and bid:
-            json_tuple[3] = selection.rule.explanation_for_bid(bid)
-            json_tuple[4] = selection.rule.sayc_page_for_bid(bid)
+        if selection.rule and selection.call:
+            json_tuple[3] = selection.rule.explanation_for_bid(selection.call)
+            json_tuple[4] = selection.rule.sayc_page_for_bid(selection.call)
         return json_tuple
 
     def _bid_all_hands(self, bidder, board, until_position=None):
@@ -60,7 +60,7 @@ class JSONAutobidHandler(webapp2.RequestHandler):
         while not board.call_history.is_complete() and board.call_history.position_to_call() != until_position:
             position_to_call = board.call_history.position_to_call()
             hand = board.deal.hands[position_to_call]
-            selection = self.bidder.call_selection_for(hand, board.call_history)
+            selection = bidder.call_selection_for(hand, board.call_history)
             call = selection.call if selection else Pass()
             board.call_history.calls.append(call)
             call_selections.append(selection)
@@ -77,9 +77,9 @@ class JSONAutobidHandler(webapp2.RequestHandler):
         # Callers might want to know what the full history would look like if autobid.
         board_dict = {
             'board_number': board.number,
-            'calls_string': current_history.calls_string(),
-            'autobid_continuation': board.call_history.calls_string(),
-            'autobid_interpretations': map(self._json_tuple, call_selections),
+            'calls_string': current_history.calls_string(), # The history up to "until_position"
+            'autobid_continuation': board.call_history.calls_string(), # How the autobidder would continue
+            'autobid_interpretations': map(self._json_tuple, call_selections), # Interpretations for all calls (including continuation)
         }
         self.response.headers["Content-Type"] = "application/json"
         self.response.headers["Cache-Control"] = "public"

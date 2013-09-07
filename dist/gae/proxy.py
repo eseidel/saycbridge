@@ -34,6 +34,26 @@ def _position_knowledge_from_position_view(position_view):
     # FIXME: What about honor concentration?
     return kbb_constraints
 
+
+# FIXME: This is a hack to make the GAE front-end work with the Z3 Bidder.
+class CallSelectionProxy(object):
+    def __init__(self, call_selection):
+        self.call = call_selection.call if call_selection else None
+        self.rule = call_selection.rule if call_selection else None
+        self.call_selection = call_selection
+
+    @property
+    def hand_knowledge(self):
+        if not self.call:
+            return None
+
+        if use_z3:
+            with Interpreter().extend_history(self.call_selection.rule_selector.history, self.call) as history:
+                return _position_knowledge_from_position_view(history.rho)
+
+        return self.call_selection.hand_knowledge
+
+
 class BidderProxy(object):
     def __init__(self):
         if use_z3:
@@ -45,18 +65,7 @@ class BidderProxy(object):
         return self.bidder.find_call_for(hand, call_history)
 
     def call_selection_for(self, hand, call_history):
-        # FIXME: This is a hack to make the GAE front-end work with the Z3 Bidder.
-        if use_z3:
-            # z3b has a call_selection_for method, but it doesn't include the new history.
-            # I'm not sure we want it to include the new history.
-            call = self.bidder.find_call_for(hand, call_history)
-            new_call_history = call_history.copy_appending_call(call if call else core.call.Pass())
-            # FIXME: Figure out the clean way to have the Bidder return the updated History
-            # instead of interpreting the whole call history twice!
-            with Interpreter().create_history(new_call_history) as history:
-                return [call, history.rho.rule_for_last_call, _position_knowledge_from_position_view(history.rho)]
-
-        return self.bidder.call_selection_for(hand, call_history)
+        return CallSelectionProxy(self.bidder.call_selection_for(hand, call_history))
 
 
 # This is used by the explorer (explorer_handler.py)
