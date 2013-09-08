@@ -2,9 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import copy
-
-from core.position import in_partnership_with
 import kbb.rules as rules
 from kbb.knowledge import Knowledge
 from kbb.semanticbids import SemanticBid
@@ -345,7 +342,7 @@ class BidInterpreter(object):
             bid = partial_history.last_call
             bidder = partial_history.last_to_call
 
-            convention_card = self.our_conventions if in_partnership_with(bidder, viewer) else self.their_conventions
+            convention_card = self.our_conventions if bidder.in_partnership_with(viewer) else self.their_conventions
             _, consuming_rule = self.knowledge_including_new_bid(knowledge_builder, bid, convention_card=convention_card, loose_constraints=loose_constraints)
             knowledge_builder.record_bid(bid, consuming_rule)
 

@@ -5,11 +5,6 @@
 from third_party.memoized import memoized
 
 
-# Deprecated, just need to remove all callers.
-def in_partnership_with(position, other_position):
-	return position.in_partnership_with(other_position)
-
-
 class Position(object):
 	def __init__(self, index, this_should_not_be_called_directly=False):
 		assert(this_should_not_be_called_directly)
@@ -62,5 +57,6 @@ class Position(object):
 		return (other.index - self.index) % 4
 
 
+# FIXME: Should these move on to Position as Position.NORTH and Position.ALL?
 NORTH, EAST, SOUTH, WEST = map(Position.from_index, range(4))
 POSITIONS = [NORTH, EAST, SOUTH, WEST]

@@ -123,12 +123,12 @@ class CallHistory(object):
         # Make sure we haven't already doubled.
         if not self.last_non_pass().is_contract():
             return False
-        return not in_partnership_with(self.declarer(), self.position_to_call())
+        return not self.declarer().in_partnership_with(self.position_to_call())
 
     def can_redouble(self):
         if not self.last_non_pass().is_double():
             return False
-        return in_partnership_with(self.declarer(), self.position_to_call())
+        return self.declarer().in_partnership_with(self.position_to_call())
 
     # This may belong on a separate bridge-rules object?
     def is_legal_call(self, call):
@@ -263,7 +263,7 @@ class CallHistory(object):
         for caller, call in self.enumerate_calls():
             if not first_caller and call.is_contract():
                 first_caller = caller
-            if call.is_contract() and not in_partnership_with(caller, first_caller):
+            if call.is_contract() and not caller.in_partnership_with(first_caller):
                 return True
         return False
 
@@ -301,7 +301,7 @@ class CallHistory(object):
             if not last_call:
                 last_call = call
                 last_caller = caller
-            if call.strain == last_call.strain and in_partnership_with(caller, last_caller):
+            if call.strain == last_call.strain and caller.in_partnership_with(last_caller):
                 first_call = call
                 first_caller = caller
         return first_caller
