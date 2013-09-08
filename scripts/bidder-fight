@@ -42,7 +42,7 @@ class BidderFight(object):
                     board.call_history.calls_string(),
                     optional_vulernability_string,
                     board.identifier().partition(":")[0], # remove the call history
-                    position_char(position_to_call),
+                    position_to_call.char,
                 )
                 print
                 return

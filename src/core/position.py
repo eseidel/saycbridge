@@ -5,12 +5,7 @@
 from third_party.memoized import memoized
 
 
-def position_char(position):
-	return position.char
-
-def partner_of(position):
-	return position.partner
-
+# Deprecated, just need to remove all callers.
 def in_partnership_with(position, other_position):
 	return position.in_partnership_with(other_position)
 

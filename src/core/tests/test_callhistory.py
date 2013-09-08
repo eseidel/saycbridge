@@ -39,7 +39,7 @@ class VulnerabilityTest(unittest2.TestCase):
 class CallHistoryTest(unittest2.TestCase):
 
     def _assert_declarer(self, history_string, dealer, declarer):
-        self.assertEquals(CallHistory.from_string(history_string, position_char(dealer)).declarer(), declarer)
+        self.assertEquals(CallHistory.from_string(history_string, dealer.char).declarer(), declarer)
 
     def test_declarer(self):
         self._assert_declarer("", NORTH, None)
@@ -96,7 +96,7 @@ class CallHistoryTest(unittest2.TestCase):
         self._assert_competative_auction("1D P 1H P", False)
 
     def _assert_opener(self, history_string, dealer, opener):
-        self.assertEquals(CallHistory.from_string(history_string, position_char(dealer)).opener(), opener)
+        self.assertEquals(CallHistory.from_string(history_string, dealer.char).opener(), opener)
 
     def test_opener(self):
         self._assert_opener("P 1C P 1D P", NORTH, EAST)

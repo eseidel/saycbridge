@@ -64,7 +64,7 @@ class Vulnerability(object):
             return False
         if self.name == "Both":
             return True
-        return position_char(position) in self.name
+        return position.char in self.name
 
 
 # FIXME: It's unclear if this class should expose just call_names or Call objects.
@@ -173,7 +173,7 @@ class CallHistory(object):
         return partial_histories
 
     def identifier(self):
-        return "%s:%s:%s" % (position_char(self.dealer), self.vulnerability.identifier(), self.comma_separated_calls())
+        return "%s:%s:%s" % (self.dealer.char, self.vulnerability.identifier(), self.comma_separated_calls())
 
     @classmethod
     def from_identifier(cls, identifier):
@@ -193,7 +193,7 @@ class CallHistory(object):
         return CallHistory(calls=calls, dealer=dealer, vulnerability=vulnerability)
 
     def pretty_one_line(self):
-        return "Deal: %s, Bids: %s" % (position_char(self.dealer), self.calls_string())
+        return "Deal: %s, Bids: %s" % (self.dealer.char, self.calls_string())
 
     def calls_string(self):
         return " ".join([call.name for call in self.calls])
