@@ -36,8 +36,7 @@ class JSONAutobidHandler(webapp2.RequestHandler):
 
         deal = Deal.from_string(' '.join(hand_strings))
         dealer_char = self.request.get('dealer')
-        # Note: We keep bids_string around to I can test old requests.
-        calls_string = self.request.get('calls_string') or self.request.get('bids_string') or ''
+        calls_string = self.request.get('calls_string', '')
         history = CallHistory.from_string(calls_string, dealer_char, vulnerability_string)
         return Board(board_number, deal, history)
 
