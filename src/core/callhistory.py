@@ -211,7 +211,7 @@ class CallHistory(object):
     def last_to_call(self):
         if not self.calls:
             return None
-        return (self.dealer + len(self.calls) - 1) % 4
+        return self.dealer.position_after_n_calls(len(self.calls) - 1)
 
     def last_non_pass(self):
         for call in reversed(self.calls):
@@ -240,24 +240,23 @@ class CallHistory(object):
     def position_to_call(self):
         # FIXME: Should this return None when is_complete?
         # We'd have to check callers, some may assume it's OK to call position_to_call after is_complete.
-        return (self.dealer + len(self.calls)) % 4
+        return self.dealer.position_after_n_calls(len(self.calls))
 
     def calls_by(self, position):
-        offset_from_dealer = (position - self.dealer) % 4
+        offset_from_dealer = self.dealer.calls_between(position)
         if len(self.calls) <= offset_from_dealer:
             return []
         return [self.calls[i] for i in range(offset_from_dealer, len(self.calls), 4)]
 
     def enumerate_calls(self):
         for call_offset, call in enumerate(self.calls):
-            caller = (self.dealer + call_offset) % 4
-            yield caller, call
+            yield self.dealer.position_after_n_calls(call_offset), call
 
     def enumerate_reversed_calls(self):
+        # FIXME: This is needlessly complicated.
         for call_offset, call in enumerate(reversed(self.calls)):
             caller_offset = len(self.calls) - 1 - call_offset
-            caller = (self.dealer + caller_offset) % 4
-            yield caller, call
+            yield self.dealer.position_after_n_calls(caller_offset), call
 
     def competative_auction(self):
         first_caller = None
@@ -328,32 +327,3 @@ class CallHistory(object):
 
     def is_passout(self):
         return self.is_complete() and self.calls[-4].is_pass()
-
-    def _call_names_slice_for_round(self, position, round):
-        if round == 0 and position < self.dealer:
-            return None
-        call_index = round * len(POSITIONS) + position - self.dealer
-        if call_index >= len(self.calls):
-            return None
-        return map(operator.attrgetter('name'), self.calls[:call_index + 1])
-
-    def _bidding_rounds_count(self):
-        return int(math.ceil((len(self.calls) + self.dealer) / 4.0))
-
-    # Bidding rounds always start with North, even if the deal did not.
-    def bidding_rounds(self, mark_to_bid=True, last_call_only=False):
-        bidding_rounds = []
-        for round in range(self._bidding_rounds_count()):
-            bidding_round = []
-            for position in POSITIONS:
-                call_names_slice = self._call_names_slice_for_round(position, round)
-                if last_call_only and call_names_slice is not None:
-                    bidding_round.append(call_names_slice[-1])
-                else:
-                    bidding_round.append(call_names_slice)
-            bidding_rounds.append(bidding_round)
-        if mark_to_bid and not self.is_complete():
-            if not bidding_rounds or bidding_rounds[-1][self.position_to_call()] != None:
-                bidding_rounds.append([None, None, None, None])
-            bidding_rounds[-1][self.position_to_call()] = "?"
-        return bidding_rounds

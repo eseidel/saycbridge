@@ -76,18 +76,6 @@ class CallHistoryTest(unittest2.TestCase):
         self.assertEquals(CallHistory.from_string("P P P P").is_passout(), True)
         self.assertEquals(CallHistory.from_string("P 1N P P P").is_passout(), False)
 
-    def test_bidding_rounds(self):
-        self.assertEquals(CallHistory.from_string("")._bidding_rounds_count(), 0)
-        self.assertEquals(CallHistory.from_string("").bidding_rounds(last_call_only=True), [['?', None, None, None]])
-        self.assertEquals(CallHistory.from_string("").bidding_rounds(last_call_only=True, mark_to_bid=False), [])
-        self.assertEquals(CallHistory.from_string("P").bidding_rounds(last_call_only=True), [['P', '?', None, None]])
-        self.assertEquals(CallHistory.from_string("P P").bidding_rounds(last_call_only=True), [['P', 'P', '?', None]])
-        self.assertEquals(CallHistory.from_string("P P", dealer_string="E").bidding_rounds(last_call_only=True), [[None, 'P', 'P', '?']])
-        self.assertEquals(CallHistory.from_string("P P", dealer_string="W").bidding_rounds(last_call_only=True), [[None, None, None, 'P'], ['P', '?', None, None]])
-        self.assertEquals(CallHistory.from_string("2H P 3H P").bidding_rounds(last_call_only=True), [['2H', 'P', '3H', 'P'], ['?', None, None, None]])
-        self.assertEquals(CallHistory.from_string("P P P P").bidding_rounds(last_call_only=True), [['P', 'P', 'P', 'P']])
-        self.assertEquals(CallHistory.from_string("P P P P", dealer_string="E").bidding_rounds(last_call_only=True), [[None, 'P', 'P', 'P'], ['P', None, None, None]])
-
     def test_copy_with_partial_history(self):
         history = CallHistory.from_string("P P 1N P P P")
         self.assertEquals(len(history.calls), 6)

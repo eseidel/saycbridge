@@ -114,8 +114,11 @@ class Deal(object):
         return json.dumps(deal_dict, **kwargs)
 
     def pretty_one_line(self):
-        pretty_position = lambda position: "%s: %s" % (position_char(position), self.hands[position].pretty_one_line())
+        pretty_position = lambda position: "%s: %s" % (position.char, self.hand_for(position).pretty_one_line())
         return " ".join(map(pretty_position, POSITIONS))
+
+    def hand_for(self, position):
+        return self.hands[position.index]
 
     def _validate(self):
         all_cards = set()

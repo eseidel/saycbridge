@@ -11,6 +11,12 @@ class PositionTest(unittest2.TestCase):
         self.assertEquals(partner_of(NORTH), SOUTH)
         self.assertEquals(partner_of(EAST), WEST)
 
+    def test_calls_between(self):
+        self.assertEquals(NORTH.calls_between(NORTH), 0)
+        self.assertEquals(NORTH.calls_between(EAST), 1)
+        self.assertEquals(NORTH.calls_between(SOUTH), 2)
+        self.assertEquals(NORTH.calls_between(WEST), 3)
+
 
 if __name__ == '__main__':
     unittest2.main()
