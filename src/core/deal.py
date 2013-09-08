@@ -110,7 +110,7 @@ class Deal(object):
         return str(identifier)
 
     def to_json(self, **kwargs):
-        deal_dict = dict([(position_name(position).lower(), hand.cdhs_dot_string()) for position, hand in enumerate(self.hands)])
+        deal_dict = dict([(position.name.lower(), hand.cdhs_dot_string()) for position, hand in enumerate(self.hands)])
         return json.dumps(deal_dict, **kwargs)
 
     def pretty_one_line(self):

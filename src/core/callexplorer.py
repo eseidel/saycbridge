@@ -6,7 +6,6 @@ import copy
 
 from core.call import Call
 from core.callhistory import CallHistory
-from core.position import partner_of
 from core.suit import *
 
 
@@ -19,7 +18,7 @@ class CallExplorer(object):
 
         last_non_pass = history.last_non_pass()
         caller = history.position_to_call()
-        if last_non_pass and history.last_to_not_pass() != partner_of(caller):
+        if last_non_pass and history.last_to_not_pass() != caller.partner:
             if last_non_pass.is_contract():
                 yield Call('X')
             elif last_non_pass.is_double():

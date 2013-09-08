@@ -10,7 +10,6 @@ import find_src
 from core.call import Call, Pass
 from core.board import Board
 from core.suit import *
-from core.position import *
 import kbb
 import z3b.bidder
 

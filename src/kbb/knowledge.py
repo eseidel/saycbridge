@@ -9,7 +9,7 @@ from third_party import enum
 from kbb.handconstraints import HandConstraints, HonorConstraint
 from core.call import Call
 from core.suit import suit_char, SUITS, MINORS, MAJORS
-from core.position import NORTH, rho_of, partner_of, lho_of
+from core.position import NORTH
 
 import logging
 _log = logging.getLogger(__name__)
@@ -75,10 +75,10 @@ class Knowledge(object):
         if me_position is None:
             me_position = NORTH
         positions = [None, None, None, None]
-        positions[me_position] = self.me
-        positions[rho_of(me_position)] = self.rho
-        positions[lho_of(me_position)] = self.lho
-        positions[partner_of(me_position)] = self.partner
+        positions[me_position.index] = self.me
+        positions[me_position.rho.index] = self.rho
+        positions[me_position.lho.index] = self.lho
+        positions[me_position.partner.index] = self.partner
         return positions
 
     def last_contract(self):

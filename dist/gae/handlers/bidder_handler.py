@@ -15,7 +15,7 @@ jinja_environment = jinja2.Environment(loader=jinja2.FileSystemLoader("templates
 from core.callhistory import CallHistory
 from core.board import Board
 from core.deal import Deal
-from core.position import position_from_char
+from core.position import Position
 from core.call import Pass
 
 from proxy import BidderProxy
@@ -70,7 +70,7 @@ class JSONAutobidHandler(webapp2.RequestHandler):
         bidder = BidderProxy()
         board = self._board_from_request()
         until_position_string = self.request.get('until_position')
-        until_position = position_from_char(until_position_string) if until_position_string else None
+        until_position = Position.from_char(until_position_string) if until_position_string else None
         call_selections = self._bid_all_hands(bidder, board, until_position=until_position)
         current_history = copy.deepcopy(board.call_history)
         call_selections += self._bid_all_hands(bidder, board)

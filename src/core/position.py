@@ -5,26 +5,11 @@
 from third_party.memoized import memoized
 
 
-def position_name(position):
-	return position.name
-
-def position_from_name(name):
-	return Postion.from_name(name)
-
 def position_char(position):
 	return position.char
 
-def position_from_char(char):
-	return Position.from_char(char)
-
 def partner_of(position):
 	return position.partner
-
-def rho_of(position):
-	return position.rho
-
-def lho_of(position):
-	return position.rho
 
 def in_partnership_with(position, other_position):
 	return position.in_partnership_with(other_position)

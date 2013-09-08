@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-from position import *
+from core.position import *
 from core.call import Call
 from suit import SUITS
 
@@ -86,8 +86,8 @@ class CallHistory(object):
         return calls
 
     @classmethod
-    def from_string(cls, history_string, dealer_string=None, vulnerability_string=None):
-        dealer = position_from_char(dealer_string) if dealer_string else None
+    def from_string(cls, history_string, dealer_char=None, vulnerability_string=None):
+        dealer = Position.from_char(dealer_char) if dealer_char else None
         vulnerability = Vulnerability.from_string(vulnerability_string)
         calls = cls._calls_from_calls_string(history_string)
         return CallHistory(calls, dealer=dealer, vulnerability=vulnerability)
@@ -187,7 +187,7 @@ class CallHistory(object):
         else:
             assert False, "Invalid history identifier: %s" % identifier
 
-        dealer = position_from_char(dealer_char)
+        dealer = Position.from_char(dealer_char)
         vulnerability = Vulnerability.from_identifier(vulenerability_identifier)
         calls = cls._calls_from_calls_string(calls_identifier)
         return CallHistory(calls=calls, dealer=dealer, vulnerability=vulnerability)
@@ -307,7 +307,7 @@ class CallHistory(object):
         return first_caller
 
     def dummy(self):
-        return partner_of(declarer)
+        return declarer.partner
 
     def contract(self):
         # Maybe we need a Contract object which holds declarer, suit, level, and doubles?

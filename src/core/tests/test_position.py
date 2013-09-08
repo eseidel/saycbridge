@@ -7,9 +7,9 @@ from core.position import *
 
 
 class PositionTest(unittest2.TestCase):
-    def test_partner_of(self):
-        self.assertEquals(partner_of(NORTH), SOUTH)
-        self.assertEquals(partner_of(EAST), WEST)
+    def test_partner(self):
+        self.assertEquals(NORTH.partner, SOUTH)
+        self.assertEquals(EAST.partner, WEST)
 
     def test_calls_between(self):
         self.assertEquals(NORTH.calls_between(NORTH), 0)

@@ -75,7 +75,7 @@ class Gib(object):
     def _double_dummy_command(self, board):
         input_text = "\n".join([position_char(position) + " " + board.deal.hands[position].shdc_dot_string() for position in POSITIONS])
         if board.call_history.is_complete():
-            leader = lho_of(board.call_history.declarer())
+            leader = board.call_history.declarer().lho
             trump = board.call_history.last_contract().strain
         else:
             leader = NORTH
