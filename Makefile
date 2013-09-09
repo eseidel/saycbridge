@@ -1,4 +1,4 @@
-.PHONY: all clean baseline baseline-z3 accept accept-z3 check check-z3 compile serve publish chromeapp
+.PHONY: all clean baseline accept check compile serve publish chromeapp
 
 src_dir = src
 scripts_dir = scripts
@@ -62,9 +62,6 @@ serve-prod: clean compile
 
 compile:
 	coffee --compile $(appengine_scripts_dir)/*.coffee
-
-publish: compile
-	@appcfg.py --oauth2 update $(appengine_dir)
 
 deploy:
 	git push origin origin/master:production
