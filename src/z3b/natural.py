@@ -14,15 +14,16 @@ from z3b.rule_compiler import Rule, rule_order, categories
 LEVELS = [1, 2, 3, 4, 5, 6, 7]
 
 
+# FIXME: These belong on CallExplorer or Call.
 def suited_calls():
     for strain in suit.SUITS:
         for level in LEVELS:
-            yield "%s%s" % (level, suit.strain_char(strain))
+            yield "%s%s" % (level, strain.char)
 
 
 def notrump_calls():
     for level in LEVELS:
-        yield "%s%s" % (level, suit.strain_char(suit.NOTRUMP))
+        yield "%s%s" % (level, suit.NOTRUMP.char)
 
 
 natural = enum.Enum(*suited_calls())

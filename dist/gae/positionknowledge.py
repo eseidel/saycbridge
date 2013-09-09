@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-from core.suit import MINORS, SUITS, suit_char
+from core.suit import MINORS, SUITS
 
 
 class HonorConstraint(object):
@@ -206,7 +206,7 @@ class HandConstraints(object):
                 suit_options.append("!2rC")
         if suit_string == "?" and not suit_options:
             return None
-        suit_string += suit_char(suit)
+        suit_string += suit.char
         if suit_options:
             suit_string += "(%s)" % (", ".join(suit_options))
         return suit_string

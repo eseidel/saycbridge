@@ -80,7 +80,7 @@ class Gib(object):
         else:
             leader = NORTH
             trump = SPADES
-        input_text += "\n%s %s\n" % (leader.char, strain_char(trump))
+        input_text += "\n%s %s\n" % (leader.char, trump.char)
         input_text += "dq"
         return input_text
 

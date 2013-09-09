@@ -9,7 +9,7 @@ from third_party.memoized import memoized
 class Call(object):
     def __init__(self, name):
         self.name = name.upper()
-        self.strain = None if self.name in ('P', 'X', 'XX') else strain_from_char(self.name[1])
+        self.strain = None if self.name in ('P', 'X', 'XX') else Strain.from_char(self.name[1])
         self.level = int(self.name[0]) if self.is_contract() else None
         self._validate()
 

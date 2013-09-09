@@ -52,4 +52,4 @@ if __name__ == '__main__':
     print
     print "Points: %s-%s" % (history.rho.min_points, history.rho.max_points)
     for suit in SUITS:
-        print "%s: %s-%s" % (suit_name(suit), history.rho.min_length(suit), history.rho.max_length(suit))
+        print "%s: %s-%s" % (suit.name, history.rho.min_length(suit), history.rho.max_length(suit))

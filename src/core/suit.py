@@ -92,29 +92,3 @@ STRAINS = map(Strain.from_index, range(5))
 
 MINORS = (CLUBS, DIAMONDS)
 MAJORS = (HEARTS, SPADES)
-
-
-def suit_name(strain):
-    assert strain.is_suit()
-    return strain.name
-
-def suit_char(strain):
-    assert strain.is_suit()
-    return strain.char
-
-def suit_from_char(char):
-    strain = Strain.from_char(char)
-    assert strain.is_suit()
-    return strain
-
-def strain_char(strain):
-    return strain.char
-
-def strain_from_char(char):
-    return Strain.from_char(char)
-
-def other_minor(strain):
-    return strain.other_minor()
-
-def other_major(suit):
-    return strain.other_major()

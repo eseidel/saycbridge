@@ -42,7 +42,7 @@ class Card(object):
 
     @classmethod
     def card_name(cls, suit, value_char):
-        return "%s of %s" % (value_char, suit_name(suit))
+        return "%s of %s" % (value_char, suit.name)
 
     @classmethod
     def high_card_points(self, value_char):
@@ -59,7 +59,7 @@ class Card(object):
         assert value_char in ('A', 'K', 'Q', 'J', 'T', '9', '8', '7', '6', '5', '4', '3', '2')
 
     def two_char_name(self):
-        return "%s%s" % (self.value_char, suit_char(self.suit))
+        return "%s%s" % (self.value_char, self.suit.char)
 
     @classmethod
     def from_two_char_name(self, name):
@@ -73,7 +73,7 @@ class Card(object):
 
     @property
     def name(self):
-        return "%s%s" % (self.display_value(), suit_char(self.suit))
+        return "%s%s" % (self.display_value(), self.suit.char)
 
     def index(self):
         return self.index_for_card(self.value_char)
