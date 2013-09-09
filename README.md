@@ -15,12 +15,13 @@ Warning
 The SAYC Bridge code is currently undergoing an re-write.
 
 The code at saycbridge.com runs on Google App Engine
-and uses the (deprecated) Knolwedge Based Bidder (src/kbb).
+and uses the (deprecated) Knolwedge Based Bidder (KBB)
+which can be checked out from the "kbb" branch.
 
-However, all active development is focused on the new z3 bidder (src/z3b).
+All active development is focused on the new z3 bidder (src/z3b)
+which is currently only hosted on z3b.saycbridge.com.
 
-The z3 bidder is also not nearly complete enough to replace
-the Knowledge Based Bidder, but is rapily improving.
+The z3b is nearly ready to replace the kbb on www.saycbridge.com.
 
 
 Development
@@ -61,34 +62,28 @@ Running SAYCBridge.com Locally
 You can run the SAYCBridge web-interface in a local development server using
 
     make serve # A very experimental version of the site using the z3 Bidder
-or
-    make serve-kbb # The stable Knowledge Based Bidder
 
-Both versions of the site depend on CoffeeScript:
+Running the server will require CoffeeScript:
 
     sudo npm install -g coffee-script
 
 If you don't already have npm, you can get it from Node.js
 http://nodejs.org/
 
-The Knowledge Based Bidder version additionally depends on Google App Engine:
-https://developers.google.com/appengine/
-
 
 Useful URLs
 -----------
 
  - /unittests -- Shows you an html-colorized view of the current z3b_baseline.txt file
- - /explore -- Lets you walk around in the Bidder's little brain (not very functional for the Z3B yet)
+ - /explore -- Lets you walk around in the Bidder's little brain
 
 
 Where To Start
 --------------
 
-The Z3 Bidder does not know how to make many Calls.
-When it doesn't know what to bid, it returns None (an error).
-An example None from the Unittests:
+One place to start is looking at None results in the unittests:
 FAIL: None (expected 2C) for T874.876.86.J843 (hcp: 1 lp: 1 sp: 2), history: 1S X P
+These are where the bidder failed to make a call.
 
 Similarly, when you run the site locally, all None bids will
 show as "Pass" with an orange background to highlight the error.
@@ -97,9 +92,6 @@ Either browsing around the site (make serve), or running the unittests
 is a great way to find bids which are wrong or missing rules.
 
 New rules can be added to src/z3b/rules.py
-
-The KBB's (much more complete) rules can be found at src/z3b/rules/
-and are often helpful examples of rules to add to the Z3 Bidder.
 
 
 Code Layout
@@ -114,7 +106,6 @@ Code Layout
 - scripts -- Various scripts used for testing.
 - src -- Python back-end for SAYCBridge
 - src/core -- Basic Python objects for dealing with bridge hands/boards
-- src/kbb -- Knowledge Based Bidder (deprecated, but "stable" bidder)
 - src/third_party -- External code goes here
 - src/z3b -- Z3 Bidder (new bidder on top of MSR's Z3 Theorem Prover)
 
@@ -126,7 +117,6 @@ Make Targets
     make accept # replace the current baseline file with your last make check results
     make clean  # remove all *.pyc files
     make serve
-    make serve-kbb # run a local copy of saycbridge.com for testing
 
 
 Testing Scripts

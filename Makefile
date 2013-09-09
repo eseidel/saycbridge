@@ -60,19 +60,6 @@ serve: clean
 serve-prod: clean compile
 	@. sayc-env/bin/activate && cd $(appengine_dir) && python2.7 production_main.py
 
-# Support for the old Knowledge Based Bidder:
-
-accept-kbb:
-	@mv $(src_dir)/kbb_actual.txt $(src_dir)/kbb_baseline.txt
-
-check-kbb: clean
-	@$(scripts_dir)/test-sayc -k > $(src_dir)/kbb_actual.txt ; true
-	@diff -U 7 $(src_dir)/kbb_baseline.txt $(src_dir)/kbb_actual.txt ; true
-
-serve-kbb: clean
-	coffee --watch --compile $(appengine_scripts_dir)/*.coffee &
-	python2.7 `which dev_appserver.py` $(appengine_dir)
-
 compile:
 	coffee --compile $(appengine_scripts_dir)/*.coffee
 
