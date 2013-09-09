@@ -4,23 +4,13 @@
 
 import os
 
-# The Z3 Bidder and the KBB do not quite have the same interface.
-# Yet we'd like to continue letting both work with the GAE interface for now.
-# This module detects which we should use, and proxies KBB-style calls to the Z3 Bidder.
-# This module is the *ONLY* place in GAE which should know about the two bidders.
-
-# This is our hackish way of detecting app-engine vs. Werkzeug (our current z3 server harness)
-use_z3 = not os.environ.get('SERVER_SOFTWARE')
-
-from kbb.knowledge import PositionKnowledge
+from positionknowledge import PositionKnowledge
 from core.suit import SUITS
 import core.call
 
-# We can't import z3 in GAE.
-if use_z3:
-    from z3b.bidder import Interpreter, Bidder, InconsistentHistoryException
-    from z3b.model import positions
-    from z3b.preconditions import annotations
+from z3b.bidder import Interpreter, Bidder, InconsistentHistoryException
+from z3b.model import positions
+from z3b.preconditions import annotations
 
 
 # FIXME: This is a horrible hack.  Callers should move off of the KBB HandConstraints API.
@@ -45,11 +35,8 @@ class CallSelectionProxy(object):
         if not self.call:
             return None
 
-        if use_z3:
-            with Interpreter().extend_history(self.call_selection.rule_selector.history, self.call) as history:
-                return _position_knowledge_from_position_view(history.rho)
-
-        return self.call_selection.hand_knowledge
+        with Interpreter().extend_history(self.call_selection.rule_selector.history, self.call) as history:
+            return _position_knowledge_from_position_view(history.rho)
 
 
 class BidderProxy(object):
@@ -66,10 +53,7 @@ class BidderProxy(object):
 # This is used by the explorer (explorer_handler.py)
 class InterpreterProxy(object):
     def __init__(self):
-        if use_z3:
-            self.interpreter = Interpreter()
-        else:
-            self.interpreter = BidInterpreter()
+        self.interpreter = Interpreter()
 
     def _pretty_string_for_position_view(self, position_view):
         # kbb HandConstraints just so we can use it's pretty_print function.
@@ -81,8 +65,6 @@ class InterpreterProxy(object):
         return "%s %s" % (kbb_oneline, ", ".join(map(str, annotations_for_last_call)))
 
     def knowledge_string_and_rule_for_additional_call(self, history, call):
-        if not use_z3:
-            raise NotImplementedError
         try:
             history = self.interpreter.extend_history(history, call)
             return self._pretty_string_for_position_view(history.rho), history.rho.rule_for_last_call
@@ -90,14 +72,8 @@ class InterpreterProxy(object):
             return None, None
 
     def knowledge_string_and_rule_for_last_call(self, call_history):
-        if use_z3:
-            with self.interpreter.create_history(call_history) as history:
-                return self._pretty_string_for_position_view(history.rho), history.rho.rule_for_last_call
-        else:
-            existing_knowledge, knowledge_builder = self.interpreter.knowledge_from_history(call_history)
-            matched_rules = knowledge_builder.matched_rules()
-            knowledge_string = existing_knowledge.rho.pretty_one_line(include_last_call_name=False) if existing_knowledge else None,
-            return knowledge_string, matched_rules[-1]
+        with self.interpreter.create_history(call_history) as history:
+            return self._pretty_string_for_position_view(history.rho), history.rho.rule_for_last_call
 
     def create_history(self, call_history):
         return self.interpreter.create_history(call_history)
