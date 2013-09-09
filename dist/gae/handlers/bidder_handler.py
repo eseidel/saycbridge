@@ -59,7 +59,7 @@ class JSONAutobidHandler(webapp2.RequestHandler):
         call_selections = []
         while not board.call_history.is_complete() and board.call_history.position_to_call() != until_position:
             position_to_call = board.call_history.position_to_call()
-            hand = board.deal.hands[position_to_call]
+            hand = board.deal.hands[position_to_call.index]
             selection = bidder.call_selection_for(hand, board.call_history)
             call = selection.call if selection and selection.call else Pass()
             board.call_history.calls.append(call)

@@ -12,8 +12,6 @@ import os
 # This is our hackish way of detecting app-engine vs. Werkzeug (our current z3 server harness)
 use_z3 = not os.environ.get('SERVER_SOFTWARE')
 
-from kbb.bidder import KnowledgeBasedBidder
-from kbb.interpreter import BidInterpreter
 from kbb.knowledge import PositionKnowledge
 from core.suit import SUITS
 import core.call
@@ -56,10 +54,7 @@ class CallSelectionProxy(object):
 
 class BidderProxy(object):
     def __init__(self):
-        if use_z3:
-            self.bidder = Bidder()
-        else:
-            self.bidder = KnowledgeBasedBidder()
+        self.bidder = Bidder()
 
     def find_call_for(self, hand, call_history):
         return self.bidder.find_call_for(hand, call_history)

@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 import gib
-import kbb
 import z3b.bidder
 
 
@@ -19,7 +18,6 @@ class BidderFactory(object):
     @classmethod
     def configure_from_args(cls, args):
         bidders_by_flag = {
-            '-k' : kbb.KnowledgeBasedBidder,
             '-g' : gib.Gib,
             '-z' : z3b.bidder.Bidder,
         }
