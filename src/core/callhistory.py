@@ -95,7 +95,8 @@ class CallHistory(object):
     @classmethod
     def dealer_from_board_number(cls, board_number):
         # It's unclear if this number->dealer/vulnerability knowledge belongs in CallHistory or in Board.
-        return (board_number + 3) % 4
+        dealer_index = (board_number + 3) % 4
+        return Position.from_index(dealer_index)
 
     @classmethod
     def from_board_number_and_calls_string(cls, board_number, calls_string):

@@ -115,7 +115,6 @@ class CallHistoryTest(unittest2.TestCase):
         # Test that from_identifier is forgiving of a trailing comma.
         self.assertEqual(CallHistory.from_identifier('N:NO:P,').calls_string(), "P")
 
-
     def test_can_double(self):
         self.assertTrue(CallHistory.from_string("1S 2H 2S").can_double())
 
@@ -135,6 +134,11 @@ class CallHistoryTest(unittest2.TestCase):
         self._assert_is_legal_call("1N X", "X", False)
         self._assert_is_legal_call("1N X", "XX", True)
         self._assert_is_legal_call("P 1D 2S P", "X", False)
+
+    def test_empty_for_board_number(self):
+        self.assertEquals(CallHistory.empty_for_board_number(1).dealer, NORTH)
+        self.assertEquals(CallHistory.empty_for_board_number(6).dealer, EAST)
+        self.assertEquals(CallHistory.empty_for_board_number(16).dealer, WEST)
 
 
 if __name__ == '__main__':
