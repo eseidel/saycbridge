@@ -3,20 +3,43 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import logging
 import sys
 import find_src
+import requests
 
 from core.call import Call, Pass
+from core.callhistory import CallHistory
 from core.board import Board
 from core.suit import *
-import kbb
+from core.position import *
 import z3b.bidder
+
+# NOTE: This can be run against www.saycbridge.com, but that's very slow.
+kbb_baseurl = 'http://localhost:8083/json/autobid'
+
+# http://localhost:8080/json/autobid?number=11&deal%5Bnorth%5D=AK85.Q64.543.AT4&deal%5Beast%5D=J64.AK932.8.K952&deal%5Bsouth%5D=QT73.T7.QT96.J86&deal%5Bwest%5D=92.J85.AKJ72.Q73&vulnerability=NO&dealer=S
+
+# import requests
+# r = requests.get()
+# r.json()
+
+# FIXME: We should consider moving this onto Board.
+def _params_for_board(board):
+    return {
+        'number': board.number,
+        'vulnerability': board.call_history.vulnerability.name,
+        'dealer': board.call_history.dealer.char,
+        'calls_string': board.call_history.calls_string(),
+        # FIXME: Is Requests smart enough to handle a nested dict of params?
+        'deal[north]': board.deal.hand_for(NORTH).cdhs_dot_string(),
+        'deal[east]': board.deal.hand_for(EAST).cdhs_dot_string(),
+        'deal[south]': board.deal.hand_for(SOUTH).cdhs_dot_string(),
+        'deal[west]': board.deal.hand_for(WEST).cdhs_dot_string(),
+    }
 
 
 class BidderFight(object):
     def __init__(self):
-        self.kbb = kbb.KnowledgeBasedBidder()
         self.z3b = z3b.bidder.Bidder()
 
     def _find_call(self, bidder, hand, call_history):
@@ -25,12 +48,20 @@ class BidderFight(object):
             return Pass()
         return bid
 
+    def _bid_board_remote(self, board):
+        request = requests.get(kbb_baseurl, params=_params_for_board(board))
+        return CallHistory.from_string(request.json()['calls_string'])
+
     def _bid_board(self, board):
+        kbb_call_index = 0
+        kbb_call_history = self._bid_board_remote(board)
+
         while not board.call_history.is_complete():
             position = board.call_history.position_to_call()
             deal = board.deal
             hand = deal.hand_for(position)
-            kbb_bid = self._find_call(self.kbb, hand, board.call_history)
+            kbb_bid = kbb_call_history.calls[kbb_call_index]
+            kbb_call_index += 1
             z3b_bid = self._find_call(self.z3b, hand, board.call_history)
 
             if kbb_bid != z3b_bid:
@@ -50,23 +81,13 @@ class BidderFight(object):
 
             board.call_history.calls.append(z3b_bid)
 
-    def configure_logging(self, is_verbose):
-        handler = logging.StreamHandler(sys.stderr)
-        formatter = logging.Formatter("%(levelname)-8s: %(message)s")
-        handler.setFormatter(formatter)
-
-        logger = logging.getLogger()
-        logger.addHandler(handler)
-        if is_verbose:
-            logger.setLevel(logging.NOTSET)
-
     def main(self, args):
-        self.configure_logging(True)
-
         if args:
             for identifier in args:
                 self._bid_board(Board.from_identifier(identifier))
             return 0
+
+        print "Using KBB at %s\n" % kbb_baseurl
 
         try:
             while True:
