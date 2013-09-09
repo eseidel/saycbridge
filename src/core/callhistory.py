@@ -228,12 +228,6 @@ class CallHistory(object):
                 return callder
         return None
 
-    def first_contract(self):
-        for call in self.calls:
-            if call.is_contract():
-                return call
-        return None
-
     def last_contract(self):
         for call in reversed(self.calls):
             if call.is_contract():
@@ -285,13 +279,6 @@ class CallHistory(object):
             if call.is_contract():
                 return caller
         return None
-
-    def suits_bid_by(self, caller):
-        return set([call.strain for call in self.calls_by(caller) if call.strain in SUITS])
-
-    def bid_suits(self):
-        # Careful, this doesn't know anything about transfers or other non-natural suit calls.
-        return set([call.strain for call in self.calls if call.strain in SUITS])
 
     def declarer(self):
         first_caller = None

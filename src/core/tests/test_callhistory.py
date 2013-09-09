@@ -103,10 +103,6 @@ class CallHistoryTest(unittest2.TestCase):
         self._assert_opener("P 1C P 1D P", EAST, SOUTH)
         self._assert_opener("P 1C P 1D P", WEST, NORTH)
 
-    def test_suits_bid_by(self):
-        self.assertEqual(CallHistory.from_string("P 1C P 1D P 1H P 1S").suits_bid_by(EAST), set([CLUBS, HEARTS]))
-        self.assertEqual(CallHistory.from_string("P 1C P 1D P 1H P 1S").suits_bid_by(WEST), set([DIAMONDS, SPADES]))
-
     def test_from_identifier(self):
         self.assertEqual(CallHistory.from_identifier('E:EW:P').identifier, CallHistory.from_string('P', 'E', 'E-W').identifier)
         # Test that from_identifier is forgiving of a missing trailing colon
