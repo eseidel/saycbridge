@@ -58,14 +58,6 @@ class Card(object):
         self.value_char = value_char
         assert value_char in ('A', 'K', 'Q', 'J', 'T', '9', '8', '7', '6', '5', '4', '3', '2')
 
-    def two_char_name(self):
-        return "%s%s" % (self.value_char, self.suit.char)
-
-    @classmethod
-    def from_two_char_name(self, name):
-        assert len(name) == 2, "%s is not a valid two-char card name" % name
-        return Card(Suit.from_char(name[1]), name[0])
-
     def display_value(self):
         if self.value_char == 'T':
             return '10'
