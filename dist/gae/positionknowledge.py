@@ -23,7 +23,6 @@ class ControlConstraint(object):
 
 
 class HandConstraints(object):
-    # This shared constant hopefully makes our knowledge deepcopy and pretty_one_line early-exit cheaper.
     MAX_HCP_PER_HAND = 37
     EMPTY_HCP_RANGE = (0, MAX_HCP_PER_HAND)
     ZERO_OR_FOUR = 5
@@ -40,7 +39,6 @@ class HandConstraints(object):
         self._longer_major = None
         self._quick_tricks = None
         self._balanced = None
-        self._could_be_strong_four_card = [None for suit in SUITS]
         self._controls = [[None for suit in SUITS], [None for suit in SUITS]]
 
     def _is_valid_range(self, tuple):
@@ -67,21 +65,9 @@ class HandConstraints(object):
         for suit in SUITS:
             # Balanced hands have at most one doubleton, and no more than 5 cards in a suit.
             self.set_length_range(suit, 2, 5, disable_implied_length_update=True)
-        # Implied suit length computations are expensive, so we only do it once
-        # when marking a hand balanced.
-        self._compute_implied_suit_length_ranges()
 
     def is_balanced(self):
         return self._balanced
-
-    def could_be_strong_four_card(self, suit):
-        return self._could_be_strong_four_card[suit]
-
-    def set_could_be_strong_four_card(self, suit):
-        self._could_be_strong_four_card[suit] = True
-
-    def clear_could_be_strong_four_card(self, suit):
-        self._could_be_strong_four_card[suit] = None
 
     def quick_tricks(self):
         return self._quick_tricks
@@ -99,24 +85,18 @@ class HandConstraints(object):
         self._longest_suit = suit
         self._longest_suit_exceptions = except_suits or ()
         self.set_min_length(suit, 4)
-        if not disable_impled_length_update:
-            self._compute_implied_suit_length_ranges()
 
     def longer_minor(self):
         return self._longer_minor
 
     def set_longer_minor(self, suit, disable_impled_length_update=None):
         self._longer_minor = suit
-        if not disable_impled_length_update:
-            self._compute_implied_suit_length_ranges()
 
     def longer_major(self):
         return self._longer_major
 
     def set_longer_major(self, suit, disable_impled_length_update=None):
         self._longer_major = suit
-        if not disable_impled_length_update:
-            self._compute_implied_suit_length_ranges()
 
     def _range_from_tuple(self, range_tuple):
         return range(range_tuple[0], range_tuple[1] + 1)
@@ -124,12 +104,6 @@ class HandConstraints(object):
     def _updated_range_tuple(self, old_tuple, new_min, new_max):
         old_min, old_max = old_tuple
         return (max(new_min, old_min), min(new_max, old_max))
-
-    def hcp_range(self):
-        return self._range_from_tuple(self._hcp_range)
-
-    def hcp_range_tuple(self):
-        return self._hcp_range
 
     # FIXME: This name is slightly misleading, since we are actually just restricting the range.
     def set_hcp_range(self, min_hcp, max_hcp):
@@ -140,12 +114,6 @@ class HandConstraints(object):
 
     def max_hcp(self):
         return self._hcp_range[1]
-
-    def hcp_is_unbounded(self):
-        return self.max_hcp() == self.MAX_HCP_PER_HAND
-
-    def median_hcp(self):
-        return self.min_hcp() + self.max_hcp() / 2
 
     def set_min_hcp(self, min_hcp):
         self.set_hcp_range(min_hcp, self.MAX_HCP_PER_HAND)
@@ -170,79 +138,39 @@ class HandConstraints(object):
         return self._king_constraint
 
     def set_control_for_round(self, suit, control_round, have_control):
-        self._controls[control_round][suit] = have_control
+        self._controls[control_round][suit.index] = have_control
 
     def control_for_round(self, suit, control_round):
-        return self._controls[control_round][suit]
+        return self._controls[control_round][suit.index]
 
     def set_min_honors(self, suit, honor_constraint):
-        self._honors[suit] = max(honor_constraint, self._honors[suit])
+        self._honors[suit.index] = max(honor_constraint, self._honors[suit.index])
 
     def min_honors(self, suit):
-        return self._honors[suit]
+        return self._honors[suit.index]
 
     def length_range(self, suit):
-        return self._range_from_tuple(self._suit_length_ranges[suit])
+        return self._range_from_tuple(self._suit_length_ranges[suit.index])
 
     def set_length_range(self, suit, min_length, max_length, disable_implied_length_update=None):
         assert suit in SUITS, "%s is not a suit!" % suit
-        previous_length_range = self._suit_length_ranges[suit]
-        self._suit_length_ranges[suit] = self._updated_range_tuple(self._suit_length_ranges[suit], min_length, max_length)
-        if not disable_implied_length_update and self._suit_length_ranges[suit] != previous_length_range:
-            self._compute_implied_suit_length_ranges()
+        previous_length_range = self._suit_length_ranges[suit.index]
+        self._suit_length_ranges[suit.index] = self._updated_range_tuple(self._suit_length_ranges[suit.index], min_length, max_length)
 
     def set_length(self, suit, length, disable_implied_length_update=None):
         self.set_length_range(suit, length, length, disable_implied_length_update=disable_implied_length_update)
 
     def min_length(self, suit):
-        return self._suit_length_ranges[suit][0]
+        return self._suit_length_ranges[suit.index][0]
 
     def set_min_length(self, suit, min_length, disable_implied_length_update=None):
         self.set_length_range(suit, min_length, 13, disable_implied_length_update=disable_implied_length_update)
 
-    # WARNING! This function is very powerful. Use this function if you want
-    # to throw away information. If you just want to note that a hand has at
-    # least a certain length in a suit, you should use set_min_length instead.
-    def overwrite_min_length(self, suit, min_length):
-        self._suit_length_ranges[suit] = (min_length, self.max_length(suit))
-
     def max_length(self, suit):
-        return self._suit_length_ranges[suit][1]
+        return self._suit_length_ranges[suit.index][1]
 
     def set_max_length(self, suit, max_length, disable_implied_length_update=None):
         self.set_length_range(suit, 0, max_length, disable_implied_length_update=disable_implied_length_update)
-
-    def _compute_implied_suit_length_ranges(self):
-        # Based on minimum of other suits we can imply maximums for all others, likewise minimums from maximums.
-        suit_minimum_lengths = map(lambda range_tuple: range_tuple[0], self._suit_length_ranges)
-        suit_maximum_lengths = map(lambda range_tuple: range_tuple[1], self._suit_length_ranges)
-        for suit in SUITS:
-            known_cards_in_other_suits = sum([suit_minimum_lengths[other_suit] for other_suit in SUITS if suit != other_suit])
-            max_cards_in_other_suits = sum([suit_maximum_lengths[other_suit] for other_suit in SUITS if suit != other_suit])
-            # FIXME: We might need multiple passes to make this stable?
-            self.set_length_range(suit, 13 - max_cards_in_other_suits, 13 - known_cards_in_other_suits, disable_implied_length_update=True)
-            if self._longest_suit is not None and suit not in self._longest_suit_exceptions:
-                self.set_min_length(self._longest_suit, suit_minimum_lengths[suit], disable_implied_length_update=True)
-
-        if self._longest_suit is not None:
-            max_length_of_other_suits = min(self.max_length(self._longest_suit), 6)  # Can't have two 7-card suits.
-            for suit in SUITS:
-                if suit != self._longest_suit and suit not in self._longest_suit_exceptions:
-                    self.set_max_length(suit, max_length_of_other_suits, disable_implied_length_update=True)
-
-        if self._longer_minor is not None:
-            max_length_of_other_minor = min(self.max_length(self._longer_minor), 6)  # Can't have two 7-card suits.
-            self.set_max_length(other_minor(self._longer_minor), max_length_of_other_minor, disable_implied_length_update=True)
-
-            min_length_of_other_minor = self.min_length(other_minor(self._longer_minor))
-            self.set_min_length(self._longer_minor, min_length_of_other_minor, disable_implied_length_update=True)
-
-        if self._longer_major is not None:
-            max_length_of_other_major = min(self.max_length(self._longer_major), 6)  # Can't have two 7-card suits.
-            self.set_max_length(other_major(self._longer_major), max_length_of_other_major, disable_implied_length_update=True)
-
-            min_length_of_other_major = self.min_length(other_major(self._longer_major))
-            self.set_min_length(self._longer_major, min_length_of_other_major, disable_implied_length_update=True)
 
     def _string_for_range(self, range_tuple, global_max=None):
         # This len check only exists for trying to print invalid hand constraints.
@@ -260,7 +188,7 @@ class HandConstraints(object):
 
     def _pretty_string_for_suit(self, suit, max_suit_length_to_show=None):
         max_suit_length_to_show = max_suit_length_to_show or 6
-        suit_string = self._string_for_range(self._suit_length_ranges[suit], global_max=max_suit_length_to_show)
+        suit_string = self._string_for_range(self._suit_length_ranges[suit.index], global_max=max_suit_length_to_show)
         suit_options = []
         if self.min_honors(suit):
             suit_options.append(HonorConstraint.short_name(self.min_honors(suit)))
@@ -305,23 +233,6 @@ class PositionKnowledge(HandConstraints):
         self.notrump_protocol = False
         self.rule_of_twenty = None
         self.rule_of_fifteen = None
-
-    def did_bid_suit(self, suit):
-        assert suit in SUITS
-        did_bid_length = 4 # Showing 4 cards in the suit is consider bidding it, except for 1C.
-        # FIXME: This is all a big hack to avoid treating the last takeout double as having "bid" a minor
-        # yet allowing 1C to only show 3.
-        if suit in MINORS and self.last_call and self.last_call.name != 'X':
-            did_bid_length = 3
-        if self.min_length(suit) >= did_bid_length:
-            return True
-        # FIXME: This is a hack to make sure we default to treating nonsense bids as natural?
-        if self.last_call and not self.last_call.artificial and self.last_call.strain == suit:
-            return True
-        return False
-
-    def forget_everything(self):
-        PositionKnowledge.__init__(self)
 
     def explore_string(self):
         return self.pretty_one_line(include_last_call_name=False)
