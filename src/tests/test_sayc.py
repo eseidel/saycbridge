@@ -656,6 +656,8 @@ sayc_expectations = {
         ["KQ8765.8.AQT95.9", "2H", "1S"], # p99, h8, FIXME: Why not use michaels here?  Looks perfect...
         # FIXME: Ideally would test a clubs rebid by h8 here.
 
+        ["KQ873.85.32.AKQT", "1S", "1H"], # Prefer 1S over 2C?
+
         # Direct overcall of 1NT (these examples are from me), p100
         ["KQ4.AQ8.Q9873.K2", "1N", "1C"],
         ["KQ4.AQ8.Q9873.K2", "1N", "1D"],

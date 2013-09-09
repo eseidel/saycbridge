@@ -1488,28 +1488,6 @@ class ResponseAfterTransferToTwoClubs(Rule):
     }
 
 
-overcall_priorities = enum.Enum(
-    "MichaelsCuebid",
-    "Unusual2N",
-    "DirectOvercall1N",
-    "TakeoutDouble",
-
-    "WeakFourLevelPremptive",
-    "WeakThreeLevelPremptive",
-    "WeakTwoLevelPremptive",
-
-    "DirectOvercallLongestMajor",
-    "DirectOvercallMajor",
-    "DirectOvercallLongestMinor",
-    "DirectOvercallMinor",
-
-    "FourLevelPremptive",
-    "ThreeLevelPremptive",
-    "TwoLevelPremptive",
-)
-rule_order.order(*reversed(overcall_priorities))
-
-
 class DirectOvercall(Rule):
     preconditions = EitherPrecondition(
             LastBidHasAnnotation(positions.RHO, annotations.Opening),
@@ -1545,30 +1523,30 @@ class StandardDirectOvercall(DirectOvercall):
     annotations = annotations.StandardOvercall
 
 
+# FIXME: We need finer-grain ordering of suits, no?
+# If 4-card 1-level overcalls are allowed, we have a priority problem:
+# This will order 5 clubs over 4 spades when both 1S and 2C are available, no?
+# If we require 5-card overcalls, whenever we have 2 avaiable, we'll have michaels/unusual 2n instead.
+new_suit_overcalls = enum.Enum(
+    "LongestMajor",
+    "Major",
+    "LongestMinor",
+    "Minor",
+)
+rule_order.order(*reversed(new_suit_overcalls))
+
+
 class OneLevelStandardOvercall(StandardDirectOvercall):
     shared_constraints = points >= 8
-
-
-class OneDiamondOvercall(OneLevelStandardOvercall):
-    call_names = '1D'
-    priority = overcall_priorities.DirectOvercallMinor
-
-
-class OneHeartOvercall(OneLevelStandardOvercall):
-    call_names = '1H'
-    conditional_priorities = [
-        (hearts > spades, overcall_priorities.DirectOvercallLongestMajor),
-    ]
-    priority = overcall_priorities.DirectOvercallMajor
-
-
-class OneSpadeOvercall(OneLevelStandardOvercall):
-    call_names = '1S'
-    conditional_priorities = [
-        (spades >= hearts, overcall_priorities.DirectOvercallLongestMajor),
-    ]
-    priority = overcall_priorities.DirectOvercallMajor
-
+    priorities_per_call = {
+        '1D': new_suit_overcalls.Minor,
+        '1H': new_suit_overcalls.Major,
+        '1S': new_suit_overcalls.Major,
+    }
+    conditional_priorities_per_call = {
+        '1H': [(hearts > spades, new_suit_overcalls.LongestMajor)],
+        '1S': [(spades >= hearts, new_suit_overcalls.LongestMajor)],
+    }
 
 # This is replaced by Cappelletti for now.  We could do that with a category instead.
 # class DirectNotrumpDouble(DirectOvercall):
@@ -1579,38 +1557,18 @@ class OneSpadeOvercall(OneLevelStandardOvercall):
 
 class TwoLevelStandardOvercall(StandardDirectOvercall):
     shared_constraints = points >= 10
-
-
-class TwoClubOvercall(TwoLevelStandardOvercall):
-    call_names = '2C'
-    conditional_priorities = [
-        (clubs > diamonds, overcall_priorities.DirectOvercallLongestMinor),
-    ]
-    priority = overcall_priorities.DirectOvercallMinor
-
-
-class TwoDiamondOvercall(TwoLevelStandardOvercall):
-    call_names = '2D'
-    conditional_priorities = [
-        (diamonds >= clubs, overcall_priorities.DirectOvercallLongestMinor),
-    ]
-    priority = overcall_priorities.DirectOvercallMinor
-
-
-class TwoHeartOvercall(TwoLevelStandardOvercall):
-    call_names = '2H'
-    conditional_priorities = [
-        (hearts > spades, overcall_priorities.DirectOvercallLongestMajor),
-    ]
-    priority = overcall_priorities.DirectOvercallMajor
-
-
-class TwoSpadeOvercall(TwoLevelStandardOvercall):
-    call_names = '2S'
-    conditional_priorities = [
-        (spades >= hearts, overcall_priorities.DirectOvercallLongestMajor),
-    ]
-    priority = overcall_priorities.DirectOvercallMajor
+    priorities_per_call = {
+        '2C': new_suit_overcalls.Minor,
+        '2D': new_suit_overcalls.Minor,
+        '2H': new_suit_overcalls.Major,
+        '2S': new_suit_overcalls.Major,
+    }
+    conditional_priorities_per_call = {
+        '2C': [(clubs > diamonds, new_suit_overcalls.LongestMinor)],
+        '2D': [(diamonds >= clubs, new_suit_overcalls.LongestMinor)],
+        '2H': [(hearts > spades, new_suit_overcalls.LongestMajor)],
+        '2S': [(spades >= hearts, new_suit_overcalls.LongestMajor)],
+    }
 
 
 class ResponseToStandardOvercall(Rule):
@@ -1663,7 +1621,6 @@ class NewSuitResponseToStandardOvercall(ResponseToStandardOvercall):
 class DirectOvercall1N(DirectOvercall):
     call_names = '1N'
     shared_constraints = [points >= 15, points <= 18, balanced, StopperInRHOSuit()]
-    priority = overcall_priorities.DirectOvercall1N
     annotations = annotations.NotrumpSystemsOn
 
 
@@ -1682,7 +1639,6 @@ class BalancingNotrumpOvercall(BalancingOvercallOverSuitedOpen):
         '2N': (z3.And(points >= 19, points <= 21), balancing_notrumps.TwoNotrumpJump),
     }
     shared_constraints = [balanced, StoppersInOpponentsSuits()] # Only RHO has a suit.
-    priority = overcall_priorities.DirectOvercall1N
     annotations = annotations.NotrumpSystemsOn
 
 
@@ -1732,7 +1688,6 @@ class MichaelsCuebid(object):
         ('2H', '3H'): z3.And(spades >= 5, z3.Or(clubs >= 5, diamonds >= 5)),
         ('2S', '3S'): z3.And(hearts >= 5, z3.Or(clubs >= 5, diamonds >= 5)),
     }
-    priority = overcall_priorities.MichaelsCuebid
     annotations = annotations.MichaelsCuebid
     # FIXME: Should the hole in this point range be generated by a higher priority bid?
     shared_constraints = z3.Or(z3.And(6 <= points, points <= 12), 15 <= points)
@@ -1801,8 +1756,12 @@ class Unusual2N(Rule):
     # FIXME: We should consider doing mini-max unusual 2N now that we can!
     shared_constraints = [Unusual2NShape(), points >= 6]
     annotations = annotations.Unusual2N
-    priority = overcall_priorities.Unusual2N
 
+
+two_suited_direct_overcalls = set([
+    DirectMichaelsCuebid,
+    Unusual2N,
+])
 
 class TakeoutDouble(Rule):
     call_names = 'X'
@@ -1816,7 +1775,6 @@ class TakeoutDouble(Rule):
     ]
     annotations = annotations.TakeoutDouble
     shared_constraints = ConstraintOr(SupportForUnbidSuits(), points >= 17)
-    priority = overcall_priorities.TakeoutDouble
 
 
 takeout_double_after_preempt_precondition = AndPrecondition(
@@ -1847,6 +1805,13 @@ class TwoLevelTakeoutDouble(TakeoutDouble):
     shared_constraints = points >= 15
 
 
+standard_takeout_doubles = set([
+    OneLevelTakeoutDouble,
+    TwoLevelTakeoutDouble,
+])
+
+
+# FIXME: Is this really true at any level?
 class TakeoutDoubleAfterPreempt(TakeoutDouble):
     preconditions = takeout_double_after_preempt_precondition
     shared_constraints = points >= 11
@@ -2165,18 +2130,41 @@ class PreemptiveOpen(Opening):
     shared_constraints = [ThreeOfTheTopFiveOrBetter(), points >= 5]
 
 
+weak_preemptive_overcalls = enum.Enum(
+    "WeakFourLevel",
+    "WeakThreeLevel",
+    "WeakTwoLevel",
+)
+rule_order.order(*reversed(weak_preemptive_overcalls))
+
+
+preemptive_overcalls = enum.Enum(
+    "FourLevel",
+    "ThreeLevel",
+    "TwoLevel",
+)
+rule_order.order(*reversed(preemptive_overcalls))
+
+
+# rule_order.order(
+#     # If weak preempts are available, they're the priority.
+#     preemptive_overcalls,
+#     weak_preemptive_overcalls,
+# )
+
+
 class PreemptiveOvercall(DirectOvercall):
     annotations = annotations.Preemptive
     preconditions = [JumpFromLastContract(), UnbidSuit()]
     constraints = {
-        ('2C', '2D', '2H', '2S'): (MinLength(6), overcall_priorities.TwoLevelPremptive),
-        ('3C', '3D', '3H', '3S'): (MinLength(7), overcall_priorities.ThreeLevelPremptive),
-        ('4C', '4D', '4H', '4S'): (MinLength(8), overcall_priorities.FourLevelPremptive),
+        ('2C', '2D', '2H', '2S'): (MinLength(6), preemptive_overcalls.TwoLevel),
+        ('3C', '3D', '3H', '3S'): (MinLength(7), preemptive_overcalls.ThreeLevel),
+        ('4C', '4D', '4H', '4S'): (MinLength(8), preemptive_overcalls.FourLevel),
     }
     conditional_priorities_per_call = {
-        ('2C', '2D', '2H', '2S'): [(points <= 11, overcall_priorities.WeakTwoLevelPremptive)],
-        ('3C', '3D', '3H', '3S'): [(points <= 11, overcall_priorities.WeakThreeLevelPremptive)],
-        ('4C', '4D', '4H', '4S'): [(points <= 11, overcall_priorities.WeakFourLevelPremptive)],
+        ('2C', '2D', '2H', '2S'): [(points <= 11, weak_preemptive_overcalls.WeakTwoLevel)],
+        ('3C', '3D', '3H', '3S'): [(points <= 11, weak_preemptive_overcalls.WeakThreeLevel)],
+        ('4C', '4D', '4H', '4S'): [(points <= 11, weak_preemptive_overcalls.WeakFourLevel)],
     }
     shared_constraints = [ThreeOfTheTopFiveOrBetter(), points >= 5]
 
@@ -2366,7 +2354,6 @@ rule_order.order(
 
 rule_order.order(preempt_priorities, opening_priorities)
 rule_order.order(natural_bids, preempt_priorities)
-rule_order.order(natural_bids, overcall_priorities)
 rule_order.order(natural_games, nt_response_priorities, natural_slams)
 rule_order.order(natural_bids, stayman_response_priorities)
 rule_order.order(natural_bids, GarbagePassStaymanRebid)
@@ -2677,7 +2664,64 @@ rule_order.order(
     BalancingSuitedOvercall,
     BalancingMichaelsCuebid,
     balancing_notrumps.OneNotrump,
-    overcall_priorities.TakeoutDouble,
+    BalancingDouble,
     balancing_notrumps.TwoNotrumpJump,
     BalancingJumpSuitedOvercall,
+)
+rule_order.order(
+    DefaultPass,
+    new_suit_overcalls,
+)
+rule_order.order(
+    # FIXME: This is wrong.  p118, h10 seems to say we should prefer 5-card majors over a takeout double?
+    new_suit_overcalls,
+    standard_takeout_doubles,
+)
+rule_order.order(
+    DefaultPass,
+    TakeoutDoubleAfterPreempt,
+)
+rule_order.order(
+    # FIXME: Is this always true?  What if partner has passed?  Is there a point range at which we'd rather preempt?
+    preemptive_overcalls,
+    standard_takeout_doubles,
+)
+rule_order.order(
+    # It seems we'd always rather show a major and a minor instead of just a single suit when possible?
+    new_suit_overcalls,
+    two_suited_direct_overcalls,
+)
+rule_order.order(
+    # Unusual2N and Michaels show two 5 card suits which is better than one.
+    # If we have a 5-card major it will always be shown as part of one of these.
+    standard_takeout_doubles,
+    two_suited_direct_overcalls,
+)
+rule_order.order(
+    # Even when we're weak, we'd rather find a fit with partner, than jump in our own suit.
+    weak_preemptive_overcalls,
+    two_suited_direct_overcalls,
+)
+rule_order.order(
+    new_suit_overcalls,
+    Unusual2N,
+)
+rule_order.order(
+    # FIXME: Is this always true?  What about if partner has passed?
+    preemptive_overcalls,
+    new_suit_overcalls,
+)
+rule_order.order(
+    DefaultPass,
+    preemptive_overcalls,
+)
+rule_order.order(
+    # If we can preempt, that's more descriptive than a standard overcall.
+    new_suit_overcalls,
+    weak_preemptive_overcalls,
+)
+rule_order.order(
+    # 1N overcall is more descriptive than a takeout double.
+    standard_takeout_doubles,
+    DirectOvercall1N,
 )
