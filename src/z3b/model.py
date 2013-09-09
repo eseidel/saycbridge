@@ -174,7 +174,7 @@ NO_CONSTRAINTS = z3.BoolVal(True)
 
 
 def expr_for_suit(suit):
-    return (clubs, diamonds, hearts, spades)[suit]
+    return (clubs, diamonds, hearts, spades)[suit.index]
 
 
 def stopper_expr_for_suit(suit):
@@ -183,7 +183,7 @@ def stopper_expr_for_suit(suit):
         stopper_diamonds,
         stopper_hearts,
         stopper_spades,
-    )[suit]
+    )[suit.index]
 
 
 def support_points_expr_for_suit(suit):
@@ -192,7 +192,7 @@ def support_points_expr_for_suit(suit):
         points_supporting_diamonds,
         points_supporting_hearts,
         points_supporting_spades,
-    )[suit]
+    )[suit.index]
 
 
 def expr_for_hand(hand):

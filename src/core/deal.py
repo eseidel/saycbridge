@@ -3,7 +3,7 @@
 # found in the LICENSE file.
 
 from position import *
-from suit import SUITS
+from suit import Suit, SUITS
 from card import Card
 from hand import Hand
 from core.callhistory import CallHistory
@@ -37,7 +37,7 @@ class Deal(object):
         for index_in_deck, card_identifier in enumerate(shuffled_cards):
             position = index_in_deck % len(POSITIONS)
             suit, card = Card.suit_and_value_from_identifier(card_identifier)
-            hands[position][suit] += card
+            hands[position][suit.index] += card
         return Deal(map(Hand, hands))
 
     @classmethod
@@ -56,8 +56,8 @@ class Deal(object):
             lowHandIndex = hexIndex - highHandIndex * 4
             highSuit, highCard = Card.suit_and_value_from_identifier(charIndex * 2 + 0)
             lowSuit, lowCard = Card.suit_and_value_from_identifier(charIndex * 2 + 1)
-            hands[highHandIndex][highSuit] += highCard
-            hands[lowHandIndex][lowSuit] += lowCard
+            hands[highHandIndex][highSuit.index] += highCard
+            hands[lowHandIndex][lowSuit.index] += lowCard
         return Deal(map(Hand, hands))
 
     @classmethod
@@ -69,7 +69,7 @@ class Deal(object):
             position = identifier / power_of_four
             identifier -= power_of_four * position
             suit, card = Card.suit_and_value_from_identifier(card_identifier)
-            hands[position][suit] += card
+            hands[position][suit.index] += card
         return Deal(map(Hand, hands))
 
     @classmethod
@@ -80,11 +80,12 @@ class Deal(object):
 
     def identifier(self):
         position_for_card = [None for _ in range(52)]
-        for position, hand in enumerate(self.hands):
-            for suit, cards in enumerate(hand.cards_by_suit):
+        for position_index, hand in enumerate(self.hands):
+            for suit_index, cards in enumerate(hand.cards_by_suit_index):
                 for card in cards:
+                    suit = Suit.from_index(suit_index)
                     card_identifier = Card.identifier_for_card(suit, card)
-                    position_for_card[card_identifier] = position
+                    position_for_card[card_identifier] = position_index
 
         # position_for_card represents a 52-digit number in base 4
         # We're going to split it into 4-digit hunks and convert to base 16.
@@ -103,8 +104,9 @@ class Deal(object):
         # converted to base-10, its our identifier.
         identifier = 0
         for position, hand in enumerate(self.hands):
-            for suit, cards in enumerate(hand.cards_by_suit):
+            for suit_index, cards in enumerate(hand.cards_by_suit_index):
                 for card in cards:
+                    suit = Suit.from_index(suit_index)
                     card_identifier = Card.identifier_for_card(suit, card)
                     identifier += position * pow(4, card_identifier)
         return str(identifier)

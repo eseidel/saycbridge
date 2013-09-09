@@ -118,10 +118,10 @@ class CallHistoryTest(unittest2.TestCase):
     def test_can_double(self):
         self.assertTrue(CallHistory.from_string("1S 2H 2S").can_double())
 
-    def _assert_is_legal_call(self, history_string, bid, is_legal=True):
+    def _assert_is_legal_call(self, history_string, call_name, is_legal=True):
         call_history = CallHistory.from_string(history_string)
-        bid = Call.from_string(bid)
-        self.assertEquals(call_history.is_legal_call(bid), is_legal)
+        call = Call.from_string(call_name)
+        self.assertEquals(call_history.is_legal_call(call), is_legal)
 
     def test_is_legal_call(self):
         self._assert_is_legal_call("", "P", True)

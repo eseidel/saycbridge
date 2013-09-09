@@ -635,6 +635,8 @@ class Interpreter(object):
             raise InconsistentHistoryException()
 
         annotations = rule.annotations_for_call(call)
+        if explain:
+            print "Selected %s for %s:" % (rule, call)
         constraints = selector.constraints_for_call(call)
         if not history.is_consistent(positions.Me, constraints):
             raise InconsistentHistoryException(annotations, constraints, rule)

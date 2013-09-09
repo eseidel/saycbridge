@@ -57,7 +57,7 @@ def did_bid_annotation(suit):
         annotations.BidDiamonds,
         annotations.BidHearts,
         annotations.BidSpades,
-    )[suit]
+    )[suit.index]
 
 
 class Precondition(object):

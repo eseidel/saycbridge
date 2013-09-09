@@ -159,9 +159,9 @@ class SufficientCombinedPoints(Constraint):
         min_points = None
         if strain == suit.NOTRUMP:
             min_points = points_for_sound_notrump_bid_at_level[call.level]
-        if strain in suit.SUITS:
+        else:
+            assert strain in suit.SUITS, "%s not in %s" % (strain, suit.SUITS)
             min_points = points_for_sound_suited_bid_at_level[call.level]
-        assert min_points is not None
         return points >= max(0, min_points - history.partner.min_points)
 
 

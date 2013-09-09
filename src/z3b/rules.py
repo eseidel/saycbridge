@@ -79,13 +79,11 @@ class StrongTwoClubs(Opening):
 
 
 class Response(Rule):
-    preconditions = [LastBidHasAnnotation(positions.Partner, annotations.Opening)]
+    preconditions = LastBidHasAnnotation(positions.Partner, annotations.Opening)
 
 
 class ResponseToOneLevelSuitedOpen(Response):
-    preconditions = [
-        LastBidHasAnnotation(positions.Partner, annotations.OneLevelSuitOpening),
-    ]
+    preconditions = LastBidHasAnnotation(positions.Partner, annotations.OneLevelSuitOpening)
 
 
 new_one_level_suit_responses = enum.Enum(

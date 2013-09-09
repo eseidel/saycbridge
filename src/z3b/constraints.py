@@ -190,7 +190,7 @@ class TwoOfTheTopThree(Constraint):
             model.two_of_the_top_three_diamonds,
             model.two_of_the_top_three_hearts,
             model.two_of_the_top_three_spades,
-        )[call.strain]
+        )[call.strain.index]
 
 
 class ThreeOfTheTopFiveOrBetter(Constraint):
@@ -204,7 +204,7 @@ class ThreeOfTheTopFiveOrBetter(Constraint):
             model.three_of_the_top_five_diamonds_or_better,
             model.three_of_the_top_five_hearts_or_better,
             model.three_of_the_top_five_spades_or_better,
-        )[strain]
+        )[strain.index]
 
 
 class ThirdRoundStopper(Constraint):
@@ -214,7 +214,7 @@ class ThirdRoundStopper(Constraint):
             model.third_round_stopper_diamonds,
             model.third_round_stopper_hearts,
             model.third_round_stopper_spades,
-        )[call.strain]
+        )[call.strain.index]
 
 
 class OpeningRuleConstraint(Constraint):

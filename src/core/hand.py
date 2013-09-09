@@ -13,54 +13,48 @@ from card import Card
 class Hand(object):
     def __init__(self, cards_by_suit):
         hand_sorter = lambda cards: "".join(sorted(cards, key=Card.index_for_card, reverse=True))
-        self.cards_by_suit = map(hand_sorter, map(str.upper, cards_by_suit))
+        self.cards_by_suit_index = map(hand_sorter, map(str.upper, cards_by_suit))
         self._validate()
 
     @classmethod
     def random(cls):
         shuffled_cards = range(52)
         random.shuffle(shuffled_cards)
-        cards_by_suit = ["" for suit in SUITS]
+        cards_by_suit_index = ["" for suit in SUITS]
         for card_identifier in shuffled_cards[:13]:
             suit, card = Card.suit_and_value_from_identifier(card_identifier)
-            cards_by_suit[suit] += card
-        return Hand(cards_by_suit)
+            cards_by_suit_index[suit.index] += card
+        return Hand(cards_by_suit_index)
 
     def _validate(self):
-        assert sum(map(lambda suit: self.length_of_suit(suit), SUITS)) == 13, self.cards_by_suit
+        assert sum(map(lambda suit: self.length_of_suit(suit), SUITS)) == 13, self.cards_by_suit_index
 
     # This is also referred to as "pbn notation": http://www.tistis.nl/pbn/
     # "The cards of each hand are given in the order:  spades, hearts, diamonds, clubs."
     # Gib (and likely other bridge programs) use this notation.
     def shdc_dot_string(self):
-        return '.'.join([self.cards_by_suit[suit] for suit in (SPADES, HEARTS, DIAMONDS, CLUBS)])
+        return '.'.join(map(self.cards_in_suit, (SPADES, HEARTS, DIAMONDS, CLUBS)))
 
     # This is the notation we use throughout sayc bridge code.
     def cdhs_dot_string(self):
-        return '.'.join([self.cards_by_suit[suit] for suit in (CLUBS, DIAMONDS, HEARTS, SPADES)])
+        return '.'.join(map(self.cards_in_suit, (CLUBS, DIAMONDS, HEARTS, SPADES)))
 
     def play_card(self, suit, card_value):
-        assert card_value in self.cards_by_suit[suit]
-        self.cards_by_suit[suit] = self.cards_by_suit[suit].replace(card_value, '')
-
-    # FIXME: I'm not sure this belongs here. Eventually users may wish to specify sort.
-    def sorted_cards(self):
-        sorted_suits = (DIAMONDS, CLUBS, HEARTS, SPADES)
-        sorted_cards_by_suit = [sorted(self.cards_by_suit[suit], key=Card.index_for_card) for suit in SUITS]
-        return sum([map(lambda value_char: Card(suit, value_char), sorted_cards_by_suit[suit]) for suit in sorted_suits], [])
+        assert card_value in self.cards_by_suit_index[suit.index]
+        self.cards_by_suit_index[suit.index] = self.cards_by_suit_index[suit.index].replace(card_value, '')
 
     @classmethod
     def from_cdhs_string(cls, string):
         return Hand(string.split('.'))
 
     def high_card_points(self):
-        return sum(map(Card.high_card_points, itertools.chain(*self.cards_by_suit)))
+        return sum(map(Card.high_card_points, itertools.chain(*self.cards_by_suit_index)))
 
     def hcp_in_suit(self, suit):
-        return sum(map(Card.high_card_points, self.cards_by_suit[suit]))
+        return sum(map(Card.high_card_points, self.cards_by_suit_index[suit.index]))
 
     def cards_in_suit(self, suit):
-        return self.cards_by_suit[suit]
+        return self.cards_by_suit_index[suit.index]
 
     def high_card_in_suit(self, suit):
         # FIXME: It's possible we could just return self.cards_in_suit(suit)[0], depending on what cards_in_suit guarantees.
@@ -109,7 +103,7 @@ class Hand(object):
         return self.has_third_round_stopper(suit)
 
     def length_of_suit(self, suit):
-        return len(self.cards_by_suit[suit])
+        return len(self.cards_by_suit_index[suit.index])
 
     def is_longest_suit(self, suit, except_suits=None):
         except_suits = except_suits or ()
@@ -124,11 +118,11 @@ class Hand(object):
         return True
 
     def suit_lengths(self):
-        return map(len, self.cards_by_suit)
+        return map(len, self.cards_by_suit_index)
 
     def longest_suits(self):
         longest_suit_length = max(self.suit_lengths())
-        return filter(lambda suit: len(self.cards_by_suit[suit]) == longest_suit_length, SUITS)
+        return filter(lambda suit: len(self.cards_by_suit_index[suit.index]) == longest_suit_length, SUITS)
 
     def length_points(self):
         # FIXME: Should length_points return high_card_points() - 1 for a flat hand?
@@ -139,7 +133,7 @@ class Hand(object):
         slow_winners = 0
         have_seen_loser = False
 
-        cards_in_hand = self.cards_by_suit[suit]
+        cards_in_hand = self.cards_by_suit_index[suit.index]
         for card_index in reversed(range(13)):
             card = Card.card_for_index(card_index)
             if card not in cards_in_hand:
@@ -163,7 +157,7 @@ class Hand(object):
         tricks = 0
         for suit in SUITS:
             length = self.length_of_suit(suit)
-            adverse_holding = 13 - length - partner_min_lengths[suit]
+            adverse_holding = 13 - length - partner_min_lengths[suit.index]
             adverse_holding_per_hand = math.ceil(adverse_holding / 2)
 
             fast_winners, slow_winners = self._runnability(suit)
@@ -179,14 +173,14 @@ class Hand(object):
     # For this value to be useful, it needs to be compared against the "control-neutral" table
     # http://en.wikipedia.org/wiki/Hand_evaluation#Control_count
     def control_count(self):
-        return sum(map(Card.control_count, itertools.chain(*self.cards_by_suit)))
+        return sum(map(Card.control_count, itertools.chain(*self.cards_by_suit_index)))
 
     # FIXME: We shouldn't discount non-working honors for suits that partner has bid (or at least shown stoppers in).
     def _support_point_adjustment_for_non_working_honors(self, trump):
         # We'll overbid if we count holdings like 'K' or 'Qx' for both HCPs and support points.
         point_adjustment = 0
         for suit in SUITS:
-            cards = self.cards_by_suit[suit]
+            cards = self.cards_by_suit_index[suit.index]
             if suit == trump or len(cards) not in (1, 2):
                 continue
             if len(cards) == 1:
@@ -232,8 +226,7 @@ class Hand(object):
         return sorted(self.suit_lengths()) == [3, 3, 3, 4]
 
     def __repr__(self):
-        return "Hand(%s)" % self.cards_by_suit
+        return "Hand(%s)" % self.cards_by_suit_index
 
     def pretty_one_line(self):
-        cards_string = ".".join(self.cards_by_suit)
-        return "%s (hcp: %s lp: %s sp: %s)" % (cards_string, self.high_card_points(), self.length_points(), self.generic_support_points())
+        return "%s (hcp: %s lp: %s sp: %s)" % (self.cdhs_dot_string(), self.high_card_points(), self.length_points(), self.generic_support_points())

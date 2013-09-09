@@ -27,13 +27,13 @@ class Card(object):
 
     @classmethod
     def identifier_for_card(cls, suit, value):
-        return suit * 13 + cls.index_for_card(value)
+        return suit.index * 13 + cls.index_for_card(value)
 
     @classmethod
     def suit_and_index_from_identifier(cls, identifier):
-        suit = identifier / 13
-        card_index = identifier - suit * 13
-        return (suit, card_index)
+        suit_index = identifier / 13
+        card_index = identifier - suit_index * 13
+        return (Suit.from_index(suit_index), card_index)
 
     @classmethod
     def suit_and_value_from_identifier(cls, identifier):
@@ -64,7 +64,7 @@ class Card(object):
     @classmethod
     def from_two_char_name(self, name):
         assert len(name) == 2, "%s is not a valid two-char card name" % name
-        return Card(suit_from_char(name[1]), name[0])
+        return Card(Suit.from_char(name[1]), name[0])
 
     def display_value(self):
         if self.value_char == 'T':

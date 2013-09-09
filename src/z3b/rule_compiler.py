@@ -116,20 +116,24 @@ class CompiledRule(object):
         return exprs
 
     def meaning_of(self, history, call):
-        exprs = self._constraint_exprs_for_call(history, call)
-        per_call_conditionals = self.conditional_priorities_per_call.get(call.name)
-        if per_call_conditionals:
-            for condition, priority in per_call_conditionals:
+        try:
+            exprs = self._constraint_exprs_for_call(history, call)
+            per_call_conditionals = self.conditional_priorities_per_call.get(call.name)
+            if per_call_conditionals:
+                for condition, priority in per_call_conditionals:
+                    condition_exprs = RuleCompiler.exprs_from_constraints(condition, history, call)
+                    yield priority, z3.And(exprs + condition_exprs)
+
+            for condition, priority in self.dsl_rule.conditional_priorities:
                 condition_exprs = RuleCompiler.exprs_from_constraints(condition, history, call)
                 yield priority, z3.And(exprs + condition_exprs)
 
-        for condition, priority in self.dsl_rule.conditional_priorities:
-            condition_exprs = RuleCompiler.exprs_from_constraints(condition, history, call)
-            yield priority, z3.And(exprs + condition_exprs)
-
-        _, priority = self.per_call_constraints_and_priority(history, call)
-        assert priority
-        yield priority, z3.And(exprs)
+            _, priority = self.per_call_constraints_and_priority(history, call)
+            assert priority
+            yield priority, z3.And(exprs)
+        except:
+            print "Exception compiling meaning_of %s over %s with %s" % (call, history, self)
+            raise
 
     # constraints accepts various forms including:
     # constraints = { '1H': hearts > 5 }

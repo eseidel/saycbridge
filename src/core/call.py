@@ -34,7 +34,7 @@ class Call(object):
     @classmethod
     def from_level_and_strain(self, level, strain):
         # Use from_string to share the @memoized cache.
-        return Call.from_string("%s%s" % (level, strain_char(strain)))
+        return Call.from_string("%s%s" % (level, strain.char))
 
     # This is an odd way of saying "not pass, not double, not redouble"
     def is_contract(self):

@@ -61,7 +61,7 @@ class InterpreterProxy(object):
         kbb_oneline = position_knowledge.pretty_one_line(include_last_call_name=False)
         # FIXME: Annotation filtering belongs on the client, not here!
         annotations_whitelist = set([annotations.Artificial, annotations.NotrumpSystemsOn])
-        annotations_for_last_call = set(position_view.annotations_for_last_call) & annotations_whitelist
+        annotations_for_last_call = set(position_view.annotations_for_last_call)#  & annotations_whitelist
         return "%s %s" % (kbb_oneline, ", ".join(map(str, annotations_for_last_call)))
 
     def knowledge_string_and_rule_for_additional_call(self, history, call):
