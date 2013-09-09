@@ -12,7 +12,7 @@ class BoardTest(unittest2.TestCase):
     def test_identifier(self):
         board = Board.from_identifier("8-2190948053667986713720276813968-N:NO:")
         # Note how we can handle parsing old-style identfiiers, but we prefer new ones:
-        self.assertEqual(board.identifier(), "8-0622931ecfe9993de30355dae4")
+        self.assertEqual(board.identifier, "8-0622931ecfe9993de30355dae4")
         # Make sure that parsing new-style identifiers does not raise.
         self.assertTrue(Board.from_identifier("8-0622931ecfe9993de30355dae4"))
         self.assertEqual(board.number, 8)

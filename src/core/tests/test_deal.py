@@ -9,8 +9,8 @@ from core.deal import Deal
 class DealTest(unittest2.TestCase):
     def test_identifier(self):
         deal = Deal.from_string("23456789TJQKA... .23456789TJQKA.. ..23456789TJQKA. ...23456789TJQKA")
-        self.assertEquals(deal.identifier(), '0000001555555aaaaaabffffff')
-        self.assertEquals(deal.pretty_one_line(), Deal.from_identifier(deal.identifier()).pretty_one_line())
+        self.assertEquals(deal.identifier, '0000001555555aaaaaabffffff')
+        self.assertEquals(deal.pretty_one_line(), Deal.from_identifier(deal.identifier).pretty_one_line())
 
     def test_random(self):
         # Just make sure the random code path does not assert, and returns something non-None.

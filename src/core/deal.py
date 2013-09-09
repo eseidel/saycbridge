@@ -78,6 +78,7 @@ class Deal(object):
             return cls.from_old_identifier(identifier)
         return cls.from_hex_identifier(identifier)
 
+    @property
     def identifier(self):
         position_for_card = [None for _ in range(52)]
         for position_index, hand in enumerate(self.hands):
@@ -99,6 +100,7 @@ class Deal(object):
 
     # This is not maximally efficient, we could use
     # combinadics to use 96bits instead of 104.
+    @property
     def old_identifier(self):
         # We're constructing a 52 digit number in base 4,
         # converted to base-10, its our identifier.

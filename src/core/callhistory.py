@@ -21,6 +21,7 @@ class Vulnerability(object):
     name_to_identifier = { 'E-W': 'EW', 'N-S': 'NS', 'None': 'NO', 'Both': 'BO' }
     identifier_to_name = dict([(identifier, name) for name, identifier in name_to_identifier.items()])
 
+    @property
     def identifier(self):
         return self.name_to_identifier[self.name]
 
@@ -173,8 +174,9 @@ class CallHistory(object):
             partial_history = partial_history.copy_with_partial_history(-step)
         return partial_histories
 
+    @property
     def identifier(self):
-        return "%s:%s:%s" % (self.dealer.char, self.vulnerability.identifier(), self.comma_separated_calls())
+        return "%s:%s:%s" % (self.dealer.char, self.vulnerability.identifier, self.comma_separated_calls())
 
     @classmethod
     def from_identifier(cls, identifier):

@@ -42,7 +42,7 @@ class CompiledTest(object):
     @property
     def identifier(self):
         # FIXME: Our "have we run this" check would be more powerful if we used a combinatics based identifier for the hands.
-        return "%s-%s" % (self.hand.cdhs_dot_string(), self.call_history.identifier())
+        return "%s-%s" % (self.hand.cdhs_dot_string(), self.call_history.identifier)
 
     @property
     def subtest_string(self):

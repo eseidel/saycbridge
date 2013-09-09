@@ -31,7 +31,7 @@ class AutobidForNone(object):
                     hand.cdhs_dot_string(),
                     board.call_history.calls_string(),
                     optional_vulernability_string,
-                    board.identifier().partition(":")[0], # remove the call history
+                    board.identifier.partition(":")[0], # remove the call history
                     position_to_call.char,
                 )
                 print

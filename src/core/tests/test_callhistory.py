@@ -108,10 +108,10 @@ class CallHistoryTest(unittest2.TestCase):
         self.assertEqual(CallHistory.from_string("P 1C P 1D P 1H P 1S").suits_bid_by(WEST), set([DIAMONDS, SPADES]))
 
     def test_from_identifier(self):
-        self.assertEqual(CallHistory.from_identifier('E:EW:P').identifier(), CallHistory.from_string('P', 'E', 'E-W').identifier())
+        self.assertEqual(CallHistory.from_identifier('E:EW:P').identifier, CallHistory.from_string('P', 'E', 'E-W').identifier)
         # Test that from_identifier is forgiving of a missing trailing colon
-        self.assertEqual(CallHistory.from_identifier('E:EW:').identifier(), CallHistory.from_string('', 'E', 'E-W').identifier())
-        self.assertEqual(CallHistory.from_identifier('E:EW').identifier(), CallHistory.from_string('', 'E', 'E-W').identifier())
+        self.assertEqual(CallHistory.from_identifier('E:EW:').identifier, CallHistory.from_string('', 'E', 'E-W').identifier)
+        self.assertEqual(CallHistory.from_identifier('E:EW').identifier, CallHistory.from_string('', 'E', 'E-W').identifier)
         # Test that from_identifier is forgiving of a trailing comma.
         self.assertEqual(CallHistory.from_identifier('N:NO:P,').calls_string(), "P")
 

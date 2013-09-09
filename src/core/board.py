@@ -13,8 +13,9 @@ class Board(object):
         self.deal = deal or Deal.random()
         self.call_history = call_history or CallHistory.empty_for_board_number(number)
 
+    @property
     def identifier(self):
-        identifier = "%s-%s" % (self.number, self.deal.identifier())
+        identifier = "%s-%s" % (self.number, self.deal.identifier)
         if self.call_history.calls:
             identifier += ":%s" % (self.call_history.comma_separated_calls())
         return identifier
