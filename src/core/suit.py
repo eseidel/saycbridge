@@ -8,7 +8,6 @@ from third_party.memoized import memoized
 class Strain(object):
     def __init__(self, index, this_should_not_be_called_directly=False):
         assert(this_should_not_be_called_directly)
-        # Python's built-in __lt__ happens to work since all we do is store an index.
         self.index = index
 
     ALL_NAMES = ('Clubs', 'Diamonds', 'Hearts', 'Spades', 'Notrump')
