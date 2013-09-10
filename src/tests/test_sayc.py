@@ -594,7 +594,7 @@ sayc_expectations = {
         # we prefer to preempt, but with 12+ we prefer a standard overcall.
         ["4.Q765.K3.AQJ932", "1S", "1H"],
         ["9.QJ2.AQJ984.K86", "1H", "1C"],
-        ["KQ.QT82.AQJ984.2", "1H", "1D"],
+        ["KQ2.QT8.AQJ984.2", "1H", "1D"],
 
         ["4.T765.83.KQJ932", "2S", "1H"],
         ["9.JT2.AQT984.986", "2H", "1C"],

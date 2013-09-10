@@ -287,8 +287,7 @@ FAIL: P (expected 4H) for 8.9873.AKQT864.4 (hcp: 9 lp: 12 sp: 15), history: P P 
 Pass 56 of 76 hands
 
 test_preemptive_overcalls:
-FAIL: 2H (expected 1H) for KQ.QT82.AQJ984.2 (hcp: 14 lp: 16 sp: 16), history: 1D
-Pass 8 of 9 hands
+Pass 9 of 9 hands
 
 test_remaining_hands_from_book:
 FAIL: 5N (expected 6N) for KJ.QJT9.A873.KQ3 (hcp: 16 lp: 16 sp: 16), history: 1N P 4N P
@@ -378,7 +377,7 @@ FAIL: 3S (expected 4S) for K74.9.J98.KJT742 (hcp: 8 lp: 10 sp: 11), history: 1N 
 FAIL: 2N (expected P) for Q87.J843.K65.Q93 (hcp: 8 lp: 8 sp: 8), history: 1N P
 Pass 1 of 3 hands
 
-Pass 971 (79%) of 1214 total hands
+Pass 972 (80%) of 1214 total hands
 
 Tested call generation of 140 rules of 146 total (requires_planning ignored).
 
