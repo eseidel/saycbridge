@@ -511,7 +511,7 @@ sayc_expectations = {
         ["Q83.K9.Q8.AQJ874", "2S", "P P P"], # p83, h3 (Could use 1S), Special (optional) treatment for 4th seat minimum 6-card openers.
 
         ['Q3.AQ7632.82.J93', '2D', 'P'], # 2o3 is also valid.
-        ['Q3.AQ97632.8.J32', '3D', 'P'], # 2o3 is also valid.
+        ['Q3.AQ97632.82.J3', '3D', 'P'], # 2o3 is also valid.
         ['Q3.AQ987632.8.J2', '4D', 'P'], # 2o3 is also valid.
 
         # Do not have a void or an outside major when preempting. p89

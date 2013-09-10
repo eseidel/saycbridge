@@ -2126,11 +2126,21 @@ class PreemptiveOpen(Opening):
         # FIXME: p89 also says no outside 4-card major.
         # 3C only promises 6 cards due to 2C being taken for strong bids.
         (      '2D', '2H', '2S', '3C'): (
-                ConstraintAnd(MinLength(6),
-                MinLength(1, suit.SUITS),
-                MaxLengthInUnbidMajors(3),
-            ), preempt_priorities.SixCardPreempt),
-        (      '3D', '3H', '3S'): (MinLength(7), preempt_priorities.SevenCardPreempt),
+                ConstraintAnd(
+                    MinLength(6),
+                    MinLength(1, suit.SUITS),
+                    MaxLengthInUnbidMajors(3),
+                ),
+                preempt_priorities.SixCardPreempt
+            ),
+        (      '3D', '3H', '3S'): (
+                ConstraintAnd(
+                    MinLength(7),
+                    # h10 and h12 on p86 seem to suggest we should avoid 3-level preempts with 3-card majors.
+                    # FIXME: Maybe only in first and second seat?  Maybe this is a planning concern?
+                    # FIXME: MaxLengthInUnbidMajors(2), can't work here as we'll just bid the 2-level version instead.
+                ),
+                preempt_priorities.SevenCardPreempt),
         ('4C', '4D', '4H', '4S'): (MinLength(8), preempt_priorities.EightCardPreempt),
     }
     shared_constraints = [
@@ -2182,6 +2192,14 @@ class ResponseToPreempt(Rule):
     preconditions = LastBidHasAnnotation(positions.Partner, annotations.Preemptive)
 
 
+# We don't need anything to pass a preempt.  Even with a void in partner's
+# suit we can't correct w/o forcing to game.
+# This is basically just a version of SuitGameIsRemote w/o the fit requirement.
+class PassResponseToPreempt(ResponseToPreempt):
+    call_names = 'P'
+    shared_constraints = MaximumCombinedPoints(24)
+
+
 class NewSuitResponseToPreempt(ResponseToPreempt):
     preconditions = [
         UnbidSuit(),
@@ -2201,6 +2219,13 @@ class NewSuitResponseToPreempt(ResponseToPreempt):
         # than that a particular level is safe.  Responding to a 2-level 15+ should be sufficient?
         MinCombinedPointsForPartnerMinimumSuitedRebid(),
     ]
+
+
+rule_order.order(
+    PassResponseToPreempt,
+    natural_bids, # This puts the law above passing, which makes us extend preempts preferentially, is that correct?
+    NewSuitResponseToPreempt,
+)
 
 
 class ForcedRebidAfterPreempt(Rule):
