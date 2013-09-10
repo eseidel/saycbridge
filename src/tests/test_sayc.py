@@ -528,6 +528,8 @@ sayc_expectations = {
         ["T9.KT2.AQT984.82", "3D", "2H P 2N P"], # p85, h8
         ["J9.QT2.KQJ984.J2", "3D", "2H P 2N P"], # p85, h9
 
+        ['T32.Q63.KQJ986.2', '3H', 'P 2H P 2N P', 'Both'],  # 13-58e04ce61e0da8e75d5d2383bb, E - despite a protected queen, 8 hcp is still "minimum"
+
         # Three level preempts
         ["J4.T.QJT.AJT7653", "P", ""], # p86, h10
         ["J4.T.QJT.AJT7653", "P", "P"], # p86, h10
@@ -1185,7 +1187,6 @@ sayc_expectations = {
         ['J98652.942.T.AKQ', '2S', 'P 1D 2D P'],  # 14-61451c9daa40eae3f7202ff2d5, E should pick spades.
         ['.T743.AKJ63.AQJ4', 'P', 'P 1H 4C P P', 'E-W'],  # 9-88eeaa25341e0df429d41bf35d, E should not double the 4-clubs preempt w/o more values?
         ['Q5.962.AKQ65.AQ2', '4S', '1N P 2H P 2S P 2N P', 'Both'],  # 13-58e7e18d893db7c3670069eac4, N should prefer 4S over 3N.
-        ['T32.Q63.KQJ986.2', '3D', 'P 2H P 2N P', 'Both'],  # 13-58e04ce61e0da8e75d5d2383bb, E should bid 3D to show his protected queen.
         ['AJ532.KJT7..AQJ9', '1S', 'P P P 1C P 1H P', 'E-W'],  # 16-a27c2c91f869bd0343515df8ae, S should bid 1S, not 2D.
         ['KT94.83.AT9654.T', 'P', 'P P P 1C P 1H P 1S P 2H P 2N P', 'E-W'],  # 16-a27c2c91f869bd0343515df8ae, N cannot rebid hearts again w/o 7.
         ['AQ73.AT6.QJ.QJ63', 'P', '1H P 2H X P 3C P'],  # 11-93d3c46a1398dc2bb16a41cf5e, E passes after his takeout double, showing < 17 hcp.

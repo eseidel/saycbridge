@@ -2182,6 +2182,27 @@ class ResponseToPreempt(Rule):
     preconditions = LastBidHasAnnotation(positions.Partner, annotations.Preemptive)
 
 
+class NewSuitResponseToPreempt(ResponseToPreempt):
+    preconditions = [
+        UnbidSuit(),
+        NotJumpFromLastContract()
+    ]
+    # FIXME: These need some sort of priority ordering between the calls.
+    call_names = [
+              '2D', '2H', '2S',
+        '3C', '3D', '3H', '3S',
+        '4C', '4D',
+    ]
+    shared_constraints = [
+        MinLength(5),
+        # Should this deny support for partner's preempt suit?
+        # Does this really need 17+ points for a 2-level contract and 20+ for a 3-level?
+        # It seems this bid should be more "we have the majority of the points"
+        # than that a particular level is safe.  Responding to a 2-level 15+ should be sufficient?
+        MinCombinedPointsForPartnerMinimumSuitedRebid(),
+    ]
+
+
 class ForcedRebidAfterPreempt(Rule):
     preconditions = [
         LastBidHasAnnotation(positions.Me, annotations.Preemptive),
@@ -2217,25 +2238,36 @@ class RaiseOfPartnersPreemptResponse(ForcedRebidAfterPreempt):
     shared_constraints = MinimumCombinedLength(8)
 
 
-class NewSuitResponseToPreempt(ResponseToPreempt):
+class NewSuitAfterPreempt(ForcedRebidAfterPreempt):
     preconditions = [
+        NotJumpFromLastContract(),
         UnbidSuit(),
-        NotJumpFromLastContract()
     ]
-    # FIXME: These need some sort of priority ordering between the calls.
-    call_names = [
-              '2D', '2H', '2S',
+    # Min: 1S 2D P 2H P 2S, Unclear what the max is.
+    call_names = (
+                          '2S',
         '3C', '3D', '3H', '3S',
         '4C', '4D',
-    ]
-    shared_constraints = [
-        MinLength(5),
-        # Should this deny support for partner's preempt suit?
-        # Does this really need 17+ points for a 2-level contract and 20+ for a 3-level?
-        # It seems this bid should be more "we have the majority of the points"
-        # than that a particular level is safe.  Responding to a 2-level 15+ should be sufficient?
-        MinCombinedPointsForPartnerMinimumSuitedRebid(),
-    ]
+    )
+    shared_constraints = [points >= 9, MinLength(4)]
+
+
+class NotrumpAfterPreempt(ForcedRebidAfterPreempt):
+    preconditions = NotJumpFromLastContract()
+    # Min: 1S 2D P 2H P 2N, Unclear if 3N is viable?
+    call_names = '2N'
+    shared_constraints = points >= 9
+
+
+# With a minimum we would rather raise his suit than rebid our own.
+# With a maximum we would still rather raise, failing that a new suit, and otherwise NT.
+rule_order.order(
+    natural_bids, # FIXME: Is this right?  Natural rebids make no sense after a preempt.
+    MinimumRebidOfPreemptSuit,
+    NotrumpAfterPreempt,
+    NewSuitAfterPreempt,
+    RaiseOfPartnersPreemptResponse,
+)
 
 
 feature_asking_priorities = enum.Enum(
@@ -2352,7 +2384,7 @@ class FeatureResponseToTwoNotrumpFeatureRequest(ResponseToTwoNotrumpFeatureReque
     call_names = ['3C', '3D', '3H', '3S']
     # Note: We could have a protected outside honor with as few as 6 points,
     # (QJTxxx in our main suit + Qxx in our outside honor suit)
-    # Unittests would suggest we should require 9+?
+    # p86 seems to suggest we need 9+ hcp.
     shared_constraints = [points >= 9, ThirdRoundStopper()]
 
 
