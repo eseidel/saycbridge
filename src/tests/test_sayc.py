@@ -505,12 +505,12 @@ sayc_expectations = {
         ["Q98.JT8.53.AKT95", "P", "P"], # p83, h2
         ["Q98.JT8.53.AKT95", "2S", "P P"], # p83, h2
         ["Q98.JT8.53.AKT95", "1S", "P P P"], # p83, h2
-        ["Q83.K9.Q8.AQJ874", "1S", ""], # p83, h3
+        ["Q83.K9.Q8.AQJ874", "1S", ""], # p83, h3 
         ["Q83.K9.Q8.AQJ874", "1S", "P"], # p83, h3
         ["Q83.K9.Q8.AQJ874", "1S", "P P"], # p83, h3
-        ["Q83.K9.Q8.AQJ874", "2S", "P P P"], # p83, h3 (Could use 1S)
+        ["Q83.K9.Q8.AQJ874", "2S", "P P P"], # p83, h3 (Could use 1S), Special (optional) treatment for 4th seat minimum 6-card openers.
 
-        ['Q3.AQ7632.8.J932', '2D', 'P'], # 2o3 is also valid.
+        ['Q3.AQ7632.82.J93', '2D', 'P'], # 2o3 is also valid.
         ['Q3.AQ97632.8.J32', '3D', 'P'], # 2o3 is also valid.
         ['Q3.AQ987632.8.J2', '4D', 'P'], # 2o3 is also valid.
 
@@ -643,17 +643,25 @@ sayc_expectations = {
         ["A53.53.987.KJT92", "1S", "1H"], # p98, h4
         ["AKJ.Q84.6.AKJT73", "2S", "1H X P 2C P"], # p98, h5
         ["AKJ.Q84.6.AKJT73", "2S", "1H X P 2D P"], # p98, h5
-        ["AQJ6.K96.AKJ74.3", "1H", "1C"], # p98, h6 (This is a special exception for spades).
+        # This is some sort of exception to the big-hand double rule. The book is worried that
+        # the opponents may get to 3S before we have a chance to show our hearts
+        # so we should bid them first. I don't understand well enough yet.
+        ["AQJ6.K96.AKJ74.3", "1H", "1C"], # p98, h6
 
         ["JT6.T96.AK874.T3", "1H", "1C"], # 2o3 is also sufficient.
 
         # Two-Level Overcalls
         ["K8.76.AQ953.QJT2", "P", "1S"],  # p99
         ["QJT2.76.AQ953.K8", "2H", "1S", 'None'],  # p99 (not-vulnerable)
+        # The book only mentions this hand in a paragraph, unclear if they
+        # really intend for us to pass a 12hcp potential overcall in second seat!
+        # Ops are likely to negative double, since we took all their bidding space
+        # but is that so bad?
         ["QJT2.76.AQ953.K8", "P", "1S", 'Both'],  # p99 (vulnerable)
 
         ["53.A8.KQJ873.975", "2H", "1S"], # p99, h7
-        ["KQ8765.8.AQT95.9", "2H", "1S"], # p99, h8, FIXME: Why not use michaels here?  Looks perfect...
+        # I think the book is wrong here and this should just be michaels:
+        ["KQ8765.8.AQT95.9", "2H", "1S"], # p99, h8
         # FIXME: Ideally would test a clubs rebid by h8 here.
 
         ["KQ873.85.32.AKQT", "1S", "1H"], # Prefer 1S over 2C?
@@ -662,7 +670,7 @@ sayc_expectations = {
         ["KQ4.AQ8.Q9873.K2", "1N", "1C"],
         ["KQ4.AQ8.Q9873.K2", "1N", "1D"],
         ["KQ4.AQ8.Q9873.K2", "1N", "1H"],
-        ["KQ4.K98.KQ873.K2", "2H", "1S"],  # K2 is only a 66% stopper, so we can't bid 1N, but with only 16 points we shouldn't bid-hand double.
+        ["KQ4.K98.KQ873.K2", "2H", "1S"],  # K2 is only a 66% stopper, so we can't bid 1N, but with only 16 points we shouldn't big-hand double.
         ["KQ4.A98.QJ873.K2", "1N", "1C"],  # 1N overcalls are 15-18 according to p100.
 
         # A 1NT overcall is more descriptive than a takeout double and should be prefered.

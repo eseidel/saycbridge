@@ -2122,12 +2122,21 @@ class PreemptiveOpen(Opening):
     # Never worth preempting in 4th seat.
     preconditions = InvertedPrecondition(LastBidWas(positions.LHO, 'P'))
     constraints = {
+        # 2-level preempts should not have a void. (p89)
+        # FIXME: p89 also says no outside 4-card major.
         # 3C only promises 6 cards due to 2C being taken for strong bids.
-        (      '2D', '2H', '2S', '3C'): (MinLength(6), preempt_priorities.SixCardPreempt),
+        (      '2D', '2H', '2S', '3C'): (
+                ConstraintAnd(MinLength(6),
+                MinLength(1, suit.SUITS),
+                MaxLengthInUnbidMajors(3),
+            ), preempt_priorities.SixCardPreempt),
         (      '3D', '3H', '3S'): (MinLength(7), preempt_priorities.SevenCardPreempt),
         ('4C', '4D', '4H', '4S'): (MinLength(8), preempt_priorities.EightCardPreempt),
     }
-    shared_constraints = [ThreeOfTheTopFiveOrBetter(), points >= 5]
+    shared_constraints = [
+        ThreeOfTheTopFiveOrBetter(),
+        points >= 5,
+    ]
 
 
 weak_preemptive_overcalls = enum.Enum(

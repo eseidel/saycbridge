@@ -269,8 +269,6 @@ Pass 30 of 35 hands
 test_preemption:
 FAIL: P (expected 2S) for Q98.JT8.53.AKT95 (hcp: 10 lp: 11 sp: 11), history: P P
 FAIL: 1S (expected 2S) for Q83.K9.Q8.AQJ874 (hcp: 14 lp: 16 sp: 14), history: P P P
-FAIL: 2S (expected P) for .Q765.843.KQT932 (hcp: 7 lp: 9 sp: 12), history: 
-FAIL: 2S (expected P) for 3.76.Q843.KQT932 (hcp: 7 lp: 9 sp: 11), history: 
 WARNING: Unordered: ['3H', '3S', '4S'] from: [MinimumRebidOfPreemptSuit, RaiseOfPartnersPreemptResponse, NaturalSuited] ([<class 'z3b.rules.MinimumRebidOfPreemptSuit'>, <class 'z3b.rules.RaiseOfPartnersPreemptResponse'>, 4S])
 FAIL: None (expected 3S) for 9.QJ2.AQT984.986 (hcp: 9 lp: 11 sp: 12), history: 2H P 2S P
 WARNING: Unordered: ['3H', '3N'] from: [MinimumRebidOfPreemptSuit, NaturalNotrump] ([<class 'z3b.rules.MinimumRebidOfPreemptSuit'>, 3N])
@@ -297,7 +295,7 @@ FAIL: 1H (expected 4H) for 8.9873.AKQT864.4 (hcp: 9 lp: 12 sp: 15), history:
 FAIL: 1H (expected 4H) for 8.9873.AKQT864.4 (hcp: 9 lp: 12 sp: 15), history: P
 FAIL: 1H (expected 4H) for 8.9873.AKQT864.4 (hcp: 9 lp: 12 sp: 15), history: P P
 FAIL: P (expected 4H) for 8.9873.AKQT864.4 (hcp: 9 lp: 12 sp: 15), history: P P P
-Pass 48 of 74 hands
+Pass 50 of 74 hands
 
 test_preemptive_overcalls:
 FAIL: 2H (expected 1H) for KQ.QT82.AQJ984.2 (hcp: 14 lp: 16 sp: 16), history: 1D
@@ -391,7 +389,7 @@ FAIL: 3S (expected 4S) for K74.9.J98.KJT742 (hcp: 8 lp: 10 sp: 11), history: 1N 
 FAIL: 2N (expected P) for Q87.J843.K65.Q93 (hcp: 8 lp: 8 sp: 8), history: 1N P
 Pass 1 of 3 hands
 
-Pass 963 (79%) of 1214 total hands
+Pass 965 (79%) of 1214 total hands
 
 Tested call generation of 136 rules of 143 total (requires_planning ignored).
 

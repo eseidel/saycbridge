@@ -86,11 +86,13 @@ class MaximumCombinedPoints(Constraint):
 
 
 class MinLength(Constraint):
-    def __init__(self, min_length):
+    def __init__(self, min_length, suits=None):
         self.min_length = min_length
+        self.suits = suits
 
     def expr(self, history, call):
-        return expr_for_suit(call.strain) >= self.min_length
+        suits = self.suits or [call.strain]
+        return z3.And([expr_for_suit(suit) >= self.min_length for suit in suits])
 
 
 class MaxLength(Constraint):
@@ -107,6 +109,14 @@ class MaxLengthInLastContractSuit(Constraint):
 
     def expr(self, history, call):
         return expr_for_suit(history.last_contract.strain) <= self.max_length
+
+
+class MaxLengthInUnbidMajors(Constraint):
+    def __init__(self, max_length):
+        self.max_length = max_length
+
+    def expr(self, history, call):
+        return z3.And([expr_for_suit(major) <= self.max_length for major in suit.MAJORS if major != call.strain])
 
 
 # class AdditionalLength(Constraint):
