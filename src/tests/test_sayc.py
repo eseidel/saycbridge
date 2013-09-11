@@ -96,6 +96,9 @@ sayc_expectations = {
         ["JT98765.2.75.543", "P", "1N P 2S P 3C P"], # p12, h23
         ["5.QT87542.75.543", "3D", "1N P 2S P 3C P"], # p12, h24
 
+        # Sanity-check that partner knows how to accept.
+        ["97.KJ52.AT3.AKQ9", "3C", "1N P 2S P"],
+
         # Transfers are on over higher level NT as well:
         ['K83.852.5.QT9752', '3H', '2N P', 'Both'],  # 4-1bc6c9d271a2f39a0ef106751b, E
         ['83.852.5.KQT9752', '4H', '2C P 2D P 3N P'],
@@ -145,6 +148,10 @@ sayc_expectations = {
         # Using redouble to escape to a minor:
         ["987654.632.5.543", "P", "1N X XX P 2C P"],  # p16, h35
         ["982.T75432.86.32", "2D", "1N X XX P 2C P"],  # p16, h36
+
+        # Sanity check that partner knows how to accept transfer:
+        ["AQT.KJ87.J5.KQ43", "2C", "1N X XX P"],
+
         # When stayman is doubled:
         ["AQT.KJ87.J5.KQ43", "2S", "1N P 2C X"],  # p17, h37
         ["KT82.AKT8.Q8.A62", "P", "1N P 2C X"],  # p17, h38
