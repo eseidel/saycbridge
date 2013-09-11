@@ -294,6 +294,9 @@ sayc_expectations = {
         # In this hand we have 10 support points but only 5 HCP.
         # FIXME: How does this interact with length points?
         [".KT953.Q863.T742", "2D", "1D P"],
+
+        # FIXME: I think this result is wrong.  Should we mention a second minor or raise partner?
+        ['AKQJ6.T863.9.J54', '3N', 'P 1C P 1D P 2N P', 'N-S'],  # deal 4285488505698364167172343412243, S should prefer 3N over 5C.
     ],
 
     "test_game_forcing_response_to_one_of_a_minor": [
@@ -478,6 +481,8 @@ sayc_expectations = {
         ["J73.K97.Q8.AQJ72", "3N", "1D P 1S P 2C P 2H P 2N P"], # p76, h4
         ["J73.K97.Q8.AQJ72", "4C", "1D P 1S P 2C P 2H P 3C P"], # p76, h4
         ["J73.K97.Q8.AQJ72", "4D", "1D P 1S P 2C P 2H P 3D P"], # p76, h4
+        # FIXME: This seems in direct conflict with the rule that 2N jump is preferred over mentioning a new minor?
+        # Maybe the 2N jump requires a spade stopper?
         ["K92.A983.AK2.732", "2S", "1C P 1D P 1H P"], # p76, h5
 
         # Opener's rebid after FSF
@@ -1053,7 +1058,6 @@ sayc_expectations = {
         ["KT76.Q.QJ8654.72", "2H", "P P 1D P 1H P 1N P", "E-W"],  # deal 11132096549145279831166942029099 E should never have raised to 2N
         ["AKQ6.KQT.T4.QJ96", "P", "P 1N P 2C P 2S P 3N P", "Both"],  # deal 7666900753141668445629354337434, N previously was bidding 4N!
         ["QT8.AQ95.KJ532.4", "P", "1H P 1S 2D", "E-W"],  # deal 2713109889156458295693804380142, E should pass.
-        ['AKQJ6.T863.9.J54', '3N', 'P 1C P 1D P 2N P', 'N-S'],  # deal 4285488505698364167172343412243, S should prefer 3N over 5C.
         ['432.AT.T95.AKT87', '1S', 'P P 1D P P', 'Both'],  # deal 12734075338630212034897921725930, S should overcall 1S.
         ['AK532.T63.86.AT9', '3N', 'P 1N P'],  # deal 9773241304968681226215328063605, E should bid game.
         ['Q98.KQT2.75.AJ92', '2S', 'P P 1D P 1S P', 'Both'],  # deal 3211822235255751313198808697687, N should prefer to support spades instead of 2NT

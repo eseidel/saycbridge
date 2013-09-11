@@ -90,9 +90,11 @@ new_one_level_suit_responses = enum.Enum(
     "LongestNewMajor",
     "OneSpadeWithFive",
     "OneHeartWithFive",
-    "OneDiamond",
+    # We prefer 1D over 4-card majors when bidding up the line.
+    "OneDiamondWithPossibleMajor",
     "OneHeartWithFour",
     "OneSpadeWithFour",
+    "OneDiamond",
 )
 rule_order.order(*reversed(new_one_level_suit_responses))
 
@@ -105,7 +107,10 @@ new_one_level_major_responses = set([
     new_one_level_suit_responses.OneSpadeWithFour,
 ])
 
-new_one_level_minor_responses = new_one_level_suit_responses.OneDiamond
+
+# We don't include OneDiamondWithPossibleMajor in this as it only
+# matters relative to 4-card major bids.
+new_one_level_minor_responses = set([new_one_level_suit_responses.OneDiamond])
 
 
 class OneLevelNewSuitResponse(ResponseToOneLevelSuitedOpen):
@@ -117,6 +122,7 @@ class OneLevelNewSuitResponse(ResponseToOneLevelSuitedOpen):
     }
     # FIXME: 4 should probably be the special case and 5+ be the default priority.
     conditional_priorities_per_call = {
+        '1D': [(z3.Or(hearts == 4, spades == 4), new_one_level_suit_responses.OneDiamondWithPossibleMajor)],
         '1H': [
             (z3.And(hearts >= 5, hearts > spades), new_one_level_suit_responses.LongestNewMajor),
             (hearts >= 5, new_one_level_suit_responses.OneHeartWithFive),
@@ -275,6 +281,8 @@ new_two_level_major_responses = set([
     new_two_level_suit_responses.TwoHearts,
     new_two_level_suit_responses.TwoSpades,
 ])
+
+new_minor_responses = new_one_level_minor_responses | new_two_level_minor_responses
 
 
 class NewSuitAtTheTwoLevel(ResponseToOneLevelSuitedOpen):
@@ -2586,10 +2594,6 @@ rule_order.order(
     raise_responses,
 )
 rule_order.order(
-    DefaultPass,
-    raise_responses,
-)
-rule_order.order(
     # We don't need to put this above all raise responses, but it shouldn't hurt.
     raise_responses,
     MajorJumpToGame,
@@ -2597,7 +2601,7 @@ rule_order.order(
 rule_order.order(
     DefaultPass,
     OneNotrumpResponse, # Any time we can respond we should.
-    new_two_level_minor_responses, # But we prefer suits to NT.
+    new_minor_responses, # But we prefer suits to NT.
     major_raise_responses, # But we'd much rather support our partner's major!
 )
 rule_order.order(
@@ -2610,7 +2614,8 @@ rule_order.order(
     relay_priorities
 )
 rule_order.order(
-    new_two_level_minor_responses,
+    # Rather jump to NT than mention a new minor.
+    new_minor_responses,
     NotrumpResponseToMinorOpen,
     new_one_level_major_responses,
 )
@@ -2641,7 +2646,8 @@ rule_order.order(
     JumpShiftResponseToOpen,
 )
 rule_order.order(
-    # We'd rather mention a new major than raise partner's minor
+    new_one_level_minor_responses,
+    # We'd rather mention a new major than raise partner's minor or mention our own.
     minor_raise_responses,
     new_one_level_major_responses,
     # But we'd rather raise a major than mention a new one.
