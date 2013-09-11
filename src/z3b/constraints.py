@@ -73,6 +73,14 @@ class MinimumCombinedSupportPoints(Constraint):
                       model.playing_points >= implied_min_points)
 
 
+class MinimumSupportPointsForPartnersLastSuit(Constraint):
+    def __init__(self, min_points):
+        self.min_points = min_points
+
+    def expr(self, history, call):
+        return model.support_points_expr_for_suit(history.partner.last_call.strain) >= self.min_points
+
+
 class MaximumSupportPointsForPartnersLastSuit(Constraint):
     def __init__(self, max_points):
         self.max_points = max_points

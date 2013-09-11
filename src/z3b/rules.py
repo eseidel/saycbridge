@@ -567,6 +567,31 @@ rule_order.order(
 )
 
 
+class CueBidRebidAfterNegativeDouble(Rule):
+    preconditions = [
+        LastBidHasAnnotation(positions.Me, annotations.NegativeDouble),
+        # If we understood better what kind of hand this bid was trying to show, we might be able to cuebid after NT.
+        LastBidHasSuit(positions.Partner),
+        # I don't think there are any artificial responses to NegativeDoubles, or we should check !artificial here?
+        # The Cuebid here is defined as RHO's opening bid, not whatever their most recent one may be.
+        CueBid(positions.RHO, use_first_suit=True),
+    ]
+    # Min: 1D 1H X P 2C P 2H, Max: 1H 2S X P 3D P 3S
+    call_names = (
+                    '2H', '2S',
+        '3C', '3D', '3H', '3S'
+    )
+    # Shows slam interest, but in which suit?
+    shared_constraints = MinimumSupportPointsForPartnersLastSuit(15) # How big should this really be?
+
+
+# Slam interest is always more fun than natural bidding. :)
+rule_order.order(
+    natural_bids,
+    CueBidRebidAfterNegativeDouble,
+)
+
+
 two_clubs_response_priorities = enum.Enum(
     "SuitResponse",
     "NoBiddableSuit",
