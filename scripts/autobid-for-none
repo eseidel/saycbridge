@@ -20,11 +20,11 @@ class AutobidForNone(object):
     def _bid_board(self, board):
         while not board.call_history.is_complete():
             position_to_call = board.call_history.position_to_call()
-            hand = board.deal.hands[position_to_call]
+            hand = board.deal.hand_for(position_to_call)
             bid = self.z3b.find_call_for(hand, board.call_history)
 
             if bid is None:
-                print "z3b=%s with %s" % (None, board.deal.hands[position_to_call].pretty_one_line())
+                print "z3b=%s with %s" % (None, board.deal.hand_for(position_to_call).pretty_one_line())
                 vulnerability = board.call_history.vulnerability.name
                 optional_vulernability_string = "" if vulnerability == "None" else ", '%s'" % vulnerability
                 print "['%s', '?', '%s'%s],  # %s, %s" % (

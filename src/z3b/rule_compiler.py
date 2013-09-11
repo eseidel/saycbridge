@@ -132,7 +132,7 @@ class CompiledRule(object):
             assert priority
             yield priority, z3.And(exprs)
         except:
-            print "Exception compiling meaning_of %s over %s with %s" % (call, history, self)
+            print "Exception compiling meaning_of %s over %s with %s" % (call, history.call_history.calls_string(), self)
             raise
 
     # constraints accepts various forms including:
