@@ -372,7 +372,7 @@ FAIL: 3S (expected 4S) for K74.9.J98.KJT742 (hcp: 8 lp: 10 sp: 11), history: 1N 
 FAIL: 2N (expected P) for Q87.J843.K65.Q93 (hcp: 8 lp: 8 sp: 8), history: 1N P
 Pass 1 of 3 hands
 
-Pass 1015 (80%) of 1257 total hands
+Pass 1015 (80.0%) of 1257 total hands
 
 Tested call generation of 155 rules of 158 total (excluding 8 requires_planning rules).
 Never selected call from:

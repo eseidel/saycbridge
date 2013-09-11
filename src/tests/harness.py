@@ -175,7 +175,7 @@ class ResultsAggregator(object):
         total_tests = len(self._results_by_identifier)
         total_pass = total_tests - self._total_failures
         percent = 100 * total_pass / total_tests if total_tests else 0
-        print "Pass %s (%d%%) of %s total hands" % (total_pass, percent, total_tests)
+        print "Pass %s (%.1f%%) of %s total hands" % (total_pass, percent, total_tests)
 
 
 # Pickle gets mad at us if we make this a member or even static function.
