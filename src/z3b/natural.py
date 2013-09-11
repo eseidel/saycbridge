@@ -105,8 +105,8 @@ rule_order.order(
 natural_bids = set(natural) | set(notrump_with_stoppers) | set(notrump_without_stoppers)
 
 natural_exact_minor_games = set([
-    natural.get('4C'),
-    natural.get('4D'),
+    natural.get('5C'),
+    natural.get('5D'),
 ])
 
 natural_exact_major_games = set([

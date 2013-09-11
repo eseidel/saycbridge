@@ -924,7 +924,7 @@ class SufficientPointsForFourthSuitForcing(Constraint):
         return points >= max(0, points_for_sound_notrump_bid_at_level[call.level] - history.partner.min_points)
 
 
-fourth_suit_forcing_priorties = enum.Enum(
+fourth_suit_forcing = enum.Enum(
     "TwoLevel",
     "ThreeLevel",
 )
@@ -953,15 +953,15 @@ class NonJumpFourthSuitForcing(FourthSuitForcing):
         '3C', '3D', '3H', '3S',
     ]
     priorities_per_call = {
-        ('2C', '2D', '2H', '2S'): fourth_suit_forcing_priorties.TwoLevel,
-        ('3C', '3D', '3H', '3S'): fourth_suit_forcing_priorties.ThreeLevel,
+        ('2C', '2D', '2H', '2S'): fourth_suit_forcing.TwoLevel,
+        ('3C', '3D', '3H', '3S'): fourth_suit_forcing.ThreeLevel,
     }
 
 
 class TwoSpadesJumpFourthSuitForcing(FourthSuitForcing):
     preconditions = JumpFromPartnerLastBid(exact_size=1)
     call_names = '2S'
-    priority = fourth_suit_forcing_priorties.TwoLevel
+    priority = fourth_suit_forcing.TwoLevel
 
 
 fourth_suit_forcing_response_priorities = enum.Enum(
@@ -2497,19 +2497,19 @@ rule_order.order(
 )
 rule_order.order(
     natural_exact_notrump_game,
-    [fourth_suit_forcing_priorties.TwoLevel, fourth_suit_forcing_priorties.ThreeLevel],
+    fourth_suit_forcing,
 )
 rule_order.order(
     natural_nt_part_scores,
-    fourth_suit_forcing_priorties.TwoLevel,
+    fourth_suit_forcing.TwoLevel,
 )
 rule_order.order(
     # FIXME: This seems backwards.
     natural_suited_part_scores,
-    fourth_suit_forcing_priorties.TwoLevel,
+    fourth_suit_forcing.TwoLevel,
 )
 rule_order.order(
-    [fourth_suit_forcing_priorties.TwoLevel, fourth_suit_forcing_priorties.ThreeLevel],
+    fourth_suit_forcing,
     responder_rebid_priorities.ThreeLevelSuitRebidByResponder,
 )
 rule_order.order(
