@@ -172,7 +172,20 @@ rule_order.order(
 )
 
 
-class RaiseResponseToMajorCappelletti(ResponseToCappelletti):
+class ResponseToMajorCappelletti(ResponseToCappelletti):
+    preconditions = LastBidHasStrain(positions.Partner, suit.MAJORS)
+
+
+class NewSuitResponseToMajorCappelletti(ResponseToMajorCappelletti):
+    preconditions = UnbidSuit()
+    call_names = ('2S', '3C', '3D', '3H')
+    shared_constraints = [
+        MinLength(6),
+        ThreeOfTheTopFiveOrBetter(),
+    ]
+
+
+class RaiseResponseToMajorCappelletti(ResponseToMajorCappelletti):
     preconditions = [
         LastBidHasStrain(positions.Partner, suit.MAJORS),
         RaiseOfPartnersLastSuit(),
@@ -189,8 +202,14 @@ class RaiseResponseToMajorCappelletti(ResponseToCappelletti):
     ]
 
 
-class CappellettiMinorRequest(ResponseToCappelletti):
-    preconditions = LastBidHasStrain(positions.Partner, suit.MAJORS)
+rule_order.order(
+    DefaultPass,
+    NewSuitResponseToMajorCappelletti,
+    cappelletti_major_raise_responses,
+)
+
+
+class CappellettiMinorRequest(ResponseToMajorCappelletti):
     call_names = '2N'
     requires_planning = True # FIXME: Can't we do this with constraints?
     annotations = annotations.CappellettiMinorRequest
