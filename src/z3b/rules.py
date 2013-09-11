@@ -2570,6 +2570,38 @@ rule_order.order(
     feature_response_priorities.TwoNotrumpFeatureResponse,
 )
 
+
+class GrandSlamForce(Rule):
+    preconditions = [
+        LastBidHasSuit(positions.Partner),
+        # Since ACBL requires 8hcp to open naturally, I suspect partner has to have opened for GSF to be on.
+        LastBidHasAnnotation(positions.Partner, annotations.Opening),
+        JumpFromLastContract(), # This is slightly redundant. :)
+    ]
+    call_names = '5N'
+    requires_planning = True
+    shared_constraints = NO_CONSTRAINTS
+    annotations = annotations.GrandSlamForce
+
+
+grand_slam_force_responses = enum.Enum(
+    "GrandSlam",
+    "SmallSlam",
+)
+rule_order.order(*reversed(grand_slam_force_responses))
+
+
+class ResponseToGrandSlamForce(Rule):
+    preconditions = [
+        LastBidHasAnnotation(positions.Partner, annotations.GrandSlamForce),
+        RebidSameSuit(),
+    ]
+    constraints = {
+        ('6C', '6D', '6H', '6S'): (NO_CONSTRAINTS, grand_slam_force_responses.SmallSlam),
+        ('7C', '7D', '7H', '7S'): (TwoOfTheTopThree(), grand_slam_force_responses.GrandSlam),
+    }
+
+
 rule_order.order(preempt_priorities, opening_priorities)
 rule_order.order(natural_bids, preempt_priorities)
 rule_order.order(natural_games, nt_response_priorities, natural_slams)

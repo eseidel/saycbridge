@@ -321,11 +321,9 @@ FAIL: 4H (expected 5H) for .AKQ.QT76432.AKQ (hcp: 20 lp: 23 sp: 25), history: 1H
 FAIL: P (expected 5H) for .AKQ.KJ76432.AKQ (hcp: 22 lp: 25 sp: 27), history: 2C P 2N P 3H P 4H P
 FAIL: 6N (expected 6H) for QJT.AK98.J985.62 (hcp: 11 lp: 11 sp: 12), history: 2C P 2N P 3H P 4H P 5H P
 FAIL: 6N (expected 4H) for QJT.AK98.J985.62 (hcp: 11 lp: 11 sp: 12), history: 2C P 2N P 3H P (subtest of 2C P 2N P 3H P 4H P 5H P)
-FAIL: P (expected 6S) for .AQ753.AJ5.K8762 (hcp: 14 lp: 16 sp: 19), history: 1S P 5N
 FAIL: None (expected P) for AKQJT987...QJT43 (hcp: 13 lp: 18 sp: 23), history: 1S P 5N P 6S P
 FAIL: 3S (expected 5N) for AKQJT987...QJT43 (hcp: 13 lp: 18 sp: 23), history: 1S P (subtest of 1S P 5N P 6S P)
-FAIL: P (expected 7S) for .AQ753.J5.AK8762 (hcp: 14 lp: 17 sp: 19), history: 1S P 5N
-Pass 13 of 23 hands
+Pass 17 of 25 hands
 
 test_slam_invitations_over_one_nt:
 FAIL: 5N (expected P) for AJ4.KQ8.K9873.Q2 (hcp: 15 lp: 16 sp: 14), history: 1N P 4N P
@@ -374,15 +372,15 @@ FAIL: 3S (expected 4S) for K74.9.J98.KJT742 (hcp: 8 lp: 10 sp: 11), history: 1N 
 FAIL: 2N (expected P) for Q87.J843.K65.Q93 (hcp: 8 lp: 8 sp: 8), history: 1N P
 Pass 1 of 3 hands
 
-Pass 1011 (80%) of 1255 total hands
+Pass 1015 (80%) of 1257 total hands
 
-Tested call generation of 154 rules of 157 total (excluding 7 requires_planning rules).
+Tested call generation of 155 rules of 158 total (excluding 8 requires_planning rules).
 Never selected call from:
 DelayedSupportResponseToFourthSuitForcing
 JumpNewSuitResponseToNegativeDouble
 ResponseToCappellettiMinorRequest
 
-Tested interpretation of 97 rules of 164 total.
+Tested interpretation of 98 rules of 166 total.
 
 1 rules were never used for either bidding or interpretation:
 JumpNewSuitResponseToNegativeDouble

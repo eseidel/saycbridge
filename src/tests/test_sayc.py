@@ -1045,7 +1045,7 @@ sayc_expectations = {
     ],
 
     "test_slam_biding": [
-        # FIXME: The slam bidding chapter has no hands, but does have sequences we could test.
+        # FIXME: The slam bidding chapter has no hands, but does have more sequences we could test.
 
         # 4NT Quantitative (invitational)
         ["QT64.AK8.KT6.A62", "4N", "1N P"],  # p156, East
@@ -1061,10 +1061,10 @@ sayc_expectations = {
         ["QJT.AK98.J985.62", "6H", "2C P 2N P 3H P 4H P 5H P"],  # Slamtastic?
 
         # Grand Slam Force
-        [".AQ753.AJ5.K8762", "6S", "1S P 5N"], # p157
+        [".AQ753.AJ5.K8762", "6S", "1S P 5N P"], # p157
         ["AKQJT987...QJT43", "P", "1S P 5N P 6S P"], # p157
         # If we had 2o3 in trump we would have gone to grand:
-        [".AQ753.J5.AK8762", "7S", "1S P 5N"],
+        [".AQ753.J5.AK8762", "7S", "1S P 5N P"],
 
         # FIXME: Missing tests for p158+
 
