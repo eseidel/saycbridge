@@ -314,14 +314,21 @@ class RaiseOfPartnersLastSuit(Precondition):
 
 
 class CueBid(Precondition):
-    def __init__(self, position):
+    def __init__(self, position, use_first_suit=False):
         self.position = position
+        self.use_first_suit = use_first_suit
 
     def fits(self, history, call):
-        last_call = history.view_for(self.position).last_call
-        if not last_call or last_call.strain not in suit.SUITS:
+        if self.use_first_suit:
+            target_call = None
+            for view in history.view_for(self.position).walk:
+                target_call = view.last_call
+        else:
+            target_call = history.view_for(self.position).last_call
+
+        if not target_call or target_call.strain not in suit.SUITS:
             return False
-        return call.strain == last_call.strain and history.view_for(self.position).min_length(last_call.strain) >= 3
+        return call.strain == target_call.strain and history.view_for(self.position).min_length(target_call.strain) >= 3
 
 
 class SuitLowerThanMyLastSuit(Precondition):

@@ -270,6 +270,12 @@ class CallHistory(object):
             return None
         return calls[-1]
 
+    def first_call_by(self, position):
+        calls =  self.calls_by(position)
+        if not calls:
+            return None
+        return calls[0]
+
     def last_call_by_next_bidder(self):
         next_caller = self.position_to_call()
         return self.last_call_by(next_caller)

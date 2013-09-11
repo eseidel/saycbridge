@@ -2057,8 +2057,6 @@ class CuebidResponseToTakeoutDouble(ResponseToTakeoutDouble):
 
 # NOTE: I don't think we're going to end up needing most of these.
 rebids_after_takeout_double = enum.Enum(
-    "CueBidAfterTakeoutDouble",
-
     "JumpMajorRaise",
     "MajorRaise",
 
@@ -2199,12 +2197,16 @@ class JumpTwoNotrumpAfterTakeoutDouble(RebidAfterTakeoutDouble):
 # class CueBidAfterTakeoutDouble(RebidAfterTakeoutDouble):
 #     preconditions = [
 #         NotJumpFromLastContract(),
-#         CueBid(positions.RHO),
+#         # The Cuebid here is defined as RHO's opening bid, not whatever their most recent one may be.
+#         CueBid(positions.RHO, use_first_suit=True),
 #     ]
-#     # Min: 1C X 1D P 2C
-#     call_names = suit_bids_below_game('2C')
+#     # Min: 1C X 1D P 2C, unclear what Max should be?
+#     call_names = (
+#         '2C', '2D', '2H', '2S',
+#         '3C', '3D', '3H', '3S',
+#         # 1S X 2H 3D P 3S?  Should we go higher?
+#     )
 #     shared_constraints = points >= 21
-#     priority = rebids_after_takeout_double.CueBidAfterTakeoutDouble
 
 
 class TakeoutDoubleAfterTakeoutDouble(RebidAfterTakeoutDouble):
@@ -2218,6 +2220,7 @@ class TakeoutDoubleAfterTakeoutDouble(RebidAfterTakeoutDouble):
     # We're asking partner to pick a suit, any suit but don't let them have it.
     shared_constraints = [points >= 17, MaxLengthInLastContractSuit(1)]
     priority = rebids_after_takeout_double.TakeoutDoubleAfterTakeoutDouble
+
 
 
 preempt_priorities = enum.Enum(
