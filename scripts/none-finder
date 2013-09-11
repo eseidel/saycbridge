@@ -46,7 +46,7 @@ class NoneFinder(object):
         constraints = []
         for call in CallExplorer().possible_calls_over(call_history):
             rule = selector.rule_for_call(call)
-            if rule and not rule.requires_planning(history):
+            if rule and not rule.requires_planning:
                 constraints.append(selector.constraints_for_call(call))
 
         constraints_expr = z3.Not(z3.Or(*constraints))
