@@ -484,19 +484,6 @@ class RaiseResponseToNegativeDouble(ResponseToNegativeDouble):
     shared_constraints = MinimumCombinedLength(8)
 
 
-# class RebidResponseToNegativeDouble(ResponseToNegativeDouble):
-#     preconditions = [
-#         RebidSameSuit(),
-#         NotJumpFromLastContract(),
-#     ]
-#     # Min: 1C 1D X P 2C, Max: 1H 2S X P 3H
-#     call_names = (
-#         '2C', '2D', '2H', '2S',
-#         '3C', '3D', '3H',
-#     )
-#     shared_constraints = MinLength(5)
-
-
 class NotrumpResponseToNegativeDouble(ResponseToNegativeDouble):
     preconditions = NotJumpFromLastContract()
     call_names = '1N'

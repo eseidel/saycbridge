@@ -430,6 +430,9 @@ sayc_expectations = {
         ["K953.972.T986.A9", "1N", "1D P 1H P 1S P"], # p69, h2
         ["75.K53.K98743.98", "2H", "1C P 1H P 1N P"], # p69, h3
         ["K8754.Q9.76.J984", "2C", "1C P 1S P 1N P"], # p70, h4
+        # When partner has offered 2 suits w/o reversing, he may up to 18 points
+        # but he likely doesn't.  We pick between his two offered suits
+        # and in this case, it seems we should pass, preferring 2C (and possibly missing a NT game).
         ["JT64.K532.8.A543", "P", "1H P 1S P 2C P"], # p70, h5
         ["K9.9732.K9.JT943", "2H", "1H P 1S P 2C P"], # p70, h6
 
