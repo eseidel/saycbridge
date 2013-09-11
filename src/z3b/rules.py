@@ -113,7 +113,9 @@ new_one_level_major_responses = set([
 new_one_level_minor_responses = set([new_one_level_suit_responses.OneDiamond])
 
 
-class OneLevelNewSuitResponse(ResponseToOneLevelSuitedOpen):
+class OneLevelNewSuitResponse(Rule):
+    # If partner opened, regardless of the bidding, its always only 6 points to mention a new suit at the one level.
+    preconditions = Opened(positions.Partner)
     shared_constraints = points >= 6
     constraints = {
         '1D': (diamonds >= 4, new_one_level_suit_responses.OneDiamond),

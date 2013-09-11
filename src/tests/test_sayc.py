@@ -491,9 +491,12 @@ sayc_expectations = {
         ["J73.K97.Q8.AQJ72", "3N", "1D P 1S P 2C P 2H P 2N P"], # p76, h4
         ["J73.K97.Q8.AQJ72", "4C", "1D P 1S P 2C P 2H P 3C P"], # p76, h4
         ["J73.K97.Q8.AQJ72", "4D", "1D P 1S P 2C P 2H P 3D P"], # p76, h4
-        # FIXME: This seems in direct conflict with the rule that 2N jump is preferred over mentioning a new minor?
+        # FIXME: 1D here seems in direct conflict with the rule that 2N jump is preferred over mentioning a new minor?
         # Maybe the 2N jump requires a spade stopper?
         ["K92.A983.AK2.732", "2S", "1C P 1D P 1H P"], # p76, h5
+
+        # 1S is natural and only requires 6 hcp.
+        ["932.A983.82.Q732", "1S", "1C P 1D P 1H P"],
 
         # Opener's rebid after FSF
         ["AK83.83.KQ974.82", "2H", "1H P 1S P 2C P 2D P"], # p77, h6
