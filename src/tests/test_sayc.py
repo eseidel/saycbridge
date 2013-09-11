@@ -1026,19 +1026,48 @@ sayc_expectations = {
         # When not to balance
         ["4.QJ96.KQ65.Q865", "P", "1H P P"],  # p142, h14
         ["J87.T9652.A43.98", "P", "1C P P"],  # p142, h15
+
+        # Responding to a balancing overcall
+        ["K83.K95.K54.QT75", "2S", "1C P P 1S P"],  # p144, h16
+        ["Q973.42.AT95.K87", "2S", "1C P P 1S P"],  # p144, h17
+        ["QJ62.K32.A4.K843", "3S", "1C P P 1S P"],  # p144, h18
+        # FIXME: Need tests for NT responses (none given in the book).
+
+        # Responding to a balancing double
+        ["AJ3.864.JT4.KQ73", "2S", "1D P P X P"],  # p145, h19
+        ["AJ3.864.JT4.K873", "1S", "1D P P X P"],  # modified h19
+        ["543.AQT43.KT4.K6", "P", "1D P P X P"],  # p145, h20
+
+        # Responding to a balancing 1NT -- no tests provided. :(
+        # Systems are on, just require more points.
+        ["AQ3.T64.KT43.Q64", "2C", "1D P P 1N P"],
+        ["AQ3.T643.KT4.Q64", "2N", "1D P P 1N P"],
     ],
 
-    "test_remaining_hands_from_book": [
-        # FIXME: Need tests for pages 144-155!
+    "test_slam_biding": [
+        # FIXME: The slam bidding chapter has no hands, but does have sequences we could test.
 
         # 4NT Quantitative (invitational)
         ["QT64.AK8.KT6.A62", "4N", "1N P"],  # p156, East
         ["KJ.QJT9.A873.KQ3", "6N", "1N P 4N P"], # p156, West, # FIXME: Why is 16 the "top end" of the 15-17 range?
         ["JT64.AK8.KQ6.A62", "4N", "1N P"],  # p156, East
         ["KQ.QJT9.A87.QJ73", "P", "1N P 4N P"], # p156, West
-    ],
 
-    "test_slam_biding": [
+        # 5H/5S functions like 4NT, inviting to small slam based on quality of trump holding.
+        [".AKQ.QT76432.AKQ", "5H", "1H P 3H P"],
+        ["AKQ.JT98.J985.62", "P", "1H P 3H P 5H P"],  # Not good enough for slam.
+
+        [".AKQ.KJ76432.AKQ", "5H", "2C P 2N P 3H P 4H P"], # Another way to bid the hand.
+        ["QJT.AK98.J985.62", "6H", "2C P 2N P 3H P 4H P 5H P"],  # Slamtastic?
+
+        # Grand Slam Force
+        [".AQ753.AJ5.K8762", "6S", "1S P 5N"], # p157
+        ["AKQJT987...QJT43", "P", "1S P 5N P 6S P"], # p157
+        # If we had 2o3 in trump we would have gone to grand:
+        [".AQ753.J5.AK8762", "7S", "1S P 5N"],
+
+        # FIXME: Missing tests for p158+
+
         ["A63.J43.AKQJT.A2", "5S", "1H P 2N P 3H P 4N P"], # 4N is blackwood after Jacoby2N
     ],
 
