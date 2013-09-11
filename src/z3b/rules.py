@@ -2060,15 +2060,17 @@ rebids_after_takeout_double = enum.Enum(
     "JumpMajorRaise",
     "MajorRaise",
 
-    "ThreeNotrumpAfterTakeoutDouble",
+    "ThreeNotrump",
 
     "JumpSpadesNewSuit",
     "SpadesNewSuit",
     "JumpHeartsNewSuit",
     "HeartsNewSuit",
 
-    "TwoNotrumpAfterTakeoutDouble",
-    "OneNotrumpAfterTakeoutDouble",
+    "JumpTwoNotrump",
+    "CueBid",
+    "TwoNotrump",
+    "OneNotrump",
 
     "JumpMinorRaise",
     "MinorRaise",
@@ -2078,7 +2080,7 @@ rebids_after_takeout_double = enum.Enum(
     "JumpClubsNewSuit",
     "ClubsNewSuit",
 
-    "TakeoutDoubleAfterTakeoutDouble",
+    "TakeoutDouble",
 )
 rule_order.order(*reversed(rebids_after_takeout_double))
 
@@ -2172,9 +2174,9 @@ class JumpNewSuitAfterTakeoutDouble(RebidAfterTakeoutDouble):
 
 class NotrumpAfterTakeoutDouble(RebidAfterTakeoutDouble):
     constraints = {
-        '1N': (points >= 18, rebids_after_takeout_double.OneNotrumpAfterTakeoutDouble),
+        '1N': (points >= 18, rebids_after_takeout_double.OneNotrump),
         # 2N depends on whether it is a jump.
-        '3N': (points >= 23, rebids_after_takeout_double.ThreeNotrumpAfterTakeoutDouble), # FIXME: Techincally means 9+ tricks.
+        '3N': (points >= 23, rebids_after_takeout_double.ThreeNotrump), # FIXME: Techincally means 9+ tricks.
     }
     # This can't require stoppers, or we have a hole.
     # With 18 hcp and no 5 card suit, no support for partner, we have to have something to bid.
@@ -2184,29 +2186,31 @@ class NonJumpTwoNotrumpAfterTakeoutDouble(RebidAfterTakeoutDouble):
     preconditions = NotJumpFromLastContract()
     call_names = '2N'
     shared_constraints = [points >= 19, StoppersInOpponentsSuits()]
-    priority = rebids_after_takeout_double.TwoNotrumpAfterTakeoutDouble
+    priority = rebids_after_takeout_double.TwoNotrump
 
 
 class JumpTwoNotrumpAfterTakeoutDouble(RebidAfterTakeoutDouble):
     preconditions = JumpFromLastContract()
     call_names = '2N'
     shared_constraints = [points >= 21, StoppersInOpponentsSuits()]
-    priority = rebids_after_takeout_double.TwoNotrumpAfterTakeoutDouble
+    priority = rebids_after_takeout_double.JumpTwoNotrump
 
 
-# class CueBidAfterTakeoutDouble(RebidAfterTakeoutDouble):
-#     preconditions = [
-#         NotJumpFromLastContract(),
-#         # The Cuebid here is defined as RHO's opening bid, not whatever their most recent one may be.
-#         CueBid(positions.RHO, use_first_suit=True),
-#     ]
-#     # Min: 1C X 1D P 2C, unclear what Max should be?
-#     call_names = (
-#         '2C', '2D', '2H', '2S',
-#         '3C', '3D', '3H', '3S',
-#         # 1S X 2H 3D P 3S?  Should we go higher?
-#     )
-#     shared_constraints = points >= 21
+class CueBidAfterTakeoutDouble(RebidAfterTakeoutDouble):
+    preconditions = [
+        NotJumpFromLastContract(),
+        # The Cuebid here is defined as RHO's opening bid, not whatever their most recent one may be.
+        CueBid(positions.RHO, use_first_suit=True),
+    ]
+    # Min: 1C X 1D P 2C, unclear what Max should be?
+    call_names = (
+        '2C', '2D', '2H', '2S',
+        '3C', '3D', '3H', '3S',
+        # 1S X 2H 3D P 3S?  Should we go higher?
+    )
+    # The book says "with slam interest".  Unclear what that means for constraints.
+    shared_constraints = points >= 21
+    priority = rebids_after_takeout_double.CueBid
 
 
 class TakeoutDoubleAfterTakeoutDouble(RebidAfterTakeoutDouble):
@@ -2219,7 +2223,7 @@ class TakeoutDoubleAfterTakeoutDouble(RebidAfterTakeoutDouble):
     # Doubling a second time shows both 17+ and shortness in the last bid contract.
     # We're asking partner to pick a suit, any suit but don't let them have it.
     shared_constraints = [points >= 17, MaxLengthInLastContractSuit(1)]
-    priority = rebids_after_takeout_double.TakeoutDoubleAfterTakeoutDouble
+    priority = rebids_after_takeout_double.TakeoutDouble
 
 
 
