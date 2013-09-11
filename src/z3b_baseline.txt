@@ -209,26 +209,27 @@ FAIL: 3H (expected 2N) for K.K7.KJ98542.QT8 (hcp: 12 lp: 15 sp: 13), history: 1H
 FAIL: P (expected 1H) for AK.72.KT942.AQT5 (hcp: 16 lp: 17 sp: 18), history: P 1C
 FAIL: P (expected 1N) for AKT4.AT.A82.J876 (hcp: 16 lp: 16 sp: 17), history: 1C P P
 FAIL: 2N (expected 2H) for QJ86.K7.AKT53.T6 (hcp: 13 lp: 14 sp: 15), history: 1H P 2D P
-Pass 283 of 360 hands
+Pass 281 of 358 hands
 
 test_negative_double:
 FAIL: 3H (expected P) for 4.A3.KQ65.KJT865 (hcp: 13 lp: 15 sp: 17), history: 1C 1S P P X P
 FAIL: 1N (expected P) for 4.A3.KQ65.KJT865 (hcp: 13 lp: 15 sp: 17), history: 1C 1S (subtest of 1C 1S P P X P)
 FAIL: 4S (expected 3H) for KJ52.K9864..AQ64 (hcp: 13 lp: 14 sp: 18), history: 1C 2H X P 2S P
 FAIL: 3N (expected 3H) for KJ52.K9864..AQ64 (hcp: 13 lp: 14 sp: 18), history: 1C 2H X P 3C P
-FAIL: 5D (expected 3H) for KJ52.K9864..AQ64 (hcp: 13 lp: 14 sp: 18), history: 1C 2H X P 3D P
+FAIL: 3N (expected 3H) for KJ52.K9864..AQ64 (hcp: 13 lp: 14 sp: 18), history: 1C 2H X P 3D P
 WARNING: Unordered: ['X', '2N'] from: [TwoLevelNegativeDouble, NotrumpResponseToMinorOpen] ([<class 'z3b.rules.TwoLevelNegativeDouble'>, <class 'z3b.rules.NotrumpResponseToMinorOpen'>])
 FAIL: None (expected X) for KJ3.86.AQT7.K963 (hcp: 13 lp: 13 sp: 14), history: 1D 2C (subtest of 1D 2C X P 2D P)
 FAIL: 1N (expected 2D) for J5.AQ864.A54.K76 (hcp: 14 lp: 15 sp: 14), history: 1D 1S X P
 FAIL: 2S (expected 3N) for KJ6.AQJ93.K5.AJ6 (hcp: 19 lp: 20 sp: 20), history: 1D 1S X P
-FAIL: 2H (expected 2S) for AQ6.KQJ97.AQ76.5 (hcp: 18 lp: 19 sp: 21), history: 1D 1S X P
+FAIL: 3H (expected 2S) for AQ6.KQJ97.AQ76.5 (hcp: 18 lp: 19 sp: 21), history: 1D 1S X P
 WARNING: Unordered: ['2S', 'X'] from: [NewSuitAtTheTwoLevel, TwoLevelNegativeDouble] ([TwoSpades, <class 'z3b.rules.TwoLevelNegativeDouble'>])
 FAIL: None (expected 2S) for Q832.QT.K4.AQT93 (hcp: 13 lp: 14 sp: 13), history: 1D 2H
 WARNING: Unordered: ['2N', 'X'] from: [NotrumpResponseToMinorOpen, TwoLevelNegativeDouble] ([<class 'z3b.rules.NotrumpResponseToMinorOpen'>, <class 'z3b.rules.TwoLevelNegativeDouble'>])
 FAIL: None (expected X) for Q832.QT2.K4.AQT9 (hcp: 13 lp: 13 sp: 14), history: 1D 2H
 FAIL: X (expected 2H) for Q832.QT.AQT93.K4 (hcp: 13 lp: 14 sp: 13), history: 1D 1S
+FAIL: 2N (expected 2D) for A.AQ94.KJT95.Q53 (hcp: 16 lp: 17 sp: 19), history: P P P 1H 1S X P
 FAIL: 3H (expected 2S) for Q2.A95.AT3.KT843 (hcp: 13 lp: 14 sp: 12), history: 1H 2C
-Pass 39 of 52 hands
+Pass 42 of 56 hands
 
 test_open_one_nt:
 Pass 7 of 7 hands
@@ -377,12 +378,12 @@ FAIL: 3S (expected 4S) for K74.9.J98.KJT742 (hcp: 8 lp: 10 sp: 11), history: 1N 
 FAIL: 2N (expected P) for Q87.J843.K65.Q93 (hcp: 8 lp: 8 sp: 8), history: 1N P
 Pass 1 of 3 hands
 
-Pass 972 (80%) of 1214 total hands
+Pass 973 (80%) of 1216 total hands
 
-Tested call generation of 140 rules of 146 total (requires_planning ignored).
+Tested call generation of 145 rules of 151 total (requires_planning ignored).
 
-Tested interpretation of 88 rules of 152 total.
+Tested interpretation of 90 rules of 157 total.
 
 2 rules were never used for either bidding or interpretation:
-JumpNotrumpResponseToNegativeDouble
+JumpNewSuitResponseToNegativeDouble
 NotrumpAfterPreempt

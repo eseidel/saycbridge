@@ -434,6 +434,7 @@ negative_doubles = set([OneLevelNegativeDouble, TwoLevelNegativeDouble])
 
 # aka OpenerRebidAfterNegativeDouble.
 class ResponseToNegativeDouble(Rule):
+    category = categories.Gadget # FIXME: Is this right?
     preconditions = LastBidHasAnnotation(positions.Partner, annotations.NegativeDouble)
 
 
@@ -442,27 +443,128 @@ class CuebidReponseToNegativeDouble(ResponseToNegativeDouble):
         CueBid(positions.LHO),
         NotJumpFromLastContract(),
     ]
-    # Min: 1C 1D X P 2D, Max: 1S 2H X 3H
+    # Min: 1C 1D X P 2D, Max: 1C 2S X 3S
     call_names = (
         # Unclear if a cuebid of 2D ever makes sense since
         # we'll know they're 4-4 in the majors and can choose between a minor game and NT?
               '2D', '2H', '2S',
-        '3C', '3D', '3H'
+        '3C', '3D', '3H', '3S',
     )
     shared_constraints = points >= 19
 
 
-class JumpNotrumpResponseToNegativeDouble(ResponseToNegativeDouble):
-    preconditions = JumpFromLastContract(exact_size=1)
-    category = categories.Gadget # FIXME: Is this right?
-    call_names = '2N'
-    # FIXME: Why does adding "balanced" here make this exactly 18?
-    shared_constraints = (points >= 16, balanced)
+class NewSuitResponseToNegativeDouble(ResponseToNegativeDouble):
+    preconditions = [
+        NotJumpFromLastContract(),
+        UnbidSuit(),
+    ]
+    # Min: 1C 1D X P 1H, Max: 1C 2S X P 3H
+    call_names = (
+                    '1H', '1S',
+        '2C', '2D', '2H', '2S',
+        '3C', '3D', '3H',
+    )
+    shared_constraints = MinLength(4)
+
+
+class RaiseResponseToNegativeDouble(ResponseToNegativeDouble):
+    preconditions = [
+        PartnerHasAtLeastLengthInSuit(4),
+        NotJumpFromLastContract(),
+    ]
+    # Min: 1C 1D X P 1H, Max: 1C 2S X P 3H
+    priorities_per_call = {
+        # FIXME: It's a bit awkward to re-use raise_responses here.
+        ('2C', '2D', 
+         '3C', '3D'): raise_responses.MinorMinimum,
+        ('1H', '1S',
+         '2H', '2S',
+         '3H'      ): raise_responses.MajorMinimum,
+    }
+    shared_constraints = MinimumCombinedLength(8)
+
+
+# class RebidResponseToNegativeDouble(ResponseToNegativeDouble):
+#     preconditions = [
+#         RebidSameSuit(),
+#         NotJumpFromLastContract(),
+#     ]
+#     # Min: 1C 1D X P 2C, Max: 1H 2S X P 3H
+#     call_names = (
+#         '2C', '2D', '2H', '2S',
+#         '3C', '3D', '3H',
+#     )
+#     shared_constraints = MinLength(5)
+
+
+class NotrumpResponseToNegativeDouble(ResponseToNegativeDouble):
+    preconditions = NotJumpFromLastContract()
+    call_names = '1N'
+    shared_constraints = balanced
 
 
 rule_order.order(
-    JumpNotrumpResponseToNegativeDouble,
-    CuebidReponseToNegativeDouble,
+    raise_responses.MinorMinimum,
+    NotrumpResponseToNegativeDouble,
+    raise_responses.MajorMinimum,
+)
+
+
+class JumpResponseToNegativeDouble(ResponseToNegativeDouble):
+    preconditions = JumpFromLastContract(exact_size=1)
+    shared_constraints = points >= 16
+
+
+negative_double_jump_responses = enum.Enum(
+    "RaiseMajor",
+    "NewMajor",
+    "Notrump",
+    "RaiseMinor",
+    "NewMinor",
+)
+rule_order.order(*reversed(negative_double_jump_responses))
+
+
+class JumpNewSuitResponseToNegativeDouble(JumpResponseToNegativeDouble):
+    preconditions = UnbidSuit()
+    # Min: 1C 1D X P 2H, Max: 1C 2H X P 3S
+    priorities_per_call = {
+        # I don't think major and minor can ever occur at the same time.
+        # This diffence exists only for ordering with JumpNotrumpResonse.
+        ('2H', '2S'): negative_double_jump_responses.NewMajor,
+        ('3C', '3D'): negative_double_jump_responses.NewMinor,
+        ('3H', '3S'): negative_double_jump_responses.NewMajor,
+    }
+    shared_constraints = MinLength(4)
+
+
+class JumpRaiseResponseToNegativeDouble(JumpResponseToNegativeDouble):
+    preconditions = PartnerHasAtLeastLengthInSuit(4),
+    # Min: 1C 1D X P 3D, Max: 1C 2S X P 4H
+    priorities_per_call = {
+        (      '3D'): negative_double_jump_responses.RaiseMinor,
+        ('3H', '3S'): negative_double_jump_responses.RaiseMajor,
+        ('4C', '4D'): negative_double_jump_responses.RaiseMinor,
+        ('4H'      ): negative_double_jump_responses.RaiseMajor,
+    }
+    shared_constraints = MinimumCombinedLength(8)
+
+rule_order.order(
+    raise_responses,
+    negative_double_jump_responses,
+)
+
+class JumpNotrumpResponseToNegativeDouble(JumpResponseToNegativeDouble):
+    call_names = '2N'
+    # If this bid promised balanced, it would be exactly 18, as otherwise
+    # we would have opened 1N if we were balanced.
+    shared_constraints = NO_CONSTRAINTS
+    priority = negative_double_jump_responses.Notrump
+
+
+rule_order.order(
+    NotrumpResponseToNegativeDouble,
+    negative_double_jump_responses.Notrump,
 )
 
 # Cuebid response is for when we're going to at least game and possibly slam and is basically our highest priority.
@@ -665,7 +767,7 @@ class SupportPartnerMajorSuit(SupportPartnerSuit):
 
 class RebidOriginalSuitByOpener(RebidAfterOneLevelOpen):
     preconditions = [
-        LastBidHasLevel(positions.Me, 1),
+        LastBidHasAnnotation(positions.Me, annotations.OneLevelSuitOpening),
         RebidSameSuit(),
     ]
 
@@ -2803,4 +2905,16 @@ rule_order.order(
     # 1N overcall is more descriptive than a takeout double.
     standard_takeout_doubles,
     DirectOvercall1N,
+)
+rule_order.order(
+    ForcedRebidOriginalSuitByOpener,
+    NewSuitResponseToNegativeDouble,
+    negative_double_jump_responses,
+    CuebidReponseToNegativeDouble,
+)
+
+rule_order.order(
+    minimum_raise_responses,
+    JumpRaiseResponseToNegativeDouble,
+    CuebidReponseToNegativeDouble,
 )

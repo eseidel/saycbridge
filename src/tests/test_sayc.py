@@ -917,6 +917,9 @@ sayc_expectations = {
         ["J5.AQ864.A54.K76", "2D", "1D 1S X P"],  # p131, h10 (1NT is also valid)
         ["KJ43.KQJ97.K5.87", "2C", "1D 1S X P"],  # p131, h11
         ["A94.KQ87.874.KJ6", "1N", "1D 1S X P"],  # p131, h12
+        # Jump rebids are 16-18hcp p133
+        ["A964.KQ874.K7.A8", "2N", "1D 1S X P"],
+
         ["KJ6.AQJ93.K5.AJ6", "3N", "1D 1S X P"],  # p131, h13, Why 3N instead of 2N?  Minor followed by 2N show 18-19 points?  A Cuebid would also show 19+ points.
         ["AQ6.KQJ97.AQ76.5", "2S", "1D 1S X P"],  # p131, h14
         ["J43.KJ97.AQ76.Q7", "2H", "1D 1S X P"],  # p131, h15
@@ -939,6 +942,8 @@ sayc_expectations = {
         ['Q832.QT2.K4.AQT9', 'X', '1D 2H'],
         ['Q832.QT.AQT93.K4', '2H', '1D 1S'],
         ['Q832.QT2.AQT9.K4', 'X', '1D 1S'],
+
+        ['A.AQ94.KJT95.Q53', '2D', 'P P P 1H 1S X P', 'Both'],  # 4-4ddd50827c9e21e4eae4881def, S needs to bid 2D in response to the negative double.
 
         # No need to search for minor fits when we already have a major fit.
         ['J854.A64.A94.QT7', '3H', 'P 1H 1S', 'E-W'],  # 3-85c71e2998bbdc4e9ff4a24d10, E
@@ -1146,7 +1151,6 @@ sayc_expectations = {
         ['J42.AT9.987632.5', '4H', '1D 1H 1S'],  # 8-8b54e731fdaf2a0aa43149f057, S should only jump to 4H, despite having 6 hearts.
         ['AK742.A.T972.Q63', '4S', '1C P 1S P 1N P 3S P', 'N-S'],  # 15-8b6d469cdfcd684e68f7867020, S should rebid with 1N, having no better bid.
         ['732.A62.KQ964.J7', '2H', 'P P 1D 1S P', 'E-W'],  # 3-f239907a319831ecb4f162dad5, W should mention his hearts in response to his partner's overcall.
-        ['A.AQ94.KJT95.Q53', '2D', 'P P P 1H 1S X P', 'Both'],  # 4-4ddd50827c9e21e4eae4881def, S needs to bid 2D in response to the negative double.
         ['5.9643.K7542.QJ5', 'P', '1N P 2D P 2H P', 'N-S'],  # 5-12f05d5a67b30ba64d63c933ac, S should never plan garbage stayman when he could escape tranfer instead.
         ['AKQ852.K8.T.KJ93', '4S', '1S P 2N P 3H P', 'N-S'],  # 15-14d3b03b685a1ff7937625e222, N should bid Jacoby2N and consider slam (they make 6S).
         ['J5.KJ7.AKQ74.963', '4H', '1H X 2N P', 'Both'],  # 13-f8b7c66e93521b3cab0114539e, N should jump to game after Jordan2N.
