@@ -60,12 +60,16 @@ class MinimumCombinedPoints(Constraint):
 
 
 class MinimumCombinedSupportPoints(Constraint):
-    def __init__(self, min_points):
+    def __init__(self, min_points, use_partners_last_suit=False):
         self.min_points = min_points
+        self.use_partners_last_suit = use_partners_last_suit
 
     def expr(self, history, call):
         implied_min_points = max(0, self.min_points - history.partner.min_points)
-        return z3.And(model.support_points_expr_for_suit(call.strain) >= implied_min_points,
+        suit = call.strain
+        if self.use_partners_last_suit:
+            suit = history.partner.last_call.strain
+        return z3.And(model.support_points_expr_for_suit(suit) >= implied_min_points,
                       model.playing_points >= implied_min_points)
 
 

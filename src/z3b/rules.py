@@ -223,7 +223,7 @@ class Jordan(ResponseToOneLevelSuitedOpen):
     call_names = '2N'
     shared_constraints = [
         MinimumCombinedLength(8, use_partners_last_suit=True),
-        MinimumCombinedPoints(22),
+        MinimumCombinedSupportPoints(22, use_partners_last_suit=True),
     ]
 
 
