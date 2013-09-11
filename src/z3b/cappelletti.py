@@ -40,7 +40,8 @@ class Cappelletti(Rule):
     # The book suggests "decent strength".
     # The book bids Cappelletti with 11 hcp, but seems to want 12 hcp when responding.
     # Wikipedia says Cappelletti is 9-14 hcp.
-    shared_constraints = points >= 10
+    # playing_points here is sorta compensating for us not using length_points?
+    shared_constraints = points >= 10, playing_points >= 12
 
 
 rule_order.order(
@@ -215,3 +216,8 @@ class RaiseAfterCappellettiMinorRequest(Rule):
         MinimumCombinedLength(8),
         MinimumCombinedSupportPoints(22), # Matches limit raise
     ]
+
+rule_order.order(
+    DefaultPass,
+    RaiseAfterCappellettiMinorRequest,
+)
