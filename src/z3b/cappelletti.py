@@ -102,6 +102,22 @@ class ResponseToCappellettiTwoClubs(ResponseToCappelletti):
     }
 
 
+class RebidAfterCappelleti(Rule):
+    preconditions = LastBidHasAnnotation(positions.Me, annotations.Cappelletti)
+
+
+
+class SuitRebidAfterCappellettiTwoClubs(RebidAfterCappelleti):
+    preconditions = [
+        LastBidWas(positions.Me, '2C'),
+        UnbidSuit(),
+    ]
+    # FIXME: What if they interfere?
+    call_names = ('2H', '2S', '3C', '3D')
+    shared_constraints = MinLength(6)
+
+
+
 cappelletti_two_diamonds_responses = enum.Enum(
     "InvitationalHeartSupport",
     "InvitationalSpadeSupport",
