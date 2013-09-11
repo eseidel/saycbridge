@@ -214,9 +214,6 @@ Pass 281 of 358 hands
 test_negative_double:
 FAIL: 3H (expected P) for 4.A3.KQ65.KJT865 (hcp: 13 lp: 15 sp: 17), history: 1C 1S P P X P
 FAIL: 1N (expected P) for 4.A3.KQ65.KJT865 (hcp: 13 lp: 15 sp: 17), history: 1C 1S (subtest of 1C 1S P P X P)
-FAIL: 4S (expected 3H) for KJ52.K9864..AQ64 (hcp: 13 lp: 14 sp: 18), history: 1C 2H X P 2S P
-FAIL: 3N (expected 3H) for KJ52.K9864..AQ64 (hcp: 13 lp: 14 sp: 18), history: 1C 2H X P 3C P
-FAIL: 3N (expected 3H) for KJ52.K9864..AQ64 (hcp: 13 lp: 14 sp: 18), history: 1C 2H X P 3D P
 FAIL: 1N (expected 2D) for J5.AQ864.A54.K76 (hcp: 14 lp: 15 sp: 14), history: 1D 1S X P
 FAIL: 2S (expected 3N) for KJ6.AQJ93.K5.AJ6 (hcp: 19 lp: 20 sp: 20), history: 1D 1S X P
 FAIL: 3H (expected 2S) for AQ6.KQJ97.AQ76.5 (hcp: 18 lp: 19 sp: 21), history: 1D 1S X P
@@ -224,7 +221,7 @@ FAIL: X (expected 2S) for Q832.QT.K4.AQT93 (hcp: 13 lp: 14 sp: 13), history: 1D 
 FAIL: X (expected 2H) for Q832.QT.AQT93.K4 (hcp: 13 lp: 14 sp: 13), history: 1D 1S
 FAIL: 2N (expected 2D) for A.AQ94.KJT95.Q53 (hcp: 16 lp: 17 sp: 19), history: P P P 1H 1S X P
 FAIL: 3H (expected 2S) for Q2.A95.AT3.KT843 (hcp: 13 lp: 14 sp: 12), history: 1H 2C
-Pass 44 of 56 hands
+Pass 47 of 56 hands
 
 test_open_one_nt:
 Pass 7 of 7 hands
@@ -369,15 +366,15 @@ FAIL: 3S (expected 4S) for K74.9.J98.KJT742 (hcp: 8 lp: 10 sp: 11), history: 1N 
 FAIL: 2N (expected P) for Q87.J843.K65.Q93 (hcp: 8 lp: 8 sp: 8), history: 1N P
 Pass 1 of 3 hands
 
-Pass 986 (80%) of 1223 total hands
+Pass 989 (80%) of 1223 total hands
 
-Tested call generation of 153 rules of 156 total (excluding 7 requires_planning rules).
+Tested call generation of 154 rules of 157 total (excluding 7 requires_planning rules).
 Never selected call from:
 DelayedSupportResponseToFourthSuitForcing
 JumpNewSuitResponseToNegativeDouble
 ResponseToCappellettiMinorRequest
 
-Tested interpretation of 94 rules of 163 total.
+Tested interpretation of 94 rules of 164 total.
 
 1 rules were never used for either bidding or interpretation:
 JumpNewSuitResponseToNegativeDouble
