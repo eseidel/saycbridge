@@ -512,6 +512,7 @@ negative_double_jump_responses = enum.Enum(
 rule_order.order(*reversed(negative_double_jump_responses))
 
 
+# FIXME: This is identical to JumpShiftByOpener and can be removed.
 class JumpNewSuitResponseToNegativeDouble(JumpResponseToNegativeDouble):
     preconditions = UnbidSuit()
     # Min: 1C 1D X P 2H, Max: 1C 2H X P 3S
@@ -527,25 +528,30 @@ class JumpNewSuitResponseToNegativeDouble(JumpResponseToNegativeDouble):
 
 class JumpRaiseResponseToNegativeDouble(JumpResponseToNegativeDouble):
     preconditions = PartnerHasAtLeastLengthInSuit(4),
-    # Min: 1C 1D X P 3D, Max: 1C 2S X P 4H
+    # Min: 1C 1D X P 2H, Max: 1C 2S X P 4H
     priorities_per_call = {
-        (      '3D'): negative_double_jump_responses.RaiseMinor,
+        ('2H', '2S'): negative_double_jump_responses.RaiseMajor,
+        ('3C', '3D'): negative_double_jump_responses.RaiseMinor,
         ('3H', '3S'): negative_double_jump_responses.RaiseMajor,
         ('4C', '4D'): negative_double_jump_responses.RaiseMinor,
         ('4H'      ): negative_double_jump_responses.RaiseMajor,
     }
     shared_constraints = MinimumCombinedLength(8)
 
+
 rule_order.order(
     raise_responses,
     negative_double_jump_responses,
 )
 
+
 class JumpNotrumpResponseToNegativeDouble(JumpResponseToNegativeDouble):
     call_names = '2N'
     # If this bid promised balanced, it would be exactly 18, as otherwise
     # we would have opened 1N if we were balanced.
-    shared_constraints = NO_CONSTRAINTS
+    # But we still shouldn't have any voids.  With a void we should be jumping to some suit.
+    # If this bid had no constraints, then minor jump raises are impossible.
+    shared_constraints = MinLength(1, suit.SUITS)
     priority = negative_double_jump_responses.Notrump
 
 
