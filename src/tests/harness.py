@@ -260,18 +260,19 @@ class TestHarness(unittest2.TestCase):
             print "Ignoring coverage summary, failed to find rules."
             return
 
+        all_rule_names = set(map(str, all_rules))
+
         # Don't expect to see rules which are marked "requires_planning".
         non_planned_rules = filter(lambda rule: not rule.requires_planning, all_rules)
         non_planned_rule_names = set(map(str, non_planned_rules))
         called_rule_names = self.results.called_rule_names
-        print "Tested call generation of %s rules of %s total (requires_planning ignored)." % (len(called_rule_names), len(non_planned_rule_names))
+        planned_rule_count = len(all_rule_names) - len(non_planned_rule_names)
+        print "Tested call generation of %s rules of %s total (excluding %s requires_planning rules)." % (len(called_rule_names), len(non_planned_rule_names), planned_rule_count)
         uncalled_rule_names = non_planned_rule_names - called_rule_names
-        # FIXME: We should print these but we have too many right now!
-        # if uncalled_rule_names:
-        #     print "Never selected call from:"
-        #     print "\n".join(sorted(uncalled_rule_names))
+        if uncalled_rule_names:
+            print "Never selected call from:"
+            print "\n".join(sorted(uncalled_rule_names))
 
-        all_rule_names = set(map(str, all_rules))
         interpreted_rule_names = self.results.interpreted_rule_names
         print "\nTested interpretation of %s rules of %s total." % (len(interpreted_rule_names), len(all_rule_names))
         uninterpreted_rule_names = all_rule_names - interpreted_rule_names

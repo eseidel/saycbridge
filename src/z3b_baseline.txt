@@ -375,7 +375,13 @@ Pass 1 of 3 hands
 
 Pass 979 (80%) of 1220 total hands
 
-Tested call generation of 146 rules of 151 total (requires_planning ignored).
+Tested call generation of 146 rules of 151 total (excluding 6 requires_planning rules).
+Never selected call from:
+AcceptTransferToClubs
+AcceptTransferToTwoClubs
+DelayedSupportResponseToFourthSuitForcing
+Jordan
+JumpNewSuitResponseToNegativeDouble
 
 Tested interpretation of 90 rules of 157 total.
 
