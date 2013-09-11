@@ -531,6 +531,11 @@ sayc_expectations = {
         ["Q9.QT82.AQT984.2", "3D", "2H P 2S P"], # p85, h5
         ["74.982.AQT984.82", "3H", "2H P 2S P"], # p85, h6
 
+        # With a maxium and no fit for partner, bid Notrump:
+        ["74.982.AKQT94.82", "2N", "2H P 2S P"],
+        # p 90 seems to suggest we might bid 3N here?  Rebidding 3S, even with a maximum seems better, let parter call NT?
+        ["74.982.82.AKQT94", "3N", "2S P 3C P"],
+
         # Feature bidding over 2N response from partner to your preempt
         ["T9.982.AKT984.98", "3H", "2H P 2N P"], # p85, h7
         ["T9.KT2.AQT984.82", "3D", "2H P 2N P"], # p85, h8

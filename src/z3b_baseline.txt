@@ -280,7 +280,7 @@ FAIL: 1H (expected 4H) for 8.9873.AKQT864.4 (hcp: 9 lp: 12 sp: 15), history:
 FAIL: 1H (expected 4H) for 8.9873.AKQT864.4 (hcp: 9 lp: 12 sp: 15), history: P
 FAIL: 1H (expected 4H) for 8.9873.AKQT864.4 (hcp: 9 lp: 12 sp: 15), history: P P
 FAIL: P (expected 4H) for 8.9873.AKQT864.4 (hcp: 9 lp: 12 sp: 15), history: P P P
-Pass 56 of 76 hands
+Pass 60 of 80 hands
 
 test_preemptive_overcalls:
 Pass 9 of 9 hands
@@ -373,12 +373,11 @@ FAIL: 3S (expected 4S) for K74.9.J98.KJT742 (hcp: 8 lp: 10 sp: 11), history: 1N 
 FAIL: 2N (expected P) for Q87.J843.K65.Q93 (hcp: 8 lp: 8 sp: 8), history: 1N P
 Pass 1 of 3 hands
 
-Pass 975 (80%) of 1216 total hands
+Pass 979 (80%) of 1220 total hands
 
-Tested call generation of 145 rules of 151 total (requires_planning ignored).
+Tested call generation of 146 rules of 151 total (requires_planning ignored).
 
 Tested interpretation of 90 rules of 157 total.
 
-2 rules were never used for either bidding or interpretation:
+1 rules were never used for either bidding or interpretation:
 JumpNewSuitResponseToNegativeDouble
-NotrumpAfterPreempt

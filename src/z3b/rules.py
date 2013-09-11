@@ -2337,7 +2337,6 @@ rule_order.order(
     NewSuitResponseToPreempt,
 )
 
-
 class ForcedRebidAfterPreempt(Rule):
     preconditions = [
         LastBidHasAnnotation(positions.Me, annotations.Preemptive),
@@ -2346,6 +2345,14 @@ class ForcedRebidAfterPreempt(Rule):
     ]
 
 
+class ForcedRebidAfterNewSuitResponseToPreempt(ForcedRebidAfterPreempt):
+    preconditions = [
+        LastBidHasSuit(positions.Partner),
+        InvertedPrecondition(LastBidHasAnnotation(positions.Partner, annotations.Artificial)),
+    ]
+
+
+# This applies both after a new suit, or after 2N feature request.
 class MinimumRebidOfPreemptSuit(ForcedRebidAfterPreempt):
     preconditions = [
         RebidSameSuit(),
@@ -2359,7 +2366,7 @@ class MinimumRebidOfPreemptSuit(ForcedRebidAfterPreempt):
     shared_constraints = NO_CONSTRAINTS
 
 
-class RaiseOfPartnersPreemptResponse(ForcedRebidAfterPreempt):
+class RaiseOfPartnersPreemptResponse(ForcedRebidAfterNewSuitResponseToPreempt):
     preconditions = [
         RaiseOfPartnersLastSuit(),
         NotJumpFromLastContract(),
@@ -2373,7 +2380,7 @@ class RaiseOfPartnersPreemptResponse(ForcedRebidAfterPreempt):
     shared_constraints = MinimumCombinedLength(8)
 
 
-class NewSuitAfterPreempt(ForcedRebidAfterPreempt):
+class NewSuitAfterPreempt(ForcedRebidAfterNewSuitResponseToPreempt):
     preconditions = [
         NotJumpFromLastContract(),
         UnbidSuit(),
@@ -2387,10 +2394,10 @@ class NewSuitAfterPreempt(ForcedRebidAfterPreempt):
     shared_constraints = [points >= 9, MinLength(4)]
 
 
-class NotrumpAfterPreempt(ForcedRebidAfterPreempt):
+class NotrumpAfterPreempt(ForcedRebidAfterNewSuitResponseToPreempt):
     preconditions = NotJumpFromLastContract()
-    # Min: 1S 2D P 2H P 2N, Unclear if 3N is viable?
-    call_names = '2N'
+    # Min: 2D P 2H P 2N, Unclear if 3N is viable?
+    call_names = ('2N', '3N')
     shared_constraints = points >= 9
 
 
