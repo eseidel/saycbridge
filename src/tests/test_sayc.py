@@ -807,6 +807,8 @@ sayc_expectations = {
         ["76.72.42.KQT9843", "2S", "1N 2H P"],  # p112, h18
         ["AK43.T62.KT43.73", "3H", "1N 2H P 2N P 3C P"],  # p112, h19
         ["AK43.T62.KT43.73", "3H", "1N 2H P 2N P 3D P"],  # p112, h19
+        # Sanity check that we know how to respond to a minor request:
+        ["AKJ42.T9.AQ875.5", "3C", "1N 2H P 2N P"],
     ],
 
     "test_doubles": [ # Chap 15
@@ -987,6 +989,8 @@ sayc_expectations = {
 
         ["Q93.5.AT93.AKJ53", "X", "P 1S 2D P P"],  # p138, West
         ["KT6.AQJ74.874.T2", "P", "P 1S 2D P P X P"],  # p138, East
+
+        ['AJ75.A92.KT2.AK3', 'X', '1C 1D P P', 'Both'],  # 10-f912dc5ece6e9682f41b48f085, E
     ],
 
     "test_balancing": [ # Balancing (Chap 18)

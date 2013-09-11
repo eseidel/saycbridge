@@ -244,7 +244,7 @@ Pass 6 of 12 hands
 test_overcalling_one_notrump:
 FAIL: P (expected 2N) for QT643.T962.4.965 (hcp: 2 lp: 3 sp: 5), history: 1N 2H P
 FAIL: 3H (expected 2N) for AK43.T62.KT43.73 (hcp: 10 lp: 10 sp: 11), history: 1N 2H P (subtest of 1N 2H P 2N P 3C P)
-Pass 20 of 22 hands
+Pass 21 of 23 hands
 
 test_overcalls:
 FAIL: X (expected 1H) for AQJ6.K96.AKJ74.3 (hcp: 18 lp: 19 sp: 21), history: 1C
@@ -291,7 +291,9 @@ FAIL: 2S (expected X) for KQ5.QJ3.2.AJ6543 (hcp: 13 lp: 15 sp: 16), history: P 1
 FAIL: 2H (expected X) for Q93.5.AT93.AKJ53 (hcp: 14 lp: 15 sp: 17), history: P 1S 2D P P
 FAIL: 3H (expected P) for KT6.AQJ74.874.T2 (hcp: 10 lp: 11 sp: 11), history: P 1S 2D P P X P
 FAIL: 2N (expected P) for KT6.AQJ74.874.T2 (hcp: 10 lp: 11 sp: 11), history: P 1S 2D (subtest of P 1S 2D P P X P)
-Pass 10 of 19 hands
+WARNING: Unordered: ['2N', 'X'] from: [NotrumpJumpRebid, OneLevelTakeoutDouble] ([<class 'z3b.rules.NotrumpJumpRebid'>, <class 'z3b.rules.OneLevelTakeoutDouble'>])
+FAIL: None (expected X) for AJ75.A92.KT2.AK3 (hcp: 19 lp: 19 sp: 19), history: 1C 1D P P
+Pass 11 of 21 hands
 
 test_responses_to_michaels:
 FAIL: None (expected 3H) for K75.AQ5.542.T763 (hcp: 9 lp: 9 sp: 9), history: P 1S 2S P
@@ -372,15 +374,14 @@ FAIL: 3S (expected 4S) for K74.9.J98.KJT742 (hcp: 8 lp: 10 sp: 11), history: 1N 
 FAIL: 2N (expected P) for Q87.J843.K65.Q93 (hcp: 8 lp: 8 sp: 8), history: 1N P
 Pass 1 of 3 hands
 
-Pass 1015 (80.0%) of 1257 total hands
+Pass 1017 (80.0%) of 1260 total hands
 
-Tested call generation of 155 rules of 158 total (excluding 8 requires_planning rules).
+Tested call generation of 156 rules of 158 total (excluding 8 requires_planning rules).
 Never selected call from:
 DelayedSupportResponseToFourthSuitForcing
 JumpNewSuitResponseToNegativeDouble
-ResponseToCappellettiMinorRequest
 
-Tested interpretation of 98 rules of 166 total.
+Tested interpretation of 99 rules of 166 total.
 
 1 rules were never used for either bidding or interpretation:
 JumpNewSuitResponseToNegativeDouble
