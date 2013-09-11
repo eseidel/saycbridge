@@ -2178,7 +2178,8 @@ class NotrumpAfterTakeoutDouble(RebidAfterTakeoutDouble):
         # 2N depends on whether it is a jump.
         '3N': (points >= 23, rebids_after_takeout_double.ThreeNotrumpAfterTakeoutDouble), # FIXME: Techincally means 9+ tricks.
     }
-    shared_constraints = StoppersInOpponentsSuits()
+    # This can't require stoppers, or we have a hole.
+    # With 18 hcp and no 5 card suit, no support for partner, we have to have something to bid.
 
 
 class NonJumpTwoNotrumpAfterTakeoutDouble(RebidAfterTakeoutDouble):
