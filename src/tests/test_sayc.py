@@ -900,6 +900,7 @@ sayc_expectations = {
         ["9872.K64.K875.63", "X", "1C 1S"],  # p130, h3
         ["73.J986.J53.A864", "P", "1C 2H"],  # p130, h4
         ["64.Q965.984.KQ75", "X", "1C 1H"],  # p130, h5
+        # This is really a pass after reopening double for penalty test:
         ["4.A3.KQ65.KJT865", "P", "1C 1S P P X P"],  # p130, h6
 
         # Negative doubles to show strong hands

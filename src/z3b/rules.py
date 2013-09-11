@@ -2918,3 +2918,8 @@ rule_order.order(
     JumpRaiseResponseToNegativeDouble,
     CuebidReponseToNegativeDouble,
 )
+# Negative doubles possibly show majors, and are more descriptive than NT responses.
+rule_order.order(
+    NotrumpResponseToMinorOpen,
+    negative_doubles,
+)
