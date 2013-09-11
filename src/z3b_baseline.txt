@@ -1,6 +1,5 @@
 test_3c_stayman:
-FAIL: 3H (expected 3C) for Q.T43.JT92.KT863 (hcp: 6 lp: 7 sp: 7), history: P 2N P (subtest of P 2N P 3C P 3H P)
-Pass 5 of 6 hands
+Pass 6 of 6 hands
 
 test_balancing:
 FAIL: P (expected 2H) for 974.J85.AJT872.9 (hcp: 6 lp: 8 sp: 9), history: 1S P P
@@ -377,7 +376,7 @@ FAIL: 3S (expected 4S) for K74.9.J98.KJT742 (hcp: 8 lp: 10 sp: 11), history: 1N 
 FAIL: 2N (expected P) for Q87.J843.K65.Q93 (hcp: 8 lp: 8 sp: 8), history: 1N P
 Pass 1 of 3 hands
 
-Pass 972 (80%) of 1214 total hands
+Pass 973 (80%) of 1214 total hands
 
 Tested call generation of 140 rules of 146 total (requires_planning ignored).
 

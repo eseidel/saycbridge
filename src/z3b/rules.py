@@ -1167,21 +1167,28 @@ class BasicStayman(NotrumpResponse):
     annotations = annotations.Stayman
     priority = nt_response_priorities.Stayman
     shared_constraints = [z3.Or(hearts >= 4, spades >= 4)]
+    conditional_priorities = [
+        # 3-level and stolen stayman still also prefer stayman over transfers with 4-5.
+        (four_five_stayman_constraint, nt_response_priorities.FourFiveStayman),
+    ]
 
 
 class ThreeLevelStayman(BasicStayman):
     preconditions = NotJumpFromPartnerLastBid()
-    constraints = { '3C': MinimumCombinedPoints(25) }
+    call_names = '3C'
+    shared_constraints = MinimumCombinedPoints(25)
 
 
 class StolenTwoClubStayman(BasicStayman):
     preconditions = LastBidWas(positions.RHO, '2C')
-    constraints = { 'X': MinimumCombinedPoints(23) }
+    call_names = 'X'
+    shared_constraints = MinimumCombinedPoints(23)
 
 
 class StolenThreeClubStayman(BasicStayman):
     preconditions = LastBidWas(positions.RHO, '3C')
-    constraints = { 'X': MinimumCombinedPoints(25) }
+    call_names = 'X'
+    shared_constraints = MinimumCombinedPoints(25)
 
 
 class NotrumpTransferResponse(NotrumpResponse):
