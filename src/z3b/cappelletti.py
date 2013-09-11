@@ -151,8 +151,9 @@ class ResponseToCappellettiTwoDiamonds(ResponseToCappelletti):
         '3C': [(clubs >= 6, ThreeOfTheTopFiveOrBetter(suit.CLUBS)), cappelletti_two_diamonds_responses.LongClubs],
 
         # Could these be natural too?  They imply invitational points?  But how many does partner have?
-        '3H': [(MinimumCombinedLength(9), MinimumCombinedPoints(22)), cappelletti_two_diamonds_responses.InvitationalHeartSupport], 
-        '3S': [(MinimumCombinedLength(9), MinimumCombinedPoints(22)), cappelletti_two_diamonds_responses.InvitationalSpadeSupport],
+        # Currently we're assuming that 2D promises 5-5 in the majors.
+        '3H': [(MinimumCombinedLength(9), MinimumCombinedSupportPoints(22)), cappelletti_two_diamonds_responses.InvitationalHeartSupport],
+        '3S': [(MinimumCombinedLength(9), MinimumCombinedSupportPoints(22)), cappelletti_two_diamonds_responses.InvitationalSpadeSupport],
     }
     annotations_per_call = {
         '2N': annotations.Artificial,
