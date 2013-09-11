@@ -187,4 +187,31 @@ class RaiseResponseToMajorCappelletti(ResponseToCappelletti):
         MinimumCombinedPoints(18)
     ]
 
-	
+
+class CappellettiMinorRequest(ResponseToCappelletti):
+    preconditions = LastBidHasStrain(positions.Partner, suit.MAJORS)
+    call_names = '2N'
+    requires_planning = True # FIXME: Can't we do this with constraints?
+    annotations = annotations.CappellettiMinorRequest
+    shared_constraints = NO_CONSTRAINTS
+
+
+class ResponseToCappellettiMinorRequest(RebidAfterCappelleti):
+    preconditions = [
+        NotJumpFromLastContract(),
+        LastBidHasAnnotation(positions.Partner, annotations.CappellettiMinorRequest),
+    ]
+    call_names = ('3C', '3D')
+    shared_constraints = MinLength(5)
+
+
+class RaiseAfterCappellettiMinorRequest(Rule):
+    preconditions = [
+        LastBidHasAnnotation(positions.Me, annotations.CappellettiMinorRequest),
+        PartnerHasAtLeastLengthInSuit(5),
+    ]
+    call_names = ('3H', '3S')
+    shared_constraints = [
+        MinimumCombinedLength(8),
+        MinimumCombinedSupportPoints(22), # Matches limit raise
+    ]

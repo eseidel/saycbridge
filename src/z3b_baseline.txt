@@ -245,8 +245,10 @@ test_overcalling_one_notrump:
 FAIL: 2H (expected 3H) for 9742.QJ7.QJ65.A3 (hcp: 10 lp: 10 sp: 11), history: 1N 2D P
 FAIL: P (expected 2N) for QT643.T962.4.965 (hcp: 2 lp: 3 sp: 5), history: 1N 2H P
 FAIL: P (expected 2S) for 76.72.42.KQT9843 (hcp: 5 lp: 8 sp: 8), history: 1N 2H P
+FAIL: P (expected 3H) for AK43.T62.KT43.73 (hcp: 10 lp: 10 sp: 11), history: 1N 2H P 2N P 3C P
 FAIL: 3H (expected 2N) for AK43.T62.KT43.73 (hcp: 10 lp: 10 sp: 11), history: 1N 2H P (subtest of 1N 2H P 2N P 3C P)
-Pass 18 of 22 hands
+FAIL: P (expected 3H) for AK43.T62.KT43.73 (hcp: 10 lp: 10 sp: 11), history: 1N 2H P 2N P 3D P
+Pass 16 of 22 hands
 
 test_overcalls:
 FAIL: X (expected 1H) for AQJ6.K96.AKJ74.3 (hcp: 18 lp: 19 sp: 21), history: 1C
@@ -371,14 +373,17 @@ FAIL: 3S (expected 4S) for K74.9.J98.KJT742 (hcp: 8 lp: 10 sp: 11), history: 1N 
 FAIL: 2N (expected P) for Q87.J843.K65.Q93 (hcp: 8 lp: 8 sp: 8), history: 1N P
 Pass 1 of 3 hands
 
-Pass 984 (80%) of 1223 total hands
+Pass 982 (80%) of 1223 total hands
 
-Tested call generation of 151 rules of 153 total (excluding 6 requires_planning rules).
+Tested call generation of 151 rules of 155 total (excluding 7 requires_planning rules).
 Never selected call from:
 DelayedSupportResponseToFourthSuitForcing
 JumpNewSuitResponseToNegativeDouble
+RaiseAfterCappellettiMinorRequest
+ResponseToCappellettiMinorRequest
 
-Tested interpretation of 93 rules of 159 total.
+Tested interpretation of 94 rules of 162 total.
 
-1 rules were never used for either bidding or interpretation:
+2 rules were never used for either bidding or interpretation:
 JumpNewSuitResponseToNegativeDouble
+RaiseAfterCappellettiMinorRequest
