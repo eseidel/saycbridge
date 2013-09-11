@@ -46,6 +46,8 @@ class Cappelletti(Rule):
 rule_order.order(
     DefaultPass,
     cappelletti_calls,
+    # p112, h14 seems to imply we'd rather preempt than cappelletti when available.
+    set([weak_preemptive_overcalls.WeakFourLevel, weak_preemptive_overcalls.WeakThreeLevel]),
 )
 
 
