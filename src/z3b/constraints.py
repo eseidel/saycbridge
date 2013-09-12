@@ -6,6 +6,7 @@ from z3b.model import expr_for_suit
 import z3b.model as model
 import z3
 from core import suit
+from z3b.preconditions import annotations
 
 
 class Constraint(object):
@@ -45,6 +46,8 @@ class MinimumCombinedLength(Constraint):
     def expr(self, history, call):
         suit = call.strain
         if self.use_partners_last_suit:
+            # We should assert here, except this is used to pass after a transfer accept (which is artificial)
+            # assert annotations.Artificial not in history.partner.annotations_for_last_call
             suit = history.partner.last_call.strain
         partner_promised_length = history.partner.min_length(suit)
         implied_length = max(self.min_count - partner_promised_length, 0)
@@ -68,6 +71,7 @@ class MinimumCombinedSupportPoints(Constraint):
         implied_min_points = max(0, self.min_points - history.partner.min_points)
         suit = call.strain
         if self.use_partners_last_suit:
+            assert annotations.Artificial not in history.partner.annotations_for_last_call
             suit = history.partner.last_call.strain
         return z3.And(model.support_points_expr_for_suit(suit) >= implied_min_points,
                       model.playing_points >= implied_min_points)
@@ -78,6 +82,8 @@ class MinimumSupportPointsForPartnersLastSuit(Constraint):
         self.min_points = min_points
 
     def expr(self, history, call):
+        # We should assert here, except this is used to pass after a transfer accept (which is artificial)
+        # assert annotations.Artificial not in history.partner.annotations_for_last_call
         return model.support_points_expr_for_suit(history.partner.last_call.strain) >= self.min_points
 
 
@@ -86,6 +92,7 @@ class MaximumSupportPointsForPartnersLastSuit(Constraint):
         self.max_points = max_points
 
     def expr(self, history, call):
+        assert annotations.Artificial not in history.partner.annotations_for_last_call
         return model.support_points_expr_for_suit(history.partner.last_call.strain) <= self.max_points
 
 

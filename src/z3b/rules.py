@@ -1457,6 +1457,7 @@ class SuperAcceptTransfer(Rule):
         LastBidHasAnnotation(positions.Partner, annotations.Transfer),
         JumpFromPartnerLastBid(exact_size=1),
     ]
+    # FIXME: This should use support points, but MinimumSupportPointsForPartnersLastSuit will be confused by the transfer.
     shared_constraints = points >= 17
     annotations = annotations.Artificial
     priority = relay_priorities.SuperAccept

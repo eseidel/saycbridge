@@ -314,12 +314,19 @@ class NaturalPass(Rule):
 
 
 class NaturalPassWithFit(NaturalPass):
-    preconditions = LastBidHasSuit(positions.Partner)
+    preconditions = [
+        LastBidHasSuit(positions.Partner),
+        # FIXME: This should probably only apply to natural bids, but
+        # is currently employed to pass after a jacoby transfer.
+        # We should probably make an explicit rule for that Pass.
+        # InvertedPrecondition(LastBidHasAnnotation(positions.Partner, annotations.Artificial)),
+    ]
     shared_constraints = MinimumCombinedLength(7, use_partners_last_suit=True)
 
 
 class SuitGameIsRemote(NaturalPassWithFit):
     preconditions = LastBidWasBelowGame()
+    # FIXME: Shouldn't this be support points?
     shared_constraints = MaximumCombinedPoints(24)
 
 
