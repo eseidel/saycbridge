@@ -1531,6 +1531,7 @@ stayman_response_priorities = enum.Enum(
     "HeartStaymanResponse",
     "SpadeStaymanResponse",
     "DiamondStaymanResponse",
+    "RedoubleAfterDoubledStayman",
     "PassStaymanResponse",
 )
 rule_order.order(*reversed(stayman_response_priorities))
@@ -1556,7 +1557,11 @@ class PassStaymanResponse(StaymanResponse):
 
 
 class DiamondStaymanResponse(StaymanResponse):
-    preconditions = NotJumpFromPartnerLastBid()
+    preconditions = [
+        NotJumpFromPartnerLastBid(),
+        # If RHO called a new suit or doubled, pass takes on this meaning.
+        LastBidWas(positions.RHO, 'P'),
+    ]
     call_names = ['2D', '3D']
     shared_constraints = NO_CONSTRAINTS
     priority = stayman_response_priorities.DiamondStaymanResponse
@@ -1574,6 +1579,12 @@ class StolenSpadeStaymanResponse(StaymanResponse):
     constraints = { 'X': spades >= 4 }
     preconditions = LastBidWas(positions.RHO, '2S')
     priority = stayman_response_priorities.SpadeStaymanResponse
+
+
+class RedoubleAfterDoubledStayman(StaymanResponse):
+    preconditions = LastBidWas(positions.RHO, 'X')
+    constraints = { 'XX': clubs >= 5 }
+    priority = stayman_response_priorities.RedoubleAfterDoubledStayman
 
 
 class ResponseToOneNotrump(NotrumpResponse):

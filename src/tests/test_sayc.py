@@ -36,6 +36,9 @@ sayc_expectations = {
         ["T9.AJ72.Q732.K65", "3N", "1N P 2C P 2D P"],  # p6, h5
         ["T9.AJ72.Q732.K65", "4H", "1N P 2C P 2H P"],  # p6, h5
         ["T9.AJ72.Q732.K65", "3N", "1N P 2C P 2S P"],  # p6, h5
+
+        # Sanity check that partner knows how to respond with no major:
+        ["AQ2.AJ72.Q73.K65", "2D", "1N P 2C P"],
     ],
 
     "test_invitational_stayman": [
