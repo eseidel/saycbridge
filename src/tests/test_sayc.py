@@ -45,7 +45,6 @@ sayc_expectations = {
         ["832.A.QJ652.JT73", "2H", "1N P 2C P 2D P"],  # p7, h7
         ["82.A7.QJ652.KT73", "3H", "1N P 2C P 2D P"],  # p7, h8
     ],
-        # FIXME: We haven't implemented ResponseToResponseToStayman yet.
 
     "test_3c_stayman": [
         ["T9.AJ2.T652.T973", "3C", "2N P"],

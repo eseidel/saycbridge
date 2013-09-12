@@ -1287,6 +1287,7 @@ class NotrumpGameInvitation(NotrumpResponse):
 
 class NotrumpGameAccept(NotrumpResponse):
     # This is an explicit descriptive rule, not a ToPlay rule.
+    # FIXME: p13, h30 suggests we should make this jump with 7 in a minor topped by the AK.
     constraints = { '3N': MinimumCombinedPoints(25) }
     priority = nt_response_priorities.NotrumpGameAccept
 
@@ -1412,6 +1413,16 @@ class QuantitativeFourNotrumpJump(NotrumpResponse):
     preconditions = JumpFromLastContract()
     shared_constraints = QuantitativeFourNotrumpJumpConstraint()
     priority = nt_response_priorities.QuantitativeFourNotrumpJump
+    annotations = annotations.QuantitativeFourNotrumpJump
+
+
+class ResponseToQuantitativeFourNotrump(Rule):
+    preconditions = LastBidHasAnnotation(positions.Partner, annotations.QuantitativeFourNotrumpJump)
+    constraints = {
+        # This is only needed to make the P vs. 5N decision, 6N == 17 is provided by NaturalNotrump.
+        'P': points == 15,
+        '5N': points == 16,
+    }
 
 
 class AcceptTransfer(Rule):

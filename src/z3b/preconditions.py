@@ -28,6 +28,9 @@ annotations = enum.Enum(
     # Not all Cappelletti bids are artificial, some can be treated as to-play.
     "Cappelletti",
 
+    # Quantitiative 4N is odd, but not artificial. :)
+    "QuantitativeFourNotrumpJump",
+
     "Artificial",
     # NOTE: RuleCompiler._compile_annotations will automatically imply
     # "Artificial" when encountering any annotations > Artificial.
