@@ -287,6 +287,9 @@ sayc_expectations = {
 
         # Too weak, pass.
         ['954.5.QJT8.J9853', 'P', '1D P', 'Both'],  # 4-85c1fb3f6ca8b02c657077964a, E
+
+        # FIXME: Should we count partner for 4 clubs and support?
+        ['5432.KQ2.32.5432', 'P', '1C P'], # Make sure we don't have a hole with 5 hcp and 6 support points.
     ],
 
     "test_invitational_response_to_one_of_a_minor": [

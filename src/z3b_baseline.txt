@@ -128,7 +128,7 @@ Pass 7 of 8 hands
 
 test_minimum_response_to_one_of_a_minor:
 FAIL: P (expected 1H) for T8.7.KQT862.9652 (hcp: 5 lp: 7 sp: 9), history: 1C P
-Pass 12 of 13 hands
+Pass 13 of 14 hands
 
 test_minimum_stayman:
 Pass 13 of 13 hands
@@ -374,7 +374,7 @@ FAIL: 3S (expected 4S) for K74.9.J98.KJT742 (hcp: 8 lp: 10 sp: 11), history: 1N 
 FAIL: 2N (expected P) for Q87.J843.K65.Q93 (hcp: 8 lp: 8 sp: 8), history: 1N P
 Pass 1 of 3 hands
 
-Pass 1017 (80.0%) of 1260 total hands
+Pass 1018 (80.0%) of 1261 total hands
 
 Tested call generation of 156 rules of 158 total (excluding 8 requires_planning rules).
 Never selected call from:

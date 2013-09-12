@@ -309,7 +309,16 @@ class PassResponseToSuitedOpen(ResponseToOneLevelSuitedOpen):
     preconditions = LastBidWas(positions.RHO, 'P')
     call_names = 'P'
     # SuitGameIsRemote would imply that we have < 4 hcp, but conventionally we may pass with 5 hcp.
-    shared_constraints = MaximumSupportPointsForPartnersLastSuit(5)
+    # To avoid creating a hole, we if we don't have either 6 hcp or 6 support points we may pass.
+    shared_constraints = ConstraintOr(MaximumSupportPointsForPartnersLastSuit(5), points <= 5)
+
+
+# Due to the Or above, we need to order PassResponseToSuitedOpen relative to raises and game jumps.
+rule_order.order(
+    PassResponseToSuitedOpen,
+    minimum_raise_responses,
+    MajorJumpToGame,
+)
 
 
 class Jacoby2N(ResponseToMajorOpen):
