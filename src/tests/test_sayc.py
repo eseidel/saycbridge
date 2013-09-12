@@ -236,6 +236,8 @@ sayc_expectations = {
 
         ["QJ54.J753.KT2.A4", "2C", "1S P"],  # p37, h10
         ["43.KT76.K85.A753", "3H", "1H P"],  # p37, h11
+
+        ["AKJ52.J.J9743.54", "2C", "1H P"], # deal 8791080045553853812852250533176, N underbid by using length points instead of support points
     ],
 
     "test_game_forcing_resonse_to_one_of_a_major": [
@@ -1112,8 +1114,6 @@ sayc_expectations = {
         ["KQ6.Q965.K5.AQ98", "2S", "P 1N P 2C P"], # deal 5671897354712543810227745124780, E failed to reply to stayman.
         # deal 357243086480349253440501420960, N opened 1N with a singleton (missing a good spade fit)
         ["732.Q.AJ.AKJ9843", "1S"],
-        # deal 8791080045553853812852250533176, N underbid by using length points instead of support points
-        ["AKJ52.J.J9743.54", "2C", "1H P"],
         ["T3.A7.KQT86.KJ63", "4H", "1H P 2N P"], # S from 8791080045553853812852250533176
         # deal 13166359304130342084190377474345, N underbid using length_points instead of support_points (Adam was sad)
         ["AQJ5.QT42.74.T52", "3S", "1S P"],

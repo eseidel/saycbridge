@@ -205,7 +205,7 @@ class LimitRaise(RaiseResponse):
         # mention a new suit or bid NT (Jacoby2N for majors).
         # We could instead give this bid a very low priority when
         # above 12 hcp, but limiting it directly seems slightly cleaner (and makes none-finding possible).
-        points <= 12
+        MaximumSupportPointsForPartnersLastSuit(12),
     ]
 
 class MajorJumpToGame(RaiseResponse):
