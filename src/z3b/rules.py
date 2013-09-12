@@ -1568,28 +1568,32 @@ class DiamondStaymanResponse(StaymanResponse):
     annotations = annotations.Artificial
 
 
-class StolenTwoHeartStaymanResponse(StaymanResponse):
+# FIXME: There must be a simpler way to write history-variant rules like this.
+# FIXME: This whole rule feels like a special-case penalty double?
+class StolenHeartStaymanResponse(StaymanResponse):
     constraints = { 'X': hearts >= 4 }
+    priority = stayman_response_priorities.HeartStaymanResponse
+
+
+class StolenTwoHeartStaymanResponse(StolenHeartStaymanResponse):
     preconditions = LastBidWas(positions.RHO, '2H')
-    priority = stayman_response_priorities.HeartStaymanResponse
 
 
-class StolenThreeHeartStaymanResponse(StaymanResponse):
-    constraints = { 'X': hearts >= 4 }
+class StolenThreeHeartStaymanResponse(StolenHeartStaymanResponse):
     preconditions = LastBidWas(positions.RHO, '3H')
-    priority = stayman_response_priorities.HeartStaymanResponse
 
 
-class StolenTwoSpadeStaymanResponse(StaymanResponse):
+class StolenSpadeStaymanResponse(StaymanResponse):
     constraints = { 'X': spades >= 4 }
+    priority = stayman_response_priorities.SpadeStaymanResponse
+
+
+class StolenTwoSpadeStaymanResponse(StolenSpadeStaymanResponse):
     preconditions = LastBidWas(positions.RHO, '2S')
-    priority = stayman_response_priorities.SpadeStaymanResponse
 
 
-class StolenThreeSpadeStaymanResponse(StaymanResponse):
-    constraints = { 'X': spades >= 4 }
+class StolenThreeSpadeStaymanResponse(StolenSpadeStaymanResponse):
     preconditions = LastBidWas(positions.RHO, '3S')
-    priority = stayman_response_priorities.SpadeStaymanResponse
 
 
 class RedoubleAfterDoubledStayman(StaymanResponse):
