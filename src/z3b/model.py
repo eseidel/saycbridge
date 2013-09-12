@@ -6,16 +6,26 @@ from z3b import enum
 import core.suit as suit
 import z3
 
-spades, hearts, diamonds, clubs = z3.Ints('spades hearts diamonds clubs')
 
-ace_of_spades, king_of_spades, queen_of_spades, jack_of_spades, ten_of_spades = z3.Ints(
-    'ace_of_spades king_of_spades queen_of_spades jack_of_spades ten_of_spades')
-ace_of_hearts, king_of_hearts, queen_of_hearts, jack_of_hearts, ten_of_hearts = z3.Ints(
-    'ace_of_hearts king_of_hearts queen_of_hearts jack_of_hearts ten_of_hearts')
-ace_of_diamonds, king_of_diamonds, queen_of_diamonds, jack_of_diamonds, ten_of_diamonds = z3.Ints(
-    'ace_of_diamonds king_of_diamonds queen_of_diamonds jack_of_diamonds ten_of_diamonds')
-ace_of_clubs, king_of_clubs, queen_of_clubs, jack_of_clubs, ten_of_clubs = z3.Ints(
-    'ace_of_clubs king_of_clubs queen_of_clubs jack_of_clubs ten_of_clubs')
+
+_honor_names = ('ace', 'king', 'queen', 'jack', 'ten')
+_honor_values = (4, 3, 2, 1, 0)
+
+
+def _honor_vars(suit):
+    return map(z3.Int, map(("{}_of_" + suit.name.lower()).format, _honor_names))
+
+
+def _suit_count_var(suit):
+    return z3.Int(suit.name.lower())
+
+
+clubs, diamonds, hearts, spades = map(_suit_count_var, suit.SUITS)
+
+ace_of_spades, king_of_spades, queen_of_spades, jack_of_spades, ten_of_spades = _honor_vars(suit.SPADES)
+ace_of_hearts, king_of_hearts, queen_of_hearts, jack_of_hearts, ten_of_hearts = _honor_vars(suit.HEARTS)
+ace_of_diamonds, king_of_diamonds, queen_of_diamonds, jack_of_diamonds, ten_of_diamonds = _honor_vars(suit.DIAMONDS)
+ace_of_clubs, king_of_clubs, queen_of_clubs, jack_of_clubs, ten_of_clubs = _honor_vars(suit.CLUBS)
 
 high_card_points, points, playing_points = z3.Ints('high_card_points points playing_points')
 
@@ -48,15 +58,13 @@ def named_count_expr(count_name, count):
 
 def constrain_honors_expr():
     exprs = []
-    for suit_name in [s.name.lower() for s in suit.SUITS]:
-        suit_var = z3.Int(suit_name)
-        honor_names = ('ace', 'king', 'queen', 'jack', 'ten')
-        honor_name_vars = map(z3.Int, map(("{}_of_" + suit_name).format, honor_names))
+    for honor_suit in suit.SUITS:
         # The easiest way to have an Int var and constrain it to bool values is to just:
         # z3.And(0 <= ace_of_spades, ace_of_spades <= 1)
-        exprs.extend([z3.And(0 <= honor_name_var, honor_name_var <= 1) for honor_name_var in honor_name_vars])
+        honor_vars = _honor_vars(honor_suit)
+        exprs.extend([z3.And(0 <= honor_var, honor_var <= 1) for honor_var in honor_vars])
         # Also make sure that total number of honors is <= total number of cards
-        exprs.append(sum(honor_name_vars) <= suit_var)
+        exprs.append(sum(honor_vars) <= _suit_count_var(honor_suit))
     return z3.And(*exprs)
 
 
@@ -100,10 +108,11 @@ axioms = [
         z3.And(clubs >= 4, points_supporting_clubs == high_card_points + doubletons + 3 * singletons + 5 * voids),
     ),
 
-    4 * ace_of_spades   + 3 * king_of_spades   + 2 * queen_of_spades   + 1 * jack_of_spades   +
-    4 * ace_of_hearts   + 3 * king_of_hearts   + 2 * queen_of_hearts   + 1 * jack_of_hearts   +
-    4 * ace_of_diamonds + 3 * king_of_diamonds + 2 * queen_of_diamonds + 1 * jack_of_diamonds +
-    4 * ace_of_clubs    + 3 * king_of_clubs    + 2 * queen_of_clubs    + 1 * jack_of_clubs    == high_card_points
+    sum([ # Sum the sums for all suits.
+        sum([ # Sum the honors for a single suit
+            a * b for a, b in zip(_honor_values, honor_vars)])
+                for honor_vars in map(_honor_vars, suit.SUITS)
+        ]) == high_card_points, # The total is our hcp.
 ]
 
 min_hcp_for_open = 8
