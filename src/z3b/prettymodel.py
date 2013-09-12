@@ -32,7 +32,6 @@ def pretty_print_model(model):
     for decl in sorted(model.decls(), cmp=_decl_cmp):
         if model[decl].as_long() != 0:
             print "%s: %s" % (decl, model[decl])
-    print "Example hand: %s" % hand_from_model(model).cdhs_dot_string()
 
 
 def _cards_from_model(suit, model):

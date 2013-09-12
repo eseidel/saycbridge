@@ -11,7 +11,8 @@ from core.callhistory import CallHistory
 from z3b.bidder import Interpreter, RuleSelector
 from core.callexplorer import CallExplorer
 from z3b import model as z3b_model
-from z3b.prettymodel import pretty_print_model
+from z3b.prettymodel import pretty_print_model, hand_from_model
+from tests.harness import expectation_line
 import z3
 
 
@@ -45,8 +46,8 @@ class NoneFinder(object):
         if solver.check() == z3.unsat:
             print "Calls found for all possible hands."
         else:
-            print "Unbiddable hand:"
             pretty_print_model(solver.model())
+            print expectation_line(hand_from_model(solver.model()), call_history), "# from none-finder"
 
 
 if __name__ == '__main__':

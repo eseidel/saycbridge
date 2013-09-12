@@ -20,6 +20,16 @@ from tests import test_sayc
 _log = logging.getLogger(__name__)
 
 
+# This is the simple version.  We'll need a fancier version of this function which can take a board.
+def expectation_line(hand, call_history, expected_call=None):
+    expected_call_string = expected_call.name if expected_call else "?"
+    return "['%s', '%s', '%s']," % (
+        hand.cdhs_dot_string(),
+        expected_call_string,
+        call_history.calls_string(),
+    )
+
+
 class CompiledTest(object):
     def __init__(self, group, hand, call_history, expected_call, parent_test=None):
         self.group = group
