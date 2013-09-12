@@ -1568,16 +1568,27 @@ class DiamondStaymanResponse(StaymanResponse):
     annotations = annotations.Artificial
 
 
-# FIXME: Need "Stolen" variants for 3-level.
-class StolenHeartStaymanResponse(StaymanResponse):
+class StolenTwoHeartStaymanResponse(StaymanResponse):
     constraints = { 'X': hearts >= 4 }
     preconditions = LastBidWas(positions.RHO, '2H')
     priority = stayman_response_priorities.HeartStaymanResponse
 
 
-class StolenSpadeStaymanResponse(StaymanResponse):
+class StolenThreeHeartStaymanResponse(StaymanResponse):
+    constraints = { 'X': hearts >= 4 }
+    preconditions = LastBidWas(positions.RHO, '3H')
+    priority = stayman_response_priorities.HeartStaymanResponse
+
+
+class StolenTwoSpadeStaymanResponse(StaymanResponse):
     constraints = { 'X': spades >= 4 }
     preconditions = LastBidWas(positions.RHO, '2S')
+    priority = stayman_response_priorities.SpadeStaymanResponse
+
+
+class StolenThreeSpadeStaymanResponse(StaymanResponse):
+    constraints = { 'X': spades >= 4 }
+    preconditions = LastBidWas(positions.RHO, '3S')
     priority = stayman_response_priorities.SpadeStaymanResponse
 
 

@@ -162,6 +162,11 @@ sayc_expectations = {
         ["AQT9.KJ8.J5.KQ43", "2S", "1N P 2C 2H"],  # p18, h40
         ["KT8.AKT8.AQT8.62", "X", "1N P 2C 2H"],  # p18, h41
         ["KT8.AKT8.Q83.A62", "P", "1N P 2C 2H"],  # p18, h42
+
+        # Stolen Stayman response works at the 3-level too:
+        ["KT8.AKT8.AQT8.A2", "X", "2N P 3C 3H"],
+        ["KT8.AKT8.A2.AQT8", "X", "2N P 3C 3S"],
+
         # If a transfer is doubled:
         ["AQT.KJ8.AK987.43", "XX", "1N P 2H X"],  # p18, h43
         ["K87.AKT8.AT8.Q62", "2S", "1N P 2H X"],  # p18, h44
