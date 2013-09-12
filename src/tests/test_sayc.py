@@ -258,6 +258,15 @@ sayc_expectations = {
 
         # 2o3 is also sufficient for a "strong 5c suit", but is it sufficient to prefer it over 3C?
         ["2.AQ976.98.AKJT8", "4D", "1S P 2N P"],
+
+        # Jacoby2N with only 3 card support seems like our best option.
+        ['432.432.AK32.AK2', '2N', '1S P'],
+        ['A82.AK8.Q874.T42', '2N', '1S P', 'Both'],  # 10-ca4d11e0a301f6ebe2e7792355, W has no good response.  A 2N "lie" is definitely better than 3N (15-17) or a pass.
+
+        # If we actually have a second suit, we'd rather use that first though?
+        ['5432.43.AK32.AK2', '2C', '1S P'],
+
+        ['K.K7.KJ98542.QT8', '2N', '1H P', 'Both'],  # 7-9f9ee86653fd2209088b7f4447, N should bid Jacoby 2NT with 12 hcp?
     ],
 
     "test_slam_zone_responses_to_one_of_a_major": [
@@ -307,6 +316,11 @@ sayc_expectations = {
 
         # FIXME: I think this result is wrong.  Should we mention a second minor or raise partner?
         ['AKQJ6.T863.9.J54', '3N', 'P 1C P 1D P 2N P', 'N-S'],  # deal 4285488505698364167172343412243, S should prefer 3N over 5C.
+
+        # With no major to explore, the best we can do is bid 1N?  Or should we play our partner for 4 clubs?
+        ['QJ32.AKQ.432.432', '1N', '1C P'], # from none-finder
+        # Partner likely has 4, so maybe a limit raise with 12 is OK?
+        ['432.AJ32.AKT.432', '3D', '1D P'], # from none-finder
     ],
 
     "test_game_forcing_response_to_one_of_a_minor": [
@@ -321,6 +335,8 @@ sayc_expectations = {
 
         ['QJ52.AKQ7.97.KJ2', '3N', '1D P'],  # 16 hcp
         ['QJ52.AKQ7.97.KQ2', '3N', '1D P'],  # 17 hcp
+
+        ['AKJ.5432.Q32.AKQ', '3N', '1D P'], # 19hcp, despite what the book says (16-18hcp) 3N needs to be uncapped.
     ],
 
     "test_slam_zone_response_to_one_of_a_minor": [
@@ -980,6 +996,9 @@ sayc_expectations = {
 
         # When negative doubles apply, they're more descriptive than placement bids:
         ['K8732.J32.A.A942', 'X', '1H 2D', 'Both'],  # 4-5a96c9d60ac4cefae0359cc4cd, E
+
+        # Seems reasonable to start with a negative double and go from there?
+        ['8532.A854.A74.AK', 'X', 'P 1H 2S', 'Both'],  # 13-f34c952bc728b5d3914e62886f, W
     ],
 
     "test_reopening_double": [ # Chap 17
@@ -1198,7 +1217,6 @@ sayc_expectations = {
         ['JT.73.KQ76542.86', 'P', 'P 1S 2D'],  # 1-8061f64e2c962eff60f4477962, W Jump-overcalls do not apply if partner bid (can't say 3H).
         ['J.QJ.KQ854.AQJ53', 'P', 'P 1S P 1N P 2H P 2S P', 'Both'],  # 4-9f76c5e69bb0e70b260e31d508, N should pass after South's sign-off.
         ['J2.AQ84.T9432.J7', '2N', 'P P 1C 1N P 2D P 2H P', 'E-W'],  # 6-bc55e0d60e426ab7e8704c97bc, S should invite to game with 2N.
-        ['A82.AK8.Q874.T42', '2C', '1S P', 'Both'],  # 10-ca4d11e0a301f6ebe2e7792355, W has no good response.  A 2C "lie" is definitely better than 3N (15-17) or a pass.
         ['AK2.AK8.874.QT42', '1N', '1C P 1S', 'Both'],  # Indirect 1NT overcalls should be possible.
         ['6.KQJ985432..AQ8', '2D', '1H P 1S', 'N-S'],  # 12-cd97772a869a8f433334c461e6, S should be able to make an indirect overcall of 2D.
         ['AK7432.543.QJ9.5', 'X', '1S 2C 2S P P', 'E-W'],  # 16-014994301ed667fa883de39deb, N should balancing double to protect his partner.
@@ -1240,7 +1258,6 @@ sayc_expectations = {
         ['AQ72.AKJ53.A82.5', 'P', 'P 1D 1S 1N P 2C P 2D P', 'E-W'],  # 16-3fcad21139a1019d3eb3a35e59, N should know how to pass.
         ['A54.QT5.J743.QJ7', 'P', 'P P 1N P 2C P 2S P 2N P 3N P', 'E-W'],  # 19-5ac1f4b495ee32b6d2f01d93a0, S should just pass, slam is remote.
         ['J.AQ972.T5.JT964', 'P', '1H 2H 3C 4S P', 'E-W'],  # 6-f34c2fec19b6e76d19d4220a85, S should pass after partner jumps to 4S.
-        ['8532.A854.A74.AK', 'X', 'P 1H 2S P 3S P 4C 4H P P 5C', 'Both'],  # 13-f34c952bc728b5d3914e62886f, W should double if South sacrifices.
         ['83.KQ732.Q2.AKJ9', '2D', 'P 1C 1D P P 1H 1S P P X', 'E-W'],  # 9-2d0b506bd9f29b0d71b735388a, S should be able to bid after making a previously invalid bid?
         ['94.932.QT95.K872', 'P', '2C P P', 'E-W'],  # 9-9c67513c92c605b9bcc391faac, If south fails to respond to partner's artificial club, just leave them there.
         ['A853.K.K2.KJT943', '3S', 'P 1S P 2D P', 'Both'],  # 26-227bdd84f4c788f0552da7ca98, S should use length points for computing his rebid?
@@ -1262,7 +1279,6 @@ sayc_expectations = {
         ['AT6.KJ864.A4.A42', 'X', 'P 2H', 'E-W'],  # 6-51d4cadbb32cc5caa28fb06553, W should takeout double.
         ['962.863.KQJ7.KJ7', '2N', 'P P 1D 1S X P 2C P', 'N-S'],  # 5-1f28db93c85ba5589c077a3933, N should probably bid 2N to show his invitational hand.  Or would that show 17+?
         ['AKJ.T53.KQ65.KJ2', '3N', 'P 1N P 2C P 2H P 2N P', 'Both'],  # 10-cddc6288b36f35691da2c051bb, S should bid 3N with 17 hcp?  Even if flat?
-        ['K.K7.KJ98542.QT8', '2N', '1H P', 'Both'],  # 7-9f9ee86653fd2209088b7f4447, N should bid Jacoby 2NT with 12 hcp and 5+
         ['AK.72.KT942.AQT5', '1H', 'P 1C', 'N-S'], # S should bid 1H
         ['AKT4.AT.A82.J876', '1N', '1C P P', 'E-W'],  # 9-9e00d3d9a9b93e48d91d07f2d8, W should overcall 1N (or maybe big-hand double?)
         ['QJ86.K7.AKT53.T6', '2H', '1H P 2D P', 'E-W'], # Not enough points to say 3C, but we can't pass partner.

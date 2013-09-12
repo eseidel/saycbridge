@@ -135,6 +135,7 @@ class OneLevelNewSuitResponse(Rule):
 
 class OneNotrumpResponse(ResponseToOneLevelSuitedOpen):
     call_names = '1N'
+    # For minors this can be up to 12 hcp?  If we're 4.3.3.3 what better bid do we have?
     shared_constraints = points >= 6
 
 
@@ -178,7 +179,14 @@ class MinimumRaise(RaiseResponse):
         ('2C', '2D'): raise_responses.MinorMinimum,
         ('2H', '2S'): raise_responses.MajorMinimum,
     }
-    shared_constraints = [MinimumCombinedLength(8), MinimumCombinedSupportPoints(18)]
+    shared_constraints = [
+        MinimumCombinedLength(8),
+        MinimumCombinedSupportPoints(18),
+        # For the same reasons as described in LimitRaise, this bid is truly limited.
+        # At 10 hcp, LimitRaise should apply, and we do not want to absorb any holes
+        # which might occur above a limit raise.
+        MaximumSupportPointsForPartnersLastSuit(9),
+    ]
 
 
 class LimitRaise(RaiseResponse):
@@ -193,6 +201,11 @@ class LimitRaise(RaiseResponse):
         # even with a large number of support points.
         points >= 6, # FIXME: This leaves a hole with PassResponseToSuitedOpen.
         MinimumCombinedSupportPoints(22),
+        # This bid is truly limited.  Above 12 points we should either
+        # mention a new suit or bid NT (Jacoby2N for majors).
+        # We could instead give this bid a very low priority when
+        # above 12 hcp, but limiting it directly seems slightly cleaner (and makes none-finding possible).
+        points <= 12
     ]
 
 class MajorJumpToGame(RaiseResponse):
@@ -215,7 +228,9 @@ class NotrumpResponseToMinorOpen(ResponseToOneLevelSuitedOpen):
     ]
     constraints = {
         '2N': z3.And(points >= 13, points <= 15),
-        '3N': z3.And(points >= 16, points <= 17),
+        # The book says 16-18 for this bid, but with 4.3.3.3 after 1C we have no choice
+        # at high enough point levels we'll just start bidding slams directly.  Until then 3N is what we have.
+        '3N': z3.And(points >= 16),
     }
     shared_constraints = balanced
 
@@ -321,10 +336,27 @@ rule_order.order(
 )
 
 
+jacoby_2n = enum.Enum(
+    "Jacoby2NWithFour",
+    "Jacoby2NWithThree",
+)
+rule_order.order(*reversed(jacoby_2n))
+
+
 class Jacoby2N(ResponseToMajorOpen):
     preconditions = LastBidWas(positions.RHO, 'P')
     call_names = '2N'
-    shared_constraints = [points >= 14, SupportForPartnerLastBid(4)]
+    conditional_priorities = [
+        (SupportForPartnerLastBid(4), jacoby_2n.Jacoby2NWithFour)
+    ]
+    shared_constraints = [
+        # The book says 14+, but this needs to be 13 hcp or there is a hole above limit raise.
+        points >= 13,
+        # FIXME: We should use a conditional priority to make Jacoby2N with only
+        # 3-card trump support lower priority than mentioning a new suit.
+        SupportForPartnerLastBid(3),
+    ]
+    priority = jacoby_2n.Jacoby2NWithThree
     annotations = annotations.Jacoby2N
 
 
@@ -2850,8 +2882,13 @@ rule_order.order(
     TwoLevelNegativeDouble,
 )
 rule_order.order(
+    OneNotrumpResponse,
+    jacoby_2n.Jacoby2NWithThree,
+    new_two_level_suit_responses,
+)
+rule_order.order(
     major_raise_responses,
-    Jacoby2N,
+    jacoby_2n.Jacoby2NWithFour,
 )
 rule_order.order(
     natural_bids,
@@ -2998,4 +3035,12 @@ rule_order.order(
 rule_order.order(
     NotrumpResponseToMinorOpen,
     negative_doubles,
+)
+rule_order.order(
+    natural_passses,
+    HelpSuitGameTry,
+)
+rule_order.order(
+    natural_bids,
+    ThreeNotrumpMajorResponse,
 )
