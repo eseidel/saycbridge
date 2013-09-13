@@ -393,6 +393,9 @@ sayc_expectations = {
         ["A532.AK52.J4.AQ9", "2N", "P 1D P 1H P"],
 
         ["AKJ43.AKJ4.432.4", "2D", "1C P 2C P"], # 2D is the lowest HelpSuitGameTry.
+
+        # Better to rebid a major than mention a new minor?
+        ['2.7643.AKQ986.AK', '3H', '1H P 2C P', 'E-W'],  # 3-84451c4ae81f4f7ba4a9137fca, S
     ],
 
     "test_game_forcing_rebid_by_opener": [
@@ -405,6 +408,8 @@ sayc_expectations = {
 
         # JumpShift is forcing and thus better than rebidding to show 6 hearts.
         ['AKJ5.Q2.AQ9842.A', '3C', 'P 1H P 1S P'],  # 8-7855840deedca11a0d32bf79b8, N
+        # JumpShift is better than a help-suit (even skipping 3N?)
+        ['KQ.QT96.AKJT5.A9', '4D', 'P P 1H P 2H P', 'N-S'],  # 15-fbd9a0694f04a9c9e0c16dd2f4, N
     ],
 
     "test_opener_rebid_after_a_limit_raise": [
@@ -420,6 +425,12 @@ sayc_expectations = {
 
         # We've got a part score and nothing more.
         ['KQ98.98.KJ98.KT9', 'P', '1C P 3C P', 'E-W'],  # 9-a5e0a0bbdc3ad67708c56b50f1, N
+
+        # 3H seems a reasonable help-suit here?
+        ['KQ43.T.AK76.AQT3', '3H', '1C P 2C 3D', 'Both'],  # 13-817aa06f5f8fbf90e741265c48, N
+
+        # Game seems like a great idea with 15 hcp.
+        ['T942.84.AK.AQJ85', '4S', '1S P 3S P', 'E-W'],  # 9-32d42d7cf49a96b7f98293490c, N
     ],
 
     "test_reverses": [ # Chap 7
@@ -497,6 +508,9 @@ sayc_expectations = {
         ["2.KQ43.KQT8.QT98", "4S", "1D P 1H P 1S P"], # p72, h16
         ["3.AQT743.AK95.65", "5D", "1D P 1H P 1N P"], # p72, h17
 
+        # We've found our fit.  8 support points over partner's 16+?  Seems worth a try?
+        ['96.KQ65.86.JT874', '4H', '1H P 1S P 3H P'],  # 1-f78e3471afc69448b501e7a683, S
+
         # Responder rebids in 2-over-1 auctions.
         ["KJ643.9863.A9.K9", "2S", "1S P 2C P 2H P"], # p73, h18
         ["KJT432.K74.KT8.7", "3C", "1S P 2C P 2H P"], # p73, h19
@@ -566,6 +580,9 @@ sayc_expectations = {
         # Do not have a void or an outside major when preempting. p89
         [".Q765.843.KQT932", "P", ""],
         ["3.76.Q843.KQT932", "P", ""],
+
+        # Partner is not inviting when raising, always pass:
+        ['QT96.AQT962.T.83', 'P', '2D P 3D P', 'Both'],  # 13-6734134b87088feeb2d51b4a5e, N
 
         # Responding to a new suit from partner after preempt
         ["9.QJ2.AQT984.986", "3S", "2H P 2S P"], # p85, h4

@@ -900,6 +900,7 @@ class HelpSuitGameTry(RebidAfterOneLevelOpen):
     ]
     # Minimum: 1C,2C,2D, Max: 1C,3C,3S
     call_names = [
+    # FIXME: We need priority ordering between the suits.
               '2D', '2H', '2S',
         '3C', '3D', '3H', '3S'
     ]
@@ -2471,6 +2472,8 @@ class MinimumRebidOfPreemptSuit(ForcedRebidAfterPreempt):
     preconditions = [
         RebidSameSuit(),
         NotJumpFromLastContract(),
+        # FIXME: This is a hack around the LawOfTotalTricks appearing *forcing*
+        InvertedPrecondition(RaiseOfPartnersLastSuit()),
     ]
     # Min: 1S 2D P 2H P 3D
     call_names = (
@@ -2989,6 +2992,18 @@ rule_order.order(
     opener_unsupported_major_rebid,
     opener_jumpshifts,
 )
+rule_order.order(
+    # Jumpshift shows 19+ vs. 16+
+    HelpSuitGameTry,
+    opener_jumpshifts,
+)
+rule_order.order(
+    # Rebidding a 6-card major seems better than mentioning any new suit?  Including a new major?
+    # FIXME: What about when we're 6-5 in the majors?
+    opener_higher_level_new_suits,
+    opener_unsupported_major_rebid,
+)
+
 # FIXME: This is a very rough approximation, and needs much more refinement
 # particularly in the ordering of new majors vs. notrump.
 rule_order.order(
