@@ -794,6 +794,12 @@ rule_order.order(
     PassReseponseToLimitRaise,
 )
 
+rule_order.order(
+    # We have various ways to get to slam with a big hand,  Replying 3N here doesn't seem like one of them.
+    natural_exact_notrump_game,
+    GameAccept,
+)
+
 
 opener_reverses = enum.Enum(
     # FIXME: With 5.0.4.4 which do you reverse to?
