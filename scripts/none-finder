@@ -41,6 +41,8 @@ class NoneFinder(object):
         constraints_expr = z3.Not(z3.Or(*constraints))
         solver = z3.SolverFor('QF_LIA')
         solver.add(z3b_model.axioms)
+        # FIXME: This only works for last-call, need to go back further too.
+        solver.add(history.constraints_for_last_call(z3b_model.positions.Me))
         solver.add(constraints_expr)
 
         if solver.check() == z3.unsat:
