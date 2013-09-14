@@ -355,6 +355,10 @@ sayc_expectations = {
         # It's not entirely clear how to quantify those circumstances.
         ["AT98.QJ72..AKQT9", "2S", "1D P"],  # p49, h15
         ["K985.3.AKQ987.K2", "2H", "1C P"],  # p49, h16
+
+        # We have the big hand and no 5-card jumpshift, we should take over the auction with Jacoby2N
+        # We're going at least to 6 and probably to 7.
+        ['AKJ8.J42.AKJ.KJ4', '2N', '1H P', 'Both'],  # 10-a00db3fb841e695a077cb618dd, W
     ],
 
     "test_minimum_rebid_by_opener": [
@@ -399,6 +403,9 @@ sayc_expectations = {
 
         # Better to rebid a major than mention a new minor?
         ['2.7643.AKQ986.AK', '3H', '1H P 2C P', 'E-W'],  # 3-84451c4ae81f4f7ba4a9137fca, S
+
+        # We're almost game-forcing, likely heading to 2N, showing clubs is probably most helpful?
+        ['AKJT.AQJ652.3.Q3', '2C', 'P 1D P 1N P', 'Both'],  # 4-96e6080b0ef0cc55dae51eeb4d, N
     ],
 
     "test_game_forcing_rebid_by_opener": [
@@ -562,6 +569,9 @@ sayc_expectations = {
 
         # Permitted to raise the 4th suit with four (unstopped).
         ["KJ632.8432..AKQ2", "3D", "1C P 1H P 1S P 2D P"],
+
+        # If we've already found a major fit, we can just bid it.  No need for FSF?
+        ['KJ9.82.AQT7.A753', '4S', '1C P 1H P 1S P', 'Both'],  # 4-8289ddd229c8ff81b4667770e1, E
     ],
 
     "test_preemption": [ # Chap 10

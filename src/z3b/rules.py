@@ -2786,6 +2786,7 @@ rule_order.order(
     new_one_level_major_responses,
 )
 rule_order.order(
+    # FIXME: Why?  If we already see 3N, why FSF?
     natural_exact_notrump_game,
     fourth_suit_forcing,
 )
@@ -2801,6 +2802,11 @@ rule_order.order(
 rule_order.order(
     fourth_suit_forcing,
     responder_rebid_priorities.ThreeLevelSuitRebidByResponder,
+)
+rule_order.order(
+    # If we already see game, why use FSF?
+    fourth_suit_forcing,
+    natural_exact_major_games,
 )
 rule_order.order(
     DefaultPass,
@@ -2822,6 +2828,11 @@ rule_order.order(
     ForcedRebidOriginalSuitByOpener,
     UnforcedRebidOriginalSuitByOpener,
     opener_unsupported_rebids,
+)
+rule_order.order(
+    # We'd rather mention a new minor (heading towards NT) than rebid one?
+    opener_unsupported_rebids.InvitationalMinor,
+    opener_higher_level_new_minors,
 )
 rule_order.order(
     natural_suited_part_scores,

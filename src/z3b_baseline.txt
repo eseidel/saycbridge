@@ -49,7 +49,7 @@ FAIL: 3N (expected 4H) for QT72.742.A8.AK97 (hcp: 13 lp: 13 sp: 14), history: 1H
 FAIL: 2N (expected 3N) for A643.JT7.QJ64.AQ (hcp: 14 lp: 14 sp: 13), history: 1C P 1D P 1H P 2S P
 FAIL: 1N (expected 1C) for AK43.JT7.QJ64.AQ (hcp: 17 lp: 17 sp: 16), history:  (subtest of 1C P 1D P 1H P 2S P)
 FAIL: None (expected 2D) for J5.Q2.K874.QJ943 (hcp: 9 lp: 10 sp: 8), history: 1D P 1S P 2C P
-Pass 33 of 45 hands
+Pass 35 of 47 hands
 
 test_game_forcing_rebid_by_opener:
 FAIL: 1N (expected 1S) for KQ.AJT.K87.A9876 (hcp: 17 lp: 18 sp: 16), history:  (subtest of 1S P 2H P)
@@ -75,7 +75,7 @@ FAIL: 1N (expected 1S) for K3.AJ6.K64.KQ542 (hcp: 16 lp: 17 sp: 17), history:  (
 FAIL: 1N (expected 1S) for A2.KQ5.KJ7.KJ432 (hcp: 17 lp: 18 sp: 18), history:  (subtest of 1S P 2S P)
 FAIL: 1N (expected 1H) for K98.A97.AQ765.A9 (hcp: 17 lp: 18 sp: 18), history:  (subtest of 1H P 2H P)
 FAIL: 2N (expected 2S) for KQJ87.3.74.AQT98 (hcp: 12 lp: 14 sp: 16), history: 1S P 2H P
-Pass 23 of 28 hands
+Pass 25 of 30 hands
 
 test_invitational_response_to_one_of_a_major:
 Pass 5 of 5 hands
@@ -198,13 +198,12 @@ FAIL: P (expected X) for 9.AKQT63.AQ.K865 (hcp: 18 lp: 20 sp: 20), history: 2H X
 FAIL: 3N (expected P) for 875.K8752.Q6.986 (hcp: 5 lp: 6 sp: 4), history: 1C X P 1D 1S 2N P
 FAIL: None (expected 3D) for AJ6532.T73.J6.86 (hcp: 6 lp: 8 sp: 7), history: 1C 2N P
 FAIL: 2D (expected 2N) for .K54.A9842.Q9543 (hcp: 9 lp: 11 sp: 14), history: P P 1D P 1S P 2C P
-FAIL: X (expected P) for .T743.AKJ63.AQJ4 (hcp: 15 lp: 16 sp: 20), history: P 1H 4C P P
 FAIL: 3C (expected P) for KT94.83.AT9654.T (hcp: 7 lp: 9 sp: 11), history: P P P 1C P 1H P 1S P 2H P 2N P
 FAIL: P (expected X) for AT6.KJ864.A4.A42 (hcp: 16 lp: 17 sp: 17), history: P 2H
 FAIL: P (expected 1H) for AK.72.KT942.AQT5 (hcp: 16 lp: 17 sp: 18), history: P 1C
 FAIL: P (expected 1N) for AKT4.AT.A82.J876 (hcp: 16 lp: 16 sp: 17), history: 1C P P
 FAIL: 2N (expected 2H) for QJ86.K7.AKT53.T6 (hcp: 13 lp: 14 sp: 15), history: 1H P 2D P
-Pass 280 of 349 hands
+Pass 281 of 349 hands
 
 test_negative_double:
 FAIL: 4H (expected P) for 4.A3.KQ65.KJT865 (hcp: 13 lp: 15 sp: 17), history: 1C 1S P P X P
@@ -329,7 +328,9 @@ Pass 27 of 27 hands
 test_slam_zone_response_to_one_of_a_minor:
 FAIL: 1S (expected 2S) for AT98.QJ72..AKQT9 (hcp: 16 lp: 17 sp: 21), history: 1D P
 FAIL: 1H (expected 2H) for K985.3.AKQ987.K2 (hcp: 15 lp: 17 sp: 19), history: 1C P
-Pass 1 of 3 hands
+WARNING: Unordered: ['2C', '6N'] from: [NewSuitAtTheTwoLevel, NaturalNotrump] ([TwoClubs, 6N])
+FAIL: None (expected 2N) for AKJ8.J42.AKJ.KJ4 (hcp: 21 lp: 21 sp: 21), history: 1H P
+Pass 1 of 4 hands
 
 test_slam_zone_responses_to_one_of_a_major:
 Pass 2 of 2 hands
@@ -354,9 +355,7 @@ FAIL: None (expected 4H) for 96.KQ65.86.JT874 (hcp: 6 lp: 7 sp: 8), history: 1H 
 FAIL: 2N (expected 2S) for KJ643.9863.A9.K9 (hcp: 11 lp: 12 sp: 13), history: 1S P 2C P 2H P
 FAIL: 2H (expected 3D) for AQ643.KQ75.763.5 (hcp: 11 lp: 12 sp: 14), history: 1S P 2C P 2D P
 FAIL: 3S (expected 4S) for KJ643.A874.T.K97 (hcp: 11 lp: 12 sp: 14), history: 1S P 2C P 3C P
-WARNING: Unordered: ['3S', '4H'] from: [NonJumpFourthSuitForcing, NaturalSuited] ([ThreeLevel, 4H])
-FAIL: None (expected 4H) for Q974.KJT7.J653.J (hcp: 8 lp: 8 sp: 10), history: P 1C P 1D P 2N P 3C P 3H P
-Pass 45 of 58 hands
+Pass 46 of 58 hands
 
 test_third_and_fourth_seat_opens:
 FAIL: P (expected 1C) for AKT9.T87.QJ8.J32 (hcp: 11 lp: 11 sp: 11), history: P P
@@ -371,12 +370,13 @@ FAIL: 3S (expected 4S) for K74.9.J98.KJT742 (hcp: 8 lp: 10 sp: 11), history: 1N 
 FAIL: 2N (expected P) for Q87.J843.K65.Q93 (hcp: 8 lp: 8 sp: 8), history: 1N P
 Pass 1 of 3 hands
 
-Pass 1052 (81.0%) of 1291 total hands
+Pass 1058 (81.0%) of 1296 total hands
 
-Tested call generation of 161 rules of 163 total (excluding 8 requires_planning rules).
+Tested call generation of 160 rules of 163 total (excluding 8 requires_planning rules).
 Never selected call from:
 DelayedSupportResponseToFourthSuitForcing
 JumpNewSuitResponseToNegativeDouble
+ReopeningDouble
 
 Tested interpretation of 99 rules of 171 total.
 
