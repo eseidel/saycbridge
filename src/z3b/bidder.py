@@ -623,21 +623,17 @@ class Interpreter(object):
         # Assuming SAYC for all sides.
         self.system = sayc.StandardAmericanYellowCard
 
-    def extend_history(self, history, call, explain=False):
-        if explain:
-            print call.name
-
-        expected_call = call if explain else None
-        selector = RuleSelector(self.system, history, expected_call=expected_call, explain=explain)
-
-        rule = selector.rule_for_call(call)
-        if not rule:
+    def extend_history_with_selection(self, history, call_selection, explain=False):
+        if not call_selection or not call_selection.rule:
             raise InconsistentHistoryException()
+
+        rule = call_selection.rule
+        call = call_selection.call
 
         annotations = rule.annotations_for_call(call)
         if explain:
             print "Selected %s for %s:" % (rule, call)
-        constraints = selector.constraints_for_call(call)
+        constraints = call_selection.rule_selector.constraints_for_call(call)
         if not history.is_consistent(positions.Me, constraints):
             raise InconsistentHistoryException(annotations, constraints, rule)
 
@@ -645,11 +641,20 @@ class Interpreter(object):
         history_cache.add(new_history)
         return new_history
 
+    def extend_history_with_call(self, history, call, explain=False):
+        if explain:
+            print call.name
+
+        expected_call = call if explain else None
+        selector = RuleSelector(self.system, history, expected_call=expected_call, explain=explain)
+
+        return self.extend_history_with_selection(history, CallSelection(call, selector), explain)
+
     def create_history(self, call_history, explain=False):
         history, remaining_calls = history_cache.lookup(call_history)
         for call in remaining_calls:
             try:
-                history = self.extend_history(history, call, explain=explain)
+                history = self.extend_history_with_call(history, call, explain=explain)
             except InconsistentHistoryException, e:
                 if explain:
                     print "WARNING: History is not consistent, ignoring %s from %s" % (call.name, e.rule)

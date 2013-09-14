@@ -11,30 +11,34 @@ from core.call import Call, Pass
 from core.board import Board
 from core.suit import *
 import z3b.bidder
+import random
 
 
 class AutobidForNone(object):
     def __init__(self):
-        self.z3b = z3b.bidder.Bidder()
+        self.bidder = z3b.bidder.Bidder()
+        self.interpreter = z3b.bidder.Interpreter()
         self.board_count = 0
         self.none_count = 0
 
     def _bid_board(self, board):
         self.board_count += 1
-        while not board.call_history.is_complete():
+        # FIXME: Unclear if we should have to maintain our own History object.
+        history = self.interpreter.create_history(board.call_history)
+        while not history.call_history.is_complete():
             position_to_call = board.call_history.position_to_call()
             hand = board.deal.hand_for(position_to_call)
-            bid = self.z3b.find_call_for(hand, board.call_history)
+            selection = self.bidder.call_selection_for(hand, history.call_history)
 
-            if bid is None:
+            if selection is None or selection.call is None:
                 self.none_count += 1
 
                 print "z3b=%s with %s" % (None, board.deal.hand_for(position_to_call).pretty_one_line())
-                vulnerability = board.call_history.vulnerability.name
+                vulnerability = history.call_history.vulnerability.name
                 optional_vulernability_string = "" if vulnerability == "None" else ", '%s'" % vulnerability
                 print "['%s', '?', '%s'%s],  # %s, %s" % (
                     hand.cdhs_dot_string(),
-                    board.call_history.calls_string(),
+                    history.call_history.calls_string(),
                     optional_vulernability_string,
                     board.identifier.partition(":")[0], # remove the call history
                     position_to_call.char,
@@ -42,7 +46,8 @@ class AutobidForNone(object):
                 print
                 return
 
-            board.call_history.calls.append(bid)
+            history = self.interpreter.extend_history_with_selection(history, selection)
+
 
     def configure_logging(self, is_verbose):
         handler = logging.StreamHandler(sys.stderr)
@@ -63,8 +68,12 @@ class AutobidForNone(object):
             return 0
 
         try:
+            random_state = random.getstate()
             while True:
-                self._bid_board(Board.random())
+                random.setstate(random_state)
+                board = Board.random()
+                random_state = random.getstate()
+                self._bid_board(board)
         except KeyboardInterrupt:
             print
             print "User interrupted."
@@ -75,4 +84,5 @@ class AutobidForNone(object):
 
 
 if __name__ == '__main__':
+    random.seed(0)
     AutobidForNone().main(sys.argv[1:])

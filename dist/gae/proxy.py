@@ -35,7 +35,7 @@ class CallSelectionProxy(object):
         if not self.call:
             return None
 
-        with Interpreter().extend_history(self.call_selection.rule_selector.history, self.call) as history:
+        with Interpreter().extend_history_with_call(self.call_selection.rule_selector.history, self.call) as history:
             return _position_knowledge_from_position_view(history.rho)
 
 
@@ -66,7 +66,7 @@ class InterpreterProxy(object):
 
     def knowledge_string_and_rule_for_additional_call(self, history, call):
         try:
-            history = self.interpreter.extend_history(history, call)
+            history = self.interpreter.extend_history_with_call(history, call)
             return self._pretty_string_for_position_view(history.rho), history.rho.rule_for_last_call
         except InconsistentHistoryException, e:
             return None, None
