@@ -1070,6 +1070,9 @@ class ThreeLevelSuitRebidByResponder(ResponderSuitRebid):
         MaxShownLength(positions.Me, 5)
     ]
     call_names = ['3C', '3D', '3H', '3S']
+    # FIXME: Page 74 says "second round jump bid of partner's major is normally a game force".
+    # Seems we should promise a bit more than just 10hcp here, or partner will be left guessing?
+    # FIXME: We should want 3o5 or better?  Partner may just leave us here...
     shared_constraints = [MinLength(6), MinimumCombinedPoints(22)]
     priority = responder_rebid_priorities.ThreeLevelSuitRebidByResponder
 
@@ -2495,7 +2498,9 @@ class ResponseToPreempt(Rule):
 # This is basically just a version of SuitGameIsRemote w/o the fit requirement.
 class PassResponseToPreempt(ResponseToPreempt):
     call_names = 'P'
-    shared_constraints = MaximumCombinedPoints(24)
+    # FIXME: Partner can always have up to 16 hcp when preempting.
+    # This should be Max over his minimum?
+    shared_constraints = NO_CONSTRAINTS
 
 
 class NewSuitResponseToPreempt(ResponseToPreempt):
@@ -2701,6 +2706,12 @@ class TwoNotrumpFeatureRequest(ResponseToPreempt):
     annotations = annotations.FeatureRequest
     requires_planning = True
     constraints = { '2N': MinimumCombinedPoints(22) }
+
+
+rule_order.order(
+    PassResponseToPreempt,
+    TwoNotrumpFeatureRequest,
+)
 
 
 class ResponseToTwoNotrumpFeatureRequest(Rule):

@@ -560,6 +560,12 @@ sayc_expectations = {
 
         # This was found via the none-finder.  3S isn't even FSF, is it?
         ['Q974.KJT7.J653.J', '4H', 'P 1C P 1D P 2N P 3C P 3H P', 'Both'],  # 4-c8e6f9057b689eeb42135cc5b0, S
+
+        # We don't like his hearts, but 3N seems unlikely with as few as 22 combined hcp, pass?
+        ['KQ732.KQ52..K752', 'P', '1C P 1H P 1S P 3H P'],  # 1-0d4f904737542aeadfa8b126d3, N
+
+        # Unfavorable vulnerability, partner continued after our minimum rebid, pass?
+        ['A4.QJ7652..K7542', 'P', '1S P 2H P 2S P 3H P', 'E-W'],  # 16-4e00a6f0fe2f594696537ed88c, W
     ],
 
     "test_fourth_suit_forcing": [ # Chap 9
@@ -624,6 +630,9 @@ sayc_expectations = {
 
         # Partner is not inviting when raising, always pass:
         ['QT96.AQT962.T.83', 'P', '2D P 3D P', 'Both'],  # 13-6734134b87088feeb2d51b4a5e, N
+
+        # We can have an opening hand and still pass:
+        ['63.KQT763.J43.AJ', 'P', '1C 2S P', 'N-S'],  # 5-75caa02e3db3cbd853096948d7, W
 
         # Responding to a new suit from partner after preempt
         ["9.QJ2.AQT984.986", "3S", "2H P 2S P"], # p85, h4
@@ -702,6 +711,9 @@ sayc_expectations = {
         ["8.9873.AKQT864.4", "4H", "P"], # p88, h27
         ["8.9873.AKQT864.4", "4H", "P P"], # p88, h27
         ["8.9873.AKQT864.4", "4H", "P P P"], # p88, h27
+
+        # Partner shouldn't have more than 2 spades preempting in first seat, so 5C should be almost a laydown.
+        ['A4.AK87652.A.J42', '5C', '4C P', 'Both'],  # 4-f7f3af5c5522528c0b251bb84a, E
     ],
 
     "test_preemptive_overcalls": [
