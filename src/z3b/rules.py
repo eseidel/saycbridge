@@ -705,6 +705,14 @@ class NotrumpInvitationByOpener(RebidAfterOneLevelOpen):
     shared_constraints = [points >= 16, balanced]
 
 
+rule_order.order(
+    # Jumping to 3N (if possible) is better than just inviting to game.
+    # Unclear if we need a separate rule for this jump or if natural NT is sufficient.
+    NotrumpInvitationByOpener,
+    natural_exact_notrump_game,
+)
+
+
 opener_one_level_new_major = enum.Enum(
     # Up the line with 4s...
     "NewSuitHearts",

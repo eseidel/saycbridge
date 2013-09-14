@@ -429,6 +429,9 @@ sayc_expectations = {
 
         # This is a jumpshift, not doubling hand:
         ['AKQT54.J.AK54.A5', '3H', '1C 1D P 2D', 'N-S'],  # 5-a0f9103e6691db09bfc153a7b4, N
+
+        # We'd rather jump to 3N (game force) than bid 2N (invitational)
+        ['Q742.AK9.KT3.AK7', '3N', 'P 1C P 2C P', 'Both'],  # 7-ddb65e2226c9f3801c3a11d66f, W
     ],
 
     "test_opener_rebid_after_a_limit_raise": [
@@ -1073,6 +1076,9 @@ sayc_expectations = {
 
         # Partner is bound to like one of our minors.  We've got the majority of the points anyway.
         ['AKJ953.Q7654.K.6', '3D', '1C 1S X 2S', 'E-W'],  # 3-6602e682a95e47c31d2f32477f, S
+
+        # This hand does not want to play NT, despite having the points.
+        ['KQJ754.AQ93..K84', '3D', 'P P 1C 2S X P', 'E-W'],  # 6-9f793fad48e7b484a64631324c, W
     ],
 
     "test_reopening_double": [ # Chap 17
