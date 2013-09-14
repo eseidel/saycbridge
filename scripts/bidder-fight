@@ -13,6 +13,8 @@ from core.board import Board
 from core.suit import *
 from core.position import *
 import z3b.bidder
+from tests.harness import expectation_line
+
 
 # NOTE: This can be run against www.saycbridge.com, but that's very slow.
 kbb_baseurl = 'http://localhost:8083/json/autobid'
@@ -66,16 +68,11 @@ class BidderFight(object):
 
             if kbb_bid != z3b_bid:
                 print "kbb=%s z3b=%s with %s" % (kbb_bid, z3b_bid, deal.hand_for(position).pretty_one_line())
-                vulnerability = board.call_history.vulnerability.name
-                optional_vulernability_string = "" if vulnerability == "None" else ", '%s'" % vulnerability
-                print "['%s', '%s', '%s'%s],  # %s, %s" % (
-                    hand.cdhs_dot_string(),
-                    kbb_bid.name,
-                    board.call_history.calls_string(),
-                    optional_vulernability_string,
+                unittest_comment = "  # %s, %s" % (
                     board.identifier.partition(":")[0], # remove the call history
                     position.char,
                 )
+                print expectation_line(hand, board.call_history, expected_call=kbb_bid) + unittest_comment
                 print
                 return
 

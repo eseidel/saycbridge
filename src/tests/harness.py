@@ -22,11 +22,14 @@ _log = logging.getLogger(__name__)
 
 # This is the simple version.  We'll need a fancier version of this function which can take a board.
 def expectation_line(hand, call_history, expected_call=None):
+    vulnerability = call_history.vulnerability.name
+    optional_vulernability_string = "" if vulnerability == "None" else ", '%s'" % vulnerability
     expected_call_string = expected_call.name if expected_call else "?"
-    return "['%s', '%s', '%s']," % (
+    return "['%s', '%s', '%s'%s]," % (
         hand.cdhs_dot_string(),
         expected_call_string,
         call_history.calls_string(),
+        optional_vulernability_string,
     )
 
 

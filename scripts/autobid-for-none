@@ -11,6 +11,7 @@ from core.call import Call, Pass
 from core.board import Board
 from core.suit import *
 import z3b.bidder
+from tests.harness import expectation_line
 
 
 class AutobidForNone(object):
@@ -30,15 +31,11 @@ class AutobidForNone(object):
                 self.none_count += 1
 
                 print "z3b=%s with %s" % (None, board.deal.hand_for(position_to_call).pretty_one_line())
-                vulnerability = board.call_history.vulnerability.name
-                optional_vulernability_string = "" if vulnerability == "None" else ", '%s'" % vulnerability
-                print "['%s', '?', '%s'%s],  # %s, %s" % (
-                    hand.cdhs_dot_string(),
-                    board.call_history.calls_string(),
-                    optional_vulernability_string,
+                unittest_comment = "  # %s, %s" % (
                     board.identifier.partition(":")[0], # remove the call history
                     position_to_call.char,
                 )
+                print expectation_line(hand, board.call_history) + unittest_comment
                 print
                 return
 
