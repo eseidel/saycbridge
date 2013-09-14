@@ -444,6 +444,10 @@ sayc_expectations = {
 
         # Game seems like a great idea with 15 hcp.
         ['T942.84.AK.AQJ85', '4S', '1S P 3S P', 'E-W'],  # 9-32d42d7cf49a96b7f98293490c, N
+
+        # With a minimum (and vulnerable) game seems unworth the risk?
+        ['AT5.9.AJ964.A873', 'P', 'P P P 1H P 3H P', 'N-S'],  # 2-945e3a17db2d5f3288f11e06e8, N
+        ['AQ2.A963.8.K9872', 'P', '1S P 3S P'],  # 11-853fcb98ec8d2d44bd56cca918, S
     ],
 
     "test_reverses": [ # Chap 7
@@ -655,6 +659,9 @@ sayc_expectations = {
         # If he has an outside entry 3N is trivial.
         ["AKQ83.AKT93..A85", "2N", "2H P"], # bidder-fight 13-245b5abb34a4a431f051f8ecde
 
+        # 50% 3N seems worth the gamble?
+        ['74.K6.AQ8.KQJ983', '3N', '3C P', 'Both'],  # 10-5d3926683428d109caced97cfe, W
+
         # 10 clubs and all suits stopped, 3N should be easy.
         ['A53.K5.AKJ72.QJ3', '3N', '3C P'],  # 8-d1be3f6a42806431fd944f2a5e, E
         # Same idea, everything stopped, and have at least one club to lead to partner.
@@ -690,6 +697,9 @@ sayc_expectations = {
         ['73.AQ7632.8.T932', '2D', '1C'], # 2o3 is also valid.
         ['73.AQ97632.8.T92', '3D', '1C'], # 2o3 is also valid.
         ['73.AQ987632.8.T2', '4D', '1C'], # 2o3 is also valid.
+
+        # 2S seems like a better response than a takeout double.
+        ['J843.J8.K.KQJ864', '2S', '1D P 1H', 'N-S'],  # 12-e9386cf73e09c755012d2e27a9, S
     ],
 
     "test_strong_two_club": [ # Chap 11

@@ -25,6 +25,8 @@ annotations = enum.Enum(
     "BidHearts",
     "BidSpades",
 
+    "LimitRaise",
+
     # Not all Cappelletti bids are artificial, some can be treated as to-play.
     "Cappelletti",
 

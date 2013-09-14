@@ -195,6 +195,7 @@ class LimitRaise(RaiseResponse):
         ('3C', '3D'): raise_responses.MinorLimit,
         ('3H', '3S'): raise_responses.MajorLimit,
     }
+    annotations = annotations.LimitRaise
     shared_constraints = [
         MinimumCombinedLength(8),
         # We shouldn't make a limit raise with less than 6 HCP
@@ -207,6 +208,7 @@ class LimitRaise(RaiseResponse):
         # above 12 hcp, but limiting it directly seems slightly cleaner (and makes none-finding possible).
         MaximumSupportPointsForPartnersLastSuit(12),
     ]
+
 
 class MajorJumpToGame(RaiseResponse):
     call_names = ['4H', '4S']
@@ -769,6 +771,28 @@ reverse_preconditions = [
     UnbidSuit(),
     NotJumpFromLastContract(),
 ]
+
+
+class MinimumResponseToLimitRaise(OpenerRebid):
+    preconditions = LastBidHasAnnotation(positions.Partner, annotations.LimitRaise)
+
+
+class PassReseponseToLimitRaise(MinimumResponseToLimitRaise):
+    call_names = 'P'
+    shared_constraints = (balanced, points <= 14)
+
+
+class GameAccept(MinimumResponseToLimitRaise):
+    preconditions = RaiseOfPartnersLastSuit()
+    call_names = ('4H', '4S')
+    shared_constraints = NO_CONSTRAINTS  # Accepting game is our default action.
+
+
+rule_order.order(
+    # GameAccept is defined in terms of pass, we could write it the other way around and reverse the priorities.
+    GameAccept,
+    PassReseponseToLimitRaise,
+)
 
 
 opener_reverses = enum.Enum(
