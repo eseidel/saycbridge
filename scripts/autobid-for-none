@@ -16,14 +16,19 @@ import z3b.bidder
 class AutobidForNone(object):
     def __init__(self):
         self.z3b = z3b.bidder.Bidder()
+        self.board_count = 0
+        self.none_count = 0
 
     def _bid_board(self, board):
+        self.board_count += 1
         while not board.call_history.is_complete():
             position_to_call = board.call_history.position_to_call()
             hand = board.deal.hand_for(position_to_call)
             bid = self.z3b.find_call_for(hand, board.call_history)
 
             if bid is None:
+                self.none_count += 1
+
                 print "z3b=%s with %s" % (None, board.deal.hand_for(position_to_call).pretty_one_line())
                 vulnerability = board.call_history.vulnerability.name
                 optional_vulernability_string = "" if vulnerability == "None" else ", '%s'" % vulnerability
@@ -63,6 +68,9 @@ class AutobidForNone(object):
         except KeyboardInterrupt:
             print
             print "User interrupted."
+            if self.board_count:
+                none_percent = 100.0 * self.none_count / self.board_count
+                print "%s of %s (%.1f%%) boards were None" % (self.none_count, self.board_count, none_percent)
             return 0
 
 

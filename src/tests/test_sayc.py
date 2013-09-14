@@ -372,6 +372,9 @@ sayc_expectations = {
 
         # Partner has denied support for hearts, NT slam is remote (max 30 hcp), Pass.
         ['A4.Q2.J864.AJT63', 'P', 'P 1S P 3N P', 'Both'],  # 10-f970d1a53c42cdb89e43b6d286, S
+
+        # We're (barely) a minimum, we don't like partner's suit, and RHO has claimed the majors, we just pass?
+        ['AT86.J.AT74.AJ84', 'P', 'P 1C P 1D X', 'N-S'],  # 15-49dcc1d485ac66e70dadb0b8e3, W
     ],
 
     "test_invitational_rebid_by_opener": [
@@ -410,6 +413,9 @@ sayc_expectations = {
         ['AKJ5.Q2.AQ9842.A', '3C', 'P 1H P 1S P'],  # 8-7855840deedca11a0d32bf79b8, N
         # JumpShift is better than a help-suit (even skipping 3N?)
         ['KQ.QT96.AKJT5.A9', '4D', 'P P 1H P 2H P', 'N-S'],  # 15-fbd9a0694f04a9c9e0c16dd2f4, N
+
+        # This is a jumpshift, not doubling hand:
+        ['AKQT54.J.AK54.A5', '3H', '1C 1D P 2D', 'N-S'],  # 5-a0f9103e6691db09bfc153a7b4, N
     ],
 
     "test_opener_rebid_after_a_limit_raise": [
@@ -954,6 +960,9 @@ sayc_expectations = {
         ["K743.QJ96.Q865.5", "2N", "1H X"],  # p123, h28
         ["Q864.A653.T987.5", "3H", "1H X"],  # p123, h29
 
+        # Depends on the vulenerability?  This looks like a 50% game or so?
+        ['K4.J3.KQ3.AK7642', 'P', 'P 1S X 3S P'],  # 14-795dc2f94c38f2cdd4a626843a, S
+
         # Lead directing doubles
         ["74.876.AKJ987.63", "X", "1N P 2H"],  # p124, h30
         ["AKQ83.95.97.Q986", "X", "1N P 2C"],  # p124, h31
@@ -1041,7 +1050,9 @@ sayc_expectations = {
         ["Q93.5.AT93.AKJ53", "X", "P 1S 2D P P"],  # p138, West
         ["KT6.AQJ74.874.T2", "P", "P 1S 2D P P X P"],  # p138, East
 
-        ['AJ75.A92.KT2.AK3', 'X', '1C 1D P P', 'Both'],  # 10-f912dc5ece6e9682f41b48f085, E
+        ['AJ75.A92.KT2.AK3', '2N', '1C 1D P P', 'Both'],  # 10-f912dc5ece6e9682f41b48f085, E
+
+        ['3.AK954.A985.AK5', 'P', 'P 1D 1H P P X P 1S P', 'E-W'],  # 6-255c53f6b385a123a7f81b1f0a, S cannot say 2H once East has mentioned hearts and should Double and then pass.
     ],
 
     "test_balancing": [ # Balancing (Chap 18)
@@ -1244,7 +1255,6 @@ sayc_expectations = {
         ['AK2.AK8.874.QT42', '1N', '1C P 1S', 'Both'],  # Indirect 1NT overcalls should be possible.
         ['6.KQJ985432..AQ8', '2D', '1H P 1S', 'N-S'],  # 12-cd97772a869a8f433334c461e6, S should be able to make an indirect overcall of 2D.
         ['AK7432.543.QJ9.5', 'X', '1S 2C 2S P P', 'E-W'],  # 16-014994301ed667fa883de39deb, N should balancing double to protect his partner.
-        ['3.AK954.A985.AK5', 'P', 'P 1D 1H P P X P 1S P', 'E-W'],  # 6-255c53f6b385a123a7f81b1f0a, S cannot say 2H once East has mentioned hearts and should Double and then pass.
         ['K42.AJT7.QT8.T63', '2N', 'P 1N P', 'E-W'],  # 6-13bfb4a5d2c1859b113b1cac6e, N should only bid 2N, discounting 1 point for having a flat hand.
         ['AT6.K82.A64.AQ87', 'P', 'P 1N P 2N P', 'E-W'],  # 6-13bfb4a5d2c1859b113b1cac6e, S should pass the game invitation, discounting 1 point for having a flat hand.
         ['KT54.KJ73.KJT6.Q', '2H', '1C 2C P'],  # 8-7a03b6d95bd9b30b1a605c43e3, S should pick a major.  Unclear if this should be 2H or 3H.

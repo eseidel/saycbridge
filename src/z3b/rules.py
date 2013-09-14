@@ -1991,6 +1991,9 @@ class TakeoutDouble(Rule):
         UnbidSuitCountRange(2, 3),
     ]
     annotations = annotations.TakeoutDouble
+    # If this is the first bid, it seem OK to not have support for unbid suits
+    # if this is a re-bid, it seems we should have shape?
+    # e.g. 1C 1D P 2D X
     shared_constraints = ConstraintOr(SupportForUnbidSuits(), points >= 17)
 
 
@@ -2003,7 +2006,13 @@ takeout_double_after_preempt_precondition = AndPrecondition(
 )
 
 
-class OneLevelTakeoutDouble(TakeoutDouble):
+class OvercallTakeoutDouble(TakeoutDouble):
+    # FIXME: Do we need to exclude takeout double rebids by responder?
+    preconditions = InvertedPrecondition(Opened(positions.Me))
+    shared_constraints = ConstraintOr(SupportForUnbidSuits(), points >= 17)
+
+
+class OneLevelTakeoutDouble(OvercallTakeoutDouble):
     preconditions = [
         Level(1),
         InvertedPrecondition(takeout_double_after_preempt_precondition),
@@ -2013,7 +2022,7 @@ class OneLevelTakeoutDouble(TakeoutDouble):
     shared_constraints = points >= 11
 
 
-class TwoLevelTakeoutDouble(TakeoutDouble):
+class TwoLevelTakeoutDouble(OvercallTakeoutDouble):
     preconditions = [
         Level(2),
         InvertedPrecondition(takeout_double_after_preempt_precondition),
@@ -2029,18 +2038,39 @@ standard_takeout_doubles = set([
 
 
 # FIXME: Is this really true at any level?
-class TakeoutDoubleAfterPreempt(TakeoutDouble):
+class TakeoutDoubleAfterPreempt(OvercallTakeoutDouble):
     preconditions = takeout_double_after_preempt_precondition
     shared_constraints = points >= 11
 
 
-class BalancingDouble(TakeoutDouble):
+class BalancingDouble(OvercallTakeoutDouble):
     preconditions = [
         Level(1),
         balancing_precondition,
         InvertedPrecondition(takeout_double_after_preempt_precondition),
     ]
     shared_constraints = points >= 8
+
+
+class ReopeningDouble(TakeoutDouble):
+    # These only apply when partner hasn't mentioned a suit, right?
+    preconditions = [
+        Opened(positions.Me),
+        # Above 2S X, seems we need more than opening points?
+        MaxLevel(2),
+    ]
+    # Having 17+ points is not a sufficient reason to takeout later in the auction.
+    shared_constraints = [
+        # Seems more important to be short in opponents's suit?
+        MaxLengthInLastContractSuit(1),
+        SupportForUnbidSuits(),
+    ]
+
+
+rule_order.order(
+    DefaultPass,
+    ReopeningDouble,
+)
 
 
 takeout_double_responses = enum.Enum(
@@ -2709,6 +2739,7 @@ rule_order.order(DefaultPass, natural_passses)
 rule_order.order(natural_suited_part_scores, natural_passses)
 rule_order.order(SuitGameIsRemote, natural_games, SuitSlamIsRemote, natural_slams)
 rule_order.order(
+    DefaultPass,
     RebidOneNotrumpByOpener,
     opener_one_level_new_major,
     opener_support_majors,
