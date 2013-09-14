@@ -957,6 +957,8 @@ sayc_expectations = {
 
         ["A874.AK96.8.AK84", "2S", "1H X P 2S P"],
 
+        ['8.KQT53.K.AKQT92', '3S', 'P P 3C X P 3H P', 'E-W'],  # 3-c83708b64b994a8f83ddf8e515, E
+
         # Even w/o a stopper, 1N to show 18-19 seems reasonable here?
         ["T87.AK9.A98.AK84", "1N", "1C X P 1D P"],
 

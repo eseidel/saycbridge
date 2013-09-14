@@ -2325,12 +2325,12 @@ class NewSuitAfterTakeoutDouble(RebidAfterTakeoutDouble):
         # only needs 3+ to make the bid).  Promising only 3 is currently confusing UnbidSuit.
         InvertedPrecondition(RaiseOfPartnersLastSuit()),
     ]
-    # Min: 1C X XX P 1D, Max: 2D X P 2S 3H
+    # Min: 1C X XX P P 1D, Max: 3C X P 3H P 3S
     priorities_per_call = {
         (      '2C', '3C'): rebids_after_takeout_double.ClubsNewSuit,
         ('1D', '2D', '3D'): rebids_after_takeout_double.DiamondsNewSuit,
         ('1H', '2H', '3H'): rebids_after_takeout_double.HeartsNewSuit,
-        ('1S', '2S'      ): rebids_after_takeout_double.SpadesNewSuit,
+        ('1S', '2S', '3S'): rebids_after_takeout_double.SpadesNewSuit,
     }
     shared_constraints = MinLength(5)
 

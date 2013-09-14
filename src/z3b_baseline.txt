@@ -31,7 +31,7 @@ FAIL: None (expected P) for K4.J3.KQ3.AK7642 (hcp: 16 lp: 18 sp: 17), history: P
 FAIL: P (expected X) for 74.876.AKJ987.63 (hcp: 8 lp: 10 sp: 10), history: 1N P 2H
 FAIL: P (expected X) for AKQ83.95.97.Q986 (hcp: 11 lp: 12 sp: 13), history: 1N P 2C
 FAIL: P (expected X) for T986542..A7.6532 (hcp: 4 lp: 7 sp: 10), history: 1H P 3H P 4N P 5D
-Pass 71 of 87 hands
+Pass 73 of 89 hands
 
 test_escape_route_stayman:
 Pass 12 of 12 hands
@@ -401,7 +401,7 @@ FAIL: 3S (expected 4S) for K74.9.J98.KJT742 (hcp: 8 lp: 10 sp: 11), history: 1N 
 FAIL: 2N (expected P) for Q87.J843.K65.Q93 (hcp: 8 lp: 8 sp: 8), history: 1N P
 Pass 1 of 3 hands
 
-Pass 1081 (80.0%) of 1335 total hands
+Pass 1083 (81.0%) of 1337 total hands
 
 Tested call generation of 162 rules of 165 total (excluding 8 requires_planning rules).
 Never selected call from:
