@@ -311,6 +311,9 @@ sayc_expectations = {
 
         # FIXME: Should we count partner for 4 clubs and support?
         ['5432.KQ2.32.5432', 'P', '1C P'], # Make sure we don't have a hole with 5 hcp and 6 support points.
+
+        # YOLO.  Hope partner doesn't have 3 diamond losers.
+        ['AK9842.953.K86.A', '5C', 'P 1C P', 'Both'],  # 7-4725fd646f6238c44adabbb00d, E
     ],
 
     "test_invitational_response_to_one_of_a_minor": [
@@ -669,6 +672,7 @@ sayc_expectations = {
         ['A53.K5.AKJ72.QJ3', '3N', '3C P'],  # 8-d1be3f6a42806431fd944f2a5e, E
         # Same idea, everything stopped, and have at least one club to lead to partner.
         ['Q.A652.AQ962.AK9', '3N', 'P 3C P', 'Both'],  # 13-6a465d32f4817dae76ee040e0f, W
+        ['AK.JT962.A4.AT97', '3N', 'P 3C P', 'N-S'],  # 5-118157f932fc16e1620ea4dfab, W
 
         # This looks very slammy from our side.  We see 7 club QTs and at least 5-6 heart tricks from partner.
         ['AKQJ852.KT2.Q96.', '2N', 'P 2H P'],  # 1-d38ebff0963ac68d71d690504a, W
@@ -733,6 +737,8 @@ sayc_expectations = {
         ["K8.AK.A2.AKQT987", "3S", "2C P 2D P"],
 
         ["QT32.QT8.QJ4.T92", "3N", "P 2C P 2D P 2N P"],
+
+        ['AKQ85.K.AK762.KT', '2H', 'P 2C P 2D P'],  # 1-a9e6b542f0be44052397af31f4, E
     ],
 
     "test_overcalls": [ # Chap 12
@@ -886,6 +892,9 @@ sayc_expectations = {
         ["AK43.T62.KT43.73", "3H", "1N 2H P 2N P 3D P"],  # p112, h19
         # Sanity check that we know how to respond to a minor request:
         ["AKJ42.T9.AQ875.5", "3C", "1N 2H P 2N P"],
+
+        # Breath a sign of relief and pass.
+        ['63.J873.9874.T73', 'P', '1N X 2C', 'E-W'],  # 16-2791340b7a497786a5f38c86fc, S
     ],
 
     "test_doubles": [ # Chap 15
@@ -1061,6 +1070,9 @@ sayc_expectations = {
 
         # Seems reasonable to start with a negative double and go from there?
         ['8532.A854.A74.AK', 'X', 'P 1H 2S', 'Both'],  # 13-f34c952bc728b5d3914e62886f, W
+
+        # Partner is bound to like one of our minors.  We've got the majority of the points anyway.
+        ['AKJ953.Q7654.K.6', '3D', '1C 1S X 2S', 'E-W'],  # 3-6602e682a95e47c31d2f32477f, S
     ],
 
     "test_reopening_double": [ # Chap 17
@@ -1083,6 +1095,9 @@ sayc_expectations = {
 
         # A double seems more descriptive here?  Unclear if this is "reopening"?
         ['KT86.QT87.K.A843', 'X', '1D P P 1H', 'N-S'],  # 12-51ced3125f33a24691baf8b44b, W
+
+        # This is our hand.  Don't need to try and penalize them, or?
+        ['.KQ874.KQJ7.AKQ2', '3H', '1D 2C P P', 'Both'],  # 7-3757fc0e4a32bd72d2ae41506a, S
     ],
 
     "test_balancing": [ # Balancing (Chap 18)

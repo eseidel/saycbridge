@@ -934,6 +934,7 @@ class HelpSuitGameTry(RebidAfterOneLevelOpen):
 
 opener_jumpshifts = enum.Enum(
     # It's possible to have 0.4.4.5 and we'd rather jump-shift to hearts than diamonds, no?
+    # FIXME: 4-card suits should be mentioned up-the-line!
     "JumpShiftToSpades",
     "JumpShiftToHearts",
     "JumpShiftToDiamonds",
@@ -2089,6 +2090,7 @@ class ReopeningDouble(TakeoutDouble):
     # Having 17+ points is not a sufficient reason to takeout later in the auction.
     shared_constraints = [
         # Seems more important to be short in opponents's suit?
+        # Book mentions we likely don't want a void in ops suit however?
         MaxLengthInLastContractSuit(1),
         SupportForUnbidSuits(),
     ]
