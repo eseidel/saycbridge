@@ -178,7 +178,10 @@ sayc_expectations = {
         # If a transfer is overcalled:
         ["AQT9.KJ87.Q86.A2", "3H", "1N P 2D 2S"],  # p17, h47
         ["KT8.AKT8.86.AQT7", "X", "1N P 2C 2S"],  # p17, h48
-        ["KT82.AKT8.Q8.A32", "P", "1N P 2C 2S"],  # p17, h49
+        ["KT82.AKT8.Q8.A32", "P", "1N P 2C 2S"],  # p17, 
+
+        # Partner didn't have to transfer, but he did so we should accept it.
+        ['A43.KQ.KT942.K54', '2S', '1N X 2D P'],  # 10-d6eab272800d646f171c16bfe4, E
     ],
 
     "test_rule_of_twenty_open": [
@@ -352,6 +355,15 @@ sayc_expectations = {
         ['QJ52.AKQ7.97.KQ2', '3N', '1D P'],  # 17 hcp
 
         ['AKJ.5432.Q32.AKQ', '3N', '1D P'], # 19hcp, despite what the book says (16-18hcp) 3N needs to be uncapped.
+
+        # Game forcing strength and too big to limit raise.
+        # Maybe we should jump to 2N here even though not balanced, give partner a chance to show something else?
+        ['AJ9853.K.T54.KQJ', '2N', '1C P'],  # 2-d9b5da4882e3635ca730883f57, E
+        ['Q8.AQ9632.AT.J43', '2N', '1D P'],  # 6-ec87e494127d1eb3a4c45bc86e, E
+        ['AKJ973.5.T98.AQ5', '2N', '1C P'],  # 11-6166228f84d41073ab743bfde6, S
+
+        # A new suit is uncapped, slow arrival.
+        ['AQJ93.AJ643.A87.', '2C', '1D P'],  # 15-23d2eb8a61cb67de9548c7d130, S
     ],
 
     "test_slam_zone_response_to_one_of_a_minor": [
