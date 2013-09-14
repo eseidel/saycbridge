@@ -1202,6 +1202,9 @@ class NotrumpJumpResponseToFourthSuitForcing(ResponseToFourthSuitForcing):
     shared_constraints = [StopperInFouthSuit(), MinimumCombinedPoints(25)]
 
 
+# FIXME: Have seen warnings for:
+# WARNING: Multiple rules have maximal category (Gadget) for 4D: [DelayedSupportResponseToFourthSuitForcing, RebidResponseToFourthSuitForcing]
+# But haven't seen the hands yet.
 class DelayedSupportResponseToFourthSuitForcing(ResponseToFourthSuitForcing):
     preconditions = [
         NotJumpFromLastContract(),

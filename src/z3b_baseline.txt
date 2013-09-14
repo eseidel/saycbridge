@@ -215,10 +215,12 @@ FAIL: 3H (expected 2S) for AQ6.KQJ97.AQ76.5 (hcp: 18 lp: 19 sp: 21), history: 1D
 FAIL: X (expected 2S) for Q832.QT.K4.AQT93 (hcp: 13 lp: 14 sp: 13), history: 1D 2H
 FAIL: X (expected 2H) for Q832.QT.AQT93.K4 (hcp: 13 lp: 14 sp: 13), history: 1D 1S
 FAIL: 2N (expected 2D) for A.AQ94.KJT95.Q53 (hcp: 16 lp: 17 sp: 19), history: P P P 1H 1S X P
+WARNING: Unordered: ['2S', '2D'] from: [ForcedRebidOriginalSuitByOpener, NewSuitResponseToNegativeDouble] ([<class 'z3b.rules.UnforcedRebidOriginalSuitByOpener'>, <class 'z3b.rules.NewSuitResponseToNegativeDouble'>])
+FAIL: None (expected 2S) for 93.AQ43.9.AQT942 (hcp: 12 lp: 14 sp: 16), history: P 1S 2C X P
 FAIL: X (expected 2S) for Q2.A95.AT3.KT843 (hcp: 13 lp: 14 sp: 12), history: 1H 2C
 WARNING: Unordered: ['X', '3N'] from: [TwoLevelNegativeDouble, ThreeNotrumpMajorResponse] ([<class 'z3b.rules.TwoLevelNegativeDouble'>, <class 'z3b.rules.ThreeNotrumpMajorResponse'>])
 FAIL: None (expected X) for 8532.A854.A74.AK (hcp: 15 lp: 15 sp: 16), history: P 1H 2S
-Pass 47 of 57 hands
+Pass 48 of 59 hands
 
 test_open_one_nt:
 Pass 7 of 7 hands
@@ -293,7 +295,9 @@ FAIL: 2N (expected P) for KT6.AQJ74.874.T2 (hcp: 10 lp: 11 sp: 11), history: P 1
 WARNING: Multiple rules have maximal category (Default) for 1S: [OneLevelNewSuitResponse, SuitResponseToTakeoutDouble]
 FAIL: 1N (expected P) for 3.AK954.A985.AK5 (hcp: 18 lp: 19 sp: 21), history: P 1D 1H P P X P 1S P
 FAIL: P (expected X) for 3.AK954.A985.AK5 (hcp: 18 lp: 19 sp: 21), history: P 1D 1H P P (subtest of P 1D 1H P P X P 1S P)
-Pass 13 of 24 hands
+WARNING: Unordered: ['1S', 'X'] from: [NewOneLevelMajorByOpener, ReopeningDouble] ([NewSuitSpades, <class 'z3b.rules.ReopeningDouble'>])
+FAIL: None (expected X) for KT86.QT87.K.A843 (hcp: 12 lp: 12 sp: 12), history: 1D P P 1H
+Pass 14 of 26 hands
 
 test_responses_to_michaels:
 FAIL: None (expected 3H) for K75.AQ5.542.T763 (hcp: 9 lp: 9 sp: 9), history: P 1S 2S P
@@ -327,7 +331,9 @@ FAIL: 2N (expected 5N) for AKQJT987...QJT43 (hcp: 13 lp: 18 sp: 23), history: 1S
 Pass 18 of 25 hands
 
 test_slam_invitations_over_one_nt:
-Pass 27 of 27 hands
+WARNING: Unordered: ['3D', '4S'] from: [MinorGameForceRebid, NaturalSuited] ([MinorGameForceRebid, 4S])
+FAIL: None (expected 4S) for Q43.A7642..AQJ32 (hcp: 13 lp: 15 sp: 18), history: 1N P 2C P 2S P
+Pass 28 of 29 hands
 
 test_slam_zone_response_to_one_of_a_minor:
 FAIL: 1S (expected 2S) for AT98.QJ72..AKQT9 (hcp: 16 lp: 17 sp: 21), history: 1D P
@@ -374,7 +380,7 @@ FAIL: 3S (expected 4S) for K74.9.J98.KJT742 (hcp: 8 lp: 10 sp: 11), history: 1N 
 FAIL: 2N (expected P) for Q87.J843.K65.Q93 (hcp: 8 lp: 8 sp: 8), history: 1N P
 Pass 1 of 3 hands
 
-Pass 1064 (81.0%) of 1302 total hands
+Pass 1067 (81.0%) of 1308 total hands
 
 Tested call generation of 162 rules of 165 total (excluding 8 requires_planning rules).
 Never selected call from:
