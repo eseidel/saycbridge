@@ -577,6 +577,9 @@ sayc_expectations = {
 
         # NT slame is remote, pass.
         ['K32.KQJT9.QJ32.T', 'P', 'P 1D P 2C P 2H P 3N P', 'E-W'],  # 3-f1158b5861ffdf222bd8998381, W
+
+        # Partner is asking us to go to game if we're near the top of our range.  We are.
+        ['52.AQ76.AJ93.K76', '4H', '1D P 1H P 2H P 3H P', 'N-S'],  # 12-cb1851a23e07b7a5734c8be46d, W
     ],
 
     "test_fourth_suit_forcing": [ # Chap 9

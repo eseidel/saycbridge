@@ -2574,15 +2574,13 @@ rule_order.order(
 )
 
 
-# Once we preempt, we should pass forever, unless forced to bid.
-# Unfortunately we currently think LawOfTotalTricks responses are foricng. :(
-# class PassAfterPreempt(Rule):
-#     preconditions = [
-#         LastBidHasAnnotation(positions.Me, annotations.Preemptive),
-#         InvertedPrecondition(ForcedToBid()),
-#     ]
-#     call_names = 'P'
-#     shared_constraints = NO_CONSTRAINTS
+class PassAfterPreempt(Rule):
+    preconditions = [
+        LastBidHasAnnotation(positions.Me, annotations.Preemptive),
+        InvertedPrecondition(ForcedToBid()),
+    ]
+    call_names = 'P'
+    shared_constraints = NO_CONSTRAINTS
 
 
 class ForcedRebidAfterPreempt(Rule):
