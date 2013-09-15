@@ -444,6 +444,8 @@ sayc_expectations = {
 
         # We'd rather jump to 3N (game force) than bid 2N (invitational)
         ['Q742.AK9.KT3.AK7', '3N', 'P 1C P 2C P', 'Both'],  # 7-ddb65e2226c9f3801c3a11d66f, W
+
+        ['AKJT62.AKQJ.7.Q7', '3D', 'P P P 1C P 1S P', 'E-W'],  # 6-1e3704155bd007787edbaa2acb, N
     ],
 
     "test_opener_rebid_after_a_limit_raise": [
@@ -633,6 +635,7 @@ sayc_expectations = {
 
         # Partner is not inviting when raising, always pass:
         ['QT96.AQT962.T.83', 'P', '2D P 3D P', 'Both'],  # 13-6734134b87088feeb2d51b4a5e, N
+        ['4.QT2.AQJ9862.82', 'P', '3H P 4H P', 'N-S'],  # 2-34fa82d02a19f4c75d453b92be, E
 
         # We can have an opening hand and still pass:
         ['63.KQT763.J43.AJ', 'P', '1C 2S P', 'N-S'],  # 5-75caa02e3db3cbd853096948d7, W

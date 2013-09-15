@@ -983,6 +983,12 @@ class JumpShiftByOpener(RebidAfterOneLevelOpen):
     shared_constraints = (points >= 19, MinLength(4))
 
 
+rule_order.order(
+    opener_reverse_to_a_minor,
+    opener_jumpshifts_to_minors,
+)
+
+
 two_clubs_opener_rebid_priorities = enum.Enum(
     "ThreeLevelNTRebid",
     "SuitedJumpRebid", # This isn't actually comparible with 3N.
