@@ -1520,8 +1520,8 @@ class AcceptTransfer(Rule):
         NotJumpFromPartnerLastBid(),
     ]
     shared_constraints = NO_CONSTRAINTS
-    annotations = annotations.Artificial
     priority = relay_priorities.Accept
+    # FIXME: Should these generically be artifical?  Is a double of a transfer accept lead-directing?
 
 
 class AcceptTransferToHearts(AcceptTransfer):
@@ -1537,6 +1537,8 @@ class AcceptTransferToSpades(AcceptTransfer):
 class AcceptTransferToClubs(AcceptTransfer):
     preconditions = LastBidHasStrain(positions.Partner, suit.SPADES)
     call_names = '3C'
+    # We aren't actually showing clubs, so maybe a double is lead-directing and thus this is artificial?
+    annotations = annotations.Artificial
 
 
 class SuperAcceptTransfer(Rule):
@@ -1547,7 +1549,6 @@ class SuperAcceptTransfer(Rule):
     ]
     # FIXME: This should use support points, but MinimumSupportPointsForPartnersLastSuit will be confused by the transfer.
     shared_constraints = points >= 17
-    annotations = annotations.Artificial
     priority = relay_priorities.SuperAccept
 
 
