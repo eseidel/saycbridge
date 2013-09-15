@@ -566,6 +566,9 @@ sayc_expectations = {
 
         # Unfavorable vulnerability, partner continued after our minimum rebid, pass?
         ['A4.QJ7652..K7542', 'P', '1S P 2H P 2S P 3H P', 'E-W'],  # 16-4e00a6f0fe2f594696537ed88c, W
+
+        # No major fit, means 3N it is!
+        ['AQJ754.J7.5.Q876', '3N', 'P 1C P 1D P 1S P 3H P'],  # 11-0f3abee58c5c40b0a5658bf971, W
     ],
 
     "test_fourth_suit_forcing": [ # Chap 9
@@ -766,6 +769,9 @@ sayc_expectations = {
         ["QT32.QT8.QJ4.T92", "3N", "P 2C P 2D P 2N P"],
 
         ['AKQ85.K.AK762.KT', '2H', 'P 2C P 2D P'],  # 1-a9e6b542f0be44052397af31f4, E
+
+        # If second-negative isn't available, pass should be fine?
+        ['872.542.9863.J32', 'P', 'P 2C P 2D P 3D P', 'E-W'],  # 9-e23d9177e825572cf297c028da, W
     ],
 
     "test_overcalls": [ # Chap 12
