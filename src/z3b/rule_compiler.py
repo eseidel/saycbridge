@@ -46,8 +46,7 @@ class RuleOrdering(object):
 rule_order = RuleOrdering()
 
 
-# This is a public interface from RuleGenerators to the rest of the system.
-# This class knows nothing about the DSL.
+# This is a public interface from DSL Rules to the rest of the system.
 class CompiledRule(object):
     def __init__(self, rule, preconditions, known_calls, shared_constraints, annotations, constraints, default_priority, conditional_priorities_per_call, priorities_per_call):
         self.dsl_rule = rule
@@ -59,6 +58,8 @@ class CompiledRule(object):
         self.default_priority = default_priority
         self.conditional_priorities_per_call = conditional_priorities_per_call
         self.priorities_per_call = priorities_per_call
+        # FIXME: Should forcing be an annotation instead?  It has an awkward tri-state currently.
+        self.forcing = self.dsl_rule.forcing
 
     @property
     def requires_planning(self):
@@ -227,24 +228,9 @@ class RuleCompiler(object):
         # conditional_priorities doesn't work with self.constraints
         assert not dsl_class.conditional_priorities or not dsl_class.constraints
         assert not dsl_class.conditional_priorities or dsl_class.call_names
-        # FIXME: We should also walk the class and assert that no unexpected properties are found.
-        allowed_keys = set([
-            "annotations",
-            "annotations_per_call",
-            "call_names",
-            "category",
-            "conditional_priorities",
-            "constraints",
-            "preconditions",
-            "priority",
-            "priorities_per_call",
-            "requires_planning",
-            "shared_constraints",
-            "conditional_priorities_per_call",
-        ])
         properties = dsl_class.__dict__.keys()
         public_properties = filter(lambda p: not p.startswith("_"), properties)
-        unexpected_properties = set(public_properties) - allowed_keys
+        unexpected_properties = set(public_properties) - Rule.ALLOWED_KEYS
         assert not unexpected_properties, "%s defines unexpected properties: %s" % (dsl_class, unexpected_properties)
 
     @classmethod
@@ -279,28 +265,40 @@ class RuleCompiler(object):
 # These classes exist to support the DSL and make it easy to concisely express
 # the conventions of SAYC.
 class Rule(object):
-    # FIXME: Consider splitting call_preconditions out from preconditions
-    # for preconditions which only operate on the call?
-    preconditions = [] # Auto-collects from parent classes
-    category = categories.Default # Intra-bid priority
-    requires_planning = False
-
-    # All possible call names must be listed.
-    # Having an up-front list makes the bidder's rule-evaluation faster.
-    call_names = None # Required.
-
-    constraints = {}
-    shared_constraints = [] # Auto-collects from parent classes
+    # All properties with [] (empty list) defaults, auto-collect
+    # from parent classes.  foo = Parent.foo + [bar] is never necessary in this DSL.
     annotations = []
-    conditional_priorities = []
-    # FIXME: conditional_priorities_per_call is a stepping-stone to allow us to
-    # write more conditional priorities and better understand what rules we should
-    # develop to generate them.  The syntax is:
-    # {'1C': [(condition, priority), (condition, priority)]}
-    conditional_priorities_per_call = {}
-    annotations_per_call = {}
-    priority = None
-    priorities_per_call = {}
+    annotations_per_call = {} # { '1C' : (annotations.Foo, annotations.Bar) }
+    call_names = None # For when all calls share the same constraints
+    category = categories.Default # Intra-bid priority
+    conditional_priorities = [] # e.g. [(condition, priority), (condition, priority)]
+    conditional_priorities_per_call = {} # e.g. {'1C': [(condition, priority), (condition, priority)]}
+    constraints = {} # { '1C' : constraints, '1D': (constraints, priority), '1H' : constraints }
+    forcing = None
+    preconditions = []
+    priorities_per_call = {} # { '1C': priority, '1D': another_priority }
+    priority = None # Defaults to the class if None.
+    requires_planning = False
+    shared_constraints = [] # constraints which apply to call possible call_names.
+
+    # These are the only properties which are allowed to be defined in subclasses.
+    # The RuleCompiler with enforce this.
+    # FIXME: Should we autogenerate this list from this Rule declaration?
+    ALLOWED_KEYS = set([
+        "annotations",
+        "annotations_per_call",
+        "call_names",
+        "category",
+        "conditional_priorities",
+        "conditional_priorities_per_call",
+        "constraints",
+        "forcing",
+        "preconditions",
+        "priorities_per_call",
+        "priority",
+        "requires_planning",
+        "shared_constraints",
+    ])
 
     def __init__(self):
         assert False, "Rule objects should be compiled into EngineRule objects instead of instantiating them."
