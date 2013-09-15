@@ -1324,8 +1324,6 @@ class FourthSuitResponseToFourthSuitForcing(ResponseToFourthSuitForcing):
 
 
 class SecondNegative(ResponderRebid):
-    # FIXME: This should not apply over 2N, but currently ForcedToBid thinks that all
-    # bids of 17+ are forcing forever. :(
     preconditions = [
         StrongTwoClubOpeningBook(),
         LastBidWas(positions.Me, '2D'),

@@ -784,6 +784,8 @@ sayc_expectations = {
 
         # If second-negative isn't available, pass should be fine?
         ['872.542.9863.J32', 'P', 'P 2C P 2D P 3D P', 'E-W'],  # 9-e23d9177e825572cf297c028da, W
+        # Second negative doesn't apply over 2N rebid, that's stayman.
+        ['872.542.9863.J32', 'P', 'P 2C P 2D P 2N P'],
     ],
 
     "test_overcalls": [ # Chap 12
