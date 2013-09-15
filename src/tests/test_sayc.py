@@ -507,6 +507,9 @@ sayc_expectations = {
         # [".AKJ974.AKQJ7.J7", "4H", "1D P 1S P 2H P 2N P"],  # p64
         # FIXME: Need bid-history-only tests for reverse responses p64, p65
         # May need tests for h10, h11, h12, h13 on p66.
+
+        # Partner didn't use Ingberman, so we definitely have game, no fit, so 3N it is.
+        ['KQT965.A5.KQ76.A', '3N', 'P 1C P 1S P 2H P 3S P', 'N-S'],  # 15-5bc3ef62e10530af9af2685543, W
     ],
 
     "test_subsequent_bidding_by_responder": [ # Chap 8
@@ -571,6 +574,9 @@ sayc_expectations = {
 
         # No major fit, means 3N it is!
         ['AQJ754.J7.5.Q876', '3N', 'P 1C P 1D P 1S P 3H P'],  # 11-0f3abee58c5c40b0a5658bf971, W
+
+        # NT slame is remote, pass.
+        ['K32.KQJT9.QJ32.T', 'P', 'P 1D P 2C P 2H P 3N P', 'E-W'],  # 3-f1158b5861ffdf222bd8998381, W
     ],
 
     "test_fourth_suit_forcing": [ # Chap 9

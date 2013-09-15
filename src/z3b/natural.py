@@ -308,6 +308,8 @@ class NaturalPass(Rule):
         LastBidWas(positions.RHO, 'P'),
         # Natural passes do not apply when preempting.
         WeHaveShownMorePointsThanThem(),
+        # FIXME: This rule should only apply when we're not forced to bid!
+        # InvertedPrecondition(ForcedToBid()),
     ]
     call_names = 'P'
     category = categories.NaturalPass

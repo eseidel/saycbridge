@@ -329,11 +329,10 @@ FAIL: 3H (expected 3D) for 2.AKJ94.AQJ642.Q (hcp: 17 lp: 20 sp: 21), history: 1H
 FAIL: 3C (expected 2D) for AQT542.AQJ.A.987 (hcp: 17 lp: 19 sp: 20), history: 1C P 1H P
 FAIL: 3C (expected 2D) for AQT542.AQJ.A.987 (hcp: 17 lp: 19 sp: 20), history: 1C P 1S P
 FAIL: 3C (expected 2N) for J932.QJ7.Q83.JT3 (hcp: 7 lp: 7 sp: 7), history: 1C P 1N P 2D P
-FAIL: 2N (expected 2S) for 8763.85.T8.AQ985 (hcp: 6 lp: 7 sp: 8), history: 1D P 1S P 2H P
 FAIL: 2N (expected 3C) for AKJ762.KQ72.K9.5 (hcp: 16 lp: 18 sp: 20), history: 1C P 1S P 2D P 2S P
-FAIL: 2N (expected 3S) for AQJ76.AK72.J.K75 (hcp: 18 lp: 19 sp: 20), history: 1C P 1S P 2D P 2S P
 FAIL: P (expected 2N) for 87632.8.T86.AQ98 (hcp: 6 lp: 7 sp: 9), history: 1D P 1S P 2H P
-Pass 20 of 29 hands
+FAIL: None (expected 3N) for KQT965.A5.KQ76.A (hcp: 18 lp: 20 sp: 22), history: P 1C P 1S P 2H P 3S P
+Pass 24 of 32 hands
 
 test_rule_of_twenty_open:
 Pass 15 of 15 hands
@@ -389,7 +388,8 @@ FAIL: 3S (expected 4S) for KJ643.A874.T.K97 (hcp: 11 lp: 12 sp: 14), history: 1S
 FAIL: None (expected P) for KQ732.KQ52..K752 (hcp: 13 lp: 14 sp: 18), history: 1C P 1H P 1S P 3H P
 FAIL: None (expected P) for A4.QJ7652..K7542 (hcp: 10 lp: 13 sp: 16), history: 1S P 2H P 2S P 3H P
 FAIL: None (expected 3N) for AQJ754.J7.5.Q876 (hcp: 10 lp: 12 sp: 13), history: P 1C P 1D P 1S P 3H P
-Pass 52 of 67 hands
+FAIL: 4D (expected P) for K32.KQJT9.QJ32.T (hcp: 12 lp: 13 sp: 15), history: P 1D P 2C P 2H P 3N P
+Pass 54 of 70 hands
 
 test_third_and_fourth_seat_opens:
 FAIL: P (expected 1C) for AKT9.T87.QJ8.J32 (hcp: 11 lp: 11 sp: 11), history: P P
@@ -404,15 +404,17 @@ FAIL: 3S (expected 4S) for K74.9.J98.KJT742 (hcp: 8 lp: 10 sp: 11), history: 1N 
 FAIL: 2N (expected P) for Q87.J843.K65.Q93 (hcp: 8 lp: 8 sp: 8), history: 1N P
 Pass 1 of 3 hands
 
-Pass 1089 (80.9%) of 1346 total hands
+Pass 1095 (81.0%) of 1352 total hands
 
-Tested call generation of 162 rules of 165 total (excluding 8 requires_planning rules).
+Tested call generation of 163 rules of 167 total (excluding 8 requires_planning rules).
 Never selected call from:
 DelayedSupportResponseToFourthSuitForcing
+Ingberman2N
 JumpNewSuitResponseToNegativeDouble
 ReopeningDouble
 
-Tested interpretation of 101 rules of 173 total.
+Tested interpretation of 102 rules of 175 total.
 
-1 rules were never used for either bidding or interpretation:
+2 rules were never used for either bidding or interpretation:
+Ingberman2N
 JumpNewSuitResponseToNegativeDouble

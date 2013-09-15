@@ -826,6 +826,7 @@ opener_reverse_to_a_major = set([
 
 class ReverseByOpener(SecondSuitFromOpener):
     preconditions = reverse_preconditions
+    annotations = annotations.OpenerReverse
     constraints = {
         # 2C is never a reverse
         '2D': (MinimumCombinedPoints(22), opener_reverses.ReverseDiamonds),
@@ -838,6 +839,38 @@ class ReverseByOpener(SecondSuitFromOpener):
         '3S': (MinimumCombinedPoints(25), opener_reverses.ReverseSpades),
     }
     shared_constraints = MinLength(4)
+
+
+class ForcedMinimumResponseToOpenerReverse(Rule):
+    preconditions = [
+        LastBidHasAnnotation(positions.Partner, annotations.OpenerReverse),
+        ForcedToBid(),
+    ]
+
+
+class Ingberman2N(ForcedMinimumResponseToOpenerReverse):
+    call_names = '2N'
+    # Priorities imply we have no major to rebid.
+    shared_constraints = NO_CONSTRAINTS
+
+
+class ForcedMajorRebid(ForcedMinimumResponseToOpenerReverse):
+    # We have a minimum hand, so we never menetioned a 2-level suit before this one.
+    call_names = ('2H', '2S')
+    # We only need 5-cards to rebid our major, and no additional points.
+    shared_constraints = MinLength(5),
+
+
+rule_order.order(
+    Ingberman2N,
+    ForcedMajorRebid,
+)
+
+# Ingberman is effectively "pass" in response to a reverse, we'd rather do anything else if we can.
+rule_order.order(
+    Ingberman2N,
+    natural_bids,
+)
 
 
 class SupportPartnerSuit(RebidAfterOneLevelOpen):
@@ -1063,7 +1096,10 @@ class ResponderSuitRebid(OneLevelOpeningResponderRebid):
 
 
 class RebidResponderSuitByResponder(ResponderSuitRebid):
-    preconditions = InvertedPrecondition(RaiseOfPartnersLastSuit())
+    preconditions = [
+        InvertedPrecondition(RaiseOfPartnersLastSuit()),
+        InvertedPrecondition(LastBidHasAnnotation(positions.Partner, annotations.OpenerReverse))
+    ]
     call_names = ['2D', '2H', '2S']
     shared_constraints = [MinLength(6), points >= 6]
     priority = responder_rebid_priorities.RebidResponderSuitByResponder
