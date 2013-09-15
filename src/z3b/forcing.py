@@ -29,11 +29,11 @@ class SAYCForcingOracle(object):
         assert call
         assert call.strain != suit.NOTRUMP
         # FIXME: We should not be using private methods on History!
-        lho_history = history._history_after_last_call_for(positions.LHO)
+        history_before_partner_last_bid = history._history_after_last_call_for(positions.LHO)
         # If partner began the bidding, than of course his bid was an unbid suit!
-        if not lho_history:
+        if not history_before_partner_last_bid:
             return True
-        return call.strain in lho_history.them.unbid_suits
+        return call.strain in history_before_partner_last_bid.us.unbid_suits
 
     def forced_to_bid(self, history):
         # If partner hasn't bid yet, he can't be forcing us to bid.

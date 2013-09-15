@@ -117,7 +117,7 @@ Pass 19 of 21 hands
 
 test_michaels_and_unusual_notrump:
 FAIL: 2C (expected P) for AK.J.T8753.JT432 (hcp: 9 lp: 11 sp: 12), history: 1C
-FAIL: None (expected 4S) for AJ943.KQ.9.AKT95 (hcp: 17 lp: 19 sp: 19), history: 1H 2H P 3S P
+FAIL: P (expected 4S) for AJ943.KQ.9.AKT95 (hcp: 17 lp: 19 sp: 19), history: 1H 2H P 3S P
 FAIL: 2H (expected 1S) for Q9863.Q4.J.KQT87 (hcp: 10 lp: 12 sp: 11), history: 1H
 FAIL: None (expected 3D) for 4.QJT876.AQT86.5 (hcp: 9 lp: 12 sp: 15), history: 1S 2S P 3C P
 FAIL: P (expected 2D) for 86.3.QJT43.AK865 (hcp: 10 lp: 12 sp: 14), history: 1D P 1N
@@ -170,7 +170,6 @@ FAIL: 4C (expected 3C) for AQJT9.AQT3.5.T52 (hcp: 13 lp: 14 sp: 16), history: 2S
 FAIL: P (expected 6N) for KQ4.KJ.K84.KQ973 (hcp: 17 lp: 18 sp: 17), history: P 1N P 2C P 2S P 5N P
 FAIL: None (expected P) for A8763.432.K6.763 (hcp: 7 lp: 8 sp: 8), history: 1S 2S P 2N P 3D P
 FAIL: None (expected 2N) for A8763.432.K6.763 (hcp: 7 lp: 8 sp: 8), history: 1S 2S P (subtest of 1S 2S P 2N P 3D P)
-FAIL: P (expected 3D) for 5.AJT9.Q85.AQ875 (hcp: 13 lp: 14 sp: 16), history: P P 1S P 2D P
 FAIL: 3S (expected 2S) for AT9.Q97652..AJ64 (hcp: 11 lp: 13 sp: 16), history: 1D P 1S P (subtest of 1D P 1S P 2S P 4S P)
 FAIL: 2D (expected 3C) for A742.QJ765.Q4.Q4 (hcp: 11 lp: 12 sp: 9), history: P 1D P 2C P (subtest of P 1D P 2C P 3C P 3N P)
 FAIL: P (expected 3N) for A642.AQJ42..K986 (hcp: 14 lp: 15 sp: 19), history: 1D X 1H P 1S P 2N P
@@ -200,7 +199,6 @@ FAIL: P (expected 2S) for T8.KJ7.Q74.Q8654 (hcp: 8 lp: 9 sp: 9), history: P P P 
 FAIL: 3N (expected 3S) for A5.AK98765.5.KJ7 (hcp: 15 lp: 18 sp: 19), history: P 1D P 1S P 2D P 2N P
 FAIL: 3D (expected P) for AQ72.AKJ53.A82.5 (hcp: 18 lp: 19 sp: 21), history: P 1D 1S 1N P 2C P 2D P
 FAIL: 3N (expected 2N) for A54.QT5.J743.QJ7 (hcp: 10 lp: 10 sp: 10), history: P P 1N P 2C P 2S P (subtest of P P 1N P 2C P 2S P 2N P 3N P)
-FAIL: None (expected P) for J.AQ972.T5.JT964 (hcp: 8 lp: 10 sp: 11), history: 1H 2H 3C 4S P
 FAIL: P (expected 2D) for 83.KQ732.Q2.AKJ9 (hcp: 15 lp: 16 sp: 15), history: P 1C 1D P P 1H 1S P P X
 FAIL: P (expected 1S) for 83.KQ732.Q2.AKJ9 (hcp: 15 lp: 16 sp: 15), history: P 1C 1D P P 1H (subtest of P 1C 1D P P 1H 1S P P X)
 FAIL: 2S (expected 3S) for A853.K.K2.KJT943 (hcp: 14 lp: 16 sp: 15), history: P 1S P 2D P
@@ -209,11 +207,12 @@ FAIL: 3N (expected P) for 875.K8752.Q6.986 (hcp: 5 lp: 6 sp: 4), history: 1C X P
 FAIL: None (expected 3D) for AJ6532.T73.J6.86 (hcp: 6 lp: 8 sp: 7), history: 1C 2N P
 FAIL: 2D (expected 2N) for .K54.A9842.Q9543 (hcp: 9 lp: 11 sp: 14), history: P P 1D P 1S P 2C P
 FAIL: 3C (expected P) for KT94.83.AT9654.T (hcp: 7 lp: 9 sp: 11), history: P P P 1C P 1H P 1S P 2H P 2N P
+FAIL: 2D (expected P) for K5.J86532.K6.AJ8 (hcp: 12 lp: 14 sp: 14), history: P P P 1D P 1S P
 FAIL: P (expected X) for AT6.KJ864.A4.A42 (hcp: 16 lp: 17 sp: 17), history: P 2H
 FAIL: P (expected 1H) for AK.72.KT942.AQT5 (hcp: 16 lp: 17 sp: 18), history: P 1C
 FAIL: P (expected 1N) for AKT4.AT.A82.J876 (hcp: 16 lp: 16 sp: 17), history: 1C P P
 FAIL: 2N (expected 2H) for QJ86.K7.AKT53.T6 (hcp: 13 lp: 14 sp: 15), history: 1H P 2D P
-Pass 283 of 349 hands
+Pass 284 of 349 hands
 
 test_negative_double:
 FAIL: 4H (expected P) for 4.A3.KQ65.KJT865 (hcp: 13 lp: 15 sp: 17), history: 1C 1S P P X P
@@ -268,7 +267,7 @@ Pass 30 of 35 hands
 test_preemption:
 FAIL: P (expected 2S) for Q98.JT8.53.AKT95 (hcp: 10 lp: 11 sp: 11), history: P P
 FAIL: 1S (expected 2S) for Q83.K9.Q8.AQJ874 (hcp: 14 lp: 16 sp: 14), history: P P P
-FAIL: 4D (expected P) for QT96.AQT962.T.83 (hcp: 8 lp: 10 sp: 12), history: 2D P 3D P
+FAIL: None (expected P) for QT96.AQT962.T.83 (hcp: 8 lp: 10 sp: 12), history: 2D P 3D P
 FAIL: None (expected P) for 4.QT2.AQJ9862.82 (hcp: 9 lp: 12 sp: 13), history: 3H P 4H P
 FAIL: 1H (expected 2H) for Q9.QT82.AQT984.2 (hcp: 10 lp: 12 sp: 12), history:  (subtest of 2H P 2S P)
 FAIL: 3S (expected P) for J4.T.QJT.AJT7653 (hcp: 9 lp: 12 sp: 12), history: 
@@ -330,9 +329,8 @@ FAIL: 3C (expected 2D) for AQT542.AQJ.A.987 (hcp: 17 lp: 19 sp: 20), history: 1C
 FAIL: 3C (expected 2D) for AQT542.AQJ.A.987 (hcp: 17 lp: 19 sp: 20), history: 1C P 1S P
 FAIL: 3C (expected 2N) for J932.QJ7.Q83.JT3 (hcp: 7 lp: 7 sp: 7), history: 1C P 1N P 2D P
 FAIL: 2N (expected 3C) for AKJ762.KQ72.K9.5 (hcp: 16 lp: 18 sp: 20), history: 1C P 1S P 2D P 2S P
-FAIL: P (expected 2N) for 87632.8.T86.AQ98 (hcp: 6 lp: 7 sp: 9), history: 1D P 1S P 2H P
 FAIL: None (expected 3N) for KQT965.A5.KQ76.A (hcp: 18 lp: 20 sp: 22), history: P 1C P 1S P 2H P 3S P
-Pass 24 of 32 hands
+Pass 25 of 32 hands
 
 test_rule_of_twenty_open:
 Pass 15 of 15 hands
@@ -343,9 +341,8 @@ FAIL: 4H (expected 5H) for .AKQ.QT76432.AKQ (hcp: 20 lp: 23 sp: 25), history: 1H
 FAIL: P (expected 5H) for .AKQ.KJ76432.AKQ (hcp: 22 lp: 25 sp: 27), history: 2C P 2N P 3H P 4H P
 FAIL: 6N (expected 6H) for QJT.AK98.J985.62 (hcp: 11 lp: 11 sp: 12), history: 2C P 2N P 3H P 4H P 5H P
 FAIL: 6N (expected 4H) for QJT.AK98.J985.62 (hcp: 11 lp: 11 sp: 12), history: 2C P 2N P 3H P (subtest of 2C P 2N P 3H P 4H P 5H P)
-FAIL: None (expected P) for AKQJT987...QJT43 (hcp: 13 lp: 18 sp: 23), history: 1S P 5N P 6S P
 FAIL: 2N (expected 5N) for AKQJT987...QJT43 (hcp: 13 lp: 18 sp: 23), history: 1S P (subtest of 1S P 5N P 6S P)
-Pass 18 of 25 hands
+Pass 19 of 25 hands
 
 test_slam_invitations_over_one_nt:
 WARNING: Unordered: ['3D', '4S'] from: [MinorGameForceRebid, NaturalSuited] ([MinorGameForceRebid, 4S])
@@ -404,17 +401,15 @@ FAIL: 3S (expected 4S) for K74.9.J98.KJT742 (hcp: 8 lp: 10 sp: 11), history: 1N 
 FAIL: 2N (expected P) for Q87.J843.K65.Q93 (hcp: 8 lp: 8 sp: 8), history: 1N P
 Pass 1 of 3 hands
 
-Pass 1095 (81.0%) of 1352 total hands
+Pass 1098 (81.2%) of 1352 total hands
 
-Tested call generation of 163 rules of 167 total (excluding 8 requires_planning rules).
+Tested call generation of 164 rules of 167 total (excluding 8 requires_planning rules).
 Never selected call from:
 DelayedSupportResponseToFourthSuitForcing
-Ingberman2N
 JumpNewSuitResponseToNegativeDouble
 ReopeningDouble
 
-Tested interpretation of 102 rules of 175 total.
+Tested interpretation of 103 rules of 175 total.
 
-2 rules were never used for either bidding or interpretation:
-Ingberman2N
+1 rules were never used for either bidding or interpretation:
 JumpNewSuitResponseToNegativeDouble
