@@ -116,7 +116,7 @@ class CallHistory(object):
         self.vulnerability = vulnerability or Vulnerability.from_board_number(1)
 
     def __str__(self):
-        return "<CallHistory: %s>" % self.calls_string()
+        return self.calls_string()
 
     def __len__(self):
         return len(self.calls)
