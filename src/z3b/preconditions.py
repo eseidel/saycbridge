@@ -3,8 +3,7 @@
 # found in the LICENSE file.
 
 from z3b import enum
-import core.suit as suit
-from z3b.model import positions
+from core import suit
 
 
 # The ordering of these values does not matter.  We only use Enum so that
@@ -177,53 +176,10 @@ class HasBid(Precondition):
 
 
 class ForcedToBid(Precondition):
-    def _rho_bid(self, history):
-        return history.rho.last_call and not history.rho.last_call.is_pass()
-
-    def _partner_last_bid_was_pass(self, history):
-        return history.partner.last_call and history.partner.last_call.is_pass()
-
-    def _partner_last_call_was_artificial(self, history):
-        return annotations.Artificial in history.partner.annotations_for_last_call
-
-    def _partner_last_call_was_unbid_suit(self, history):
-        assert annotations.Artificial not in history.partner.annotations_for_last_call
-        call = history.partner.last_call
-        assert call
-        assert call.strain != suit.NOTRUMP
-        # FIXME: We should not be using private methods on History!
-        lho_history = history._history_after_last_call_for(positions.LHO)
-        # If partner began the bidding, than of course his bid was an unbid suit!
-        if not lho_history:
-            return True
-        return call.strain in lho_history.them.unbid_suits
-
-    def _is_forced_to_bid(self, history):
-        # If partner hasn't bid yet then cannot be forcing
-        if history.partner.last_call is None:
-            return False
-        if self._partner_last_bid_was_pass(history):
-            return False
-        if self._rho_bid(history):
-            return False
-        # Artificial bids are always forcing. We use explicit pass rules to convert them into natural bids.
-        if self._partner_last_call_was_artificial(history):
-            return True
-        # FIXME: This is a lame hack.  Natural NT bids are never forcing.
-        if history.partner.last_call.strain == suit.NOTRUMP:
-            return False
-
-        # This code works, but for SAYC we don't yet have any rules which need an explicit forcing=True.
-        rule_for_last_call = history.partner.rule_for_last_call
-        if rule_for_last_call and rule_for_last_call.forcing is not None:
-            return rule_for_last_call.forcing
-
-        # This logic assumes that doubles/redoubles are non-forcing (which is correct for penalty, wrong for takeout/negative).
-        # Since takeout/negative currently have explcit response coverage, this is OK for now.
-        return self._partner_last_call_was_unbid_suit(history)
-
     def fits(self, history, call):
-        return self._is_forced_to_bid(history)
+        # preconditions.py depends on forcing.py, but forcing.py needs to know annotations.
+        from forcing import SAYCForcingOracle
+        return SAYCForcingOracle().forced_to_bid(history)
 
 
 class IsGame(Precondition):
