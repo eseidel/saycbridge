@@ -22,6 +22,11 @@ def _suit_count_var(suit):
 
 clubs, diamonds, hearts, spades = map(_suit_count_var, suit.SUITS)
 
+
+def expr_for_suit(suit):
+    return (clubs, diamonds, hearts, spades)[suit.index]
+
+
 ace_of_spades, king_of_spades, queen_of_spades, jack_of_spades, ten_of_spades = _honor_vars(suit.SPADES)
 ace_of_hearts, king_of_hearts, queen_of_hearts, jack_of_hearts, ten_of_hearts = _honor_vars(suit.HEARTS)
 ace_of_diamonds, king_of_diamonds, queen_of_diamonds, jack_of_diamonds, ten_of_diamonds = _honor_vars(suit.DIAMONDS)
@@ -44,12 +49,14 @@ voids, singletons, doubletons = z3.Ints('voids singletons doubletons')
 
 def named_count_expr(count_name, count):
     exprs = []
-    suit_names = [s.name.lower() for s in suit.SUITS]
-    suit_count_vars = map(z3.Int, suit_names) # spades, etc.
-    suit_matches_count_vars = map(z3.Int, map((count_name + "_in_{}").format, suit_names)) # void_in_spades, etc.
+    suit_count_vars = map(expr_for_suit, suit.SUITS)
+    suit_matches_count_vars = [z3.Int("%s_in_%s" % (count_name, s.name.lower())) for s in suit.SUITS] # void_in_spades, etc.
     exprs = [
         # FIXME: Can z3 support writing this as "void_in_spades == (spades == 0)"?
-        z3.Or(z3.And(suit_count == count, suit_matches_count == 1), z3.And(suit_count != count, suit_matches_count == 0))
+        z3.Or(
+            z3.And(suit_count == count, suit_matches_count == 1),
+            z3.And(suit_count != count, suit_matches_count == 0),
+        )
             for suit_count, suit_matches_count in zip(suit_count_vars, suit_matches_count_vars)
     ]
     exprs.append(z3.Int(count_name + "s") == sum(suit_matches_count_vars))
@@ -64,7 +71,7 @@ def constrain_honors_expr():
         honor_vars = _honor_vars(honor_suit)
         exprs.extend([z3.And(0 <= honor_var, honor_var <= 1) for honor_var in honor_vars])
         # Also make sure that total number of honors is <= total number of cards
-        exprs.append(sum(honor_vars) <= _suit_count_var(honor_suit))
+        exprs.append(sum(honor_vars) <= expr_for_suit(honor_suit))
     return z3.And(*exprs)
 
 
@@ -168,10 +175,6 @@ stopper_diamonds = z3.Or(ace_of_diamonds == 1, z3.And(king_of_diamonds == 1, dia
 stopper_clubs = z3.Or(ace_of_clubs == 1, z3.And(king_of_clubs == 1, clubs >= 2), z3.And(queen_of_clubs == 1, clubs >= 3), z3.And(jack_of_clubs == 1, ten_of_clubs == 1, clubs >= 4))
 
 NO_CONSTRAINTS = z3.BoolVal(True)
-
-
-def expr_for_suit(suit):
-    return (clubs, diamonds, hearts, spades)[suit.index]
 
 
 def stopper_expr_for_suit(suit):
