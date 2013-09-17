@@ -536,9 +536,10 @@ class RaiseResponseToNegativeDouble(ResponseToNegativeDouble):
     shared_constraints = MinimumCombinedLength(8)
 
 
+# FIXME: Should this be a forced-only response?  Should the unforced variant show points? stoppers?
 class NotrumpResponseToNegativeDouble(ResponseToNegativeDouble):
     preconditions = NotJumpFromLastContract()
-    call_names = '1N'
+    call_names = ['1N', '2N']
     shared_constraints = balanced
 
 

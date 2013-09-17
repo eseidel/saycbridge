@@ -1092,6 +1092,12 @@ sayc_expectations = {
         ["J5.AQ864.A54.K76", "2D", "1D 1S X P"],  # p131, h10 (1NT is also valid)
         ["KJ43.KQJ97.K5.87", "2C", "1D 1S X P"],  # p131, h11
         ["A94.KQ87.874.KJ6", "1N", "1D 1S X P"],  # p131, h12
+
+        # Minimum NT responses only show shape, not more points.
+        ['AT76.K63.Q98.KJ8', '2N', 'P 1C 2S X P', 'Both'],  # 13-3e5b4b44d80b70f05a7ce29e66, E
+        ['A973.KJT82.J43.Q', 'P', 'P 1S 2H X P 2N P'],  # deal 17874141946813701341102482461267
+        ['A973.KQT82.Q43.Q', '3N', 'P 1S 2H X P 2N P'],
+
         # Jump rebids are 16-18hcp p133
         ["A964.KQ874.K7.A8", "2N", "1D 1S X P"],
 
@@ -1280,7 +1286,6 @@ sayc_expectations = {
         ["A93.Q762.K832.J3", "P", "1D P 1H P 1S P 2N P 3N P", "E-W"],  # deal 13032830395998601871443699251555, N I believe N's 2NT was correct (p70)
         ["864.A6.QJ65.K987", "4H", "P P P 1N P 2C P 2H P", "None"],  # deal 9606125883933381651464004418488, W failed to raise E to game after he showed 4 hearts
         ["J2.AQ8642.J72.KQ", "2D", "P 1D P 1H P"], # deal 17104155942037401012949293200001, exception while E was trying to bid.
-        ["A973.KJT82.J43.Q", "3N", "P 1S 2H X P 2N P", "None"],  # deal 17874141946813701341102482461267, exception while generating North's bid.
         ["6.AKJ75.KJT86.A4", "P", "1H P 2N P 4D P 4H P"], # deal 2137828841254613144319938747574, exception interpreting Jacoby 2N (south's bid is wrong, but useful as a test)
         ["KQT4.AT96.632.T8", "2C", "1C P 1D P 1S P", "Both"],  # deal 14821420111709134787520015678345, N should retreat to clubs instead of NT.
         ["KQ4.KT4.AJ32.954", "3N", "P 1C P 1H P 1N P", "None"],  # deal 19769130892564304556643507165641, N needs a spade stopper to go to 2N? (south shouldn't have opened, oops!)
