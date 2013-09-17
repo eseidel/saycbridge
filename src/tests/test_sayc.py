@@ -397,6 +397,11 @@ sayc_expectations = {
 
         # We're (barely) a minimum, we don't like partner's suit, and RHO has claimed the majors, we just pass?
         ['AT86.J.AT74.AJ84', 'P', 'P 1C P 1D X', 'N-S'],  # 15-49dcc1d485ac66e70dadb0b8e3, W
+
+        # We have a fit for partner's diamonds, but we'd still rather be in a major if possible.
+        # If we're gonna find a game it's going to be due to partner's big hand, so maybe
+        # we should support his diamonds and hope he bids 3S to show delayed support?
+        ['K.A9763.6.AJT752', '3D', '1S P 2D P'],  # 1-af75b4d3c21a8e539ae491343c, N
     ],
 
     "test_invitational_rebid_by_opener": [
@@ -729,6 +734,9 @@ sayc_expectations = {
 
         # Partner shouldn't have more than 2 spades preempting in first seat, so 5C should be almost a laydown.
         ['A4.AK87652.A.J42', '5C', '4C P', 'Both'],  # 4-f7f3af5c5522528c0b251bb84a, E
+
+        # We have the majority of the points, but only barely.  They stole our potential game, double.
+        ['AK92..K32.QT8754', 'X', '1S 3D 3S 5D'],  # 14-72898d4e2ae885bc3fd3145d1e, E
     ],
 
     "test_preemptive_overcalls": [

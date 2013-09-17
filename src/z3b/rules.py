@@ -1801,6 +1801,7 @@ class DirectOvercall(Rule):
             )
         )
 
+
 balancing_precondition = AndPrecondition(
     LastBidHasAnnotation(positions.LHO, annotations.Opening),
     LastBidWas(positions.Partner, 'P'),
@@ -1824,6 +1825,7 @@ class StandardDirectOvercall(DirectOvercall):
         MaxLengthInLastContractSuit(3),
     ]
     annotations = annotations.StandardOvercall
+    forcing = False # We're limited by the fact that we didn't double.  Partner is allowed to pass.
 
 
 # FIXME: We need finer-grain ordering of suits, no?
@@ -1960,6 +1962,8 @@ class BalancingSuitedOvercall(BalancingOvercallOverSuitedOpen):
         # Even when balancing, we should not have strength in their suit.
         MaxLengthInLastContractSuit(3),
     ]
+    forcing = False # We're limited by the fact that we didn't double.  Partner is allowed to pass.
+
 
 class BalancingJumpSuitedOvercall(BalancingOvercallOverSuitedOpen):
     preconditions = [
@@ -1977,6 +1981,7 @@ class BalancingJumpSuitedOvercall(BalancingOvercallOverSuitedOpen):
         # Even when balancing, we should not have strength in their suit.
         MaxLengthInLastContractSuit(3),
     ]
+    forcing = False # We're limited by the fact that we didn't double.  Partner is allowed to pass.
 
 
 class MichaelsCuebid(object):

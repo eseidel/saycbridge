@@ -20,7 +20,6 @@ from tests import test_sayc
 _log = logging.getLogger(__name__)
 
 
-# This is the simple version.  We'll need a fancier version of this function which can take a board.
 def expectation_line(hand, call_history, expected_call=None):
     vulnerability = call_history.vulnerability.name
     optional_vulernability_string = "" if vulnerability == "None" else ", '%s'" % vulnerability
