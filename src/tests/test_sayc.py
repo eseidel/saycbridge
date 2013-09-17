@@ -539,6 +539,13 @@ sayc_expectations = {
         ["K95.97.KQJ986.J9", "3H", "1C P 1H P 1S P"], # p70, h8
         ["Q5.KJ65.K9.Q8762", "3D", "1H P 1S P 2D P"], # p70, h9
 
+        ['J642.K97.KQ6.AJ4', 'P', '1C P 1D P 1N P 2D P', 'E-W'],  # 9-332687aaf2252d73b90dcd5934, N
+
+        # Despite having junk, the book p69 h3 thinks we should escape to a part score.
+        # This causes these bids to have a huge range of points, sadly.
+        ['Q976.AT8432.T8.9', '2D', '1C P 1D P 1N P'],
+        ["KT76.Q.QJ8654.72", "2H", "P P 1D P 1H P 1N P", "E-W"],  # deal 11132096549145279831166942029099 E
+
         # Forcing rebids
         ["KJ642.KT.KQT97.7", "2C", "1D P 1H P 1S P"], # p71, h10 (FSF)
         ["QJ4.T42.K9.A8765", "2N", "1H P 1S P 2D P"], # p71, h11
@@ -1278,7 +1285,6 @@ sayc_expectations = {
         ["KQT4.AT96.632.T8", "2C", "1C P 1D P 1S P", "Both"],  # deal 14821420111709134787520015678345, N should retreat to clubs instead of NT.
         ["KQ4.KT4.AJ32.954", "3N", "P 1C P 1H P 1N P", "None"],  # deal 19769130892564304556643507165641, N needs a spade stopper to go to 2N? (south shouldn't have opened, oops!)
         ["KQT.95.AK74.AJ53", "4H", "P P P 1N P 2C P 2H P 3H P", "None"],  # deal 9606125883933381651464004418488, East should bid game directly, seeing 25-27 points and 8 hearts.
-        ["KT76.Q.QJ8654.72", "2H", "P P 1D P 1H P 1N P", "E-W"],  # deal 11132096549145279831166942029099 E should never have raised to 2N
         ["AKQ6.KQT.T4.QJ96", "P", "P 1N P 2C P 2S P 3N P", "Both"],  # deal 7666900753141668445629354337434, N previously was bidding 4N!
         ["QT8.AQ95.KJ532.4", "P", "1H P 1S 2D", "E-W"],  # deal 2713109889156458295693804380142, E should pass.
         ['432.AT.T95.AKT87', '1S', 'P P 1D P P', 'Both'],  # deal 12734075338630212034897921725930, S should overcall 1S.
