@@ -67,9 +67,7 @@ WARNING: Unordered: ['1N', '4D'] from: [OneNotrumpResponse, NaturalSuited] ([<cl
 FAIL: None (expected 2N) for Q8.AQ9632.AT.J43 (hcp: 13 lp: 15 sp: 13), history: 1D P
 WARNING: Unordered: ['1N', '4C'] from: [OneNotrumpResponse, NaturalSuited] ([<class 'z3b.rules.OneNotrumpResponse'>, 4C])
 FAIL: None (expected 2N) for AKJ973.5.T98.AQ5 (hcp: 14 lp: 16 sp: 17), history: 1C P
-WARNING: Unordered: ['5D', '2C'] from: [NaturalSuited, NewSuitAtTheTwoLevel] ([5D, TwoClubs])
-FAIL: None (expected 2C) for AQJ93.AJ643.A87. (hcp: 16 lp: 18 sp: 21), history: 1D P
-Pass 9 of 13 hands
+Pass 11 of 14 hands
 
 test_interference_over_one_nt:
 FAIL: 2S (expected XX) for AQT.KJ8.AK987.43 (hcp: 17 lp: 18 sp: 18), history: 1N P 2H X
@@ -403,7 +401,7 @@ FAIL: 3S (expected 4S) for K74.9.J98.KJT742 (hcp: 8 lp: 10 sp: 11), history: 1N 
 FAIL: 2N (expected P) for Q87.J843.K65.Q93 (hcp: 8 lp: 8 sp: 8), history: 1N P
 Pass 1 of 3 hands
 
-Pass 1106 (81.3%) of 1361 total hands
+Pass 1108 (81.4%) of 1362 total hands
 
 Tested call generation of 165 rules of 168 total (excluding 8 requires_planning rules).
 Never selected call from:

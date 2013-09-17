@@ -315,6 +315,13 @@ class NewSuitAtTheTwoLevel(ResponseToOneLevelSuitedOpen):
     shared_constraints = MinimumCombinedPoints(22)
 
 
+rule_order.order(
+    # Don't jump directly to some high part score or game if we have a second suit to mention first, we might miss slam.
+    natural_minor_part_scores | natural_exact_minor_games,
+    new_two_level_suit_responses,
+)
+
+
 class ResponseToMajorOpen(ResponseToOneLevelSuitedOpen):
     preconditions = [
         LastBidHasStrain(positions.Partner, suit.MAJORS),

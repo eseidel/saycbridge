@@ -125,11 +125,18 @@ natural_games = set([
     natural.get('5C'), natural.get('5D'), natural.get('5H'), natural.get('5S'), notrump_with_stoppers.get('5N'), notrump_without_stoppers.get('5N'),
 ])
 
-natural_suited_part_scores = set([
-    natural.get('2C'), natural.get('2D'), natural.get('2H'), natural.get('2S'),
-    natural.get('3C'), natural.get('3D'), natural.get('3H'), natural.get('3S'),
+natural_minor_part_scores = set([
+    natural.get('2C'), natural.get('2D'),
+    natural.get('3C'), natural.get('3D'),
     natural.get('4C'), natural.get('4D'),
 ])
+
+natural_major_part_scores = set([
+    natural.get('2H'), natural.get('2S'),
+    natural.get('3H'), natural.get('3S'),
+])
+
+natural_suited_part_scores = natural_minor_part_scores | natural_major_part_scores
 
 natural_nt_part_scores = set([
     notrump_with_stoppers.get('1N'), notrump_without_stoppers.get('1N'),

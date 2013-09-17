@@ -364,6 +364,7 @@ sayc_expectations = {
 
         # A new suit is uncapped, slow arrival.
         ['AQJ93.AJ643.A87.', '2C', '1D P'],  # 15-23d2eb8a61cb67de9548c7d130, S
+        ['T9632.AKJ52.K.K5', '2C', 'P 1D P'],  # 8-a3b69327b038a5751de348077b, S
     ],
 
     "test_slam_zone_response_to_one_of_a_minor": [
