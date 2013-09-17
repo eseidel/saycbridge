@@ -282,6 +282,9 @@ sayc_expectations = {
         ['5432.43.AK32.AK2', '2C', '1S P'],
 
         ['K.K7.KJ98542.QT8', '2N', '1H P', 'Both'],  # 7-9f9ee86653fd2209088b7f4447, N should bid Jacoby 2NT with 12 hcp?
+
+        # Woe is me, I have 2 singletons and 7 trumps.  Bid the lower singleton first.
+        ['K.A743.K.AJ65432', '3C', '1S P 2N P', 'E-W'],  # 3-7fc1123a1b75645f732eaa1c82, S
     ],
 
     "test_slam_zone_responses_to_one_of_a_major": [
@@ -720,6 +723,9 @@ sayc_expectations = {
         # 50% 3N seems worth the gamble?
         ['74.K6.AQ8.KQJ983', '3N', '3C P', 'Both'],  # 10-5d3926683428d109caced97cfe, W
 
+        # Partner's 3N is not inviting to 4N:
+        ['AK7432.42.62.Q87', 'P', '3C P 3N P', 'Both'],  # 7-ab60c6a6737408d94f47ffa520, S
+
         # 10 clubs and all suits stopped, 3N should be easy.
         ['A53.K5.AKJ72.QJ3', '3N', '3C P'],  # 8-d1be3f6a42806431fd944f2a5e, E
         # Same idea, everything stopped, and have at least one club to lead to partner.
@@ -977,6 +983,8 @@ sayc_expectations = {
 
         ["KT843.AQ9.KT87.T", "X", "3S"],  # Takeout double of preempt.
         ["2.AK742.KJ7.QJ64", "X", "3C P P"],
+
+        ['K2.A3.KQJ72.AQ54', 'X', 'P 2D', 'E-W'],  # 9-bc5ccef8c155683612a069fd2e, S
 
         # Doubling to show show strong holdings
         ["A87.AK96.8.AK875", "2S", "1H X P 1S P"],  # p118, h11

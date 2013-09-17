@@ -18,6 +18,8 @@ test_doubles:
 FAIL: P (expected X) for KJ76.KQ72..J9874 (hcp: 10 lp: 11 sp: 15), history: 1H
 FAIL: P (expected X) for 3.A6.KJ983.Q8754 (hcp: 10 lp: 12 sp: 14), history: 1C P 1D
 FAIL: X (expected 1S) for Q87.AQ62.3.AK874 (hcp: 15 lp: 16 sp: 18), history: 1H
+WARNING: Unordered: ['X', '2H'] from: [TakeoutDoubleAfterPreempt, TwoLevelStandardOvercall] ([<class 'z3b.rules.TakeoutDoubleAfterPreempt'>, LongestMajor])
+FAIL: None (expected X) for K2.A3.KQJ72.AQ54 (hcp: 19 lp: 20 sp: 21), history: P 2D
 FAIL: X (expected 1S) for K2.AKT86.5.AQJ76 (hcp: 17 lp: 19 sp: 21), history: 1C
 FAIL: 3S (expected 2S) for A874.AK96.8.AK84 (hcp: 18 lp: 18 sp: 21), history: 1H X P 2S P
 FAIL: 1N (expected 2D) for 98.KQJ9.AJ7.AK84 (hcp: 18 lp: 18 sp: 19), history: 1C X P 1D P
@@ -31,7 +33,7 @@ FAIL: None (expected P) for K4.J3.KQ3.AK7642 (hcp: 16 lp: 18 sp: 17), history: P
 FAIL: P (expected X) for 74.876.AKJ987.63 (hcp: 8 lp: 10 sp: 10), history: 1N P 2H
 FAIL: P (expected X) for AKQ83.95.97.Q986 (hcp: 11 lp: 12 sp: 13), history: 1N P 2C
 FAIL: P (expected X) for T986542..A7.6532 (hcp: 4 lp: 7 sp: 10), history: 1H P 3H P 4N P 5D
-Pass 73 of 89 hands
+Pass 73 of 90 hands
 
 test_escape_route_stayman:
 Pass 12 of 12 hands
@@ -111,7 +113,9 @@ Pass 36 of 40 hands
 test_jacoby_two_nt_response_to_one_of_a_major:
 FAIL: 3N (expected 3H) for AJ2.K7.KQT853.A5 (hcp: 17 lp: 19 sp: 19), history: 1H P 2N P
 FAIL: 1N (expected 2N) for K.K7.KJ98542.QT8 (hcp: 12 lp: 15 sp: 13), history: 1H P
-Pass 19 of 21 hands
+WARNING: Unordered: ['3H', '3C'] from: [SingletonResponseToJacoby2N, SingletonResponseToJacoby2N] ([Singleton, Singleton])
+FAIL: None (expected 3C) for K.A743.K.AJ65432 (hcp: 15 lp: 18 sp: 15), history: 1S P 2N P
+Pass 20 of 23 hands
 
 test_michaels_and_unusual_notrump:
 FAIL: 2C (expected P) for AK.J.T8753.JT432 (hcp: 9 lp: 11 sp: 12), history: 1C
@@ -279,6 +283,8 @@ FAIL: None (expected 6S) for 864.AKQT6.A2.K83 (hcp: 16 lp: 17 sp: 17), history: 
 WARNING: Unordered: ['3C', '3D'] from: [NewSuitResponseToPreempt, NewSuitResponseToPreempt] ([<class 'z3b.rules.NewSuitResponseToPreempt'>, <class 'z3b.rules.NewSuitResponseToPreempt'>])
 FAIL: None (expected 2N) for AKQ83.AKT93..A85 (hcp: 20 lp: 22 sp: 25), history: 2H P
 FAIL: P (expected 3N) for 74.K6.AQ8.KQJ983 (hcp: 15 lp: 17 sp: 17), history: 3C P
+WARNING: Unordered: ['4N', 'P'] from: [NaturalNotrump, PassAfterPreempt] ([4N, <class 'z3b.rules.PassAfterPreempt'>])
+FAIL: None (expected P) for AK7432.42.62.Q87 (hcp: 9 lp: 11 sp: 11), history: 3C P 3N P
 FAIL: P (expected 3N) for A53.K5.AKJ72.QJ3 (hcp: 18 lp: 19 sp: 19), history: 3C P
 FAIL: P (expected 3N) for Q.A652.AQ962.AK9 (hcp: 19 lp: 20 sp: 20), history: P 3C P
 FAIL: P (expected 3N) for AK.JT962.A4.AT97 (hcp: 16 lp: 17 sp: 18), history: P 3C P
@@ -289,7 +295,7 @@ FAIL: 1H (expected 4H) for 8.9873.AKQT864.4 (hcp: 9 lp: 12 sp: 15), history: P P
 FAIL: P (expected 4H) for 8.9873.AKQT864.4 (hcp: 9 lp: 12 sp: 15), history: P P P
 FAIL: P (expected 5C) for A4.AK87652.A.J42 (hcp: 16 lp: 19 sp: 20), history: 4C P
 FAIL: None (expected X) for AK92..K32.QT8754 (hcp: 12 lp: 14 sp: 17), history: 1S 3D 3S 5D
-Pass 66 of 90 hands
+Pass 67 of 92 hands
 
 test_preemptive_overcalls:
 WARNING: Unordered: ['2S', 'X'] from: [PreemptiveOvercall, OneLevelTakeoutDouble] ([WeakTwoLevel, <class 'z3b.rules.OneLevelTakeoutDouble'>])
@@ -401,7 +407,7 @@ FAIL: 3S (expected 4S) for K74.9.J98.KJT742 (hcp: 8 lp: 10 sp: 11), history: 1N 
 FAIL: 2N (expected P) for Q87.J843.K65.Q93 (hcp: 8 lp: 8 sp: 8), history: 1N P
 Pass 1 of 3 hands
 
-Pass 1118 (81.4%) of 1373 total hands
+Pass 1120 (81.3%) of 1378 total hands
 
 Tested call generation of 165 rules of 168 total (excluding 8 requires_planning rules).
 Never selected call from:
