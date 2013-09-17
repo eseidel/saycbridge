@@ -1147,6 +1147,9 @@ sayc_expectations = {
 
         # This hand does not want to play NT, despite having the points.
         ['KQJ754.AQ93..K84', '3D', 'P P 1C 2S X P', 'E-W'],  # 6-9f793fad48e7b484a64631324c, W
+
+        # The lack of double earlier is questionable, but at least 3S shouldn't trigger an assertion:
+        ['J432.AK32.AK32.2', '3S', '1C P 1S P 2S X P'],
     ],
 
     "test_reopening_double": [ # Chap 17

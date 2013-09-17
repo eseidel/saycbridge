@@ -2289,7 +2289,10 @@ class CuebidResponseToTakeoutDouble(ResponseToTakeoutDouble):
         '3C', '3D', '3H', '3S'
     ]
     # FIXME: 4+ in the available majors?
-    shared_constraints = [points >= 13, SupportForUnbidSuits()]
+    shared_constraints = [
+        points >= 13,
+        SupportForPartnersSuits(),
+    ]
 
 
 # NOTE: I don't think we're going to end up needing most of these.

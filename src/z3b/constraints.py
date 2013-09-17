@@ -156,19 +156,35 @@ class SupportForPartnerLastBid(Constraint):
         return expr_for_suit(partner_suit) >= self._min_count
 
 
-class SupportForUnbidSuits(Constraint):
+class SupportForMultipleSuits(Constraint):
     def _four_in_almost_every_suit(self, missing_suit, suits):
         return z3.And([expr_for_suit(suit) >= 4 for suit in set(suits) - set([missing_suit])])
 
+    def _support_for_suits(self, suits, history):
+        if len(suits) == 3:
+            three_card_support_expr = z3.And([expr_for_suit(suit) >= 3 for suit in suits])
+            four_card_support_expr = z3.Or([self._four_in_almost_every_suit(missing_suit, suits) for missing_suit in suits])
+            return z3.And(three_card_support_expr, four_card_support_expr)
+        if len(suits) == 2:
+            return z3.And([expr_for_suit(suit) >= 4 for suit in suits])
+        assert False, "%s only supports 2 or 3 unbid suits, found %d: %s" % (self.__class__, len(suits), history.call_history)
+
+
+class SupportForUnbidSuits(SupportForMultipleSuits):
     def expr(self, history, call):
         unbid_suits = history.unbid_suits
-        if len(unbid_suits) == 3:
-            three_card_support_expr = z3.And([expr_for_suit(suit) >= 3 for suit in unbid_suits])
-            four_card_support_expr = z3.Or([self._four_in_almost_every_suit(missing_suit, unbid_suits) for missing_suit in unbid_suits])
-            return z3.And(three_card_support_expr, four_card_support_expr)
-        if len(unbid_suits) == 2:
-            return z3.And([expr_for_suit(suit) >= 4 for suit in unbid_suits])
-        assert False, "SupportForUnbidSuits only supports 2 or 3 unbid suits, found %d: %s" % (len(unbid_suits), history.call_history)
+        return self._support_for_suits(history.unbid_suits, history)
+
+
+# We support any suit partner has shown life in.  Used for cuebid responses to doubles.
+class SupportForPartnersSuits(SupportForMultipleSuits):
+    def expr(self, history, call):
+        # This is kinda a hack.  Because TakeoutDouble can be either 17+ hcp or shape
+        # we don't know that partner has necessarily bid a suit yet, so we can't just:
+        # partners_suits = filter(lambda strain: history.partner.min_length(strain) > 1, suit.SUITS)
+        # Instead we take the inverse of suits which ops have bid, which should be the same:
+        partners_suits = set(suit.SUITS) - set(history.them.bid_suits)
+        return self._support_for_suits(partners_suits, history)
 
 
 class Unusual2NShape(Constraint):

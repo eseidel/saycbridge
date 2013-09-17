@@ -230,7 +230,8 @@ WARNING: Unordered: ['X', '3N'] from: [TwoLevelNegativeDouble, ThreeNotrumpMajor
 FAIL: None (expected X) for 8532.A854.A74.AK (hcp: 15 lp: 15 sp: 16), history: P 1H 2S
 WARNING: Unordered: ['3D', 'P'] from: [NewSuitResponseToNegativeDouble, DefaultPass] ([<class 'z3b.rules.NewSuitResponseToNegativeDouble'>, <class 'z3b.natural.DefaultPass'>])
 FAIL: None (expected 3D) for AKJ953.Q7654.K.6 (hcp: 13 lp: 16 sp: 16), history: 1C 1S X 2S
-Pass 57 of 69 hands
+FAIL: X (expected P) for J432.AK32.AK32.2 (hcp: 15 lp: 15 sp: 18), history: 1C P 1S (subtest of 1C P 1S P 2S X P)
+Pass 58 of 71 hands
 
 test_open_one_nt:
 Pass 7 of 7 hands
@@ -400,7 +401,7 @@ FAIL: 3S (expected 4S) for K74.9.J98.KJT742 (hcp: 8 lp: 10 sp: 11), history: 1N 
 FAIL: 2N (expected P) for Q87.J843.K65.Q93 (hcp: 8 lp: 8 sp: 8), history: 1N P
 Pass 1 of 3 hands
 
-Pass 1117 (81.5%) of 1371 total hands
+Pass 1118 (81.4%) of 1373 total hands
 
 Tested call generation of 165 rules of 168 total (excluding 8 requires_planning rules).
 Never selected call from:
