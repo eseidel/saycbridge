@@ -519,6 +519,12 @@ class NewSuitResponseToNegativeDouble(ResponseToNegativeDouble):
     shared_constraints = MinLength(4)
 
 
+rule_order.order(
+    DefaultPass,
+    NewSuitResponseToNegativeDouble,
+)
+
+
 class RaiseResponseToNegativeDouble(ResponseToNegativeDouble):
     preconditions = [
         PartnerHasAtLeastLengthInSuit(4),

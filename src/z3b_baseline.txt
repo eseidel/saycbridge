@@ -108,7 +108,9 @@ FAIL: P (expected 2S) for 9.32.KJ832.QJ765 (hcp: 7 lp: 9 sp: 11), history: 1N P 
 FAIL: P (expected 3H) for J97.Q2.KJ9832.65 (hcp: 7 lp: 9 sp: 7), history: 1N P 2D P 2H P
 FAIL: 2S (expected 4H) for A.3.KJ8532.JT764 (hcp: 9 lp: 12 sp: 15), history: 1N P 2D P 2H P
 FAIL: 3H (expected 4H) for 97.A2.KJ9832.J76 (hcp: 9 lp: 11 sp: 11), history: 1N P 2D P 2H P
-Pass 36 of 40 hands
+WARNING: Unordered: ['3H', '4H'] from: [AcceptTransferToHearts, NaturalSuited] ([Accept, 4H])
+FAIL: None (expected 4H) for KQT.AK763.AK6.84 (hcp: 19 lp: 20 sp: 20), history: P 1D P 1H P 2N P 3D P
+Pass 38 of 43 hands
 
 test_jacoby_two_nt_response_to_one_of_a_major:
 FAIL: 3N (expected 3H) for AJ2.K7.KQT853.A5 (hcp: 17 lp: 19 sp: 19), history: 1H P 2N P
@@ -232,10 +234,8 @@ FAIL: None (expected 2S) for 93.AQ43.9.AQT942 (hcp: 12 lp: 14 sp: 16), history: 
 FAIL: X (expected 2S) for Q2.A95.AT3.KT843 (hcp: 13 lp: 14 sp: 12), history: 1H 2C
 WARNING: Unordered: ['X', '3N'] from: [TwoLevelNegativeDouble, ThreeNotrumpMajorResponse] ([<class 'z3b.rules.TwoLevelNegativeDouble'>, <class 'z3b.rules.ThreeNotrumpMajorResponse'>])
 FAIL: None (expected X) for 8532.A854.A74.AK (hcp: 15 lp: 15 sp: 16), history: P 1H 2S
-WARNING: Unordered: ['3D', 'P'] from: [NewSuitResponseToNegativeDouble, DefaultPass] ([<class 'z3b.rules.NewSuitResponseToNegativeDouble'>, <class 'z3b.natural.DefaultPass'>])
-FAIL: None (expected 3D) for AKJ953.Q7654.K.6 (hcp: 13 lp: 16 sp: 16), history: 1C 1S X 2S
 FAIL: X (expected P) for J432.AK32.AK32.2 (hcp: 15 lp: 15 sp: 18), history: 1C P 1S (subtest of 1C P 1S P 2S X P)
-Pass 58 of 71 hands
+Pass 61 of 73 hands
 
 test_open_one_nt:
 Pass 7 of 7 hands
@@ -407,7 +407,7 @@ FAIL: 3S (expected 4S) for K74.9.J98.KJT742 (hcp: 8 lp: 10 sp: 11), history: 1N 
 FAIL: 2N (expected P) for Q87.J843.K65.Q93 (hcp: 8 lp: 8 sp: 8), history: 1N P
 Pass 1 of 3 hands
 
-Pass 1120 (81.3%) of 1378 total hands
+Pass 1125 (81.3%) of 1383 total hands
 
 Tested call generation of 165 rules of 168 total (excluding 8 requires_planning rules).
 Never selected call from:

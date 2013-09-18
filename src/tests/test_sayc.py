@@ -106,6 +106,9 @@ sayc_expectations = {
         ['83.852.5.KQT9752', '4H', '2C P 2D P 3N P'],
         ['K83.852.QT9752.5', '3D', '2N P', 'Both'],  # 4-1bc6c9d271a2f39a0ef106751b, E
         ['83.852.KQT9752.5', '4D', '2C P 2D P 3N P'],
+
+        # What about super-accepts?  Even if partner only has 6hcp, we want to go to game!
+        ['KQT.AK763.AK6.84', '4H', 'P 1D P 1H P 2N P 3D P'],  # 1-0ba065f416fa5fc432d61c9af2, E
     ],
 
     "test_invitational_two_nt_over_one_nt": [
@@ -1100,6 +1103,8 @@ sayc_expectations = {
         ["J5.AQ864.A54.K76", "2D", "1D 1S X P"],  # p131, h10 (1NT is also valid)
         ["KJ43.KQJ97.K5.87", "2C", "1D 1S X P"],  # p131, h11
         ["A94.KQ87.874.KJ6", "1N", "1D 1S X P"],  # p131, h12
+
+        ['KT964.QJ874.53.A', '3C', 'P P 1D 1S X 2S', 'N-S'],  # 15-d2381cacd0b0d88e797add66d4, N
 
         # Minimum NT responses only show shape, not more points.
         ['AT76.K63.Q98.KJ8', '2N', 'P 1C 2S X P', 'Both'],  # 13-3e5b4b44d80b70f05a7ce29e66, E
