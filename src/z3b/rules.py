@@ -723,7 +723,7 @@ rule_order.order(
     # Jumping to 3N (if possible) is better than just inviting to game.
     # Unclear if we need a separate rule for this jump or if natural NT is sufficient.
     NotrumpInvitationByOpener,
-    natural_exact_notrump_game,
+    notrump_with_stoppers.get('3N'),
 )
 
 
@@ -1218,10 +1218,6 @@ class NonJumpFourthSuitForcing(FourthSuitForcing):
     preconditions = NotJumpFromPartnerLastBid()
     # Smallest: 1D,1H,1S,2C
     # Largest: 1H,2D,3C,3S
-    call_names = [
-        '2C', '2D', '2H', '2S',
-        '3C', '3D', '3H', '3S',
-    ]
     priorities_per_call = {
         ('2C', '2D', '2H', '2S'): fourth_suit_forcing.TwoLevel,
         ('3C', '3D', '3H', '3S'): fourth_suit_forcing.ThreeLevel,
@@ -2587,11 +2583,11 @@ class NewSuitResponseToPreempt(ResponseToPreempt):
     ]
 
 
-rule_order.order(
-    PassResponseToPreempt,
-    natural_bids, # This puts the law above passing, which makes us extend preempts preferentially, is that correct?
-    NewSuitResponseToPreempt,
-)
+# rule_order.order(
+#     PassResponseToPreempt,
+#     natural_bids, # This puts the law above passing, which makes us extend preempts preferentially, is that correct?
+#     NewSuitResponseToPreempt,
+# )
 
 
 class PassAfterPreempt(Rule):
@@ -2843,28 +2839,26 @@ class ResponseToGrandSlamForce(Rule):
 
 rule_order.order(preempt_priorities, opening_priorities)
 rule_order.order(natural_bids, preempt_priorities)
-rule_order.order(natural_games, nt_response_priorities, natural_slams)
+rule_order.order(natural_games, nt_response_priorities)
 rule_order.order(natural_bids, stayman_response_priorities)
 rule_order.order(natural_bids, GarbagePassStaymanRebid)
 rule_order.order(natural_bids, PassAfterTakeoutDouble)
 rule_order.order(natural_bids, two_clubs_opener_rebid_priorities)
 rule_order.order(natural_bids, responder_rebid_priorities)
-rule_order.order(natural_exact_notrump_game, stayman_rebid_priorities.GameForcingOtherMajor, natural_exact_major_games)
-rule_order.order(natural_nt_part_scores, stayman_rebid_priorities.InvitationalOtherMajor, natural_suited_part_scores)
-rule_order.order(takeout_double_responses, natural_bids)
-rule_order.order(ForcedRebidOriginalSuitByOpener, natural_bids)
+rule_order.order(natural_exact_notrump_game, stayman_rebid_priorities.GameForcingOtherMajor)
+rule_order.order(natural_nt_part_scores, stayman_rebid_priorities.InvitationalOtherMajor)
+#rule_order.order(takeout_double_responses, natural_bids)
+#rule_order.order(ForcedRebidOriginalSuitByOpener, sound_natural_bids)
 rule_order.order(natural_bids, NewSuitResponseToStandardOvercall, CuebidResponseToStandardOvercall)
-rule_order.order(RaiseResponseToStandardOvercall, natural_bids, NewSuitResponseToStandardOvercall, CuebidResponseToStandardOvercall)
+#rule_order.order(RaiseResponseToStandardOvercall, natural_bids)
 rule_order.order(DefaultPass, RaiseResponseToStandardOvercall)
-rule_order.order(ResponderSignoffInPartnersSuit, natural_bids)
-rule_order.order(DefaultPass, ResponderSignoffInPartnersSuit)
+#rule_order.order(ResponderSignoffInPartnersSuit, natural_bids)
+rule_order.order(unsound_notrump_part_scores, ResponderSignoffInPartnersSuit)
 rule_order.order(DefaultPass, opening_priorities)
-rule_order.order(rebids_after_takeout_double, natural_bids)
+#rule_order.order(rebids_after_takeout_double, natural_bids)
 rule_order.order(natural_bids, SecondNegative)
 rule_order.order(DefaultPass, rebids_after_takeout_double)
 rule_order.order(DefaultPass, natural_passses)
-rule_order.order(natural_suited_part_scores, natural_passses)
-rule_order.order(SuitGameIsRemote, natural_games, SuitSlamIsRemote, natural_slams)
 rule_order.order(
     DefaultPass,
     RebidOneNotrumpByOpener,

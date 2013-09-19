@@ -79,20 +79,21 @@ natural_overly_sufficient_games = [
 rule_order.order(*natural_overly_sufficient_games)
 
 
-natural_part_scores = [
+unsound_notrump_part_scores = rule_order.order(
     notrump_without_stoppers.get('2N'),
     notrump_without_stoppers.get('1N'),
+)
 
-    # FIXME: These should have higher priorities than the suited part scores.
-    notrump_with_stoppers.get('2N'),
-    notrump_with_stoppers.get('1N'),
+natural_part_scores = rule_order.order(
+    unsound_notrump_part_scores,
 
     natural.get('4C'), natural.get('4D'),
     natural.get('3C'), natural.get('3D'), natural.get('3H'), natural.get('3S'),
     natural.get('2C'), natural.get('2D'), natural.get('2H'), natural.get('2S'),
-]
-rule_order.order(*natural_part_scores)
 
+    notrump_with_stoppers.get('2N'),
+    notrump_with_stoppers.get('1N'),
+)
 
 rule_order.order(
     natural_part_scores,
@@ -101,8 +102,8 @@ rule_order.order(
     natural_slams,
 )
 
-
-natural_bids = set(natural) | set(notrump_with_stoppers) | set(notrump_without_stoppers)
+sound_natural_bids = set(natural) | set(notrump_with_stoppers)
+natural_bids = sound_natural_bids | set(notrump_without_stoppers)
 
 natural_exact_minor_games = set([
     natural.get('5C'),
@@ -347,3 +348,6 @@ natural_passses = set([
     SuitGameIsRemote,
     SuitSlamIsRemote,
 ])
+
+rule_order.order(natural_suited_part_scores, natural_passses)
+# rule_order.order(SuitGameIsRemote, natural_games, SuitSlamIsRemote, natural_slams)
