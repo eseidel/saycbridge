@@ -31,7 +31,7 @@ notrump_without_stoppers = enum.Enum(*notrump_calls())
 notrump_with_stoppers = enum.Enum(*notrump_calls())
 
 
-natural_slams = [
+natural_slams = rule_order.order(
     notrump_without_stoppers.get('6N'), 
 
     natural.get('6C'),
@@ -48,11 +48,10 @@ natural_slams = [
     natural.get('7S'),
 
     notrump_with_stoppers.get('7N'), 
-]
-rule_order.order(*natural_slams)
+)
 
 
-natural_exact_games = [
+natural_exact_games = rule_order.order(
     notrump_without_stoppers.get('3N'),
 
     natural.get('5C'),
@@ -62,11 +61,10 @@ natural_exact_games = [
 
     natural.get('4H'),
     natural.get('4S'),
-]
-rule_order.order(*natural_exact_games)
+)
 
 
-natural_overly_sufficient_games = [
+natural_overly_sufficient_games = rule_order.order(
     notrump_without_stoppers.get('5N'),
     notrump_without_stoppers.get('4N'),
 
@@ -75,11 +73,10 @@ natural_overly_sufficient_games = [
 
     notrump_with_stoppers.get('5N'),
     notrump_with_stoppers.get('4N'),
-]
-rule_order.order(*natural_overly_sufficient_games)
+)
 
 
-natural_part_scores = [
+natural_part_scores = rule_order.order(
     notrump_without_stoppers.get('2N'),
     notrump_without_stoppers.get('1N'),
 
@@ -90,8 +87,7 @@ natural_part_scores = [
     natural.get('4C'), natural.get('4D'),
     natural.get('3C'), natural.get('3D'), natural.get('3H'), natural.get('3S'),
     natural.get('2C'), natural.get('2D'), natural.get('2H'), natural.get('2S'),
-]
-rule_order.order(*natural_part_scores)
+)
 
 
 rule_order.order(
@@ -347,3 +343,8 @@ natural_passses = set([
     SuitGameIsRemote,
     SuitSlamIsRemote,
 ])
+
+
+rule_order.order(DefaultPass, natural_passses)
+rule_order.order(natural_suited_part_scores, natural_passses)
+rule_order.order(SuitGameIsRemote, natural_games, SuitSlamIsRemote, natural_slams)

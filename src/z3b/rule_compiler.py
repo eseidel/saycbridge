@@ -33,7 +33,7 @@ class RuleOrdering(object):
         return key
 
     def order(self, *args):
-        self.ordering.order(*map(self._check_key, args))
+        return self.ordering.order(*map(self._check_key, args))
 
     def lt(self, left, right):
         try:

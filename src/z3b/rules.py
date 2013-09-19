@@ -2854,7 +2854,7 @@ rule_order.order(natural_nt_part_scores, stayman_rebid_priorities.InvitationalOt
 rule_order.order(takeout_double_responses, natural_bids)
 rule_order.order(ForcedRebidOriginalSuitByOpener, natural_bids)
 rule_order.order(natural_bids, NewSuitResponseToStandardOvercall, CuebidResponseToStandardOvercall)
-rule_order.order(RaiseResponseToStandardOvercall, natural_bids, NewSuitResponseToStandardOvercall, CuebidResponseToStandardOvercall)
+rule_order.order(RaiseResponseToStandardOvercall, natural_bids)
 rule_order.order(DefaultPass, RaiseResponseToStandardOvercall)
 rule_order.order(ResponderSignoffInPartnersSuit, natural_bids)
 rule_order.order(DefaultPass, ResponderSignoffInPartnersSuit)
@@ -2862,9 +2862,7 @@ rule_order.order(DefaultPass, opening_priorities)
 rule_order.order(rebids_after_takeout_double, natural_bids)
 rule_order.order(natural_bids, SecondNegative)
 rule_order.order(DefaultPass, rebids_after_takeout_double)
-rule_order.order(DefaultPass, natural_passses)
-rule_order.order(natural_suited_part_scores, natural_passses)
-rule_order.order(SuitGameIsRemote, natural_games, SuitSlamIsRemote, natural_slams)
+
 rule_order.order(
     DefaultPass,
     RebidOneNotrumpByOpener,
