@@ -184,7 +184,7 @@ sayc_expectations = {
         ["KT82.AKT8.Q8.A32", "P", "1N P 2C 2S"],  # p17, 
 
         # Partner didn't have to transfer, but he did so we should accept it.
-        ['A43.KQ.KT942.K54', '2S', '1N X 2D P'],  # 10-d6eab272800d646f171c16bfe4, E
+        ['A43.KQ.KT942.K54', '2H', '1N X 2D P'],  # 10-d6eab272800d646f171c16bfe4, E
     ],
 
     "test_rule_of_twenty_open": [
