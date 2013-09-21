@@ -5,6 +5,20 @@
 from suit import *
 from third_party.memoized import memoized
 
+
+# FIXME: Doesn't python have a nicer way to do this?
+def _values_between(start, stop, iterable):
+    # FIXME: Should assert that start/stop are in iterable?
+    yielding = False
+    for value in iterable:
+        if value == start:
+            yielding = True
+        if yielding:
+            yield value
+        # Putting this after the yield to make the range inclusive.
+        if value == stop:
+            break
+
 # Call objects should be global singletons and thus immutable.
 class Call(object):
     def __init__(self, name):
@@ -12,6 +26,8 @@ class Call(object):
         self.strain = None if self.name in ('P', 'X', 'XX') else Strain.from_char(self.name[1])
         self.level = int(self.name[0]) if self.is_contract() else None
         self._validate()
+
+    LEVELS = (1, 2, 3, 4, 5, 6, 7)
 
     def __str__(self):
         return self.name
@@ -79,6 +95,26 @@ class Call(object):
             return cmp(self.level, other.level)
         # Using the suit enum, this comparison is very easy and will correctly order C, D, H, S
         return cmp(self.strain, other.strain)
+
+    # These should also operate on Call objects and we should use map(Call.name, calls)
+    @classmethod
+    def suited_names(cls):
+        for level in cls.LEVELS:
+            for strain in SUITS:
+                yield "%s%s" % (level, strain.char)
+
+    @classmethod
+    def suited_names_between(cls, start_name, stop_name):
+        return _values_between(start_name, stop_name, cls.suited_names())
+
+    @classmethod
+    def notrump_names(cls):
+        for level in cls.LEVELS:
+            yield "%s%s" % (level, NOTRUMP.char)
+
+    @classmethod
+    def notrump_names_between(cls, start_name, stop_name):
+        return _values_between(start_name, stop_name, cls.notrump_names())
 
 
 # This is a convenience for an old method of specifying calls.

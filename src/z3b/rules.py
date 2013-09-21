@@ -1243,7 +1243,8 @@ fourth_suit_forcing_response_priorities = enum.Enum(
 )
 rule_order.order(*reversed(fourth_suit_forcing_response_priorities))
 
-rebid_response_to_fourth_suit_forcing_priorities = enum.Enum(*suited_calls())
+rebid_response_to_fourth_suit_forcing_priorities = enum.Enum(*Call.suited_names_between('2D', '4H'))
+# Rebid is the lowest priority, so we want lower bids to be higher priority, hence the reverse, right?
 rule_order.order(*reversed(rebid_response_to_fourth_suit_forcing_priorities))
 
 rule_order.order(

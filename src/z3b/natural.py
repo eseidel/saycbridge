@@ -8,27 +8,16 @@ from z3b.constraints import *
 from z3b.model import *
 from z3b.preconditions import *
 from z3b.rule_compiler import Rule, rule_order, categories
+from core.call import Call
 
 
-# FIXME: This should be in a more general location.
-LEVELS = [1, 2, 3, 4, 5, 6, 7]
+def copy_dict(d, keys):
+    return {key: d.get(key) for key in keys}
 
 
-# FIXME: These belong on CallExplorer or Call.
-def suited_calls():
-    for strain in suit.SUITS:
-        for level in LEVELS:
-            yield "%s%s" % (level, strain.char)
-
-
-def notrump_calls():
-    for level in LEVELS:
-        yield "%s%s" % (level, suit.NOTRUMP.char)
-
-
-natural = enum.Enum(*suited_calls())
-notrump_without_stoppers = enum.Enum(*notrump_calls())
-notrump_with_stoppers = enum.Enum(*notrump_calls())
+natural = enum.Enum(*Call.suited_names())
+notrump_without_stoppers = enum.Enum(*Call.notrump_names())
+notrump_with_stoppers = enum.Enum(*Call.notrump_names())
 
 
 natural_slams = rule_order.order(
@@ -201,62 +190,15 @@ class NaturalSuited(SoundNaturalBid):
         WeHaveShownMorePointsThanThem(),
         PartnerHasAtLeastLengthInSuit(1),
     ]
-    priorities_per_call = {
-        '2C': natural.get('2C'),
-        '2D': natural.get('2D'),
-        '2H': natural.get('2H'),
-        '2S': natural.get('2S'),
-
-        '3C': natural.get('3C'),
-        '3D': natural.get('3D'),
-        '3H': natural.get('3H'),
-        '3S': natural.get('3S'),
-
-        '4C': natural.get('4C'),
-        '4D': natural.get('4D'),
-        '4H': natural.get('4H'),
-        '4S': natural.get('4S'),
-
-        '5C': natural.get('5C'),
-        '5D': natural.get('5D'),
-        '5H': natural.get('5H'),
-        '5S': natural.get('5S'),
-
-        '6C': natural.get('6C'),
-        '6D': natural.get('6D'),
-        '6H': natural.get('6H'),
-        '6S': natural.get('6S'),
-
-        '7C': natural.get('7C'),
-        '7D': natural.get('7D'),
-        '7H': natural.get('7H'),
-        '7S': natural.get('7S'),
-    }
+    priorities_per_call = copy_dict(natural, Call.suited_names_between('2C', '7S'))
 
 
 class LawOfTotalTricks(Rule):
     preconditions = [
+        # FIXME: This should only apply over weak bids (only when NaturalSuited does not)?
         PartnerHasAtLeastLengthInSuit(1),
     ]
-    priorities_per_call = {
-        '2C': natural.get('2C'),
-        '2D': natural.get('2D'),
-        '2H': natural.get('2H'),
-        '2S': natural.get('2S'),
-
-        '3C': natural.get('3C'),
-        '3D': natural.get('3D'),
-        '3H': natural.get('3H'),
-        '3S': natural.get('3S'),
-
-        '4C': natural.get('4C'),
-        '4D': natural.get('4D'),
-        '4H': natural.get('4H'),
-        '4S': natural.get('4S'),
-
-        '5C': natural.get('5C'),
-        '5D': natural.get('5D'),
-    }
+    priorities_per_call = copy_dict(natural, Call.suited_names_between('2C', '5D'))
     shared_constraints = LengthSatisfiesLawOfTotalTricks()
     category = categories.LawOfTotalTricks
 
@@ -278,15 +220,8 @@ class SufficientStoppers(Constraint):
 
 class NaturalNotrump(SoundNaturalBid):
     preconditions = WeHaveShownMorePointsThanThem()
-    priorities_per_call = {
-        '1N': notrump_without_stoppers.get('1N'),
-        '2N': notrump_without_stoppers.get('2N'),
-        '3N': notrump_without_stoppers.get('3N'),
-        '4N': notrump_without_stoppers.get('4N'),
-        '5N': notrump_without_stoppers.get('5N'),
-        '6N': notrump_without_stoppers.get('6N'),
-        '7N': notrump_without_stoppers.get('7N'),
-    }
+    # The copy_dict is redundant, this is all notrump bids.
+    priorities_per_call = copy_dict(notrump_without_stoppers, Call.notrump_names_between('1N', '7N'))
     shared_constraints = SufficientStoppers()
     conditional_priorities_per_call = {
         '1N': [(StoppersInOpponentsSuits(), notrump_with_stoppers.get('1N'))],
