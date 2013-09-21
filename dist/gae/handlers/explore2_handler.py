@@ -31,7 +31,7 @@ class Explore2Handler(webapp2.RequestHandler):
         return CallHistory.from_identifier(history_identifier)
 
     def _redirect_to_history(self, history):
-        self.redirect("/explore/%s" % history.comma_separated_calls())
+        self.redirect("/explore2/%s" % history.comma_separated_calls())
 
     def get(self, calls_string=None):
         calls_string = calls_string or ""
