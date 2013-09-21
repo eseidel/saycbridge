@@ -266,7 +266,7 @@ class JumpShiftResponseToOpenAfterRHODouble(ResponseToOneLevelSuitedOpen):
     preconditions = JumpShift.preconditions + [
         LastBidHasAnnotation(positions.RHO, annotations.TakeoutDouble),
     ]
-    call_names = ['2D', '2H', '2S', '3C', '3D', '3H']
+    call_names = Call.suited_names_between('2D', '3H')
     shared_constraints = [points >= 5, MinLength(6), TwoOfTheTopThree()]
 
 
@@ -416,7 +416,7 @@ class MinimumResponseToJacoby2N(ResponseToJacoby2N):
 
 
 class NotrumpResponseToJacoby2N(ResponseToJacoby2N):
-    call_names = ['3N']
+    call_names = '3N'
     shared_constraints = points > 15 # It's really 15-17
     priority = jacoby_2n_response_priorities.Notrump
 
@@ -428,7 +428,7 @@ class JumpShiftResponseToOpen(ResponseToOneLevelSuitedOpen):
 
     # Jumpshifts must be below game and are off in competition so
     # 1S P 3H is the highest available response jumpshift.
-    call_names = ['2D', '2H', '2S', '3C', '3D', '3H']
+    call_names = Call.suited_names_between('2D', '3H')
     # FIXME: Shouldn't this be MinHighCardPoints?
     shared_constraints = [points >= 19, MinLength(5)]
 
@@ -496,12 +496,9 @@ class CuebidReponseToNegativeDouble(ResponseToNegativeDouble):
         NotJumpFromLastContract(),
     ]
     # Min: 1C 1D X P 2D, Max: 1C 2S X 3S
-    call_names = (
-        # Unclear if a cuebid of 2D ever makes sense since
-        # we'll know they're 4-4 in the majors and can choose between a minor game and NT?
-              '2D', '2H', '2S',
-        '3C', '3D', '3H', '3S',
-    )
+    # Unclear if a cuebid of 2D ever makes sense since
+    # we'll know they're 4-4 in the majors and can choose between a minor game and NT?
+    call_names = Call.suited_names_between('2D', '3S')
     shared_constraints = points >= 19
 
 
@@ -511,11 +508,7 @@ class NewSuitResponseToNegativeDouble(ResponseToNegativeDouble):
         UnbidSuit(),
     ]
     # Min: 1C 1D X P 1H, Max: 1C 2S X P 3H
-    call_names = (
-                    '1H', '1S',
-        '2C', '2D', '2H', '2S',
-        '3C', '3D', '3H',
-    )
+    call_names = Call.suited_names_between('1H', '3H')
     shared_constraints = MinLength(4)
 
 
@@ -636,10 +629,7 @@ class CueBidRebidAfterNegativeDouble(Rule):
         CueBid(positions.RHO, use_first_suit=True),
     ]
     # Min: 1D 1H X P 2C P 2H, Max: 1H 2S X P 3D P 3S
-    call_names = (
-                    '2H', '2S',
-        '3C', '3D', '3H', '3S'
-    )
+    call_names = Call.suited_names_between('2H', '3S')
     # Shows slam interest, but in which suit?
     shared_constraints = MinimumSupportPointsForPartnersLastSuit(15) # How big should this really be?
 
@@ -984,11 +974,7 @@ class HelpSuitGameTry(RebidAfterOneLevelOpen):
         UnbidSuit(),
     ]
     # Minimum: 1C,2C,2D, Max: 1C,3C,3S
-    call_names = [
-    # FIXME: We need priority ordering between the suits.
-              '2D', '2H', '2S',
-        '3C', '3D', '3H', '3S'
-    ]
+    call_names = Call.suited_names_between('2D', '3S')
     # Descriptive not placement bid hence points instead of MinimumCombinedPoints.
     shared_constraints = [MinLength(4), Stopper(), points >= 16]
 
@@ -1066,10 +1052,7 @@ class OpenerSuitedRebidAfterStrongTwoClubs(OpenerRebidAfterStrongTwoClubs):
     preconditions = [UnbidSuit(), NotJumpFromLastContract()]
     # This maxes out at 4C -> 2C P 3D P 4C
     # If the opponents are competing we're just gonna double them anyway.
-    call_names = [
-                '2H', '2S',
-    '3C', '3D', '3H', '3S',
-    '4C']
+    call_names = Call.suited_names_between('2H', '4C')
     # FIXME: This should either have NoMajorFit(), or have priorities separated
     # so that we prefer to support our partner's major before bidding our own new minor.
     shared_constraints = MinLength(5)
@@ -1080,7 +1063,7 @@ class OpenerSuitedJumpRebidAfterStrongTwoClubs(OpenerRebidAfterStrongTwoClubs):
     preconditions = [UnbidSuit(), JumpFromLastContract(exact_size=1)]
     # This maxes out at 4C -> 2C P 3D P 5C, but I'm not sure we need to cover that case?
     # If we have self-supporting suit why jump all the way to 5C?  Why not Blackwood in preparation for slam?
-    call_names = ['3H', '3S', '4C', '4D', '4H', '4S', '5C']
+    call_names = Call.suited_names_between('3H', '5C')
     shared_constraints = [MinLength(7), TwoOfTheTopThree()]
     priority = two_clubs_opener_rebid_priorities.SuitedJumpRebid
 
@@ -1161,10 +1144,7 @@ class ResponderSignoffInPartnersSuit(OneLevelOpeningResponderRebid):
 class ResponderReverse(OneLevelOpeningResponderRebid):
     preconditions = reverse_preconditions
     # Min: 1C,1D,2C,2H, Max: 1S,2D,2S,3H
-    call_names = [
-                  '2H','2S',
-        '3C','3D','3H',
-    ]
+    call_names = Call.suited_names_between('2H', '3H')
     shared_constraints = [MinLength(4), points >= 12]
     priority = responder_rebid_priorities.ResponderReverse
 
@@ -1173,11 +1153,7 @@ class JumpShiftResponderRebid(OneLevelOpeningResponderRebid):
     preconditions = JumpShift.preconditions
     # Smallest: 1C,1D,1H,2S
     # Largest: 1S,2H,3C,4D (anything above 4D is game)
-    call_names = [
-                          '2S',
-        '3C', '3D', '3H', '3S',
-        '4C', '4D'
-    ]
+    call_names = Call.suited_names_between('2S', '4D')
     shared_constraints = [MinLength(4), points >= 14]
     priority = responder_rebid_priorities.JumpShiftResponderRebid
 
@@ -1218,10 +1194,6 @@ class NonJumpFourthSuitForcing(FourthSuitForcing):
     preconditions = NotJumpFromPartnerLastBid()
     # Smallest: 1D,1H,1S,2C
     # Largest: 1H,2D,3C,3S
-    call_names = [
-        '2C', '2D', '2H', '2S',
-        '3C', '3D', '3H', '3S',
-    ]
     priorities_per_call = {
         ('2C', '2D', '2H', '2S'): fourth_suit_forcing.TwoLevel,
         ('3C', '3D', '3H', '3S'): fourth_suit_forcing.ThreeLevel,
@@ -1285,11 +1257,7 @@ class DelayedSupportResponseToFourthSuitForcing(ResponseToFourthSuitForcing):
         NotJumpFromLastContract(),
         DidBidSuit(positions.Partner),
     ]
-    call_names = [
-              '2D', '2H', '2S',
-        '3C', '3D', '3H', '3S',
-        '4C', '4D', '4H',
-    ]
+    call_names = Call.suited_names_between('2D', '4H')
     priority = fourth_suit_forcing_response_priorities.DelayedSupport
     shared_constraints = MinimumCombinedLength(7)
 
@@ -1300,20 +1268,7 @@ class RebidResponseToFourthSuitForcing(ResponseToFourthSuitForcing):
         DidBidSuit(positions.Me),
     ]
     # FIXME: The higher call should show additional length in that suit.
-    priorities_per_call = {
-        '2D': rebid_response_to_fourth_suit_forcing_priorities.get('2D'),
-        '2H': rebid_response_to_fourth_suit_forcing_priorities.get('2H'),
-        '2S': rebid_response_to_fourth_suit_forcing_priorities.get('2S'),
-
-        '3C': rebid_response_to_fourth_suit_forcing_priorities.get('3C'),
-        '3D': rebid_response_to_fourth_suit_forcing_priorities.get('3D'),
-        '3H': rebid_response_to_fourth_suit_forcing_priorities.get('3H'),
-        '3S': rebid_response_to_fourth_suit_forcing_priorities.get('3S'),
-
-        '4C': rebid_response_to_fourth_suit_forcing_priorities.get('4C'),
-        '4D': rebid_response_to_fourth_suit_forcing_priorities.get('4D'),
-        '4H': rebid_response_to_fourth_suit_forcing_priorities.get('4H'),
-    }
+    priorities_per_call = copy_dict(rebid_response_to_fourth_suit_forcing_priorities, Call.suited_names_between('2D', '4H'))
     shared_constraints = NO_CONSTRAINTS
 
 
@@ -1322,10 +1277,7 @@ class FourthSuitResponseToFourthSuitForcing(ResponseToFourthSuitForcing):
         NotJumpFromLastContract(),
         UnbidSuit(),
     ]
-    call_names = [
-        '3C', '3D', '3H', '3S',
-        '4C', '4D', '4H', '4S',
-    ]
+    call_names = Call.suited_names_between('3C', '4S')
     priority = fourth_suit_forcing_response_priorities.FourthSuit
     shared_constraints = [
         MinLength(4),
@@ -1899,10 +1851,7 @@ class ResponseToStandardOvercall(Rule):
 # All it does is cause one test to fail.  It may not be worth having.
 class RaiseResponseToStandardOvercall(ResponseToStandardOvercall):
     preconditions = [RaiseOfPartnersLastSuit(), NotJumpFromLastContract()]
-    call_names = [
-              '2D', '2H', '2S',
-        '3C', '3D', '3H', '3S',
-    ]
+    call_names = Call.suited_names_between('2D', '3S')
     shared_constraints = [MinLength(3), points >= 6]
 
 
@@ -1911,10 +1860,7 @@ class CuebidResponseToStandardOvercall(ResponseToStandardOvercall):
         CueBid(positions.LHO),
         NotJumpFromLastContract()
     ]
-    call_names = [
-        '2C', '2D', '2H', '2S',
-        '3C', '3D', '3H',
-    ]
+    call_names = Call.suited_names_between('2C', '3H')
     # FIXME: This should use support points.
     shared_constraints = [SupportForPartnerLastBid(3), points >= 11]
 
@@ -1926,11 +1872,7 @@ class NewSuitResponseToStandardOvercall(ResponseToStandardOvercall):
         NotJumpFromLastContract(),
         UnbidSuit()
     ]
-    call_names = [
-                    '1H', '1S',
-        '2C', '2D', '2H', '2S',
-        '3C', '3D', '3H', '3S',
-    ]
+    call_names = Call.suited_names_between('1H', '3S')
     shared_constraints = [
         MinLength(5),
         TwoOfTheTopThree(),
@@ -1985,10 +1927,7 @@ class BalancingJumpSuitedOvercall(BalancingOvercallOverSuitedOpen):
         JumpFromLastContract(exact_size=1),
         UnbidSuit(),
     ]
-    call_names =[
-              '2D', '2H', '2S',
-        '3C', '3D', '3H',
-    ]
+    call_names = Call.suited_names_between('2D', '3H')
     shared_constraints = [
         points >= 12,
         MinLength(6),
@@ -2291,10 +2230,7 @@ class CuebidResponseToTakeoutDouble(ResponseToTakeoutDouble):
         NotJumpFromLastContract(),
     ]
     priority = takeout_double_responses.CuebidResponseToTakeoutDouble
-    call_names = [
-        '2C', '2D', '2H', '2S',
-        '3C', '3D', '3H', '3S'
-    ]
+    call_names = Call.suited_names_between('2C', '3S')
     # FIXME: 4+ in the available majors?
     shared_constraints = [
         points >= 13,
@@ -2450,11 +2386,8 @@ class CueBidAfterTakeoutDouble(RebidAfterTakeoutDouble):
         CueBid(positions.RHO, use_first_suit=True),
     ]
     # Min: 1C X 1D P 2C, unclear what Max should be?
-    call_names = (
-        '2C', '2D', '2H', '2S',
-        '3C', '3D', '3H', '3S',
-        # 1S X 2H 3D P 3S?  Should we go higher?
-    )
+    # 1S X 2H 3D P 3S?  Should we go higher?
+    call_names = Call.suited_names_between('2C', '3S')
     # The book says "with slam interest".  Unclear what that means for constraints.
     shared_constraints = points >= 21
     priority = rebids_after_takeout_double.CueBid
@@ -2573,11 +2506,7 @@ class NewSuitResponseToPreempt(ResponseToPreempt):
         NotJumpFromLastContract()
     ]
     # FIXME: These need some sort of priority ordering between the calls.
-    call_names = [
-              '2D', '2H', '2S',
-        '3C', '3D', '3H', '3S',
-        '4C', '4D',
-    ]
+    call_names = Call.suited_names_between('2D', '4D')
     shared_constraints = [
         MinLength(5),
         # Should this deny support for partner's preempt suit?
@@ -2628,10 +2557,7 @@ class MinimumRebidOfPreemptSuit(ForcedRebidAfterPreempt):
         InvertedPrecondition(RaiseOfPartnersLastSuit()),
     ]
     # Min: 1S 2D P 2H P 3D
-    call_names = (
-              '3D', '3H', '3S',
-        '4C', '4D',
-    )
+    call_names = Call.suited_names_between('3D', '4D')
     shared_constraints = NO_CONSTRAINTS
 
 
@@ -2641,10 +2567,7 @@ class RaiseOfPartnersPreemptResponse(ForcedRebidAfterNewSuitResponseToPreempt):
         NotJumpFromLastContract(),
     ]
     # Min: 1S 2D P 2H P 3D, Unclear what the max is.
-    call_names = (
-              '3D', '3H', '3S',
-        '4C', '4D',
-    )
+    call_names = Call.suited_names_between('3D', '4D')
     # FIXME: This can also be made with doubleton honors according to p85
     shared_constraints = MinimumCombinedLength(8)
 
@@ -2655,11 +2578,7 @@ class NewSuitAfterPreempt(ForcedRebidAfterNewSuitResponseToPreempt):
         UnbidSuit(),
     ]
     # Min: 1S 2D P 2H P 2S, Unclear what the max is.
-    call_names = (
-                          '2S',
-        '3C', '3D', '3H', '3S',
-        '4C', '4D',
-    )
+    call_names = Call.suited_names_between('2S', '4D')
     shared_constraints = [points >= 9, MinLength(4)]
 
 
