@@ -48,6 +48,17 @@ class Explore
         # FIXME: Maybe we'll make this smarter some day.
         @setupView()
 
+    _createClearButton: ->
+        clearButton = document.createElement 'div'
+        $(clearButton).addClass('clear')
+        $(clearButton).addClass('button')
+        clearButton.textContent = 'Clear'
+        $(clearButton).click (event) =>
+            @callHistory.calls = []
+            @saveState()
+            event.preventDefault()
+        return clearButton
+
     setupView: ->
         content = document.getElementById('content')
         $(content).empty()
@@ -64,6 +75,9 @@ class Explore
             while callDescription and not callDescription.call
                 callDescription = callDescription.parentNode
             @recordCall callDescription.call
+
+        content.appendChild @_createClearButton()
+
 
 $ ->
     window.mainController = new Explore
