@@ -2664,7 +2664,7 @@ class Blackwood(Rule):
 class BlackwoodForAces(Blackwood):
     call_names = '4N'
     preconditions = [
-        InvertedPrecondition(LastBidHasStrain(positions.Partner, suit.NOTRUMP)),
+        LastBidHasSuit(positions.Partner),
         EitherPrecondition(JumpFromLastContract(), HaveFit())
     ]
 
