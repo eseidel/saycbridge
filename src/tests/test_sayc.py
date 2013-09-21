@@ -107,6 +107,9 @@ sayc_expectations = {
         ['K83.852.QT9752.5', '3D', '2N P', 'Both'],  # 4-1bc6c9d271a2f39a0ef106751b, E
         ['83.852.KQT9752.5', '4D', '2C P 2D P 3N P'],
 
+        # Needs SpadesRebidAfterHeartsTransfer defined for higher-level transfers to not be None:
+        ['972.T872.97653.J', 'P', 'P 2C P 2D P 2N P 3D P 3H P', 'Both'],  # 10-19847dc6f0cba48049a7f75f2a, N
+
         # What about super-accepts?  Even if partner only has 6hcp, we want to go to game!
         ['KQT.AK763.AK6.84', '4H', 'P 1D P 1H P 2N P 3D P'],  # 1-0ba065f416fa5fc432d61c9af2, E
     ],
@@ -431,6 +434,9 @@ sayc_expectations = {
 
         ["AKJ43.AKJ4.432.4", "2D", "1C P 2C P"], # 2D is the lowest HelpSuitGameTry.
 
+        # Up the line with 4 card suits.
+        ['AK86.AJT8..AQ653', '3C', '1S P 2S P', 'N-S'],  # 5-ef236c1d9c42c655a7ed206acc, N
+
         # Better to rebid a major than mention a new minor?
         ['2.7643.AKQ986.AK', '3H', '1H P 2C P', 'E-W'],  # 3-84451c4ae81f4f7ba4a9137fca, S
 
@@ -561,6 +567,9 @@ sayc_expectations = {
         ["KJ6.T.KQT97.KQ74", "2S", "1C P 1H P 1N P"], # p71, h13
         ["K54.KQJ87.KQT97.", "3D", "1C P 1H P 1N P"], # p71, h14
 
+        # Seems better to support partner's major than rebid our minor.
+        ['.KQJ965.QJT2.A95', '4H', '1C P 1D P 1H P', 'Both'],  # 7-5a95f6b50b3022a5f039f3729c, N
+
         # Responder Reverse.  Fear not. p65
         ["3.KJ643.AK75.Q65", "2H", "1C P 1D P 2C P"],
         ["KJ643.Q32.AK75.6", "3H", "1S P 2C P 2S P"],
@@ -599,6 +608,9 @@ sayc_expectations = {
 
         # Partner is asking us to go to game if we're near the top of our range.  We are.
         ['52.AQ76.AJ93.K76', '4H', '1D P 1H P 2H P 3H P', 'N-S'],  # 12-cb1851a23e07b7a5734c8be46d, W
+
+        # Even if partner bids twice, we can still pass with nothing.  Heck, we like 1S!
+        ['87.842.7652.T953', 'P', '1C P P X 1S P'],  # 14-92bd953b430a6e7f8241de1f24, W
     ],
 
     "test_fourth_suit_forcing": [ # Chap 9
@@ -1105,6 +1117,9 @@ sayc_expectations = {
         ["A94.KQ87.874.KJ6", "1N", "1D 1S X P"],  # p131, h12
 
         ['KT964.QJ874.53.A', '3C', 'P P 1D 1S X 2S', 'N-S'],  # 15-d2381cacd0b0d88e797add66d4, N
+
+        # Showing a 6-card suit seems better than just showing points:
+        ['AKQJT2.QJ5.Q4.A3', '3C', '1C 1S X P'],  # 8-e814ffd1ea2f99d681d2c91423, W
 
         # Minimum NT responses only show shape, not more points.
         ['AT76.K63.Q98.KJ8', '2N', 'P 1C 2S X P', 'Both'],  # 13-3e5b4b44d80b70f05a7ce29e66, E

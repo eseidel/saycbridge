@@ -1548,6 +1548,7 @@ class RebidAfterJacobyTransfer(Rule):
     shared_constraints = points >= 8
 
 
+# FIXME: We need this over higher-level transfers as well to replace the NaturalSuited responses.
 class SpadesRebidAfterHeartsTransfer(RebidAfterJacobyTransfer):
     preconditions = LastBidWas(positions.Me, '2D')
     # FIXME: We should not need to manually cap 2S.  We can infer that we have < 10 or we would have transfered to hearts first.
