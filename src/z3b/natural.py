@@ -270,6 +270,16 @@ class SuitSlamIsRemote(NaturalPassWithFit):
     preconditions = [
         LastBidWasGameOrAbove(),
         LastBidWasBelowSlam(),
+        InvertedPrecondition(LastBidHasStrain(positions.Partner, suit.NOTRUMP))
+    ]
+    shared_constraints = MaximumCombinedPoints(32)
+
+
+class NotrumpSlamIsRemote(NaturalPass):
+    preconditions = [
+        LastBidHasStrain(positions.Partner, suit.NOTRUMP),
+        LastBidWasGameOrAbove(),
+        LastBidWasBelowSlam(),
     ]
     shared_constraints = MaximumCombinedPoints(32)
 
@@ -277,9 +287,12 @@ class SuitSlamIsRemote(NaturalPassWithFit):
 natural_passses = set([
     SuitGameIsRemote,
     SuitSlamIsRemote,
+    NotrumpSlamIsRemote,
 ])
 
 
 rule_order.order(DefaultPass, natural_passses)
+# Suited games are much easier to make, we should prefer those when available.
+rule_order.order(NotrumpSlamIsRemote, natural_exact_major_games)
 rule_order.order(natural_suited_part_scores, natural_passses)
 rule_order.order(SuitGameIsRemote, natural_games, SuitSlamIsRemote, natural_slams)

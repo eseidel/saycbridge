@@ -395,10 +395,9 @@ FAIL: 3S (expected 4S) for KJ643.A874.T.K97 (hcp: 11 lp: 12 sp: 14), history: 1S
 FAIL: None (expected P) for KQ732.KQ52..K752 (hcp: 13 lp: 14 sp: 18), history: 1C P 1H P 1S P 3H P
 FAIL: None (expected P) for A4.QJ7652..K7542 (hcp: 10 lp: 13 sp: 16), history: 1S P 2H P 2S P 3H P
 FAIL: None (expected 3N) for AQJ754.J7.5.Q876 (hcp: 10 lp: 12 sp: 13), history: P 1C P 1D P 1S P 3H P
-FAIL: 4D (expected P) for K32.KQJT9.QJ32.T (hcp: 12 lp: 13 sp: 15), history: P 1D P 2C P 2H P 3N P
 FAIL: None (expected 4H) for 52.AQ76.AJ93.K76 (hcp: 14 lp: 14 sp: 15), history: 1D P 1H P 2H P 3H P
 FAIL: None (expected P) for 87.842.7652.T953 (hcp: 0 lp: 0 sp: 1), history: 1C P P X 1S P
-Pass 65 of 85 hands
+Pass 66 of 85 hands
 
 test_third_and_fourth_seat_opens:
 FAIL: P (expected 1C) for AKT9.T87.QJ8.J32 (hcp: 11 lp: 11 sp: 11), history: P P
@@ -413,15 +412,15 @@ FAIL: 3S (expected 4S) for K74.9.J98.KJT742 (hcp: 8 lp: 10 sp: 11), history: 1N 
 FAIL: 2N (expected P) for Q87.J843.K65.Q93 (hcp: 8 lp: 8 sp: 8), history: 1N P
 Pass 1 of 3 hands
 
-Pass 1132 (81.2%) of 1394 total hands
+Pass 1133 (81.3%) of 1394 total hands
 
-Tested call generation of 165 rules of 168 total (excluding 8 requires_planning rules).
+Tested call generation of 166 rules of 169 total (excluding 8 requires_planning rules).
 Never selected call from:
 DelayedSupportResponseToFourthSuitForcing
 JumpNewSuitResponseToNegativeDouble
 ReopeningDouble
 
-Tested interpretation of 105 rules of 176 total.
+Tested interpretation of 105 rules of 177 total.
 
 1 rules were never used for either bidding or interpretation:
 JumpNewSuitResponseToNegativeDouble
