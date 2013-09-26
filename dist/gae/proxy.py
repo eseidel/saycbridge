@@ -6,11 +6,12 @@ import os
 
 from positionknowledge import PositionKnowledge
 from core.suit import SUITS
-import core.call
+from core.call import Call, Pass
 
 from z3b.bidder import Interpreter, Bidder, InconsistentHistoryException
 from z3b.model import positions
 from z3b.preconditions import annotations
+from z3b.forcing import SAYCForcingOracle
 
 
 # FIXME: This is a horrible hack.  Callers should move off of the KBB HandConstraints API.
@@ -62,7 +63,11 @@ class InterpreterProxy(object):
         # FIXME: Annotation filtering belongs on the client, not here!
         annotations_whitelist = set([annotations.Artificial, annotations.NotrumpSystemsOn])
         annotations_for_last_call = set(position_view.annotations_for_last_call)#  & annotations_whitelist
-        return "%s %s" % (kbb_oneline, ", ".join(map(str, annotations_for_last_call)))
+        pretty_string = "%s %s" % (kbb_oneline, ", ".join(map(str, annotations_for_last_call)))
+        partner_future = self.interpreter.extend_history(position_view.history, Pass())
+        if SAYCForcingOracle().forced_to_bid(partner_future):
+            pretty_string += " Forcing"
+        return pretty_string
 
     def knowledge_string_and_rule_for_additional_call(self, history, call):
         try:
@@ -73,6 +78,7 @@ class InterpreterProxy(object):
 
     def knowledge_string_and_rule_for_last_call(self, call_history):
         with self.interpreter.create_history(call_history) as history:
+            print call_history.calls_string()
             return self._pretty_string_for_position_view(history.rho), history.rho.rule_for_last_call
 
     def create_history(self, call_history):

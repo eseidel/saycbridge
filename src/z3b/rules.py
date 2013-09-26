@@ -1298,7 +1298,8 @@ class SecondNegative(ResponderRebid):
     preconditions = [
         StrongTwoClubOpeningBook(),
         LastBidWas(positions.Me, '2D'),
-        ForcedToBid(),
+        LastBidWas(positions.RHO, 'P'),
+        LastBidHasSuit(positions.Partner),
     ]
     call_names = '3C'
     # Denies a fit, shows a max of 3 hcp

@@ -20,10 +20,9 @@ class SAYCForcingOracle(object):
     def _partner_last_bid_was_pass(self, history):
         return history.partner.last_call and history.partner.last_call.is_pass()
 
-    def _partner_last_call_was_artificial(self, history):
-        return annotations.Artificial in history.partner.annotations_for_last_call
-
-    def _partner_last_call_was_unbid_suit(self, history):
+    def _am_opener_and_partner_last_call_was_unbid_suit(self, history):
+        if annotations.Opening not in history.me.annotations:
+            return False
         assert annotations.Artificial not in history.partner.annotations_for_last_call
         call = history.partner.last_call
         assert call
@@ -44,7 +43,9 @@ class SAYCForcingOracle(object):
         if self._rho_bid(history):
             return False
         # Artificial bids are always forcing. We use explicit pass rules to convert them into natural bids.
-        if self._partner_last_call_was_artificial(history):
+        if annotations.Artificial in history.partner.annotations_for_last_call:
+            return True
+        if annotations.OpenerReverse in history.partner.annotations_for_last_call:
             return True
         # Natural NT bids are never forcing in SAYC.
         if history.partner.last_call.strain == suit.NOTRUMP:
@@ -57,4 +58,4 @@ class SAYCForcingOracle(object):
 
         # This logic assumes that doubles/redoubles are non-forcing (which is correct for penalty, wrong for takeout/negative).
         # Since takeout/negative currently have explcit response coverage, this is OK for now.
-        return self._partner_last_call_was_unbid_suit(history)
+        return self._am_opener_and_partner_last_call_was_unbid_suit(history)
