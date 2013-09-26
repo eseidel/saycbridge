@@ -256,6 +256,7 @@ class NaturalPassWithFit(NaturalPass):
     preconditions = [
         LastBidHasSuit(positions.Partner),
         InvertedPrecondition(LastBidHasAnnotation(positions.Partner, annotations.Artificial)),
+        HaveFit(),
     ]
     shared_constraints = MinimumCombinedLength(7, use_partners_last_suit=True)
 

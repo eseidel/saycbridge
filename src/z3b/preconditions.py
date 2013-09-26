@@ -349,7 +349,6 @@ class MaxShownLength(Precondition):
         self.max_length = max_length
         self.suit = suit
 
-
     @property
     def repr_args(self):
         return [self.position.key, self.max_length, self.suit]

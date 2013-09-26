@@ -1068,15 +1068,6 @@ class OpenerSuitedJumpRebidAfterStrongTwoClubs(OpenerRebidAfterStrongTwoClubs):
     priority = two_clubs_opener_rebid_priorities.SuitedJumpRebid
 
 
-responder_rebid_priorities = enum.Enum(
-    "JumpShiftResponderRebid",
-    "ResponderReverse",
-    "ThreeLevelSuitRebidByResponder",
-    "RebidResponderSuitByResponder",
-)
-rule_order.order(*reversed(responder_rebid_priorities))
-
-
 class ResponderRebid(Rule):
     preconditions = [
         Opened(positions.Partner),
@@ -1099,21 +1090,28 @@ class RebidResponderSuitByResponder(ResponderSuitRebid):
     ]
     call_names = ['2D', '2H', '2S']
     shared_constraints = [MinLength(6), points >= 6]
-    priority = responder_rebid_priorities.RebidResponderSuitByResponder
+
+
+rule_order.order(
+    natural_nt_part_scores,
+    RebidResponderSuitByResponder,
+)
 
 
 class ThreeLevelSuitRebidByResponder(ResponderSuitRebid):
     preconditions = [
         InvertedPrecondition(RaiseOfPartnersLastSuit()),
         MaxShownLength(positions.Partner, 0),
-        MaxShownLength(positions.Me, 5)
+        MaxShownLength(positions.Me, 5),
     ]
     call_names = ['3C', '3D', '3H', '3S']
     # FIXME: Page 74 says "second round jump bid of partner's major is normally a game force".
     # Seems we should promise a bit more than just 10hcp here, or partner will be left guessing?
     # FIXME: We should want 3o5 or better?  Partner may just leave us here...
-    shared_constraints = [MinLength(6), MinimumCombinedPoints(22)]
-    priority = responder_rebid_priorities.ThreeLevelSuitRebidByResponder
+    shared_constraints = [
+        MinLength(6),
+        MinimumCombinedPoints(22),
+    ]
 
 
 class ResponderSignoffInPartnersSuit(OneLevelOpeningResponderRebid):
@@ -1146,7 +1144,6 @@ class ResponderReverse(OneLevelOpeningResponderRebid):
     # Min: 1C,1D,2C,2H, Max: 1S,2D,2S,3H
     call_names = Call.suited_names_between('2H', '3H')
     shared_constraints = [MinLength(4), points >= 12]
-    priority = responder_rebid_priorities.ResponderReverse
 
 
 class JumpShiftResponderRebid(OneLevelOpeningResponderRebid):
@@ -1155,7 +1152,14 @@ class JumpShiftResponderRebid(OneLevelOpeningResponderRebid):
     # Largest: 1S,2H,3C,4D (anything above 4D is game)
     call_names = Call.suited_names_between('2S', '4D')
     shared_constraints = [MinLength(4), points >= 14]
-    priority = responder_rebid_priorities.JumpShiftResponderRebid
+
+
+rule_order.order(
+    RebidResponderSuitByResponder,
+    ThreeLevelSuitRebidByResponder,
+    ResponderReverse,
+    JumpShiftResponderRebid,
+)
 
 
 class FourthSuitForcingPrecondition(Precondition):
@@ -2769,7 +2773,6 @@ rule_order.order(natural_bids, stayman_response_priorities)
 rule_order.order(natural_bids, GarbagePassStaymanRebid)
 rule_order.order(natural_bids, PassAfterTakeoutDouble)
 rule_order.order(natural_bids, two_clubs_opener_rebid_priorities)
-rule_order.order(natural_bids, responder_rebid_priorities)
 rule_order.order(natural_exact_notrump_game, stayman_rebid_priorities.GameForcingOtherMajor, natural_exact_major_games)
 rule_order.order(natural_nt_part_scores, stayman_rebid_priorities.InvitationalOtherMajor, natural_suited_part_scores)
 rule_order.order(takeout_double_responses, natural_bids)
@@ -2847,7 +2850,7 @@ rule_order.order(
 )
 rule_order.order(
     fourth_suit_forcing,
-    responder_rebid_priorities.ThreeLevelSuitRebidByResponder,
+    ThreeLevelSuitRebidByResponder,
 )
 rule_order.order(
     # If we already see game, why use FSF?
@@ -2904,7 +2907,7 @@ rule_order.order(
 )
 rule_order.order(
     ResponderSignoffInPartnersSuit,
-    responder_rebid_priorities.ResponderReverse,
+    ResponderReverse,
 )
 rule_order.order(
     # If we see that game is remote, just stop.
