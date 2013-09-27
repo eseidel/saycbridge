@@ -284,16 +284,29 @@ class NotrumpSlamIsRemote(NaturalPass):
     ]
     shared_constraints = MaximumCombinedPoints(32)
 
-
-natural_passses = set([
+game_is_remote_passes = set([
+    # FIXME: Need NotrumpGameIsRemote?
     SuitGameIsRemote,
+])
+
+slam_is_remote_passes = set([
     SuitSlamIsRemote,
     NotrumpSlamIsRemote,
 ])
+
+natural_passses = game_is_remote_passes | slam_is_remote_passes
 
 
 rule_order.order(DefaultPass, natural_passses)
 # Suited games are much easier to make, we should prefer those when available.
 rule_order.order(NotrumpSlamIsRemote, natural_exact_major_games)
 rule_order.order(natural_suited_part_scores, natural_passses)
-rule_order.order(SuitGameIsRemote, natural_games, SuitSlamIsRemote, natural_slams)
+rule_order.order(
+    SuitGameIsRemote,
+    natural_exact_games,
+)
+rule_order.order(
+    natural_overly_sufficient_games,
+    slam_is_remote_passes,
+    natural_slams,
+)
