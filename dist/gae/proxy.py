@@ -78,7 +78,6 @@ class InterpreterProxy(object):
 
     def knowledge_string_and_rule_for_last_call(self, call_history):
         with self.interpreter.create_history(call_history) as history:
-            print call_history.calls_string()
             return self._pretty_string_for_position_view(history.rho), history.rho.rule_for_last_call
 
     def create_history(self, call_history):
