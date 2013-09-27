@@ -64,9 +64,12 @@ class InterpreterProxy(object):
         annotations_whitelist = set([annotations.Artificial, annotations.NotrumpSystemsOn])
         annotations_for_last_call = set(position_view.annotations_for_last_call)#  & annotations_whitelist
         pretty_string = "%s %s" % (kbb_oneline, ", ".join(map(str, annotations_for_last_call)))
-        partner_future = self.interpreter.extend_history(position_view.history, Pass())
-        if SAYCForcingOracle().forced_to_bid(partner_future):
-            pretty_string += " Forcing"
+        try:
+            partner_future = self.interpreter.extend_history(position_view.history, Pass())
+            if SAYCForcingOracle().forced_to_bid(partner_future):
+                pretty_string += " Forcing"
+        except InconsistentHistoryException:
+            pass
         return pretty_string
 
     def knowledge_string_and_rule_for_additional_call(self, history, call):
