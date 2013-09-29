@@ -1188,6 +1188,9 @@ sayc_expectations = {
 
         # The lack of double earlier is questionable, but at least 3S shouldn't trigger an assertion:
         ['J432.AK32.AK32.2', '3S', '1C P 1S P 2S X P'],
+
+        # We'd rather raise a major than rebid our minor.
+        ['KQJ983.Q4.J.AK96', '2S', 'P 1C 1D X P', 'Both'],  # 10-21fa6afe513e343f7611d2094a, S
     ],
 
     "test_reopening_double": [ # Chap 17

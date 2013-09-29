@@ -3201,3 +3201,8 @@ rule_order.order(
     natural_bids,
     ThreeNotrumpMajorResponse,
 )
+rule_order.order(
+    # We'd rather raise a major than rebid our minor.
+    opener_unsupported_rebids.InvitationalMinor,
+    negative_double_jump_responses.RaiseMajor,
+)
