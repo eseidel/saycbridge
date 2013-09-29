@@ -614,6 +614,9 @@ sayc_expectations = {
 
         # Even if partner bids twice, we can still pass with nothing.  Heck, we like 1S!
         ['87.842.7652.T953', 'P', '1C P P X 1S P'],  # 14-92bd953b430a6e7f8241de1f24, W
+
+        # 1S here is not FSF and is better than rebiding our minor:
+        ['74.QJ7532.8.AJ74', '1S', 'P P 1C P 1D P 1H P'],  # 11-d920d3698b4a43d4bcd36c9f86, S
     ],
 
     "test_fourth_suit_forcing": [ # Chap 9

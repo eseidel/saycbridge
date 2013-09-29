@@ -1102,6 +1102,11 @@ rule_order.order(
     natural_nt_part_scores,
     RebidResponderSuitByResponder,
 )
+rule_order.order(
+    # In the rare case of 1C 1D 1H we'd rather mention 1S than rebid our minor.
+    RebidResponderSuitByResponder,
+    new_one_level_suit_responses,
+)
 
 
 class ThreeLevelSuitRebidByResponder(ResponderSuitRebid):
