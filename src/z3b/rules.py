@@ -3128,7 +3128,7 @@ rule_order.order(
     standard_takeout_doubles,
 )
 rule_order.order(
-    DefaultPass,
+    new_suit_overcalls,
     TakeoutDoubleAfterPreempt,
 )
 rule_order.order(
