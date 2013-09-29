@@ -988,6 +988,7 @@ sayc_expectations = {
 
         # Breath a sign of relief and pass.
         ['63.J873.9874.T73', 'P', '1N X 2C', 'E-W'],  # 16-2791340b7a497786a5f38c86fc, S
+        ['9875.J82.83.9854', 'P', 'P P 1N X 2H', 'E-W'],  # 9-b1d53bdfb1a4f9384ca81714a8, E
     ],
 
     "test_doubles": [ # Chap 15

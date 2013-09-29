@@ -251,9 +251,7 @@ Pass 16 of 20 hands
 test_overcalling_one_notrump:
 FAIL: P (expected 2N) for QT643.T962.4.965 (hcp: 2 lp: 3 sp: 5), history: 1N 2H P
 FAIL: 3H (expected 2N) for AK43.T62.KT43.73 (hcp: 10 lp: 10 sp: 11), history: 1N 2H P (subtest of 1N 2H P 2N P 3C P)
-WARNING: Unordered: ['2H', '2D'] rules: [NewSuitResponseToOneNotrumpPenaltyDouble, NewSuitResponseToOneNotrumpPenaltyDouble] priorities: (<class 'z3b.cappelletti.NewSuitResponseToOneNotrumpPenaltyDouble'>, <class 'z3b.cappelletti.NewSuitResponseToOneNotrumpPenaltyDouble'>)
-FAIL: None (expected P) for 63.J873.9874.T73 (hcp: 1 lp: 1 sp: 2), history: 1N X 2C
-Pass 21 of 24 hands
+Pass 24 of 26 hands
 
 test_overcalls:
 FAIL: X (expected 1H) for AQJ6.K96.AKJ74.3 (hcp: 18 lp: 19 sp: 21), history: 1C
@@ -400,7 +398,7 @@ FAIL: 3S (expected 4S) for K74.9.J98.KJT742 (hcp: 8 lp: 10 sp: 11), history: 1N 
 FAIL: 2N (expected P) for Q87.J843.K65.Q93 (hcp: 8 lp: 8 sp: 8), history: 1N P
 Pass 1 of 3 hands
 
-Pass 1157 (82.2%) of 1407 total hands
+Pass 1160 (82.3%) of 1409 total hands
 
 Tested call generation of 166 rules of 169 total (excluding 8 requires_planning rules).
 Never selected call from:
@@ -408,7 +406,7 @@ DelayedSupportResponseToFourthSuitForcing
 JumpNewSuitResponseToNegativeDouble
 ReopeningDouble
 
-Tested interpretation of 108 rules of 177 total.
+Tested interpretation of 107 rules of 177 total.
 
 1 rules were never used for either bidding or interpretation:
 JumpNewSuitResponseToNegativeDouble

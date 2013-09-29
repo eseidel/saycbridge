@@ -53,7 +53,10 @@ rule_order.order(
 
 
 class ResponseToCappelletti(Rule):
-    preconditions = LastBidHasAnnotation(positions.Partner, annotations.Cappelletti)
+    preconditions = [
+        LastBidHasAnnotation(positions.Partner, annotations.Cappelletti),
+        LastBidWas(positions.RHO, 'P'),
+    ]
 
 
 class PassResponseToOneNotrumpPenaltyDouble(ResponseToCappelletti):
