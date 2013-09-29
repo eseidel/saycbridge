@@ -188,6 +188,11 @@ sayc_expectations = {
 
         # Partner didn't have to transfer, but he did so we should accept it.
         ['A43.KQ.KT942.K54', '2H', '1N X 2D P'],  # 10-d6eab272800d646f171c16bfe4, E
+
+        # Double becomes stayman, and we should only pass for penalties:
+        ['J53.AKJ76.A5.Q53', '2D', '1N 2C X P', 'E-W'],  # 16-372932667d6df870144eeda832, W
+        # This pass is quesionable?  2C is gonna be hard to set, even with 23 points?
+        ['AKJ76.J53.A5.Q53', 'P', '1N 2C X P', 'E-W'],
     ],
 
     "test_rule_of_twenty_open": [
@@ -584,6 +589,9 @@ sayc_expectations = {
 
         # We've found our fit.  8 support points over partner's 16+?  Seems worth a try?
         ['96.KQ65.86.JT874', '4H', '1H P 1S P 3H P'],  # 1-f78e3471afc69448b501e7a683, S
+
+        # 4H is our game.  No need to beat around the bush.
+        ['J3.A7.AKJ986.976', '4H', 'P 1D P 1H P 1N P'],  # 8-6dd4e11f490c2748a6e8fe89cd, S
 
         # Responder rebids in 2-over-1 auctions.
         ["KJ643.9863.A9.K9", "2S", "1S P 2C P 2H P"], # p73, h18
@@ -998,6 +1006,16 @@ sayc_expectations = {
 
         # Cheapest available?
         ['T9.2.KJ753.T9743', '2H', 'P P 1N X P'],  # 1-8c0d7edab3c0ad9da1dc50658e, E
+
+        # Overcalls at the 3 level are natural:
+        ['4.AKQJT83.T5.K52', '3D', '1N', 'N-S'],  # 12-61e69af17c8009cb537cd25ea3, N
+        ['K75.J.Q8.KQJ9874', '3S', 'P 1N', 'Both'],  # 13-d6e476331ccb540cb394e5a8ab, S
+
+        # Should weak 1-suited hands go through Cappelletti?
+        ['4.AKQJT83.T5.T52', '3D', '1N', 'N-S'],
+
+        # If partner ignores us, just bid our suit:
+        ['QT62..KJ8763.KJT', '2H', '1N 2C X P P', 'E-W'],  # 16-372932667d6df870144eeda832, N
     ],
 
     "test_doubles": [ # Chap 15
@@ -1269,6 +1287,7 @@ sayc_expectations = {
 
         # Balancing Michaels
         ["QJ875.A.KT9854.9", "2S", "1S P P"],  # p142, h13
+        ['.J.KQT762.AKT932', '2D', '1D P P', 'E-W'],  # 6-da7b9d695ae253d0f30827e070, N
 
         # When not to balance
         ["4.QJ96.KQ65.Q865", "P", "1H P P"],  # p142, h14
