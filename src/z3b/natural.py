@@ -155,7 +155,12 @@ class SufficientCombinedPoints(Constraint):
         else:
             assert strain in suit.SUITS, "%s not in %s" % (strain, suit.SUITS)
             min_points = points_for_sound_suited_bid_at_level[call.level]
-        return points >= max(0, min_points - history.partner.min_points)
+        implied_min_points = max(0, min_points - history.partner.min_points)
+        if strain == suit.NOTRUMP:
+            return points >= implied_min_points
+        # Use support points for suits
+        return z3.And(model.support_points_expr_for_suit(strain) >= implied_min_points,
+                      model.playing_points >= implied_min_points)
 
 
 class SufficientCombinedLength(MinimumCombinedLength):
