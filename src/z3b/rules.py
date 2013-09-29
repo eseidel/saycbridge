@@ -1159,9 +1159,9 @@ class ResponderReverse(OneLevelOpeningResponderRebid):
 
 class JumpShiftResponderRebid(OneLevelOpeningResponderRebid):
     preconditions = JumpShift.preconditions
-    # Smallest: 1C,1D,1H,2S
+    # Smallest: 1D,1H,1S,3C
     # Largest: 1S,2H,3C,4D (anything above 4D is game)
-    call_names = Call.suited_names_between('2S', '4D')
+    call_names = Call.suited_names_between('3C', '4D')
     shared_constraints = [MinLength(4), points >= 14]
 
 

@@ -617,6 +617,9 @@ sayc_expectations = {
 
         # 1S here is not FSF and is better than rebiding our minor:
         ['74.QJ7532.8.AJ74', '1S', 'P P 1C P 1D P 1H P'],  # 11-d920d3698b4a43d4bcd36c9f86, S
+
+        # Opener has capped his hand, just head straight to 3N?
+        ['A9.QJT65.QJ96.A6', '3N', 'P 1S X XX P 1N P', 'E-W'],  # 3-cc29236c5b15cea4114ea9fef1, E
     ],
 
     "test_fourth_suit_forcing": [ # Chap 9
@@ -989,6 +992,9 @@ sayc_expectations = {
         # Breath a sign of relief and pass.
         ['63.J873.9874.T73', 'P', '1N X 2C', 'E-W'],  # 16-2791340b7a497786a5f38c86fc, S
         ['9875.J82.83.9854', 'P', 'P P 1N X 2H', 'E-W'],  # 9-b1d53bdfb1a4f9384ca81714a8, E
+
+        # Cheapest available?
+        ['T9.2.KJ753.T9743', '2H', 'P P 1N X P'],  # 1-8c0d7edab3c0ad9da1dc50658e, E
     ],
 
     "test_doubles": [ # Chap 15
