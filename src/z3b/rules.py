@@ -3173,6 +3173,7 @@ rule_order.order(
 rule_order.order(
     ForcedRebidOriginalSuitByOpener,
     NewSuitResponseToNegativeDouble,
+    UnforcedRebidOriginalSuitByOpener,
     negative_double_jump_responses,
     CuebidReponseToNegativeDouble,
 )

@@ -1166,6 +1166,7 @@ sayc_expectations = {
 
         # Showing a 6-card major is still higher priority than a minor.
         ['93.AQ43.9.AQT942', '2S', 'P 1S 2C X P', 'E-W'],  # 6-2c52fcca44f260dd251e67dae2, S
+        ['Q43.AT93.KJ9854.', '2H', 'P 1H 1S X P'],  # 11-7ca9ad5e49f43af1fb76214080, W
 
         # We're too strong to limit-raise and have too many spades to negative double:
         ['Q2.A95.AT3.KT843', '2S', '1H 2C'],

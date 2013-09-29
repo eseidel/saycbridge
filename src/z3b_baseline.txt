@@ -230,13 +230,11 @@ FAIL: 3H (expected 2S) for AQ6.KQJ97.AQ76.5 (hcp: 18 lp: 19 sp: 21), history: 1D
 FAIL: X (expected 2S) for Q832.QT.K4.AQT93 (hcp: 13 lp: 14 sp: 13), history: 1D 2H
 FAIL: X (expected 2H) for Q832.QT.AQT93.K4 (hcp: 13 lp: 14 sp: 13), history: 1D 1S
 FAIL: 2N (expected 2D) for A.AQ94.KJT95.Q53 (hcp: 16 lp: 17 sp: 19), history: P P P 1H 1S X P
-WARNING: Unordered: ['2S', '2D'] rules: [ForcedRebidOriginalSuitByOpener, NewSuitResponseToNegativeDouble] priorities: (<class 'z3b.rules.UnforcedRebidOriginalSuitByOpener'>, <class 'z3b.rules.NewSuitResponseToNegativeDouble'>)
-FAIL: None (expected 2S) for 93.AQ43.9.AQT942 (hcp: 12 lp: 14 sp: 16), history: P 1S 2C X P
 FAIL: X (expected 2S) for Q2.A95.AT3.KT843 (hcp: 13 lp: 14 sp: 12), history: 1H 2C
 WARNING: Unordered: ['X', '3N'] rules: [TwoLevelNegativeDouble, ThreeNotrumpMajorResponse] priorities: (<class 'z3b.rules.TwoLevelNegativeDouble'>, <class 'z3b.rules.ThreeNotrumpMajorResponse'>)
 FAIL: None (expected X) for 8532.A854.A74.AK (hcp: 15 lp: 15 sp: 16), history: P 1H 2S
 FAIL: X (expected P) for J432.AK32.AK32.2 (hcp: 15 lp: 15 sp: 18), history: 1C P 1S (subtest of 1C P 1S P 2S X P)
-Pass 62 of 75 hands
+Pass 65 of 77 hands
 
 test_open_one_nt:
 Pass 7 of 7 hands
@@ -404,7 +402,7 @@ FAIL: 3S (expected 4S) for K74.9.J98.KJT742 (hcp: 8 lp: 10 sp: 11), history: 1N 
 FAIL: 2N (expected P) for Q87.J843.K65.Q93 (hcp: 8 lp: 8 sp: 8), history: 1N P
 Pass 1 of 3 hands
 
-Pass 1145 (82.0%) of 1397 total hands
+Pass 1148 (82.1%) of 1399 total hands
 
 Tested call generation of 166 rules of 169 total (excluding 8 requires_planning rules).
 Never selected call from:
