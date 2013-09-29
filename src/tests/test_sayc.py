@@ -775,6 +775,9 @@ sayc_expectations = {
 
         # We have the majority of the points, but only barely.  They stole our potential game, double.
         ['AK92..K32.QT8754', 'X', '1S 3D 3S 5D'],  # 14-72898d4e2ae885bc3fd3145d1e, E
+
+        # Partner has passed.  Better to preempt than search for a fit.
+        ['Q842..Q42.AK9753', '2S', 'P P 1D', 'Both'],  # 10-22e151e6eeb7f119772d2313a0, N
     ],
 
     "test_preemptive_overcalls": [
