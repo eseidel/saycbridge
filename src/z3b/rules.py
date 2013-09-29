@@ -3071,6 +3071,11 @@ rule_order.order(
     major_raise_responses,
 )
 rule_order.order(
+    # Better to show a major than raise partner's minor.
+    minor_raise_responses,
+    negative_doubles,
+)
+rule_order.order(
     # Better to show points for NT game than mention a new minor?
     new_two_level_minor_responses,
     ThreeNotrumpMajorResponse,

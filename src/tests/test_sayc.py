@@ -1164,6 +1164,9 @@ sayc_expectations = {
         ['J854.A64.A94.QT7', '3H', 'P 1H 1S', 'E-W'],  # 3-85c71e2998bbdc4e9ff4a24d10, E
         ['52.A95.AT3.KT843', '3H', 'P P 1H 2C', 'E-W'],  # 16-e384a665c6ca37604d6ef9330d, W
 
+        # Look for the possible major instead of supporting a minor:
+        ['QJ875.KQ2.9542.9', 'X', '1C 2S', 'N-S'],  # 5-722868214ffeb9a3ef51407947, S
+
         # Showing a 6-card major is still higher priority than a minor.
         ['93.AQ43.9.AQT942', '2S', 'P 1S 2C X P', 'E-W'],  # 6-2c52fcca44f260dd251e67dae2, S
         ['Q43.AT93.KJ9854.', '2H', 'P 1H 1S X P'],  # 11-7ca9ad5e49f43af1fb76214080, W
