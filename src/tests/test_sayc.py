@@ -464,6 +464,9 @@ sayc_expectations = {
         ['Q742.AK9.KT3.AK7', '3N', 'P 1C P 2C P', 'Both'],  # 7-ddb65e2226c9f3801c3a11d66f, W
 
         ['AKJT62.AKQJ.7.Q7', '3D', 'P P P 1C P 1S P', 'E-W'],  # 6-1e3704155bd007787edbaa2acb, N
+
+        # Even though partner is week, seems better to show our full points instead of just jumping to 4S.
+        ['9.K95.AKQ6.AKJ75', '4H', 'P P P 1S P 2S P', 'Both'],  # 4-cdde3c43bd9d843873a918958a, S
     ],
 
     "test_opener_rebid_after_a_limit_raise": [
@@ -906,6 +909,9 @@ sayc_expectations = {
         [".54.KJT65.QJT875", "2C", "1C P P"],  # p105, h10
         [".54.KJT65.QJT875", "2D", "1D P P"],  # p105, h10
         ["QJ972.A3..AKT653", "3H", "2H"],  # p105, h11
+
+        # Regardless of which minor he has, we want to be in it.
+        ['QJT9763.AQ43.A4.', '4C', '2H 3H P'],  # 11-125d5625bef1d842faa60c0cbf, E
 
         # FIXME: If we have a max-michaels, partner likely doesn't have much, jump to show him we want this?
         # I can't find this in the book.  Maybe we invented it for the KBB?

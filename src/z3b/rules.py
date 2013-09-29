@@ -1021,6 +1021,12 @@ rule_order.order(
     opener_jumpshifts_to_minors,
 )
 
+rule_order.order(
+    # Partner can place us into game, we'd rather JumpShift to show our full strength?
+    # This should never preclude a game bid, since JumpShifts are always to lower suits.
+    natural_games,
+    opener_jumpshifts,
+)
 
 two_clubs_opener_rebid_priorities = enum.Enum(
     "ThreeLevelNTRebid",
