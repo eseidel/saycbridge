@@ -979,6 +979,13 @@ class HelpSuitGameTry(RebidAfterOneLevelOpen):
     shared_constraints = [MinLength(4), Stopper(), points >= 16]
 
 
+rule_order.order(
+    # No need to help-suit if we already see game:
+    HelpSuitGameTry,
+    GameAccept,
+)
+
+
 opener_jumpshifts = enum.Enum(
     # It's possible to have 0.4.4.5 and we'd rather jump-shift to hearts than diamonds, no?
     # FIXME: 4-card suits should be mentioned up-the-line!

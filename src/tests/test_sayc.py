@@ -497,6 +497,9 @@ sayc_expectations = {
         # With a minimum (and vulnerable) game seems unworth the risk?
         ['AT5.9.AJ964.A873', 'P', 'P P P 1H P 3H P', 'N-S'],  # 2-945e3a17db2d5f3288f11e06e8, N
         ['AQ2.A963.8.K9872', 'P', '1S P 3S P'],  # 11-853fcb98ec8d2d44bd56cca918, S
+
+        # Accept the game if we see it!
+        ['87.T9.AKT85.AKQ5', '4H', '1H 2C 3H P', 'E-W'],  # 9-d9c25a69f70adb4e1182f1fe40, N
     ],
 
     "test_reverses": [ # Chap 7
@@ -628,6 +631,9 @@ sayc_expectations = {
 
         # Opener has capped his hand, just head straight to 3N?
         ['A9.QJT65.QJ96.A6', '3N', 'P 1S X XX P 1N P', 'E-W'],  # 3-cc29236c5b15cea4114ea9fef1, E
+
+        # 3S is an invite to game, accept!  We actually probably have slam for this board...
+        ['KQ843.AKJ82.2.75', '4S', '1D P 1S P 2C P 3S P', 'E-W'],  # 9-4162b0cdf4d20297dfda523e6a, N
     ],
 
     "test_fourth_suit_forcing": [ # Chap 9
@@ -957,6 +963,10 @@ sayc_expectations = {
         # Michaels/Unusual notrump in the balancing seat
         ["2.3.QJ8752.KT984", "2D", "1D P P"],  # p107 (BOOK_ERROR: The hand only has 12 cards in the book!)
         ["KQ4.AQ8.KQ873.K2", "2N", "1D P P"],  # (my example) p141 points out that 2N in the balancing seat is not Unusual.  Why would we ever jump to 2N instead of start with a double?
+
+        # Can't leave partner in 2N, at least pick one:
+        ['86.A92.84.KJ8732', '3D', 'P 1C 2N P', 'N-S'],  # 5-6731f54beb3ac91e29ec190931, N
+        ['4.AT93.Q84.QT953', '3D', '1D 2N P', 'E-W'],  # 3-c70feaa630589e606f7c7625d0, E
     ],
 
     "test_responses_to_michaels": [
@@ -1249,6 +1259,7 @@ sayc_expectations = {
 
         # A double seems more descriptive here?  Unclear if this is "reopening"?
         ['KT86.QT87.K.A843', 'X', '1D P P 1H', 'N-S'],  # 12-51ced3125f33a24691baf8b44b, W
+        ['J762.KQ86.AK54.A', 'X', '1D P P 1S', 'Both'],  # 10-7850d282d1ad6f5fead708ce81, E
 
         # This is our hand.  Don't need to try and penalize them, or?
         ['.KQ874.KQJ7.AKQ2', '3H', '1D 2C P P', 'Both'],  # 7-3757fc0e4a32bd72d2ae41506a, S
