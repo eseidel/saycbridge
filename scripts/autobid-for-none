@@ -11,6 +11,19 @@ from core.board import Board
 from core.suit import *
 import z3b.bidder
 from tests.harness import expectation_line
+from core.hand import Hand
+
+
+# FIXME: This belongs on a Contract object or maybe call?
+def _is_below_game(call):
+    if not call:
+        return True
+    assert call.strain
+    if call.strain == NOTRUMP:
+        return call.level < 3
+    if call.strain in MAJORS:
+        return call.level < 4
+    return call.level < 5
 
 
 class AutobidForNone(object):
@@ -19,6 +32,14 @@ class AutobidForNone(object):
         self.interpreter = z3b.bidder.Interpreter()
         self.board_count = 0
         self.none_count = 0
+
+    def _check_for_missed_game(self, board):
+        points = map(Hand.high_card_points, board.deal.hands)
+        pair_points = [points[0] + points[2], points[1] + points[3]]
+        # If any group has 28+ hcp and contract is below game.
+        someone_has_game = any(map(lambda hcp: hcp >= 28, pair_points))
+        if someone_has_game and _is_below_game(board.call_history.last_contract()):
+            print "MISSED GAME: %s\n" % board.identifier
 
     def _bid_board(self, board):
         self.board_count += 1
@@ -43,6 +64,7 @@ class AutobidForNone(object):
                 return
 
             board.call_history.calls.append(call)
+        self._check_for_missed_game(board)
 
     def main(self, args):
         if args:
