@@ -634,6 +634,9 @@ sayc_expectations = {
 
         # 3S is an invite to game, accept!  We actually probably have slam for this board...
         ['KQ843.AKJ82.2.75', '4S', '1D P 1S P 2C P 3S P', 'E-W'],  # 9-4162b0cdf4d20297dfda523e6a, N
+
+        # Partner may have a big hand, but we still don't jump to 3H:
+        ['Q4.K8.Q87643.JT2', '2H', 'P P P 1C P 1H P 2D P', 'E-W'],  # 16-b367e2abe45b34301f24957c26, N
     ],
 
     "test_fourth_suit_forcing": [ # Chap 9
@@ -966,7 +969,7 @@ sayc_expectations = {
 
         # Can't leave partner in 2N, at least pick one:
         ['86.A92.84.KJ8732', '3D', 'P 1C 2N P', 'N-S'],  # 5-6731f54beb3ac91e29ec190931, N
-        ['4.AT93.Q84.QT953', '3D', '1D 2N P', 'E-W'],  # 3-c70feaa630589e606f7c7625d0, E
+        ['4.AT93.Q84.QT953', '3H', '1D 2N P', 'E-W'],  # 3-c70feaa630589e606f7c7625d0, E
     ],
 
     "test_responses_to_michaels": [

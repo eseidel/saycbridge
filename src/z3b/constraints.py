@@ -228,6 +228,17 @@ class LongestSuitExceptOpponentSuits(Constraint):
         return z3.And([suit_expr >= expr_for_suit(suit) for suit in history.them.unbid_suits if suit != call.strain])
 
 
+class LongestOfPartnersSuits(Constraint):
+    def expr(self, history, call):
+        # Nothing to say if partner hasn't bid more than one suit.
+        if len(history.partner.bid_suits) < 2:
+            return model.NO_CONSTRAINTS
+        suit_expr = expr_for_suit(call.strain)
+        # Including hearts >= hearts in this And doesn't hurt, but just reads funny when debugging.
+        return z3.And([suit_expr >= expr_for_suit(suit) for suit in history.partner.bid_suits if suit != call.strain])
+
+
+
 class TwoOfTheTopThree(Constraint):
     def expr(self, history, call):
         return (

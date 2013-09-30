@@ -1969,6 +1969,7 @@ class MichaelsCuebid(object):
         # Michaels is only on if the opponents have only bid one suit.
         UnbidSuitCountRange(3, 3),
     ]
+    # FIXME: 3S may force partner to bid 4H with possibly 0 points!
     constraints = {
         ('2C', '2D', '3C', '3D'): z3.And(hearts >= 5, spades >= 5),
         ('2H', '3H'): z3.And(spades >= 5, z3.Or(clubs >= 5, diamonds >= 5)),
@@ -2032,6 +2033,30 @@ rule_order.order(SuitResponseToMichaelsMinorRequest, PassResponseToMichaelsMinor
 # They're used for showing that we're a big michaels.
 
 
+class ForcedResponseToMichaelsCuebid(Rule):
+    preconditions = [
+        LastBidHasAnnotation(positions.Partner, annotations.MichaelsCuebid),
+        LastBidWas(positions.RHO, 'P'),
+    ]
+
+# Shared by both michaels and Unusual 2N
+class SimplePreference(object):
+    preconditions = [
+        DidBidSuit(positions.Partner),
+        NotJumpFromLastContract(),
+    ]
+    shared_constraints = [
+        MinLength(2),
+        LongestOfPartnersSuits(),
+    ]
+
+
+class MichaelsSimplePreferenceResponse(SimplePreference, ForcedResponseToMichaelsCuebid):
+    # Min: 1C 2C P 2H, Max: 2S 3S 4H
+    call_names = Call.suited_names_between('2H', '4H')
+
+
+
 class Unusual2N(Rule):
     preconditions = [
         # Unusual2N only exists immediately after RHO opens.
@@ -2042,6 +2067,18 @@ class Unusual2N(Rule):
     # FIXME: We should consider doing mini-max unusual 2N now that we can!
     shared_constraints = [Unusual2NShape(), points >= 6]
     annotations = annotations.Unusual2N
+
+
+class ForcedResponseToUnusual2N(Rule):
+    preconditions = [
+        LastBidHasAnnotation(positions.Partner, annotations.Unusual2N),
+        LastBidWas(positions.RHO, 'P'),
+    ]
+
+
+class Unusual2NSimplePreferenceResponse(SimplePreference, ForcedResponseToUnusual2N):
+    # Min: 1D 2N P 3C, Max: 1D 2N P 3H
+    call_names = ('3C', '3D', '3H')
 
 
 two_suited_direct_overcalls = set([
@@ -2190,7 +2227,7 @@ class ResponseToTakeoutDouble(Rule):
 
 
 class NotrumpResponseToTakeoutDouble(ResponseToTakeoutDouble):
-    preconditions = [NotJumpFromLastContract()]
+    preconditions = NotJumpFromLastContract()
     constraints = {
         '1N': (points >= 6, takeout_double_responses.OneNotrump),
         '2N': (points >= 11, takeout_double_responses.TwoNotrump),
@@ -2201,7 +2238,7 @@ class NotrumpResponseToTakeoutDouble(ResponseToTakeoutDouble):
 
 # FIXME: This could probably be handled by suited to play if we could get the priorities right!
 class JumpNotrumpResponseToTakeoutDouble(ResponseToTakeoutDouble):
-    preconditions = [JumpFromLastContract()]
+    preconditions = JumpFromLastContract()
     constraints = {
         '2N': (points >= 11, takeout_double_responses.TwoNotrumpJump),
         '3N': (points >= 13, takeout_double_responses.ThreeNotrump),
