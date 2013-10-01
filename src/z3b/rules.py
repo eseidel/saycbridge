@@ -2103,6 +2103,7 @@ class TakeoutDouble(Rule):
 takeout_double_after_preempt_precondition = AndPrecondition(
     EitherPrecondition(
         LastBidHasAnnotation(positions.RHO, annotations.Preemptive),
+        # FIXME: This shouldn't apply when LHO preempts and RHO shows points!
         LastBidHasAnnotation(positions.LHO, annotations.Preemptive),
     ),
     InvertedPrecondition(HasBid(positions.Me)),

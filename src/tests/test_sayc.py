@@ -1053,6 +1053,9 @@ sayc_expectations = {
         ["KT843.AQ9.KT87.T", "X", "3S"],  # Takeout double of preempt.
         ["2.AK742.KJ7.QJ64", "X", "3C P P"],
 
+        # No point in doubling when RHO has shown a big hand.
+        ['KQ76.Q5.A962.764', 'P', '2S P 3D'],  # 14-f60b50eb1e9cf2638ad14c2597, N
+
         # Bighand doubles work after preempts too:
         ['AKQ6.Q9.AKT84.K8', 'X', '2D', 'E-W'],  # 6-c097fa8c5d96d39c9b6b10234b, S
         # If we're not big-hand, we'd rather overcall?
