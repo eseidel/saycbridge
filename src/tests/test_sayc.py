@@ -637,6 +637,10 @@ sayc_expectations = {
 
         # Partner may have a big hand, but we still don't jump to 3H:
         ['Q4.K8.Q87643.JT2', '2H', 'P P P 1C P 1H P 2D P', 'E-W'],  # 16-b367e2abe45b34301f24957c26, N
+
+        # Looks pretty slam-tastic, despite the lack of fit.
+        # Should this be up-the-line, or skip to the major first?
+        ['.KQ43.AKJ98.QT42', '3D', 'P 1C P 1H P 2C P', 'N-S'],  # 5-a416416f614bd80af3bfb65b30, W
     ],
 
     "test_fourth_suit_forcing": [ # Chap 9
