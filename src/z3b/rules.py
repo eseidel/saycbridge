@@ -2067,6 +2067,7 @@ class Unusual2N(Rule):
     # FIXME: We should consider doing mini-max unusual 2N now that we can!
     shared_constraints = [Unusual2NShape(), points >= 6]
     annotations = annotations.Unusual2N
+    explanation = "5-5 or better in the two lowest unbid suits."
 
 
 class ForcedResponseToUnusual2N(Rule):
@@ -2101,6 +2102,7 @@ class TakeoutDouble(Rule):
     # if this is a re-bid, it seems we should have shape?
     # e.g. 1C 1D P 2D X
     shared_constraints = ConstraintOr(SupportForUnbidSuits(), points >= 17)
+    explanation = "Either support for all unbid suits or 17+ hcp."
 
 
 takeout_double_after_preempt_precondition = AndPrecondition(
