@@ -417,6 +417,9 @@ sayc_expectations = {
         # If we're gonna find a game it's going to be due to partner's big hand, so maybe
         # we should support his diamonds and hope he bids 3S to show delayed support?
         ['K.A9763.6.AJT752', '3D', '1S P 2D P'],  # 1-af75b4d3c21a8e539ae491343c, N
+
+        # In a 2-over-one auction, we rebid our suit with a minimum.
+        ['K32.KQJT9.QJ32.T', '2D', 'P 1D P 2C P', 'E-W'],  # 3-f1158b5861ffdf222bd8998381, W
     ],
 
     "test_invitational_rebid_by_opener": [
@@ -616,9 +619,6 @@ sayc_expectations = {
 
         # No major fit, means 3N it is!
         ['AQJ754.J7.5.Q876', '3N', 'P 1C P 1D P 1S P 3H P'],  # 11-0f3abee58c5c40b0a5658bf971, W
-
-        # NT slame is remote, pass.
-        ['K32.KQJT9.QJ32.T', 'P', 'P 1D P 2C P 2H P 3N P', 'E-W'],  # 3-f1158b5861ffdf222bd8998381, W
 
         # Partner is asking us to go to game if we're near the top of our range.  We are.
         ['52.AQ76.AJ93.K76', '4H', '1D P 1H P 2H P 3H P', 'N-S'],  # 12-cb1851a23e07b7a5734c8be46d, W

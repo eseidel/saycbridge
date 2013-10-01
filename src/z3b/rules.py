@@ -831,18 +831,13 @@ opener_reverse_to_a_major = set([
 class ReverseByOpener(SecondSuitFromOpener):
     preconditions = reverse_preconditions
     annotations = annotations.OpenerReverse
-    constraints = {
+    priorities_per_call = {
         # 2C is never a reverse
-        '2D': (MinimumCombinedPoints(22), opener_reverses.ReverseDiamonds),
-        '2H': (MinimumCombinedPoints(22), opener_reverses.ReverseHearts),
-        '2S': (MinimumCombinedPoints(22), opener_reverses.ReverseSpades),
-
-        # 3C is also never a reverse
-        '3D': (MinimumCombinedPoints(25), opener_reverses.ReverseDiamonds),
-        '3H': (MinimumCombinedPoints(25), opener_reverses.ReverseHearts),
-        '3S': (MinimumCombinedPoints(25), opener_reverses.ReverseSpades),
+        '2D': opener_reverses.ReverseDiamonds,
+        '2H': opener_reverses.ReverseHearts,
+        '2S': opener_reverses.ReverseSpades,
     }
-    shared_constraints = MinLength(4)
+    shared_constraints = [MinLength(4), points >= 16]
 
 
 class ForcedMinimumResponseToOpenerReverse(Rule):
