@@ -295,7 +295,10 @@ sayc_expectations = {
         ['K.K7.KJ98542.QT8', '2N', '1H P', 'Both'],  # 7-9f9ee86653fd2209088b7f4447, N should bid Jacoby 2NT with 12 hcp?
 
         # Woe is me, I have 2 singletons and 7 trumps.  Bid the lower singleton first.
-        ['K.A743.K.AJ65432', '3C', '1S P 2N P', 'E-W'],  # 3-7fc1123a1b75645f732eaa1c82, S
+        ['K.A743.K.AJ65432', '3C', '1S P 2N P', 'E-W'],  # 3-7fc1123a1b75645f732eaa1c82, 
+
+        # It's not easy having 7 trump and 2 voids.  Slammy?
+        ['K.K932.7.AK97653', '3H', 'P 1S P 2N P', 'E-W'],  # 9-c8bb29160f407ae9223e757735, E
     ],
 
     "test_slam_zone_responses_to_one_of_a_major": [
@@ -678,6 +681,11 @@ sayc_expectations = {
 
         # If we've already found a major fit, we can just bid it.  No need for FSF?
         ['KJ9.82.AQT7.A753', '4S', '1C P 1H P 1S P', 'Both'],  # 4-8289ddd229c8ff81b4667770e1, E
+
+        ['AT97.9.AK753.982', '2S', '1H P 1S P 2C P 2D P'],
+
+        # A rebid here is minimum and not delayed support:
+        ['987.AT97.A753.82', '3D', 'P P 1C P 1D P 1H P 2H P 2S P'],
     ],
 
     "test_preemption": [ # Chap 10
@@ -970,6 +978,7 @@ sayc_expectations = {
         # Michaels/Unusual notrump in the balancing seat
         ["2.3.QJ8752.KT984", "2D", "1D P P"],  # p107 (BOOK_ERROR: The hand only has 12 cards in the book!)
         ["KQ4.AQ8.KQ873.K2", "2N", "1D P P"],  # (my example) p141 points out that 2N in the balancing seat is not Unusual.  Why would we ever jump to 2N instead of start with a double?
+        ['Q4.AKJ92.AQT65.T', '1H', '1C P P'],  # 8-19d138e4c788a3e87b89f5125f, S
 
         # Can't leave partner in 2N, at least pick one:
         ['86.A92.84.KJ8732', '3D', 'P 1C 2N P', 'N-S'],  # 5-6731f54beb3ac91e29ec190931, N

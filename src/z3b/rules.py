@@ -1266,13 +1266,12 @@ class NotrumpJumpResponseToFourthSuitForcing(ResponseToFourthSuitForcing):
     shared_constraints = [StopperInFouthSuit(), MinimumCombinedPoints(25)]
 
 
-# FIXME: Have seen warnings for:
-# WARNING: Multiple rules have maximal category (Gadget) for 4D: [DelayedSupportResponseToFourthSuitForcing, RebidResponseToFourthSuitForcing]
-# But haven't seen the hands yet.
 class DelayedSupportResponseToFourthSuitForcing(ResponseToFourthSuitForcing):
     preconditions = [
         NotJumpFromLastContract(),
         DidBidSuit(positions.Partner),
+        # This is our first mention of this suit for it to be "delayed support".
+        InvertedPrecondition(DidBidSuit(positions.Me)),
     ]
     call_names = Call.suited_names_between('2D', '4H')
     priority = fourth_suit_forcing_response_priorities.DelayedSupport
