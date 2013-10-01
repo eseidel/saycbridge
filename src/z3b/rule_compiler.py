@@ -85,7 +85,10 @@ class CompiledRule(object):
 
     # FIXME: This exists for compatiblity with KBB's Rule interface and is used by bidder_handler.py
     def explanation_for_bid(self, call):
-        return None
+        explanation = self.dsl_rule.explanations_per_call.get(call.name)
+        if explanation:
+            return explanation
+        return self.dsl_rule.explanation
 
     # FIXME: This exists for compatiblity with KBB's Rule interface and is used by bidder_handler.py
     def sayc_page_for_bid(self, call):
@@ -280,6 +283,8 @@ class Rule(object):
     priority = None # Defaults to the class if None.
     requires_planning = False
     shared_constraints = [] # constraints which apply to call possible call_names.
+    explanations_per_call = {}
+    explanation = None
 
     # These are the only properties which are allowed to be defined in subclasses.
     # The RuleCompiler with enforce this.
@@ -298,6 +303,8 @@ class Rule(object):
         "priority",
         "requires_planning",
         "shared_constraints",
+        "explanations_per_call",
+        "explanation",
     ])
 
     def __init__(self):

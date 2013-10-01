@@ -42,6 +42,11 @@ class Cappelletti(Rule):
     # Wikipedia says Cappelletti is 9-14 hcp.
     # playing_points here is sorta compensating for us not using length_points?
     shared_constraints = points >= 10, playing_points >= 12
+    explanations_per_call = {
+        'X': """Indicates a 1NT opening hand.  NT conventional responses are off.
+Responder can pass with enough points to penalize opener, but more likely should escape to a suit fit.""",
+        '2C': "Indicates one-suited hand (6+ cards in an un-named suit).",
+    }
 
 
 rule_order.order(
@@ -105,6 +110,9 @@ class ResponseToCappellettiTwoClubs(ResponseToCappelletti):
     }
     annotations_per_call = {
         '2D': annotations.Artificial,
+    }
+    explanations_per_call = {
+        '2D': "Waiting. Asks partners to name their 6-card suit.",
     }
 
 
