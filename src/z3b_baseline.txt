@@ -137,9 +137,10 @@ FAIL: 3D (expected 4D) for Q3.AKJ94.AKJ86.2 (hcp: 18 lp: 20 sp: 20), history: 1S
 FAIL: 3C (expected 4C) for K9874.3.AQ.AKQ72 (hcp: 18 lp: 20 sp: 20), history: P 1H 2H P 2N P
 FAIL: 2N (expected 4N) for AQT987.AKQT8.4.A (hcp: 19 lp: 22 sp: 25), history: 1H
 FAIL: 2N (expected 4N) for AQT987.AKQT8.4.A (hcp: 19 lp: 22 sp: 25), history: 1S
+FAIL: X (expected 2N) for KT98.KQ2.AK4.KQT (hcp: 20 lp: 20 sp: 20), history: 2S
 WARNING: Unordered: ['1H', '1D'] rules: [BalancingSuitedOvercall, BalancingSuitedOvercall] priorities: (<class 'z3b.rules.BalancingSuitedOvercall'>, <class 'z3b.rules.BalancingSuitedOvercall'>)
 FAIL: None (expected 1H) for Q4.AKJ92.AQT65.T (hcp: 16 lp: 18 sp: 18), history: 1C P P
-Pass 33 of 46 hands
+Pass 35 of 49 hands
 
 test_minimum_rebid_by_opener:
 FAIL: 1N (expected P) for AT86.J.AT74.AJ84 (hcp: 14 lp: 14 sp: 16), history: P 1C P 1D X
@@ -430,7 +431,7 @@ FAIL: 3S (expected 4S) for K74.9.J98.KJT742 (hcp: 8 lp: 10 sp: 11), history: 1N 
 FAIL: 2N (expected P) for Q87.J843.K65.Q93 (hcp: 8 lp: 8 sp: 8), history: 1N P
 Pass 1 of 3 hands
 
-Pass 1185 (81.7%) of 1451 total hands
+Pass 1187 (81.6%) of 1454 total hands
 
 Tested call generation of 169 rules of 171 total (excluding 8 requires_planning rules).
 Never selected call from:

@@ -975,6 +975,11 @@ sayc_expectations = {
 
         ['JT876.92.JT754.4', 'P', 'P 1D'], # Insufficient points.
 
+        # p107 says 2N is unususal over 2C, but shows a strong 2N over preempts:
+        ['KT987.KQT87.43.2', '2N', '2C'],
+        ['KT987.KQT87.43.2', 'P', '2S'],
+        ['KT98.KQ2.AK4.KQT', '2N', '2S'],
+
         # Michaels/Unusual notrump in the balancing seat
         ["2.3.QJ8752.KT984", "2D", "1D P P"],  # p107 (BOOK_ERROR: The hand only has 12 cards in the book!)
         ["KQ4.AQ8.KQ873.K2", "2N", "1D P P"],  # (my example) p141 points out that 2N in the balancing seat is not Unusual.  Why would we ever jump to 2N instead of start with a double?

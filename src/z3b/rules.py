@@ -2050,16 +2050,22 @@ class MichaelsSimplePreferenceResponse(SimplePreference, ForcedResponseToMichael
     call_names = Call.suited_names_between('2H', '4H')
 
 
-
 class Unusual2N(Rule):
     preconditions = [
         # Unusual2N only exists immediately after RHO opens.
         LastBidHasAnnotation(positions.RHO, annotations.Opening),
-        JumpFromLastContract(),
+        EitherPrecondition(
+            LastBidHasAnnotation(positions.RHO, annotations.OneLevelSuitOpening),
+            # FIXME: We should probably only do this when vulnerability is favorable or with more points?
+            LastBidHasAnnotation(positions.RHO, annotations.StrongTwoClubOpening),
+        ),
     ]
     call_names = '2N'
     # FIXME: We should consider doing mini-max unusual 2N now that we can!
-    shared_constraints = [Unusual2NShape(), points >= 6]
+    shared_constraints = [
+        Unusual2NShape(),
+        points >= 6,
+    ]
     annotations = annotations.Unusual2N
     explanation = "5-5 or better in the two lowest unbid suits."
 
