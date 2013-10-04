@@ -25,6 +25,11 @@ def _is_below_game(call):
         return call.level < 4
     return call.level < 5
 
+def _is_below_small_slam(call):
+    if not call:
+        return True
+    return call.level < 6
+
 
 class AutobidForNone(object):
     def __init__(self):
@@ -36,10 +41,23 @@ class AutobidForNone(object):
     def _check_for_missed_game(self, board):
         points = map(Hand.high_card_points, board.deal.hands)
         pair_points = [points[0] + points[2], points[1] + points[3]]
+        contract = board.call_history.last_contract()
+        # If any group has 32+ hcp and contract is below slam.
+        someone_has_slam = any(map(lambda hcp: hcp >= 32, pair_points))
+        if someone_has_slam and _is_below_small_slam(contract):
+            print "MISSED SLAM: %s" % board.identifier
+            return True
+
         # If any group has 28+ hcp and contract is below game.
         someone_has_game = any(map(lambda hcp: hcp >= 28, pair_points))
-        if someone_has_game and _is_below_game(board.call_history.last_contract()):
-            print "MISSED GAME: %s\n" % board.identifier
+        if someone_has_game and _is_below_game(contract):
+            print "MISSED GAME: %s" % board.identifier
+            return True
+        return False
+
+    def _print_hands(self, deal):
+        for hand in deal.hands:
+            print hand.pretty_one_line()
 
     def _bid_board(self, board):
         self.board_count += 1
@@ -64,7 +82,9 @@ class AutobidForNone(object):
                 return
 
             board.call_history.calls.append(call)
-        self._check_for_missed_game(board)
+        if self._check_for_missed_game(board):
+            self._print_hands(board.deal)
+            print
 
     def main(self, args):
         if args:
