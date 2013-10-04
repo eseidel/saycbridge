@@ -212,7 +212,10 @@ class LimitRaise(RaiseResponse):
 
 class MajorJumpToGame(RaiseResponse):
     call_names = ['4H', '4S']
-    shared_constraints = [MinimumCombinedLength(10), points < 10]
+    shared_constraints = [
+        MinimumCombinedLength(10),
+        points < 10
+    ]
 
 
 class ThreeNotrumpMajorResponse(ResponseToOneLevelSuitedOpen):
@@ -246,8 +249,11 @@ class Jordan(ResponseToOneLevelSuitedOpen):
     ]
 
 
-class RedoubleResponseRHOTakeoutDouble(ResponseToOneLevelSuitedOpen):
+class ResponseAfterRHOTakeoutDouble(ResponseToOneLevelSuitedOpen):
     preconditions = LastBidHasAnnotation(positions.RHO, annotations.TakeoutDouble)
+
+
+class RedoubleResponseAfterRHOTakeoutDouble(ResponseAfterRHOTakeoutDouble):
     call_names = 'XX'
     shared_constraints = MinimumCombinedPoints(22)
 
@@ -255,24 +261,28 @@ class RedoubleResponseRHOTakeoutDouble(ResponseToOneLevelSuitedOpen):
 class JumpRaiseResponseToAfterRHOTakeoutDouble(RaiseResponse):
     preconditions = LastBidHasAnnotation(positions.RHO, annotations.TakeoutDouble)
     call_names = ['3C', '3D', '3H', '3S']
-    shared_constraints = [MinimumCombinedLength(9)]
+    shared_constraints = MinimumCombinedLength(9)
 
 
 class JumpShift(object):
-    preconditions = [UnbidSuit(), JumpFromLastContract(exact_size=1)]
-
-
-class JumpShiftResponseToOpenAfterRHODouble(ResponseToOneLevelSuitedOpen):
-    preconditions = JumpShift.preconditions + [
-        LastBidHasAnnotation(positions.RHO, annotations.TakeoutDouble),
+    preconditions = [
+        UnbidSuit(),
+        JumpFromLastContract(exact_size=1)
     ]
+
+
+class JumpShiftResponseToOpenAfterRHODouble(JumpShift, ResponseAfterRHOTakeoutDouble):
     call_names = Call.suited_names_between('2D', '3H')
-    shared_constraints = [points >= 5, MinLength(6), TwoOfTheTopThree()]
+    shared_constraints = [
+        points >= 5,
+        MinLength(6),
+        TwoOfTheTopThree()
+    ]
 
 
 defenses_against_takeout_double = [
     Jordan,
-    RedoubleResponseRHOTakeoutDouble,
+    RedoubleResponseAfterRHOTakeoutDouble,
     JumpRaiseResponseToAfterRHOTakeoutDouble,
     JumpShiftResponseToOpenAfterRHODouble,
 ]
@@ -305,7 +315,10 @@ new_minor_responses = new_one_level_minor_responses | new_two_level_minor_respon
 
 
 class NewSuitAtTheTwoLevel(ResponseToOneLevelSuitedOpen):
-    preconditions = [UnbidSuit(), NotJumpFromLastContract()]
+    preconditions = [
+        UnbidSuit(),
+        NotJumpFromLastContract()
+    ]
     constraints = {
         '2C' : (clubs >= 4, new_two_level_suit_responses.TwoClubs),
         '2D' : (diamonds >= 4, new_two_level_suit_responses.TwoDiamonds),
@@ -421,10 +434,8 @@ class NotrumpResponseToJacoby2N(ResponseToJacoby2N):
     priority = jacoby_2n_response_priorities.Notrump
 
 
-class JumpShiftResponseToOpen(ResponseToOneLevelSuitedOpen):
-    preconditions = JumpShift.preconditions + [
-        InvertedPrecondition(LastBidHasAnnotation(positions.RHO, annotations.TakeoutDouble)),
-    ]
+class JumpShiftResponseToOpen(JumpShift, ResponseToOneLevelSuitedOpen):
+    preconditions = InvertedPrecondition(LastBidHasAnnotation(positions.RHO, annotations.TakeoutDouble))
 
     # Jumpshifts must be below game and are off in competition so
     # 1S P 3H is the highest available response jumpshift.
@@ -1004,8 +1015,7 @@ opener_jumpshifts_to_majors = set([
 ])
 
 
-class JumpShiftByOpener(RebidAfterOneLevelOpen):
-    preconditions = JumpShift.preconditions
+class JumpShiftByOpener(JumpShift, RebidAfterOneLevelOpen):
     # The lowest possible jumpshift is 1C P 1D P 2H.
     # The highest possible jumpshift is 1S P 2S P 4H
     priorities_per_call = {
@@ -1159,8 +1169,7 @@ class ResponderReverse(OneLevelOpeningResponderRebid):
     shared_constraints = [MinLength(4), points >= 12]
 
 
-class JumpShiftResponderRebid(OneLevelOpeningResponderRebid):
-    preconditions = JumpShift.preconditions
+class JumpShiftResponderRebid(JumpShift, OneLevelOpeningResponderRebid):
     # Smallest: 1D,1H,1S,3C
     # Largest: 1S,2H,3C,4D (anything above 4D is game)
     call_names = Call.suited_names_between('3C', '4D')
