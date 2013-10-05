@@ -407,6 +407,7 @@ FAIL: None (expected 4H) for J3.A7.AKJ986.976 (hcp: 13 lp: 15 sp: 14), history: 
 FAIL: 2N (expected 2S) for KJ643.9863.A9.K9 (hcp: 11 lp: 12 sp: 13), history: 1S P 2C P 2H P
 FAIL: 2H (expected 3D) for AQ643.KQ75.763.5 (hcp: 11 lp: 12 sp: 14), history: 1S P 2C P 2D P
 FAIL: 3S (expected 4S) for KJ643.A874.T.K97 (hcp: 11 lp: 12 sp: 14), history: 1S P 2C P 3C P
+FAIL: 2N (expected P) for AKQJ2.975.53.964 (hcp: 10 lp: 11 sp: 11), history: 1H P 2C P 2H P
 FAIL: None (expected 3N) for AQJ754.J7.5.Q876 (hcp: 10 lp: 12 sp: 13), history: P 1C P 1D P 1S P 3H P
 FAIL: None (expected 4H) for 52.AQ76.AJ93.K76 (hcp: 14 lp: 14 sp: 15), history: 1D P 1H P 2H P 3H P
 WARNING: Unordered: ['3D', '3H'] rules: [JumpShiftResponderRebid, JumpShiftResponderRebid] priorities: (<class 'z3b.rules.JumpShiftResponderRebid'>, <class 'z3b.rules.JumpShiftResponderRebid'>)
@@ -416,7 +417,7 @@ WARNING: Unordered: ['2H', '3H'] rules: [ForcedMajorRebid, ThreeLevelSuitRebidBy
 FAIL: None (expected 2H) for Q4.K8.Q87643.JT2 (hcp: 8 lp: 10 sp: 8), history: P P P 1C P 1H P 2D P
 WARNING: Unordered: ['3S', '3D'] rules: [JumpShiftResponderRebid, JumpShiftResponderRebid] priorities: (<class 'z3b.rules.JumpShiftResponderRebid'>, <class 'z3b.rules.JumpShiftResponderRebid'>)
 FAIL: None (expected 3D) for .KQ43.AKJ98.QT42 (hcp: 15 lp: 16 sp: 20), history: P 1C P 1H P 2C P
-Pass 77 of 97 hands
+Pass 78 of 99 hands
 
 test_third_and_fourth_seat_opens:
 FAIL: P (expected 1C) for AKT9.T87.QJ8.J32 (hcp: 11 lp: 11 sp: 11), history: P P
@@ -431,7 +432,7 @@ FAIL: 3S (expected 4S) for K74.9.J98.KJT742 (hcp: 8 lp: 10 sp: 11), history: 1N 
 FAIL: 2N (expected P) for Q87.J843.K65.Q93 (hcp: 8 lp: 8 sp: 8), history: 1N P
 Pass 1 of 3 hands
 
-Pass 1187 (81.6%) of 1454 total hands
+Pass 1188 (81.6%) of 1456 total hands
 
 Tested call generation of 169 rules of 171 total (excluding 8 requires_planning rules).
 Never selected call from:

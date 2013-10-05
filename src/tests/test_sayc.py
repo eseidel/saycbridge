@@ -611,6 +611,9 @@ sayc_expectations = {
         ["AJ432.J85.QT7.AQ", "3D", "1S P 2C P 2H P"], # p73, h22 (FSF)
         ["KJ643.K3.K975.65", "2N", "1S P 2C P 2D P"], # p73, h23
 
+        # In SAYC its possible to pass after a minimum rebid, right?
+        ['AKQJ2.975.53.964', 'P', '1H P 2C P 2H P'],
+
         # This was found via the none-finder.  3S isn't even FSF, is it?
         ['Q974.KJT7.J653.J', '4H', 'P 1C P 1D P 2N P 3C P 3H P', 'Both'],  # 4-c8e6f9057b689eeb42135cc5b0, S
 
