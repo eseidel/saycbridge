@@ -926,6 +926,9 @@ sayc_expectations = {
 
         ["43.5432.Q2.AKQ42", "1S", "1D 1H P"],
 
+        # Cuebids should use support points.
+        ["J843.4.KQ43.Q842", "2D", "1D 1H P"],
+
         # Preemptive jump overcalls
         ["J63.K43.KQT874.5", "2H", "1D"],  # p101, h12
         ["6.Q84.AQT8764.65", "3H", "1D"],  # p101, h13

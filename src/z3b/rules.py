@@ -1877,9 +1877,15 @@ class ResponseToStandardOvercall(Rule):
 # This is nearly identical to TheLaw, it just notes that you have 6 points.
 # All it does is cause one test to fail.  It may not be worth having.
 class RaiseResponseToStandardOvercall(ResponseToStandardOvercall):
-    preconditions = [RaiseOfPartnersLastSuit(), NotJumpFromLastContract()]
+    preconditions = [
+        RaiseOfPartnersLastSuit(),
+        NotJumpFromLastContract()
+    ]
     call_names = Call.suited_names_between('2D', '3S')
-    shared_constraints = [MinLength(3), points >= 6]
+    shared_constraints = [
+        SupportForPartnerLastBid(3),
+        points >= 6,
+    ]
 
 
 class CuebidResponseToStandardOvercall(ResponseToStandardOvercall):
@@ -1888,14 +1894,16 @@ class CuebidResponseToStandardOvercall(ResponseToStandardOvercall):
         NotJumpFromLastContract()
     ]
     call_names = Call.suited_names_between('2C', '3H')
-    # FIXME: This should use support points.
-    shared_constraints = [SupportForPartnerLastBid(3), points >= 11]
+    shared_constraints = [
+        SupportForPartnerLastBid(3),
+        MinimumSupportPointsForPartnersLastSuit(11),
+    ]
 
 
 class NewSuitResponseToStandardOvercall(ResponseToStandardOvercall):
     preconditions = [
         TheyOpened(),
-        InvertedPrecondition(LastBidWas(positions.Partner, 'P')),
+        LastBidHasAnnotation(positions.Partner, annotations.StandardOvercall),
         NotJumpFromLastContract(),
         UnbidSuit()
     ]
