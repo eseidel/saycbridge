@@ -12,6 +12,7 @@ from handlers.new_bidder_handler import NewBidderHandler
 from handlers.scores_handler import ScoresHandler
 from handlers.score_flashcards_handler import ScoreFlashcardsHandler
 from handlers.unittest_handler import UnittestHandler
+from handlers.priorities_handler import JSONPrioritiesHandler
 
 
 routes = [
@@ -31,6 +32,7 @@ routes = [
     (r'/scores', ScoresHandler),
     (r'/scoring', ScoreFlashcardsHandler),
     (r'/scoring/.*', ScoreFlashcardsHandler),
+    (r'/json/priorities', JSONPrioritiesHandler),
 
     # Deprecated handlers:
     (r'/bidder', NewBidderHandler),
@@ -39,13 +41,5 @@ routes = [
     (r'/new_bidder', NewBidderHandler),
     (r'/new_bidder/.*', NewBidderHandler),
 ]
-
-try:
-    from handlers.priorities_handler import JSONPrioritiesHandler
-    routes.append(
-        (r'/json/priorities', JSONPrioritiesHandler)
-    )
-except:
-    pass
 
 app = webapp2.WSGIApplication(routes, debug=True)
