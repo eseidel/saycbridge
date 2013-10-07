@@ -36,8 +36,11 @@ class CallSelectionProxy(object):
         if not self.call:
             return None
 
-        with Interpreter().extend_history(self.call_selection.rule_selector.history, self.call) as history:
-            return _position_knowledge_from_position_view(history.rho)
+        try:
+            with Interpreter().extend_history(self.call_selection.rule_selector.history, self.call) as history:
+                return _position_knowledge_from_position_view(history.rho)
+        except InconsistentHistoryException:
+            return None
 
 
 class BidderProxy(object):

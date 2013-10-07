@@ -25,6 +25,7 @@ def get_git_revision():
     return proc.stdout.readline().rstrip()
 BIDDER_REVISION = get_git_revision()
 
+
 class Explore2Handler(webapp2.RequestHandler):
     def _history_from_calls_string(self, calls_string):
         history_identifier = "N:NO:%s" % calls_string  # FIXME: I doubt this is right with the new identifiers.
