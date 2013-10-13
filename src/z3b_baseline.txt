@@ -87,9 +87,7 @@ FAIL: 1N (expected 1S) for K3.AJ6.K64.KQ542 (hcp: 16 lp: 17 sp: 17), history:  (
 FAIL: 1N (expected 1S) for A2.KQ5.KJ7.KJ432 (hcp: 17 lp: 18 sp: 18), history:  (subtest of 1S P 2S P)
 FAIL: 1N (expected 1H) for K98.A97.AQ765.A9 (hcp: 17 lp: 18 sp: 18), history:  (subtest of 1H P 2H P)
 FAIL: 2N (expected 2S) for KQJ87.3.74.AQT98 (hcp: 12 lp: 14 sp: 16), history: 1S P 2H P
-WARNING: Unordered: ['3C', '3D'] rules: [HelpSuitGameTry, HelpSuitGameTry] priorities: (<class 'z3b.rules.HelpSuitGameTry'>, <class 'z3b.rules.HelpSuitGameTry'>)
-FAIL: None (expected 3C) for AK86.AJT8..AQ653 (hcp: 18 lp: 19 sp: 23), history: 1S P 2S P
-Pass 26 of 32 hands
+Pass 27 of 32 hands
 
 test_invitational_response_to_one_of_a_major:
 Pass 5 of 5 hands
@@ -255,11 +253,9 @@ Pass 1 of 1 hands
 
 test_opener_rebid_after_a_limit_raise:
 FAIL: 1N (expected 1S) for 98.Q86.KT5.AKQJ8 (hcp: 15 lp: 16 sp: 16), history:  (subtest of 1S P 3S P)
-WARNING: Unordered: ['3H', '3S'] rules: [HelpSuitGameTry, HelpSuitGameTry] priorities: (<class 'z3b.rules.HelpSuitGameTry'>, <class 'z3b.rules.HelpSuitGameTry'>)
-FAIL: None (expected 3H) for KQ43.T.AK76.AQT3 (hcp: 18 lp: 18 sp: 21), history: 1C P 2C 3D
 FAIL: 4H (expected P) for AT5.9.AJ964.A873 (hcp: 13 lp: 14 sp: 16), history: P P P 1H P 3H P
 FAIL: 4S (expected P) for AQ2.A963.8.K9872 (hcp: 13 lp: 14 sp: 16), history: 1S P 3S P
-Pass 18 of 22 hands
+Pass 19 of 22 hands
 
 test_overcalling_one_notrump:
 FAIL: P (expected 2N) for QT643.T962.4.965 (hcp: 2 lp: 3 sp: 5), history: 1N 2H P
@@ -427,7 +423,7 @@ FAIL: 3S (expected 4S) for K74.9.J98.KJT742 (hcp: 8 lp: 10 sp: 11), history: 1N 
 FAIL: 2N (expected P) for Q87.J843.K65.Q93 (hcp: 8 lp: 8 sp: 8), history: 1N P
 Pass 1 of 3 hands
 
-Pass 1194 (81.8%) of 1460 total hands
+Pass 1196 (81.9%) of 1460 total hands
 
 Tested call generation of 169 rules of 171 total (excluding 8 requires_planning rules).
 Never selected call from:
