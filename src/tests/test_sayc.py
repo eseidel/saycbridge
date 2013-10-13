@@ -110,8 +110,8 @@ sayc_expectations = {
         # Needs SpadesRebidAfterHeartsTransfer defined for higher-level transfers to not be None:
         ['972.T872.97653.J', 'P', 'P 2C P 2D P 2N P 3D P 3H P', 'Both'],  # 10-19847dc6f0cba48049a7f75f2a, N
 
-        # What about super-accepts?  Even if partner only has 6hcp, we want to go to game!
-        ['KQT.AK763.AK6.84', '4H', 'P 1D P 1H P 2N P 3D P'],  # 1-0ba065f416fa5fc432d61c9af2, E
+        # Super accepts only exist over 1N, partner can always bid game after transfer.
+        ['KQT.AK763.AK6.84', '3H', 'P 1D P 1H P 2N P 3D P'],  # 1-0ba065f416fa5fc432d61c9af2, E
     ],
 
     "test_invitational_two_nt_over_one_nt": [
