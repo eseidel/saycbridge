@@ -858,7 +858,8 @@ class ForcedMinimumResponseToOpenerReverse(Rule):
     ]
 
 
-class Ingberman2N(ForcedMinimumResponseToOpenerReverse):
+# Also known as Ingberman 2NT
+class Lebensohl(ForcedMinimumResponseToOpenerReverse):
     call_names = '2N'
     # Priorities imply we have no major to rebid.
     shared_constraints = NO_CONSTRAINTS
