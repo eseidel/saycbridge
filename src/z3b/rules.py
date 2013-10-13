@@ -3085,6 +3085,10 @@ rule_order.order(
 )
 rule_order.order(
     OneNotrumpResponse,
+    natural,
+)
+rule_order.order(
+    OneNotrumpResponse,
     OneLevelNegativeDouble,
 )
 rule_order.order(

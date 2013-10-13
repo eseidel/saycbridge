@@ -375,9 +375,9 @@ sayc_expectations = {
 
         # Game forcing strength and too big to limit raise.
         # Maybe we should jump to 2N here even though not balanced, give partner a chance to show something else?
-        ['AJ9853.K.T54.KQJ', '2N', '1C P'],  # 2-d9b5da4882e3635ca730883f57, E
-        ['Q8.AQ9632.AT.J43', '2N', '1D P'],  # 6-ec87e494127d1eb3a4c45bc86e, E
-        ['AKJ973.5.T98.AQ5', '2N', '1C P'],  # 11-6166228f84d41073ab743bfde6, S
+        ['AJ9853.K.T54.KQJ', '4C', '1C P'],  # 2-d9b5da4882e3635ca730883f57, E
+        ['Q8.AQ9632.AT.J43', '4D', '1D P'],  # 6-ec87e494127d1eb3a4c45bc86e, E
+        ['AKJ973.5.T98.AQ5', '4C', '1C P'],  # 11-6166228f84d41073ab743bfde6, S
 
         # A new suit is uncapped, slow arrival.
         ['AQJ93.AJ643.A87.', '2C', '1D P'],  # 15-23d2eb8a61cb67de9548c7d130, S
