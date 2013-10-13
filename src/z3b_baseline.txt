@@ -353,7 +353,7 @@ FAIL: 3C (expected 2D) for AQT542.AQJ.A.987 (hcp: 17 lp: 19 sp: 20), history: 1C
 FAIL: 3C (expected 2N) for J932.QJ7.Q83.JT3 (hcp: 7 lp: 7 sp: 7), history: 1C P 1N P 2D P
 FAIL: 2N (expected 3C) for AKJ762.KQ72.K9.5 (hcp: 16 lp: 18 sp: 20), history: 1C P 1S P 2D P 2S P
 FAIL: P (expected 3N) for KQT965.A5.KQ76.A (hcp: 18 lp: 20 sp: 22), history: P 1C P 1S P 2H P 3S P
-Pass 25 of 32 hands
+Pass 27 of 34 hands
 
 test_rule_of_twenty_open:
 Pass 15 of 15 hands
@@ -414,8 +414,7 @@ FAIL: None (expected 4H) for 52.AQ76.AJ93.K76 (hcp: 14 lp: 14 sp: 15), history: 
 WARNING: Unordered: ['3D', '3H'] rules: [JumpShiftResponderRebid, JumpShiftResponderRebid] priorities: (<class 'z3b.rules.JumpShiftResponderRebid'>, <class 'z3b.rules.JumpShiftResponderRebid'>)
 FAIL: None (expected 3N) for A9.QJT65.QJ96.A6 (hcp: 14 lp: 15 sp: 16), history: P 1S X XX P 1N P
 FAIL: P (expected 4S) for KQ843.AKJ82.2.75 (hcp: 13 lp: 15 sp: 17), history: 1D P 1S P 2C P 3S P
-WARNING: Unordered: ['2H', '3H'] rules: [ForcedMajorRebid, ThreeLevelSuitRebidByResponder] priorities: (<class 'z3b.rules.ForcedMajorRebid'>, <class 'z3b.rules.ThreeLevelSuitRebidByResponder'>)
-FAIL: None (expected 2H) for Q4.K8.Q87643.JT2 (hcp: 8 lp: 10 sp: 8), history: P P P 1C P 1H P 2D P
+FAIL: 3H (expected 2H) for Q4.K8.Q87643.JT2 (hcp: 8 lp: 10 sp: 8), history: P P P 1C P 1H P 2D P
 WARNING: Unordered: ['3S', '3D'] rules: [JumpShiftResponderRebid, JumpShiftResponderRebid] priorities: (<class 'z3b.rules.JumpShiftResponderRebid'>, <class 'z3b.rules.JumpShiftResponderRebid'>)
 FAIL: None (expected 3D) for .KQ43.AKJ98.QT42 (hcp: 15 lp: 16 sp: 20), history: P 1C P 1H P 2C P
 Pass 78 of 99 hands
@@ -433,7 +432,7 @@ FAIL: 3S (expected 4S) for K74.9.J98.KJT742 (hcp: 8 lp: 10 sp: 11), history: 1N 
 FAIL: 2N (expected P) for Q87.J843.K65.Q93 (hcp: 8 lp: 8 sp: 8), history: 1N P
 Pass 1 of 3 hands
 
-Pass 1189 (81.6%) of 1458 total hands
+Pass 1191 (81.6%) of 1460 total hands
 
 Tested call generation of 169 rules of 171 total (excluding 8 requires_planning rules).
 Never selected call from:

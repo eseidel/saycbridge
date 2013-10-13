@@ -545,6 +545,8 @@ sayc_expectations = {
 
         # Partner didn't use Ingberman, so we definitely have game, no fit, so 3N it is.
         ['KQT965.A5.KQ76.A', '3N', 'P 1C P 1S P 2H P 3S P', 'N-S'],  # 15-5bc3ef62e10530af9af2685543, W
+
+        ['K.T986.T74.AKJ72', '3C', '1D P 1S P 2H P', 'E-W'],  # 16-2ecca1239d5bf07906fd2c4a65, E
     ],
 
     "test_subsequent_bidding_by_responder": [ # Chap 8

@@ -873,13 +873,13 @@ class ForcedMajorRebid(ForcedMinimumResponseToOpenerReverse):
 
 
 rule_order.order(
-    Ingberman2N,
+    Lebensohl,
     ForcedMajorRebid,
 )
 
 # Ingberman is effectively "pass" in response to a reverse, we'd rather do anything else if we can.
 rule_order.order(
-    Ingberman2N,
+    Lebensohl,
     natural_bids,
 )
 
@@ -1225,6 +1225,13 @@ class NonJumpFourthSuitForcing(FourthSuitForcing):
         ('2C', '2D', '2H', '2S'): fourth_suit_forcing.TwoLevel,
         ('3C', '3D', '3H', '3S'): fourth_suit_forcing.ThreeLevel,
     }
+
+
+rule_order.order(
+    ForcedMajorRebid,
+    # We'd rather explore for NT than rebid a 5-card major.
+    fourth_suit_forcing,
+)
 
 
 class TwoSpadesJumpFourthSuitForcing(FourthSuitForcing):
