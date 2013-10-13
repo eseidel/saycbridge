@@ -902,6 +902,8 @@ sayc_expectations = {
 
         ["KQ873.85.32.AKQT", "1S", "1H"], # Prefer 1S over 2C?
 
+        ['AJ8.T9.AQJT9.KQT', '2H', '1S P 1N', 'Both'],  # 7-ef06184f0e5e80b0d576acb9d6, E
+
         # Direct overcall of 1NT (these examples are from me), p100
         ["KQ4.AQ8.Q9873.K2", "1N", "1C"],
         ["KQ4.AQ8.Q9873.K2", "1N", "1D"],
