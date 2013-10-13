@@ -1180,18 +1180,23 @@ class ResponderReverse(OneLevelOpeningResponderRebid):
     shared_constraints = [MinLength(4), points >= 12]
 
 
+jump_shift_response_bids = enum.Enum(*Call.suited_names())
+rule_order.order(*reversed(jump_shift_response_bids))
+
+
 class JumpShiftResponderRebid(JumpShift, OneLevelOpeningResponderRebid):
     # Smallest: 1D,1H,1S,3C
     # Largest: 1S,2H,3C,4D (anything above 4D is game)
     call_names = Call.suited_names_between('3C', '4D')
     shared_constraints = [MinLength(4), points >= 14]
+    priorities_per_call = copy_dict(jump_shift_response_bids, call_names)
 
 
 rule_order.order(
     RebidResponderSuitByResponder,
     ThreeLevelSuitRebidByResponder,
     ResponderReverse,
-    JumpShiftResponderRebid,
+    jump_shift_response_bids,
 )
 
 

@@ -105,7 +105,9 @@ class Call(object):
 
     @classmethod
     def suited_names_between(cls, start_name, stop_name):
-        return _values_between(start_name, stop_name, cls.suited_names())
+        # We don't want to return a generator because folks might want to enumerate
+        # these lists more than once.
+        return list(_values_between(start_name, stop_name, cls.suited_names()))
 
     @classmethod
     def notrump_names(cls):
@@ -114,7 +116,7 @@ class Call(object):
 
     @classmethod
     def notrump_names_between(cls, start_name, stop_name):
-        return _values_between(start_name, stop_name, cls.notrump_names())
+        return list(_values_between(start_name, stop_name, cls.notrump_names()))
 
 
 # This is a convenience for an old method of specifying calls.
