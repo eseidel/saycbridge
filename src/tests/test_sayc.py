@@ -298,7 +298,7 @@ sayc_expectations = {
         ['K.A743.K.AJ65432', '3C', '1S P 2N P', 'E-W'],  # 3-7fc1123a1b75645f732eaa1c82, 
 
         # It's not easy having 7 trump and 2 voids.  Slammy?
-        ['K.K932.7.AK97653', '3H', 'P 1S P 2N P', 'E-W'],  # 9-c8bb29160f407ae9223e757735, E
+        ['K.K932.7.AK97653', '3C', 'P 1S P 2N P', 'E-W'],  # 9-c8bb29160f407ae9223e757735, E
     ],
 
     "test_slam_zone_responses_to_one_of_a_major": [

@@ -106,11 +106,7 @@ Pass 43 of 46 hands
 test_jacoby_two_nt_response_to_one_of_a_major:
 FAIL: 3N (expected 3H) for AJ2.K7.KQT853.A5 (hcp: 17 lp: 19 sp: 19), history: 1H P 2N P
 FAIL: 1N (expected 2N) for K.K7.KJ98542.QT8 (hcp: 12 lp: 15 sp: 13), history: 1H P
-WARNING: Unordered: ['3H', '3C'] rules: [SingletonResponseToJacoby2N, SingletonResponseToJacoby2N] priorities: (Singleton, Singleton)
-FAIL: None (expected 3C) for K.A743.K.AJ65432 (hcp: 15 lp: 18 sp: 15), history: 1S P 2N P
-WARNING: Unordered: ['3H', '3C'] rules: [SingletonResponseToJacoby2N, SingletonResponseToJacoby2N] priorities: (Singleton, Singleton)
-FAIL: None (expected 3H) for K.K932.7.AK97653 (hcp: 13 lp: 16 sp: 16), history: P 1S P 2N P
-Pass 21 of 25 hands
+Pass 23 of 25 hands
 
 test_michaels_and_unusual_notrump:
 FAIL: 2C (expected P) for AK.J.T8753.JT432 (hcp: 9 lp: 11 sp: 12), history: 1C
@@ -412,7 +408,7 @@ FAIL: 3S (expected 4S) for K74.9.J98.KJT742 (hcp: 8 lp: 10 sp: 11), history: 1N 
 FAIL: 2N (expected P) for Q87.J843.K65.Q93 (hcp: 8 lp: 8 sp: 8), history: 1N P
 Pass 1 of 3 hands
 
-Pass 1201 (82.3%) of 1460 total hands
+Pass 1203 (82.4%) of 1460 total hands
 
 Tested call generation of 169 rules of 171 total (excluding 8 requires_planning rules).
 Never selected call from:

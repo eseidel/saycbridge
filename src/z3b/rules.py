@@ -388,17 +388,6 @@ class Jacoby2N(ResponseToMajorOpen):
     annotations = annotations.Jacoby2N
 
 
-jacoby_2n_response_priorities = enum.Enum(
-    # Currently favoring features over slam interest.  Unclear if that's correct?
-    "SolidSuit",
-    "Singleton",
-    "Slam",
-    "Notrump",
-    "MinimumGame",
-)
-rule_order.order(*reversed(jacoby_2n_response_priorities))
-
-
 class ResponseToJacoby2N(Rule):
     # Bids above 4NT are either natural or covered by other conventions.
     preconditions = LastBidHasAnnotation(positions.Partner, annotations.Jacoby2N)
@@ -410,34 +399,40 @@ class SingletonResponseToJacoby2N(ResponseToJacoby2N):
     call_names = ['3C', '3D', '3H', '3S']
     shared_constraints = MaxLength(1)
     annotations = annotations.Artificial
-    priority = jacoby_2n_response_priorities.Singleton
+    priorities_per_call = lower_calls_first(call_names)
 
 
 class SolidSuitResponseToJacoby2N(ResponseToJacoby2N):
     preconditions = InvertedPrecondition(RebidSameSuit())
     call_names = ['4C', '4D', '4H', '4S']
     shared_constraints = [MinLength(5), ThreeOfTheTopFiveOrBetter()]
-    priority = jacoby_2n_response_priorities.SolidSuit
 
 
 class SlamResponseToJacoby2N(ResponseToJacoby2N):
     preconditions = RebidSameSuit()
     call_names = ['3C', '3D', '3H', '3S']
     shared_constraints = points >= 18
-    priority = jacoby_2n_response_priorities.Slam
 
 
 class MinimumResponseToJacoby2N(ResponseToJacoby2N):
     preconditions = RebidSameSuit()
     call_names = ['4C', '4D', '4H', '4S']
     shared_constraints = NO_CONSTRAINTS
-    priority = jacoby_2n_response_priorities.MinimumGame
 
 
 class NotrumpResponseToJacoby2N(ResponseToJacoby2N):
     call_names = '3N'
     shared_constraints = points > 15 # It's really 15-17
-    priority = jacoby_2n_response_priorities.Notrump
+
+
+jacoby_2n_responses= rule_order.order(
+    MinimumResponseToJacoby2N,
+    NotrumpResponseToJacoby2N,
+    SlamResponseToJacoby2N,
+    # Currently favoring features over slam interest.  Unclear if that's correct?
+    all_priorities_for_rule(SingletonResponseToJacoby2N),
+    SolidSuitResponseToJacoby2N,
+)
 
 
 class JumpShiftResponseToOpen(JumpShift, ResponseToOneLevelSuitedOpen):
@@ -3132,7 +3127,7 @@ rule_order.order(
 )
 rule_order.order(
     natural_bids,
-    jacoby_2n_response_priorities,
+    jacoby_2n_responses,
 )
 rule_order.order(
     new_one_level_suit_responses,
