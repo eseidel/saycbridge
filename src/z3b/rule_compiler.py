@@ -4,6 +4,7 @@
 
 from core.call import Call
 from itertools import chain
+from third_party.memoized import memoized
 from z3b import enum
 from z3b import model
 from z3b import ordering
@@ -46,6 +47,12 @@ class RuleOrdering(object):
 rule_order = RuleOrdering()
 
 
+# FIXME: We should integrate this function into RuleOrdering.
+def all_priorities_for_rule(dsl_rule):
+    compiled_rule = RuleCompiler.compile(dsl_rule)
+    return compiled_rule.all_priorities
+
+
 # This is a public interface from DSL Rules to the rest of the system.
 class CompiledRule(object):
     def __init__(self, rule, preconditions, known_calls, shared_constraints, annotations, constraints, default_priority, conditional_priorities_per_call, priorities_per_call):
@@ -60,6 +67,11 @@ class CompiledRule(object):
         self.priorities_per_call = priorities_per_call
         # FIXME: Should forcing be an annotation instead?  It has an awkward tri-state currently.
         self.forcing = self.dsl_rule.forcing
+
+    @property
+    def all_priorities(self):
+        conditional_priorities = [priority for _, priority in self.conditional_priorities_per_call.values()]
+        return set([self.default_priority] + self.priorities_per_call.values() + conditional_priorities)
 
     @property
     def requires_planning(self):
@@ -243,6 +255,7 @@ class RuleCompiler(object):
         return dsl_rule # Use the class as the default priority.
 
     @classmethod
+    @memoized
     def compile(cls, dsl_rule):
         try:
             cls._validate_rule(dsl_rule)
@@ -316,4 +329,3 @@ class Rule(object):
 
     def __repr__(self):
         return "%s()" % self.name
-

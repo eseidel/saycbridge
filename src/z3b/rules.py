@@ -7,7 +7,13 @@ from z3b.constraints import *
 from z3b.model import *
 from z3b.natural import *
 from z3b.preconditions import *
-from z3b.rule_compiler import Rule, RuleCompiler, rule_order, categories
+from z3b.rule_compiler import Rule, RuleCompiler, all_priorities_for_rule, rule_order, categories
+
+
+def lower_calls_first(call_names):
+    priorities = enum.Enum(*call_names)
+    rule_order.order(*reversed(priorities))
+    return copy_dict(priorities, call_names)
 
 
 relay_priorities = enum.Enum(
@@ -994,11 +1000,12 @@ class HelpSuitGameTry(RebidAfterOneLevelOpen):
     call_names = Call.suited_names_between('2D', '3S')
     # Descriptive not placement bid hence points instead of MinimumCombinedPoints.
     shared_constraints = [MinLength(4), Stopper(), points >= 16]
+    priorities_per_call = lower_calls_first(call_names)
 
 
 rule_order.order(
     # No need to help-suit if we already see game:
-    HelpSuitGameTry,
+    all_priorities_for_rule(HelpSuitGameTry),
     GameAccept,
 )
 
@@ -2987,7 +2994,7 @@ rule_order.order(
 rule_order.order(
     natural_suited_part_scores,
     NotrumpInvitationByOpener,
-    HelpSuitGameTry,
+    all_priorities_for_rule(HelpSuitGameTry),
 )
 rule_order.order(
     # If we have a new suit to mention, we'd rather do that than sign off in game?
@@ -3191,7 +3198,7 @@ rule_order.order(
 )
 rule_order.order(
     # Jumpshift shows 19+ vs. 16+
-    HelpSuitGameTry,
+    all_priorities_for_rule(HelpSuitGameTry),
     opener_jumpshifts,
 )
 rule_order.order(
@@ -3289,7 +3296,7 @@ rule_order.order(
 )
 rule_order.order(
     natural_passses,
-    HelpSuitGameTry,
+    all_priorities_for_rule(HelpSuitGameTry),
 )
 rule_order.order(
     natural_bids,
