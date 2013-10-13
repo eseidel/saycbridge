@@ -865,16 +865,26 @@ class Lebensohl(ForcedMinimumResponseToOpenerReverse):
     shared_constraints = NO_CONSTRAINTS
 
 
+major_responses_to_opener_reverse = enum.Enum(
+    "WithFive",
+    "WithSixOrMore",
+)
+
+
 class ForcedMajorRebid(ForcedMinimumResponseToOpenerReverse):
     # We have a minimum hand, so we never menetioned a 2-level suit before this one.
     call_names = ('2H', '2S')
     # We only need 5-cards to rebid our major, and no additional points.
-    shared_constraints = MinLength(5),
+    shared_constraints = MinLength(5)
+    conditional_priorities = [
+        (MinLength(6), major_responses_to_opener_reverse.WithSixOrMore),
+    ]
+    priority = major_responses_to_opener_reverse.WithFive
 
 
 rule_order.order(
     Lebensohl,
-    ForcedMajorRebid,
+    major_responses_to_opener_reverse,
 )
 
 # Ingberman is effectively "pass" in response to a reverse, we'd rather do anything else if we can.
@@ -1134,7 +1144,7 @@ class ThreeLevelSuitRebidByResponder(ResponderSuitRebid):
     # FIXME: We should want 3o5 or better?  Partner may just leave us here...
     shared_constraints = [
         MinLength(6),
-        MinimumCombinedPoints(22),
+        points >= 10,
     ]
 
 
@@ -1227,10 +1237,12 @@ class NonJumpFourthSuitForcing(FourthSuitForcing):
     }
 
 
+# We'd rather explore for NT than rebid a 5-card major, but with
+# six or more, we prefer the major.
 rule_order.order(
-    ForcedMajorRebid,
-    # We'd rather explore for NT than rebid a 5-card major.
+    major_responses_to_opener_reverse.WithFive,
     fourth_suit_forcing,
+    major_responses_to_opener_reverse.WithSixOrMore
 )
 
 
