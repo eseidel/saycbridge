@@ -3056,7 +3056,7 @@ rule_order.order(
 )
 rule_order.order(
     # Relays are extremely high priority, this is likely redundant with other orderings.
-    DefaultPass,
+    natural_bids,
     relay_priorities
 )
 rule_order.order(
@@ -3085,7 +3085,7 @@ rule_order.order(
 )
 rule_order.order(
     OneNotrumpResponse,
-    natural,
+    natural_bids,
 )
 rule_order.order(
     OneNotrumpResponse,
