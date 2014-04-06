@@ -843,6 +843,12 @@ class CallExplorerTable extends HTMLTableElement
 class CallHistoryTable extends HTMLTableElement
     constructor: (@board, @callHistory, @showLoadingSpinner) ->
         @className = 'history'
+        @positionsInDisplayOrder = [
+            model.Position.WEST,
+            model.Position.NORTH,
+            model.Position.EAST,
+            model.Position.SOUTH
+        ]
         @setupView()
 
     updateFromCallHistory: (@callHistory, @showLoadingSpinner) ->
@@ -852,7 +858,7 @@ class CallHistoryTable extends HTMLTableElement
 
     setupView: ->
         headerRow = @insertRow(-1)
-        for position in model.Position.POSITIONS
+        for position in @positionsInDisplayOrder
             positionHeader = document.createElement('th')
             headerRow.appendChild(positionHeader)
             positionHeader.textContent = position.displayName()
@@ -861,16 +867,17 @@ class CallHistoryTable extends HTMLTableElement
 
         # FIXME: This would probably be cleaner using a biddingRounds() and callForRound() like bidhistory.py uses.
         firstRow = @insertRow(-1)
-        for position in model.Position.POSITIONS
+        for position in @positionsInDisplayOrder
             if position.index() == @board.dealer.index()
                 break
             firstRow.insertCell(-1)  # Add empty cells for all players before the dealer.
 
+        firstDisplayPositionIndex = @positionsInDisplayOrder[0].index()
         currentRow = firstRow
         biddingComplete = @callHistory.isComplete()
         for call, callIndex in @callHistory.calls
             positionIndex = (@board.dealer.index() + callIndex) % model.Position.POSITIONS.length
-            if positionIndex == 0 and callIndex != 0
+            if positionIndex == firstDisplayPositionIndex and callIndex != 0
                 currentRow = @insertRow(-1)
             partialHistory = @callHistory.calls[0..callIndex]
             currentCell = currentRow.insertCell(-1)
