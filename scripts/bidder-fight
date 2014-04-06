@@ -67,6 +67,10 @@ class BidderFight(object):
             z3b_bid = self._find_call(self.z3b, hand, board.call_history)
 
             if kbb_bid != z3b_bid:
+                if self.ask:
+                    print deal.hand_for(position).pretty_one_line()
+                    print board.call_history
+                    raw_input("")
                 print "kbb=%s z3b=%s with %s" % (kbb_bid, z3b_bid, deal.hand_for(position).pretty_one_line())
                 unittest_comment = "  # %s, %s" % (
                     board.identifier.partition(":")[0], # remove the call history
@@ -79,6 +83,10 @@ class BidderFight(object):
             board.call_history.calls.append(z3b_bid)
 
     def main(self, args):
+        self.ask = args and args[0] == '--ask'
+        if self.ask:
+            args = args[1:]
+
         if args:
             for identifier in args:
                 self._bid_board(Board.from_identifier(identifier))
