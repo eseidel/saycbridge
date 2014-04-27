@@ -68,6 +68,8 @@ class Explore
         historyTable = view.CallHistoryTable.fromBoardAndHistory(board, @callHistory)
         content.appendChild historyTable
 
+        content.appendChild @_createClearButton()
+
         callMenu = view.CallMenu.fromCallHistory(@callHistory, @recordCall)
         content.appendChild callMenu
         $('.call_description', callMenu).bind 'click', (event) =>

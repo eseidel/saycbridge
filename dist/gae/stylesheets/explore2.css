@@ -3,6 +3,10 @@ body {
     padding: 0px;
 }
 
+.call {
+    font-size: 16pt;
+}
+
 .call_menu {
     width: 100%;
     font-size: 16pt;

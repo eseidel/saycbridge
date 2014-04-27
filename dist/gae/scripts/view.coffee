@@ -739,7 +739,7 @@ class RuleName extends HTMLDivElement
         # A couple exceptions to the spacing rules:
         @ruleName = @ruleName.replace(/R H O/g, "RHO")
         @ruleName = @ruleName.replace(/L H O/g, "LHO")
-        @ruleName = @ruleName.replace(/\bN$/g, "Notrump")
+        @ruleName = @ruleName.replace(/\sN$/g, "NT")
         @textContent = @ruleName
 
     @fromRuleName: (ruleName) ->
