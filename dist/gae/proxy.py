@@ -7,11 +7,6 @@ import os
 from core.suit import SUITS
 from core.call import Call, Pass
 
-from z3b.bidder import Interpreter, InconsistentHistoryException
-from z3b.model import positions
-from z3b.preconditions import annotations
-from z3b.forcing import SAYCForcingOracle
-
 
 class ConstraintsSerializer(object):
     MAX_HCP_PER_HAND = 37
@@ -51,38 +46,3 @@ class ConstraintsSerializer(object):
             return "%s, %s" % (pretty_string, " ".join(suit_strings))
         return pretty_string
 
-
-# This is used by the explorer (explorer_handler.py)
-class InterpreterProxy(object):
-    def __init__(self):
-        self.interpreter = Interpreter()
-
-    def _pretty_string_for_position_view(self, position_view):
-        explore_string = ConstraintsSerializer(position_view).explore_string()
-        # FIXME: Annotation filtering belongs on the client, not here!
-        annotations_whitelist = set([annotations.Artificial, annotations.NotrumpSystemsOn])
-        annotations_for_last_call = set(position_view.annotations_for_last_call) & annotations_whitelist
-        pretty_string = "%s %s" % (explore_string, ", ".join(map(str, annotations_for_last_call)))
-        # Only bother trying to interpret if the bid is forcing if we understood it in the first place:
-        if position_view.rule_for_last_call:
-            try:
-                partner_future = self.interpreter.extend_history(position_view.history, Pass())
-                if SAYCForcingOracle().forced_to_bid(partner_future):
-                    pretty_string += " Forcing"
-            except InconsistentHistoryException:
-                pass
-        return pretty_string
-
-    def knowledge_string_and_rule_for_additional_call(self, history, call):
-        try:
-            history = self.interpreter.extend_history(history, call)
-            return self._pretty_string_for_position_view(history.rho), history.rho.rule_for_last_call
-        except InconsistentHistoryException, e:
-            return None, None
-
-    def knowledge_string_and_rule_for_last_call(self, call_history):
-        with self.interpreter.create_history(call_history) as history:
-            return self._pretty_string_for_position_view(history.rho), history.rho.rule_for_last_call
-
-    def create_history(self, call_history):
-        return self.interpreter.create_history(call_history)
