@@ -4,7 +4,6 @@
 
 import os
 
-from positionknowledge import PositionKnowledge
 from core.suit import SUITS
 from core.call import Call, Pass
 
@@ -14,9 +13,68 @@ from z3b.preconditions import annotations
 from z3b.forcing import SAYCForcingOracle
 
 
+# FIXME: This is an over-complicated artifact from the KBB.
+class HandConstraints(object):
+    MAX_HCP_PER_HAND = 37
+    EMPTY_HCP_RANGE = (0, MAX_HCP_PER_HAND)
+
+    def __init__(self):
+        self._hcp_range = self.EMPTY_HCP_RANGE
+        self._suit_length_ranges = [(0, 13) for suit in SUITS]
+
+    def _range_from_tuple(self, range_tuple):
+        return range(range_tuple[0], range_tuple[1] + 1)
+
+    def _updated_range_tuple(self, old_tuple, new_min, new_max):
+        old_min, old_max = old_tuple
+        return (max(new_min, old_min), min(new_max, old_max))
+
+    # FIXME: This name is slightly misleading, since we are actually just restricting the range.
+    def set_hcp_range(self, min_hcp, max_hcp):
+        self._hcp_range = self._updated_range_tuple(self._hcp_range, min_hcp, max_hcp)
+
+    def set_length_range(self, suit, min_length, max_length, disable_implied_length_update=None):
+        assert suit in SUITS, "%s is not a suit!" % suit
+        previous_length_range = self._suit_length_ranges[suit.index]
+        self._suit_length_ranges[suit.index] = self._updated_range_tuple(self._suit_length_ranges[suit.index], min_length, max_length)
+
+    def _string_for_range(self, range_tuple, global_max=None):
+        # This len check only exists for trying to print invalid hand constraints.
+        min_value, max_value = range_tuple
+        if min_value == max_value:
+            return str(min_value)
+        if min_value == 0 and max_value >= global_max:
+            return "?"  # To indicate no information.
+        if max_value >= global_max:
+            return "%s+" % min_value
+        # Could use <5 syntax, but that looks strange for suit lengths.
+        # if min_value == 0:
+        #     return "<%s" % max_value
+        return "%s-%s" % (min_value, max_value)
+
+    def _pretty_string_for_suit(self, suit, max_suit_length_to_show=None):
+        max_suit_length_to_show = max_suit_length_to_show or 6
+        suit_string = self._string_for_range(self._suit_length_ranges[suit.index], global_max=max_suit_length_to_show)
+        if suit_string == "?":
+            return None
+        return suit_string + suit.char
+
+    def explore_string(self):
+        # Building the strings for the empty constraints is needlessly expensive (also a single ? looks better).
+        if self._hcp_range == self.EMPTY_HCP_RANGE and self._suit_length_ranges.count((0, 13)) == 4:
+            return "?"
+        suit_strings = [self._pretty_string_for_suit(suit) for suit in SUITS]
+        # Don't bother to show suits we know nothing about.
+        suit_strings = filter(lambda string: bool(string), suit_strings)
+        pretty_string = "%s hcp" % self._string_for_range(self._hcp_range, global_max=self.MAX_HCP_PER_HAND)
+        if suit_strings:
+            return "%s, %s" % (pretty_string, " ".join(suit_strings))
+        return pretty_string
+
+
 # FIXME: This is a horrible hack.  Callers should move off of the KBB HandConstraints API.
 def _position_knowledge_from_position_view(position_view):
-    kbb_constraints = PositionKnowledge()
+    kbb_constraints = HandConstraints()
     kbb_constraints.set_hcp_range(position_view.min_points, position_view.max_points)
     for suit in SUITS:
         kbb_constraints.set_length_range(suit, position_view.min_length(suit), position_view.max_length(suit))
