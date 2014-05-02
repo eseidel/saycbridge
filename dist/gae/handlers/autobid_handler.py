@@ -17,8 +17,9 @@ from core.board import Board
 from core.deal import Deal
 from core.position import Position
 from core.call import Pass
+from z3b.bidder import Interpreter, Bidder, InconsistentHistoryException
 
-from proxy import BidderProxy
+from proxy import ConstraintsSerializer
 
 import json
 
@@ -40,6 +41,14 @@ class JSONAutobidHandler(webapp2.RequestHandler):
         history = CallHistory.from_string(calls_string, dealer_char, vulnerability_string)
         return Board(board_number, deal, history)
 
+    # FIXME: This is a hack.
+    def _explore_string_from_call_selection(self, selection):
+        try:
+            with Interpreter().extend_history(selection.rule_selector.history, selection.call) as history:
+                return ConstraintsSerializer(history.rho).explore_string()
+        except InconsistentHistoryException:
+            return None
+
     def _json_tuple(self, selection):
         json_tuple = [None, None, None, None, None]
         if not selection:
@@ -48,8 +57,8 @@ class JSONAutobidHandler(webapp2.RequestHandler):
             json_tuple[0] = selection.call.name
         if selection.rule:
             json_tuple[1] = selection.rule.name
-        if selection.hand_knowledge:
-            json_tuple[2] = selection.hand_knowledge.explore_string()
+        if selection.call:
+            json_tuple[2] = self._explore_string_from_call_selection(selection)
         if selection.rule and selection.call:
             json_tuple[3] = selection.rule.explanation_for_bid(selection.call)
             json_tuple[4] = None # Was sayc_page_for_bid.
@@ -67,7 +76,7 @@ class JSONAutobidHandler(webapp2.RequestHandler):
         return call_selections
 
     def get(self):
-        bidder = BidderProxy()
+        bidder = Bidder()
         board = self._board_from_request()
         until_position_string = self.request.get('until_position')
         until_position = Position.from_char(until_position_string) if until_position_string else None

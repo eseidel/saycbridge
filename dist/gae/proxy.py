@@ -7,7 +7,7 @@ import os
 from core.suit import SUITS
 from core.call import Call, Pass
 
-from z3b.bidder import Interpreter, Bidder, InconsistentHistoryException
+from z3b.bidder import Interpreter, InconsistentHistoryException
 from z3b.model import positions
 from z3b.preconditions import annotations
 from z3b.forcing import SAYCForcingOracle
@@ -50,36 +50,6 @@ class ConstraintsSerializer(object):
         if suit_strings:
             return "%s, %s" % (pretty_string, " ".join(suit_strings))
         return pretty_string
-
-
-# FIXME: This is a hack to make the GAE front-end work with the Z3 Bidder.
-class CallSelectionProxy(object):
-    def __init__(self, call_selection):
-        self.call = call_selection.call if call_selection else None
-        self.rule = call_selection.rule if call_selection else None
-        self.call_selection = call_selection
-
-    @property
-    def hand_knowledge(self):
-        if not self.call:
-            return None
-
-        try:
-            with Interpreter().extend_history(self.call_selection.rule_selector.history, self.call) as history:
-                return ConstraintsSerializer(history.rho)
-        except InconsistentHistoryException:
-            return None
-
-
-class BidderProxy(object):
-    def __init__(self):
-        self.bidder = Bidder()
-
-    def find_call_for(self, hand, call_history):
-        return self.bidder.find_call_for(hand, call_history)
-
-    def call_selection_for(self, hand, call_history):
-        return CallSelectionProxy(self.bidder.call_selection_for(hand, call_history))
 
 
 # This is used by the explorer (explorer_handler.py)
