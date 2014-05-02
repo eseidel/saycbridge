@@ -26,13 +26,13 @@ def get_git_revision():
 BIDDER_REVISION = get_git_revision()
 
 
-class Explore2Handler(webapp2.RequestHandler):
+class ExploreHandler(webapp2.RequestHandler):
     def _history_from_calls_string(self, calls_string):
         history_identifier = "N:NO:%s" % calls_string  # FIXME: I doubt this is right with the new identifiers.
         return CallHistory.from_identifier(history_identifier)
 
     def _redirect_to_history(self, history):
-        self.redirect("/explore2/%s" % history.comma_separated_calls())
+        self.redirect("/explore/%s" % history.comma_separated_calls())
 
     def get(self, calls_string=None):
         calls_string = calls_string or ""
@@ -47,7 +47,7 @@ class Explore2Handler(webapp2.RequestHandler):
             dict(bidder_revision=BIDDER_REVISION)))
 
 
-class JSONExplore2Handler(webapp2.RequestHandler):
+class JSONExploreHandler(webapp2.RequestHandler):
     def _set_if_not_none(self, dictionary, key, value):
         if value is not None:
             dictionary[key] = value
