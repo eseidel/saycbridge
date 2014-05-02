@@ -60,7 +60,7 @@ class JSONExploreHandler(webapp2.RequestHandler):
             priority = rule.priority.index if hasattr(rule, 'priority') and rule.priority else None
             self._set_if_not_none(explore_dict, 'priority', priority)
             self._set_if_not_none(explore_dict, 'explanation', rule.explanation_for_bid(call))
-            self._set_if_not_none(explore_dict, 'sayc_page', rule.sayc_page_for_bid(call))
+            # sayc_page no longer supported.
         return explore_dict
 
     def get(self):

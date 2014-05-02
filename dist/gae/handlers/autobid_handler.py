@@ -49,10 +49,10 @@ class JSONAutobidHandler(webapp2.RequestHandler):
         if selection.rule:
             json_tuple[1] = selection.rule.name
         if selection.hand_knowledge:
-            json_tuple[2] = selection.hand_knowledge.pretty_one_line(include_last_call_name=False)
+            json_tuple[2] = selection.hand_knowledge.explore_string()
         if selection.rule and selection.call:
             json_tuple[3] = selection.rule.explanation_for_bid(selection.call)
-            json_tuple[4] = selection.rule.sayc_page_for_bid(selection.call)
+            json_tuple[4] = None # Was sayc_page_for_bid.
         return json_tuple
 
     def _bid_all_hands(self, bidder, board, until_position=None):

@@ -62,7 +62,7 @@ class InterpreterProxy(object):
     def _pretty_string_for_position_view(self, position_view):
         # kbb HandConstraints just so we can use it's pretty_print function.
         position_knowledge = _position_knowledge_from_position_view(position_view)
-        kbb_oneline = position_knowledge.pretty_one_line(include_last_call_name=False)
+        kbb_oneline = position_knowledge.explore_string()
         # FIXME: Annotation filtering belongs on the client, not here!
         annotations_whitelist = set([annotations.Artificial, annotations.NotrumpSystemsOn])
         annotations_for_last_call = set(position_view.annotations_for_last_call) & annotations_whitelist

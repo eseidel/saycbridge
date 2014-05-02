@@ -22,10 +22,6 @@ from core.tests.test_hand import *
 from core.tests.test_position import *
 from tests.harness import TestHarness
 
-# FIXME: These only apply if we're running the kbb tests
-#from kbb.handconstraints_unittest import *
-#from kbb.semanticbids_unittest import *
-#from kbb.interpreter_unittest import *
 
 def configure_logging(is_verbose):
     handler = logging.StreamHandler(sys.stdout)

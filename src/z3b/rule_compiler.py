@@ -102,10 +102,6 @@ class CompiledRule(object):
             return explanation
         return self.dsl_rule.explanation
 
-    # FIXME: This exists for compatiblity with KBB's Rule interface and is used by autobid_handler.py
-    def sayc_page_for_bid(self, call):
-        return None
-
     def _fits_preconditions(self, history, call, expected_call=None):
         try:
             for precondition in self.preconditions:

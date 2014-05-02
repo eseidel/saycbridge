@@ -229,26 +229,17 @@ class PositionKnowledge(HandConstraints):
     def __init__(self):
         HandConstraints.__init__(self)
         self.last_call = None
-        self.opened = False
         self.notrump_protocol = False
         self.rule_of_twenty = None
         self.rule_of_fifteen = None
 
     def explore_string(self):
-        return self.pretty_one_line(include_last_call_name=False)
-
-    def pretty_one_line(self, include_last_call_name=True):
         pretty_line = HandConstraints.pretty_one_line(self)
-        if self.last_call or self.opened:
+        if self.last_call:
             info_strings = []
-            if include_last_call_name:
-                info_strings.append("last: %s" % self.last_call)
-            else:
-                last_call_string = self.last_call.pretty_one_line(include_bid_name=False)
-                if last_call_string:
-                    info_strings.append(last_call_string)
-            if self.opened:
-                info_strings.append("opened")
+            last_call_string = self.last_call.pretty_one_line(include_bid_name=False)
+            if last_call_string:
+                info_strings.append(last_call_string)
             if self.notrump_protocol:
                 info_strings.append("nt")
             if self.ace_constraint() is not None:
