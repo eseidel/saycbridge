@@ -6,22 +6,6 @@ scripts_dir = scripts
 appengine_dir = dist/gae
 appengine_scripts_dir = $(appengine_dir)/scripts
 
-THIRD_PARTY_SCRIPTS = \
-	third_party/jquery-1.6.2.min.js \
-	third_party/jquery.history.js \
-	third_party/bignumber.js \
-
-SCRIPTS = \
-	model.js \
-	controller.js \
-	fight.js \
-	view.js \
-	controller.js \
-	controller.test.js \
-	new_bidder.js \
-	play.js \
-	play.test.js \
-	recap.js \
 
 PYTHON_PACKAGES=networkx unittest2 werkzeug webapp2 webob jinja2
 # Prod packages: cherrypy
