@@ -72,12 +72,12 @@ class JSONAutobidHandler(webapp2.RequestHandler):
         until_position_string = self.request.get('until_position')
         until_position = Position.from_char(until_position_string) if until_position_string else None
         call_selections = self._bid_all_hands(bidder, board, until_position=until_position)
-        current_history = copy.deepcopy(board.call_history)
+        until_position_history_string = board.call_history.calls_string()
         call_selections += self._bid_all_hands(bidder, board)
         # Callers might want to know what the full history would look like if autobid.
         board_dict = {
             'board_number': board.number,
-            'calls_string': current_history.calls_string(), # The history up to "until_position"
+            'calls_string': until_position_history_string, # The history up to "until_position"
             'autobid_continuation': board.call_history.calls_string(), # How the autobidder would continue
             'autobid_interpretations': map(self._json_tuple, call_selections), # Interpretations for all calls (including continuation)
         }
