@@ -9,6 +9,6 @@ import os
 jinja_environment = jinja2.Environment(loader=jinja2.FileSystemLoader("templates"))
 
 
-class NewBidderHandler(webapp2.RequestHandler):
+class BidderHandler(webapp2.RequestHandler):
     def get(self):
-        self.response.out.write(jinja_environment.get_template('new_bidder.html').render())
+        self.response.out.write(jinja_environment.get_template('bidder.html').render())

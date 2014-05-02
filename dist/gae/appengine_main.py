@@ -8,7 +8,7 @@ import webapp2
 from handlers.autobid_handler import JSONAutobidHandler
 from handlers.explore_handler import ExploreHandler, JSONExploreHandler
 from handlers.explore2_handler import Explore2Handler, JSONExplore2Handler
-from handlers.new_bidder_handler import NewBidderHandler
+from handlers.bidder_handler import BidderHandler
 from handlers.scores_handler import ScoresHandler
 from handlers.score_flashcards_handler import ScoreFlashcardsHandler
 from handlers.unittest_handler import UnittestHandler
@@ -16,7 +16,7 @@ from handlers.priorities_handler import JSONPrioritiesHandler
 
 
 routes = [
-    ('/', NewBidderHandler),
+    ('/', BidderHandler),
     (r'/explore/(.*)', ExploreHandler),
     (r'/explore', ExploreHandler),
     (r'/explore2/(.*)', Explore2Handler),
@@ -25,21 +25,14 @@ routes = [
     (r'/json/autobid', JSONAutobidHandler),
     (r'/json/interpret', JSONExploreHandler),
     (r'/json/interpret2', JSONExplore2Handler),
-    (r'/bid', NewBidderHandler),
-    (r'/bid/.*', NewBidderHandler),
-    (r'/play', NewBidderHandler),
-    (r'/play/.*', NewBidderHandler),
+    (r'/bid', BidderHandler),
+    (r'/bid/.*', BidderHandler),
+    (r'/play', BidderHandler),
+    (r'/play/.*', BidderHandler),
     (r'/scores', ScoresHandler),
     (r'/scoring', ScoreFlashcardsHandler),
     (r'/scoring/.*', ScoreFlashcardsHandler),
     (r'/json/priorities', JSONPrioritiesHandler),
-
-    # Deprecated handlers:
-    (r'/bidder', NewBidderHandler),
-    (r'/bidder/.*', NewBidderHandler),
-    (r'/autobid/.*', NewBidderHandler),  # exists for compatibility with old URLs.
-    (r'/new_bidder', NewBidderHandler),
-    (r'/new_bidder/.*', NewBidderHandler),
 ]
 
 app = webapp2.WSGIApplication(routes, debug=True)
