@@ -5,7 +5,7 @@
 
 import webapp2
 
-from handlers.bidder_handler import JSONAutobidHandler
+from handlers.autobid_handler import JSONAutobidHandler
 from handlers.explore_handler import ExploreHandler, JSONExploreHandler
 from handlers.explore2_handler import Explore2Handler, JSONExplore2Handler
 from handlers.new_bidder_handler import NewBidderHandler

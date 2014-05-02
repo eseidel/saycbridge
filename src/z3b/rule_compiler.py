@@ -95,14 +95,14 @@ class CompiledRule(object):
         # List printing looks nicer if we lie here.
         return self.dsl_rule.name()
 
-    # FIXME: This exists for compatiblity with KBB's Rule interface and is used by bidder_handler.py
+    # FIXME: This exists for compatiblity with KBB's Rule interface and is used by autobid_handler.py
     def explanation_for_bid(self, call):
         explanation = self.dsl_rule.explanations_per_call.get(call.name)
         if explanation:
             return explanation
         return self.dsl_rule.explanation
 
-    # FIXME: This exists for compatiblity with KBB's Rule interface and is used by bidder_handler.py
+    # FIXME: This exists for compatiblity with KBB's Rule interface and is used by autobid_handler.py
     def sayc_page_for_bid(self, call):
         return None
 

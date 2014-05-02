@@ -1,5 +1,6 @@
 *.pyc
 *.swp
+*.map
 dist/android/bin
 dist/android/gen
 dist/gae/scripts/*.js
