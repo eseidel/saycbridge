@@ -34,7 +34,7 @@ class SAYCBot(object):
     def _bid_board(self, board, bidder):
         print "Board:", board.identifier
         while not board.call_history.is_complete():
-            position_to_call = board.call_history.position_to_call()
+            position_to_call = board.call_history.position_to_call().index
             hand = board.deal.hands[position_to_call]
             bid = bidder.find_call_for(hand, board.call_history)
             if not bid:
