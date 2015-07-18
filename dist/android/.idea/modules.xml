@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file:///Stuff/Projects/saycbridge/dist/android/android.iml" filepath="/Stuff/Projects/saycbridge/dist/android/android.iml" />
+      <module fileurl="file:///Stuff/Projects/saycbridge/dist/android/app/app.iml" filepath="/Stuff/Projects/saycbridge/dist/android/app/app.iml" />
+    </modules>
+  </component>
+</project>
