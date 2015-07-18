@@ -605,7 +605,7 @@ class BiddingBox extends HTMLTableElement
         for card in $('.callcard', this)
             @_setVisibility(card, @_isPossibleCall(card.call, @cachedHistory))
         for levelRow in $('.levelrow', this)
-            shouldShow = @_isPossibleLevel(levelRow, @cachedHistory) and @_shouldShowLevel(levelRow, @cachedHistory, @shouldShowAllLevels) 
+            shouldShow = @_isPossibleLevel(levelRow, @cachedHistory) and @_shouldShowLevel(levelRow, @cachedHistory, @shouldShowAllLevels)
             displayValue = if shouldShow then '' else 'none'
             $(levelRow).css('display', displayValue)
 
@@ -893,7 +893,7 @@ class CallHistoryTable extends HTMLTableElement
                     currentCell.style.backgroundColor = 'orange'
 
         if not biddingComplete
-            if @callHistory.lastToCall() and @callHistory.lastToCall().index() == model.Position.WEST.index()
+            if @callHistory.lastToCall() and @callHistory.lastToCall().index() == @positionsInDisplayOrder[3].index()
                 currentRow = @insertRow(-1)
             currentCell = currentRow.insertCell(-1)
             if @showLoadingSpinner
@@ -1407,4 +1407,3 @@ view.StatefulBiddingBox = StatefulBiddingBox
 view.SuggestBidBox = SuggestBidBox
 view.TrickList = TrickList
 view.TrickView = TrickView
-
