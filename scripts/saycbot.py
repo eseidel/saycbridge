@@ -11,7 +11,7 @@ from factory import BidderFactory
 from core.call import Call, Pass
 from core.board import Board
 from core.suit import *
-from core.position import *
+from core.position import Position
 
 
 class SAYCBot(object):
@@ -25,20 +25,20 @@ class SAYCBot(object):
         else:
             contract = call_history.contract()
             declarer = call_history.declarer()
-            print "%s by %s" % (contract, position_name(declarer))
+            print "%s by %s" % (contract, declarer.name)
 
     def _print_hands(self, deal):
         for position, hand in enumerate(deal.hands):
-            print "%s: %s" % (position_name(position), hand.pretty_one_line())
+            print "%s: %s" % (Position.from_index(position).name, hand.pretty_one_line())
 
     def _bid_board(self, board, bidder):
-        print "Board:", board.identifier()
+        print "Board:", board.identifier
         while not board.call_history.is_complete():
-            position_to_call = board.call_history.position_to_call()
+            position_to_call = board.call_history.position_to_call().index
             hand = board.deal.hands[position_to_call]
             bid = bidder.find_call_for(hand, board.call_history)
             if not bid:
-                print "NO BID in board: %s" % board.identifier()
+                print "NO BID in board: %s" % board.identifier
                 bid = Pass()
             board.call_history.calls.append(bid)
         if self.verbose:

@@ -1,9 +1,6 @@
 
 class Explore
     constructor: ->
-        # The help text is static to make it most accessible to search engines.
-        @aboutDiv = document.getElementById('about')
-
         [@basePath, @callHistory] = @basePathAndCallHistoryFromPath(window.location.pathname)
         @setupView()
 
@@ -51,6 +48,17 @@ class Explore
         # FIXME: Maybe we'll make this smarter some day.
         @setupView()
 
+    _createClearButton: ->
+        clearButton = document.createElement 'div'
+        $(clearButton).addClass('clear')
+        $(clearButton).addClass('button')
+        clearButton.textContent = 'Clear'
+        $(clearButton).click (event) =>
+            @callHistory.calls = []
+            @saveState()
+            event.preventDefault()
+        return clearButton
+
     setupView: ->
         content = document.getElementById('content')
         $(content).empty()
@@ -60,13 +68,18 @@ class Explore
         historyTable = view.CallHistoryTable.fromBoardAndHistory(board, @callHistory)
         content.appendChild historyTable
 
-        possibleCallTable = view.CallExplorerTable.fromCallHistory(@callHistory, @recordCall)
-        content.appendChild possibleCallTable
-        $('.bid_button', possibleCallTable).bind 'click', (event) =>
-            callButton = event.target
-            while callButton and not callButton.call
-                callButton = callButton.parentNode
-            @recordCall callButton.call
+        content.appendChild @_createClearButton()
+
+        callMenu = view.CallMenu.fromCallHistory(@callHistory, @recordCall)
+        content.appendChild callMenu
+        $('.call_description', callMenu).bind 'click', (event) =>
+            callDescription = event.target
+            while callDescription and not callDescription.call
+                callDescription = callDescription.parentNode
+            @recordCall callDescription.call
+
+        content.appendChild @_createClearButton()
+
 
 $ ->
     window.mainController = new Explore

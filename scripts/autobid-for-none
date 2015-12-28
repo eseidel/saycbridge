@@ -3,57 +3,90 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import logging
 import sys
 import find_src
 
 from core.call import Call, Pass
 from core.board import Board
 from core.suit import *
-from core.position import *
-import kbb
 import z3b.bidder
+from tests.harness import expectation_line
+from core.hand import Hand
+
+
+# FIXME: This belongs on a Contract object or maybe call?
+def _is_below_game(call):
+    if not call:
+        return True
+    assert call.strain
+    if call.strain == NOTRUMP:
+        return call.level < 3
+    if call.strain in MAJORS:
+        return call.level < 4
+    return call.level < 5
+
+def _is_below_small_slam(call):
+    if not call:
+        return True
+    return call.level < 6
 
 
 class AutobidForNone(object):
     def __init__(self):
         self.z3b = z3b.bidder.Bidder()
+        self.interpreter = z3b.bidder.Interpreter()
+        self.board_count = 0
+        self.none_count = 0
+
+    def _check_for_missed_game(self, board):
+        points = map(Hand.high_card_points, board.deal.hands)
+        pair_points = [points[0] + points[2], points[1] + points[3]]
+        contract = board.call_history.last_contract()
+        # If any group has 32+ hcp and contract is below slam.
+        someone_has_slam = any(map(lambda hcp: hcp >= 32, pair_points))
+        if someone_has_slam and _is_below_small_slam(contract):
+            print "MISSED SLAM: %s" % board.identifier
+            return True
+
+        # If any group has 28+ hcp and contract is below game.
+        someone_has_game = any(map(lambda hcp: hcp >= 28, pair_points))
+        if someone_has_game and _is_below_game(contract):
+            print "MISSED GAME: %s" % board.identifier
+            return True
+        return False
+
+    def _print_hands(self, deal):
+        for hand in deal.hands:
+            print hand.pretty_one_line()
 
     def _bid_board(self, board):
+        self.board_count += 1
         while not board.call_history.is_complete():
-            position_to_call = board.call_history.position_to_call()
-            hand = board.deal.hands[position_to_call]
-            bid = self.z3b.find_call_for(hand, board.call_history)
+            position = board.call_history.position_to_call()
+            hand = board.deal.hand_for(position)
+            call = self.z3b.find_call_for(hand, board.call_history)
 
-            if bid is None:
-                print "z3b=%s with %s" % (None, board.deal.hands[position_to_call].pretty_one_line())
-                vulnerability = board.call_history.vulnerability.name
-                optional_vulernability_string = "" if vulnerability == "None" else ", '%s'" % vulnerability
-                print "['%s', '?', '%s'%s],  # %s, %s" % (
-                    hand.cdhs_dot_string(),
-                    board.call_history.calls_string(),
-                    optional_vulernability_string,
-                    board.identifier().partition(":")[0], # remove the call history
-                    position_char(position_to_call),
+            if call is None:
+                self.none_count += 1
+
+                print "%s partner last rule: %s" % (
+                    board.deal.hand_for(position).pretty_one_line(),
+                    self.interpreter.create_history(board.call_history).partner.rule_for_last_call,
                 )
+                unittest_comment = "  # %s, %s" % (
+                    board.identifier.partition(":")[0], # remove the call history
+                    position.char,
+                )
+                print expectation_line(hand, board.call_history) + unittest_comment
                 print
                 return
 
-            board.call_history.calls.append(bid)
-
-    def configure_logging(self, is_verbose):
-        handler = logging.StreamHandler(sys.stderr)
-        formatter = logging.Formatter("%(levelname)-8s: %(message)s")
-        handler.setFormatter(formatter)
-
-        logger = logging.getLogger()
-        logger.addHandler(handler)
-        if is_verbose:
-            logger.setLevel(logging.NOTSET)
+            board.call_history.calls.append(call)
+        if self._check_for_missed_game(board):
+            self._print_hands(board.deal)
+            print
 
     def main(self, args):
-        self.configure_logging(True)
-
         if args:
             for identifier in args:
                 self._bid_board(Board.from_identifier(identifier))
@@ -65,6 +98,9 @@ class AutobidForNone(object):
         except KeyboardInterrupt:
             print
             print "User interrupted."
+            if self.board_count:
+                none_percent = 100.0 * self.none_count / self.board_count
+                print "%s of %s (%.1f%%) boards were None" % (self.none_count, self.board_count, none_percent)
             return 0
 
 

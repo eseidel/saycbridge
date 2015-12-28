@@ -8,29 +8,19 @@ from z3b.constraints import *
 from z3b.model import *
 from z3b.preconditions import *
 from z3b.rule_compiler import Rule, rule_order, categories
+from core.call import Call
 
 
-# FIXME: This should be in a more general location.
-LEVELS = [1, 2, 3, 4, 5, 6, 7]
+def copy_dict(d, keys):
+    return {key: d.get(key) for key in keys}
 
 
-def suited_calls():
-    for strain in suit.SUITS:
-        for level in LEVELS:
-            yield "%s%s" % (level, suit.strain_char(strain))
+natural = enum.Enum(*Call.suited_names())
+notrump_without_stoppers = enum.Enum(*Call.notrump_names())
+notrump_with_stoppers = enum.Enum(*Call.notrump_names())
 
 
-def notrump_calls():
-    for level in LEVELS:
-        yield "%s%s" % (level, suit.strain_char(suit.NOTRUMP))
-
-
-natural = enum.Enum(*suited_calls())
-notrump_without_stoppers = enum.Enum(*notrump_calls())
-notrump_with_stoppers = enum.Enum(*notrump_calls())
-
-
-natural_slams = [
+natural_slams = rule_order.order(
     notrump_without_stoppers.get('6N'), 
 
     natural.get('6C'),
@@ -47,11 +37,10 @@ natural_slams = [
     natural.get('7S'),
 
     notrump_with_stoppers.get('7N'), 
-]
-rule_order.order(*natural_slams)
+)
 
 
-natural_exact_games = [
+natural_exact_games = rule_order.order(
     notrump_without_stoppers.get('3N'),
 
     natural.get('5C'),
@@ -61,11 +50,10 @@ natural_exact_games = [
 
     natural.get('4H'),
     natural.get('4S'),
-]
-rule_order.order(*natural_exact_games)
+)
 
 
-natural_overly_sufficient_games = [
+natural_overly_sufficient_games = rule_order.order(
     notrump_without_stoppers.get('5N'),
     notrump_without_stoppers.get('4N'),
 
@@ -74,11 +62,10 @@ natural_overly_sufficient_games = [
 
     notrump_with_stoppers.get('5N'),
     notrump_with_stoppers.get('4N'),
-]
-rule_order.order(*natural_overly_sufficient_games)
+)
 
 
-natural_part_scores = [
+natural_part_scores = rule_order.order(
     notrump_without_stoppers.get('2N'),
     notrump_without_stoppers.get('1N'),
 
@@ -89,8 +76,7 @@ natural_part_scores = [
     natural.get('4C'), natural.get('4D'),
     natural.get('3C'), natural.get('3D'), natural.get('3H'), natural.get('3S'),
     natural.get('2C'), natural.get('2D'), natural.get('2H'), natural.get('2S'),
-]
-rule_order.order(*natural_part_scores)
+)
 
 
 rule_order.order(
@@ -104,8 +90,8 @@ rule_order.order(
 natural_bids = set(natural) | set(notrump_with_stoppers) | set(notrump_without_stoppers)
 
 natural_exact_minor_games = set([
-    natural.get('4C'),
-    natural.get('4D'),
+    natural.get('5C'),
+    natural.get('5D'),
 ])
 
 natural_exact_major_games = set([
@@ -124,11 +110,18 @@ natural_games = set([
     natural.get('5C'), natural.get('5D'), natural.get('5H'), natural.get('5S'), notrump_with_stoppers.get('5N'), notrump_without_stoppers.get('5N'),
 ])
 
-natural_suited_part_scores = set([
-    natural.get('2C'), natural.get('2D'), natural.get('2H'), natural.get('2S'),
-    natural.get('3C'), natural.get('3D'), natural.get('3H'), natural.get('3S'),
+natural_minor_part_scores = set([
+    natural.get('2C'), natural.get('2D'),
+    natural.get('3C'), natural.get('3D'),
     natural.get('4C'), natural.get('4D'),
 ])
+
+natural_major_part_scores = set([
+    natural.get('2H'), natural.get('2S'),
+    natural.get('3H'), natural.get('3S'),
+])
+
+natural_suited_part_scores = natural_minor_part_scores | natural_major_part_scores
 
 natural_nt_part_scores = set([
     notrump_with_stoppers.get('1N'), notrump_without_stoppers.get('1N'),
@@ -159,9 +152,9 @@ class SufficientCombinedPoints(Constraint):
         min_points = None
         if strain == suit.NOTRUMP:
             min_points = points_for_sound_notrump_bid_at_level[call.level]
-        if strain in suit.SUITS:
+        else:
+            assert strain in suit.SUITS, "%s not in %s" % (strain, suit.SUITS)
             min_points = points_for_sound_suited_bid_at_level[call.level]
-        assert min_points is not None
         return points >= max(0, min_points - history.partner.min_points)
 
 
@@ -197,62 +190,15 @@ class NaturalSuited(SoundNaturalBid):
         WeHaveShownMorePointsThanThem(),
         PartnerHasAtLeastLengthInSuit(1),
     ]
-    priorities_per_call = {
-        '2C': natural.get('2C'),
-        '2D': natural.get('2D'),
-        '2H': natural.get('2H'),
-        '2S': natural.get('2S'),
-
-        '3C': natural.get('3C'),
-        '3D': natural.get('3D'),
-        '3H': natural.get('3H'),
-        '3S': natural.get('3S'),
-
-        '4C': natural.get('4C'),
-        '4D': natural.get('4D'),
-        '4H': natural.get('4H'),
-        '4S': natural.get('4S'),
-
-        '5C': natural.get('5C'),
-        '5D': natural.get('5D'),
-        '5H': natural.get('5H'),
-        '5S': natural.get('5S'),
-
-        '6C': natural.get('6C'),
-        '6D': natural.get('6D'),
-        '6H': natural.get('6H'),
-        '6S': natural.get('6S'),
-
-        '7C': natural.get('7C'),
-        '7D': natural.get('7D'),
-        '7H': natural.get('7H'),
-        '7S': natural.get('7S'),
-    }
+    priorities_per_call = copy_dict(natural, Call.suited_names_between('2C', '7S'))
 
 
 class LawOfTotalTricks(Rule):
     preconditions = [
+        # FIXME: This should only apply over weak bids (only when NaturalSuited does not)?
         PartnerHasAtLeastLengthInSuit(1),
     ]
-    priorities_per_call = {
-        '2C': natural.get('2C'),
-        '2D': natural.get('2D'),
-        '2H': natural.get('2H'),
-        '2S': natural.get('2S'),
-
-        '3C': natural.get('3C'),
-        '3D': natural.get('3D'),
-        '3H': natural.get('3H'),
-        '3S': natural.get('3S'),
-
-        '4C': natural.get('4C'),
-        '4D': natural.get('4D'),
-        '4H': natural.get('4H'),
-        '4S': natural.get('4S'),
-
-        '5C': natural.get('5C'),
-        '5D': natural.get('5D'),
-    }
+    priorities_per_call = copy_dict(natural, Call.suited_names_between('2C', '5D'))
     shared_constraints = LengthSatisfiesLawOfTotalTricks()
     category = categories.LawOfTotalTricks
 
@@ -274,15 +220,8 @@ class SufficientStoppers(Constraint):
 
 class NaturalNotrump(SoundNaturalBid):
     preconditions = WeHaveShownMorePointsThanThem()
-    priorities_per_call = {
-        '1N': notrump_without_stoppers.get('1N'),
-        '2N': notrump_without_stoppers.get('2N'),
-        '3N': notrump_without_stoppers.get('3N'),
-        '4N': notrump_without_stoppers.get('4N'),
-        '5N': notrump_without_stoppers.get('5N'),
-        '6N': notrump_without_stoppers.get('6N'),
-        '7N': notrump_without_stoppers.get('7N'),
-    }
+    # The copy_dict is redundant, this is all notrump bids.
+    priorities_per_call = copy_dict(notrump_without_stoppers, Call.notrump_names_between('1N', '7N'))
     shared_constraints = SufficientStoppers()
     conditional_priorities_per_call = {
         '1N': [(StoppersInOpponentsSuits(), notrump_with_stoppers.get('1N'))],
@@ -307,18 +246,24 @@ class NaturalPass(Rule):
         LastBidWas(positions.RHO, 'P'),
         # Natural passes do not apply when preempting.
         WeHaveShownMorePointsThanThem(),
+        InvertedPrecondition(ForcedToBid()),
     ]
     call_names = 'P'
     category = categories.NaturalPass
 
 
 class NaturalPassWithFit(NaturalPass):
-    preconditions = LastBidHasSuit(positions.Partner)
+    preconditions = [
+        LastBidHasSuit(positions.Partner),
+        InvertedPrecondition(LastBidHasAnnotation(positions.Partner, annotations.Artificial)),
+        HaveFit(),
+    ]
     shared_constraints = MinimumCombinedLength(7, use_partners_last_suit=True)
 
 
 class SuitGameIsRemote(NaturalPassWithFit):
     preconditions = LastBidWasBelowGame()
+    # FIXME: Shouldn't this be support points?
     shared_constraints = MaximumCombinedPoints(24)
 
 
@@ -326,11 +271,42 @@ class SuitSlamIsRemote(NaturalPassWithFit):
     preconditions = [
         LastBidWasGameOrAbove(),
         LastBidWasBelowSlam(),
+        InvertedPrecondition(LastBidHasStrain(positions.Partner, suit.NOTRUMP))
     ]
     shared_constraints = MaximumCombinedPoints(32)
 
 
-natural_passses = set([
+class NotrumpSlamIsRemote(NaturalPass):
+    preconditions = [
+        LastBidHasStrain(positions.Partner, suit.NOTRUMP),
+        LastBidWasGameOrAbove(),
+        LastBidWasBelowSlam(),
+    ]
+    shared_constraints = MaximumCombinedPoints(32)
+
+game_is_remote_passes = set([
+    # FIXME: Need NotrumpGameIsRemote?
     SuitGameIsRemote,
-    SuitSlamIsRemote,
 ])
+
+slam_is_remote_passes = set([
+    SuitSlamIsRemote,
+    NotrumpSlamIsRemote,
+])
+
+natural_passses = game_is_remote_passes | slam_is_remote_passes
+
+
+rule_order.order(DefaultPass, natural_passses)
+# Suited games are much easier to make, we should prefer those when available.
+rule_order.order(NotrumpSlamIsRemote, natural_exact_major_games)
+rule_order.order(natural_suited_part_scores, natural_passses)
+rule_order.order(
+    SuitGameIsRemote,
+    natural_exact_games,
+)
+rule_order.order(
+    natural_overly_sufficient_games,
+    slam_is_remote_passes,
+    natural_slams,
+)

@@ -1,49 +1,69 @@
-#help table {
-    margin-top: 0px;
-    margin-left: 10px;
+body {
+    margin: 0px;
+    padding: 0px;
 }
-.explore_table {
-    min-width: 300px;
-    border-top: 1px solid gray;
-    margin-top: 5px;
-    padding-top: 5px;
-    float: left;
+
+.call {
+    font-size: 16pt;
 }
-.explore_table td {
-    padding-left: 10px;
-    padding-right: 10px;
+
+.call_menu {
+    width: 100%;
+    font-size: 16pt;
 }
-.explore_table tr:nth-child(even) { background-color: #CCF }
-.explore_table tr:nth-child(odd) { background-color: #FFC }
-.bid_button {
-    -webkit-appearance: square-button;
-    width: 50px;
-    height: 25px;
-    font-size: 15px;
+
+.call_menu.hide {
+    -webkit-transition: -webkit-transform 0.5s;
+    -webkit-transition-timing-function: ease-in-out;
+    -webkit-transform: translateX(-100%);
 }
-#right_panel {
-    float: left;
-    text-align: left;
-    max-width: 400px;
-    margin-left: 20px;
+
+tr.call_description > td:last-child {
+    opacity: 0;
 }
-#footer_links {
-    margin-top: 10px;
-    font-size: 24px;
+
+table.ready tr.call_description > td:last-child {
+    -webkit-transition: opacity 0.3s;
+    -webkit-transition-timing-function: ease-in;
+    opacity: 1.0;
+}
+
+tr.call_description > td {
     text-align: center;
+    cursor: pointer;
 }
-.priority {
-    text-align: center;
+
+tr.call_description > td:first-child {
+    width: 75px;
+    height: 75px;
 }
-.term {
-    text-align: right;
+
+tr.call_description:nth-child(even) > td {
+    background-color: #CCF;
 }
-.term:after {
-    content: ': ';
+
+tr.call_description:nth-child(odd)  > td {
+    background-color: #FFC;
 }
-.definition {
-    padding-left: 10px;
-}
-#returntobidder {
-    display: block;
+
+/*This is copied from hand.css */
+.button {
+    margin: auto;
+    border-radius: 10px;
+    text-decoration: none;
+    font-size: 34px;
+    border: 2px solid #555;
+    box-shadow: 0px 2px 2px #aaa;
+    padding-bottom: 3px;
+    margin-bottom: 7px;
+    cursor: pointer;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -o-user-select: none;
+    user-select: none;
+    color: #444;
+    background-color: white;
+    background: -webkit-linear-gradient(top, #ffffff 0%, #fdfdfd 100%);
+    text-align:center;
 }

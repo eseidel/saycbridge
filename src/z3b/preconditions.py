@@ -3,7 +3,7 @@
 # found in the LICENSE file.
 
 from z3b import enum
-import core.suit as suit
+from core import suit
 
 
 # The ordering of these values does not matter.  We only use Enum so that
@@ -25,8 +25,14 @@ annotations = enum.Enum(
     "BidHearts",
     "BidSpades",
 
+    "LimitRaise",
+    "OpenerReverse",
+
     # Not all Cappelletti bids are artificial, some can be treated as to-play.
     "Cappelletti",
+
+    # Quantitiative 4N is odd, but not artificial. :)
+    "QuantitativeFourNotrumpJump",
 
     "Artificial",
     # NOTE: RuleCompiler._compile_annotations will automatically imply
@@ -45,6 +51,7 @@ annotations = enum.Enum(
     "TakeoutDouble",
     "Transfer",
     "Unusual2N",
+    "GrandSlamForce",
 )
 
 # Used by RuleCompiler._compile_annotations.
@@ -57,9 +64,12 @@ def did_bid_annotation(suit):
         annotations.BidDiamonds,
         annotations.BidHearts,
         annotations.BidSpades,
-    )[suit]
+    )[suit.index]
 
 
+# FIXME: Consider adding a CallPrecondition and HistoryPrecondition subclasses
+# which could then easily be filtered to the front of the preconditions list
+# for faster matching, or asserting about unreachable call_names, etc.
 class Precondition(object):
     repr_name = None
 
@@ -166,39 +176,10 @@ class HasBid(Precondition):
 
 
 class ForcedToBid(Precondition):
-    def _rho_bid(self, history):
-        return history.rho.last_call and not history.rho.last_call.is_pass()
-
-    def _partner_last_bid_was_pass(self, history):
-        return history.partner.last_call and history.partner.last_call.is_pass()
-
-    def _partner_last_call_was_artificial(self, history):
-        return annotations.Artificial in history.partner.annotations_for_last_call
-
-    def _is_forced_to_bid(self, history):
-        # If partner hasn't bid yet then cannot be forcing
-        if history.partner.last_call is None:
-            return False
-        if self._partner_last_bid_was_pass(history):
-            return False
-        # FIXME: Understand penalty doubles.
-        if self._rho_bid(history):
-            return False
-        # Artificial bids are always forcing. We use explicit pass rules to convert them into natural bids.
-        if self._partner_last_call_was_artificial(history):
-            return True
-        # FIXME: This is a lame hack.  Natural NT bids are never forcing.
-        if history.partner.last_call.strain == suit.NOTRUMP:
-            return False
-        # FIXME: We're attempting to express that partner is unbounded but
-        # partner is never truly unbounded if other players have bid.
-        # "Game is not remote" might be better?
-        # FIXME: This is wrong and will cause hands with 17+ points to
-        # only be able to make forcing bids, including 2N! NT is bounded and thus never forcing.
-        return history.partner.could_have_more_points_than(17)
-
     def fits(self, history, call):
-        return self._is_forced_to_bid(history)
+        # preconditions.py depends on forcing.py, but forcing.py needs to know annotations.
+        from forcing import SAYCForcingOracle
+        return SAYCForcingOracle().forced_to_bid(history)
 
 
 class IsGame(Precondition):
@@ -314,14 +295,21 @@ class RaiseOfPartnersLastSuit(Precondition):
 
 
 class CueBid(Precondition):
-    def __init__(self, position):
+    def __init__(self, position, use_first_suit=False):
         self.position = position
+        self.use_first_suit = use_first_suit
 
     def fits(self, history, call):
-        last_call = history.view_for(self.position).last_call
-        if not last_call or last_call.strain not in suit.SUITS:
+        if self.use_first_suit:
+            target_call = None
+            for view in history.view_for(self.position).walk:
+                target_call = view.last_call
+        else:
+            target_call = history.view_for(self.position).last_call
+
+        if not target_call or target_call.strain not in suit.SUITS:
             return False
-        return call.strain == last_call.strain and history.view_for(self.position).min_length(last_call.strain) >= 3
+        return call.strain == target_call.strain and history.view_for(self.position).min_length(target_call.strain) >= 3
 
 
 class SuitLowerThanMyLastSuit(Precondition):
@@ -360,7 +348,6 @@ class MaxShownLength(Precondition):
         self.position = position
         self.max_length = max_length
         self.suit = suit
-
 
     @property
     def repr_args(self):

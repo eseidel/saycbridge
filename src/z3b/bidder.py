@@ -439,15 +439,26 @@ class PossibleCalls(object):
         # FIXME: There must be a nicer way to do this.
         return [pair for pair in self._calls_and_priorities if pair[0] == call][0][1]
 
-
-    def calls_of_maximal_priority(self):
+    def maximal_calls_and_priorities(self):
         maximal_calls_and_priorities = []
         for call, priority in self._calls_and_priorities:
             if self._is_dominated(priority, maximal_calls_and_priorities):
                 continue
             maximal_calls_and_priorities = filter(lambda (max_call, max_priority): not self.ordering.lt(max_priority, priority), maximal_calls_and_priorities)
             maximal_calls_and_priorities.append([call, priority])
-        return [call for call, _ in maximal_calls_and_priorities]
+        return maximal_calls_and_priorities
+
+
+# CallSelection exposes similar information to a History object, but not connected in a History chain.
+# It also comes from the *bidding* process and thus can contain more information (since it had access to the hand).
+class CallSelection(object):
+    def __init__(self, call, rule_selector):
+        self.call = call
+        self.rule_selector = rule_selector
+
+    @property
+    def rule(self):
+        return self.rule_selector.rule_for_call(self.call)
 
 
 class Bidder(object):
@@ -455,28 +466,35 @@ class Bidder(object):
         # Assuming SAYC for all sides.
         self.system = sayc.StandardAmericanYellowCard
 
-    def find_call_for(self, hand, call_history, expected_call=None):
+    def call_selection_for(self, hand, call_history, expected_call=None):
         with Interpreter().create_history(call_history) as history:
             # Select highest-intra-bid-priority (category) rules for all possible bids
             rule_selector = RuleSelector(self.system, history, expected_call)
 
             # Compute inter-bid priorities (priority) for each using the hand.
             possible_calls = rule_selector.possible_calls_for_hand(hand, expected_call)
-            maximal_calls = possible_calls.calls_of_maximal_priority()
+            maximal_calls_and_priorities = possible_calls.maximal_calls_and_priorities()
             # We don't currently support tie-breaking priorities, but we do have some bids that
-            # we don't make without a planner
-            maximal_calls = filter(
-                    lambda call: not rule_selector.rule_for_call(call).requires_planning(history), maximal_calls)
-            if not maximal_calls:
-                # If we failed to find a single maximal bid, this is an error.
-                return None
+            # we don't make without a planner.
+            no_planning_filter = lambda call_priority_tuple: not rule_selector.rule_for_call(call_priority_tuple[0]).requires_planning
+            maximal_calls_and_priorities = filter(no_planning_filter, maximal_calls_and_priorities)
+            if not maximal_calls_and_priorities:
+                return None # If we failed to find any call, this is an error.
+            maximal_calls, maximal_priorities = zip(*maximal_calls_and_priorities)
             if len(maximal_calls) != 1:
                 rules = map(rule_selector.rule_for_call, maximal_calls)
                 call_names = map(lambda call: call.name, maximal_calls)
-                print "WARNING: Unordered: %s from: %s (%s)" % (call_names, rules, map(possible_calls.priority_for_call, maximal_calls))
+                print "WARNING: Unordered: %s rules: %s priorities: %s" % (call_names, rules, maximal_priorities)
                 return None
-            # print rule_selector.rule_for_call(maximal_calls[0])
-            return maximal_calls[0]
+
+            call = maximal_calls[0]
+            return CallSelection(call, rule_selector)
+
+    def find_call_for(self, hand, call_history, expected_call=None):
+        call_selection = self.call_selection_for(hand, call_history, expected_call)
+        if not call_selection:
+            return None
+        return call_selection.call
 
 
 class RuleSelector(object):
@@ -522,7 +540,7 @@ class RuleSelector(object):
         for call, best in maximal.iteritems():
             category, rules = best
             if len(rules) > 1:
-                print "WARNING: Multiple rules have maximal category (%s) for %s: %s" % (category, call, rules)
+                print "WARNING: Multiple rules have maximal category (%s) for %s: %s over: %s" % (category, call, rules, self.history.call_history)
             else:
                 result[call] = rules[0]
         return result
@@ -597,6 +615,7 @@ class HistoryCache(object):
         call_string_and_history = (history.call_history.calls_string(), history)
         self.lru.append(call_string_and_history)
 
+
 history_cache = HistoryCache()
 
 
@@ -617,6 +636,8 @@ class Interpreter(object):
             raise InconsistentHistoryException()
 
         annotations = rule.annotations_for_call(call)
+        if explain:
+            print "Selected %s for %s:" % (rule, call)
         constraints = selector.constraints_for_call(call)
         if not history.is_consistent(positions.Me, constraints):
             raise InconsistentHistoryException(annotations, constraints, rule)

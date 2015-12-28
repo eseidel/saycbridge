@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-from position import *
+from core.position import *
 from core.call import Call
 from suit import SUITS
 
@@ -21,6 +21,7 @@ class Vulnerability(object):
     name_to_identifier = { 'E-W': 'EW', 'N-S': 'NS', 'None': 'NO', 'Both': 'BO' }
     identifier_to_name = dict([(identifier, name) for name, identifier in name_to_identifier.items()])
 
+    @property
     def identifier(self):
         return self.name_to_identifier[self.name]
 
@@ -64,7 +65,7 @@ class Vulnerability(object):
             return False
         if self.name == "Both":
             return True
-        return position_char(position) in self.name
+        return position.char in self.name
 
 
 # FIXME: It's unclear if this class should expose just call_names or Call objects.
@@ -86,8 +87,8 @@ class CallHistory(object):
         return calls
 
     @classmethod
-    def from_string(cls, history_string, dealer_string=None, vulnerability_string=None):
-        dealer = position_from_char(dealer_string) if dealer_string else None
+    def from_string(cls, history_string, dealer_char=None, vulnerability_string=None):
+        dealer = Position.from_char(dealer_char) if dealer_char else None
         vulnerability = Vulnerability.from_string(vulnerability_string)
         calls = cls._calls_from_calls_string(history_string)
         return CallHistory(calls, dealer=dealer, vulnerability=vulnerability)
@@ -95,7 +96,8 @@ class CallHistory(object):
     @classmethod
     def dealer_from_board_number(cls, board_number):
         # It's unclear if this number->dealer/vulnerability knowledge belongs in CallHistory or in Board.
-        return (board_number + 3) % 4
+        dealer_index = (board_number + 3) % 4
+        return Position.from_index(dealer_index)
 
     @classmethod
     def from_board_number_and_calls_string(cls, board_number, calls_string):
@@ -114,7 +116,7 @@ class CallHistory(object):
         self.vulnerability = vulnerability or Vulnerability.from_board_number(1)
 
     def __str__(self):
-        return "<CallHistory: %s>" % self.calls_string()
+        return self.calls_string()
 
     def __len__(self):
         return len(self.calls)
@@ -123,12 +125,12 @@ class CallHistory(object):
         # Make sure we haven't already doubled.
         if not self.last_non_pass().is_contract():
             return False
-        return not in_partnership_with(self.declarer(), self.position_to_call())
+        return not self.declarer().in_partnership_with(self.position_to_call())
 
     def can_redouble(self):
         if not self.last_non_pass().is_double():
             return False
-        return in_partnership_with(self.declarer(), self.position_to_call())
+        return self.declarer().in_partnership_with(self.position_to_call())
 
     # This may belong on a separate bridge-rules object?
     def is_legal_call(self, call):
@@ -172,8 +174,9 @@ class CallHistory(object):
             partial_history = partial_history.copy_with_partial_history(-step)
         return partial_histories
 
+    @property
     def identifier(self):
-        return "%s:%s:%s" % (position_char(self.dealer), self.vulnerability.identifier(), self.comma_separated_calls())
+        return "%s:%s:%s" % (self.dealer.char, self.vulnerability.identifier, self.comma_separated_calls())
 
     @classmethod
     def from_identifier(cls, identifier):
@@ -187,13 +190,13 @@ class CallHistory(object):
         else:
             assert False, "Invalid history identifier: %s" % identifier
 
-        dealer = position_from_char(dealer_char)
+        dealer = Position.from_char(dealer_char)
         vulnerability = Vulnerability.from_identifier(vulenerability_identifier)
         calls = cls._calls_from_calls_string(calls_identifier)
         return CallHistory(calls=calls, dealer=dealer, vulnerability=vulnerability)
 
     def pretty_one_line(self):
-        return "Deal: %s, Bids: %s" % (position_char(self.dealer), self.calls_string())
+        return "Deal: %s, Bids: %s" % (self.dealer.char, self.calls_string())
 
     def calls_string(self):
         return " ".join([call.name for call in self.calls])
@@ -211,7 +214,7 @@ class CallHistory(object):
     def last_to_call(self):
         if not self.calls:
             return None
-        return (self.dealer + len(self.calls) - 1) % 4
+        return self.dealer.position_after_n_calls(len(self.calls) - 1)
 
     def last_non_pass(self):
         for call in reversed(self.calls):
@@ -225,12 +228,6 @@ class CallHistory(object):
                 return callder
         return None
 
-    def first_contract(self):
-        for call in self.calls:
-            if call.is_contract():
-                return call
-        return None
-
     def last_contract(self):
         for call in reversed(self.calls):
             if call.is_contract():
@@ -240,31 +237,30 @@ class CallHistory(object):
     def position_to_call(self):
         # FIXME: Should this return None when is_complete?
         # We'd have to check callers, some may assume it's OK to call position_to_call after is_complete.
-        return (self.dealer + len(self.calls)) % 4
+        return self.dealer.position_after_n_calls(len(self.calls))
 
     def calls_by(self, position):
-        offset_from_dealer = (position - self.dealer) % 4
+        offset_from_dealer = self.dealer.calls_between(position)
         if len(self.calls) <= offset_from_dealer:
             return []
         return [self.calls[i] for i in range(offset_from_dealer, len(self.calls), 4)]
 
     def enumerate_calls(self):
         for call_offset, call in enumerate(self.calls):
-            caller = (self.dealer + call_offset) % 4
-            yield caller, call
+            yield self.dealer.position_after_n_calls(call_offset), call
 
     def enumerate_reversed_calls(self):
+        # FIXME: This is needlessly complicated.
         for call_offset, call in enumerate(reversed(self.calls)):
             caller_offset = len(self.calls) - 1 - call_offset
-            caller = (self.dealer + caller_offset) % 4
-            yield caller, call
+            yield self.dealer.position_after_n_calls(caller_offset), call
 
     def competative_auction(self):
         first_caller = None
         for caller, call in self.enumerate_calls():
             if not first_caller and call.is_contract():
                 first_caller = caller
-            if call.is_contract() and not in_partnership_with(caller, first_caller):
+            if call.is_contract() and not caller.in_partnership_with(first_caller):
                 return True
         return False
 
@@ -273,6 +269,12 @@ class CallHistory(object):
         if not calls:
             return None
         return calls[-1]
+
+    def first_call_by(self, position):
+        calls =  self.calls_by(position)
+        if not calls:
+            return None
+        return calls[0]
 
     def last_call_by_next_bidder(self):
         next_caller = self.position_to_call()
@@ -283,13 +285,6 @@ class CallHistory(object):
             if call.is_contract():
                 return caller
         return None
-
-    def suits_bid_by(self, caller):
-        return set([call.strain for call in self.calls_by(caller) if call.strain in SUITS])
-
-    def bid_suits(self):
-        # Careful, this doesn't know anything about transfers or other non-natural suit calls.
-        return set([call.strain for call in self.calls if call.strain in SUITS])
 
     def declarer(self):
         first_caller = None
@@ -302,13 +297,13 @@ class CallHistory(object):
             if not last_call:
                 last_call = call
                 last_caller = caller
-            if call.strain == last_call.strain and in_partnership_with(caller, last_caller):
+            if call.strain == last_call.strain and caller.in_partnership_with(last_caller):
                 first_call = call
                 first_caller = caller
         return first_caller
 
     def dummy(self):
-        return partner_of(declarer)
+        return declarer.partner
 
     def contract(self):
         # Maybe we need a Contract object which holds declarer, suit, level, and doubles?
@@ -328,32 +323,3 @@ class CallHistory(object):
 
     def is_passout(self):
         return self.is_complete() and self.calls[-4].is_pass()
-
-    def _call_names_slice_for_round(self, position, round):
-        if round == 0 and position < self.dealer:
-            return None
-        call_index = round * len(POSITIONS) + position - self.dealer
-        if call_index >= len(self.calls):
-            return None
-        return map(operator.attrgetter('name'), self.calls[:call_index + 1])
-
-    def _bidding_rounds_count(self):
-        return int(math.ceil((len(self.calls) + self.dealer) / 4.0))
-
-    # Bidding rounds always start with North, even if the deal did not.
-    def bidding_rounds(self, mark_to_bid=True, last_call_only=False):
-        bidding_rounds = []
-        for round in range(self._bidding_rounds_count()):
-            bidding_round = []
-            for position in POSITIONS:
-                call_names_slice = self._call_names_slice_for_round(position, round)
-                if last_call_only and call_names_slice is not None:
-                    bidding_round.append(call_names_slice[-1])
-                else:
-                    bidding_round.append(call_names_slice)
-            bidding_rounds.append(bidding_round)
-        if mark_to_bid and not self.is_complete():
-            if not bidding_rounds or bidding_rounds[-1][self.position_to_call()] != None:
-                bidding_rounds.append([None, None, None, None])
-            bidding_rounds[-1][self.position_to_call()] = "?"
-        return bidding_rounds

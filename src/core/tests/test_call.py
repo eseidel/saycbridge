@@ -23,3 +23,9 @@ class CallTest(unittest2.TestCase):
         self.assertEqual(test_dict[Call('P')], 1)
         test_dict[Call('1C')] = 2
         self.assertEqual(test_dict[Call('1C')], 2)
+
+    def test_names(self):
+        self.assertEqual(list(Call.suited_names_between('1C', '1H')), ['1C', '1D', '1H'])
+        self.assertEqual(list(Call.suited_names_between('2D', '4H')), ['2D', '2H', '2S', '3C', '3D', '3H', '3S', '4C', '4D', '4H'])
+        self.assertEqual(list(Call.notrump_names_between('1N', '7N')), ['1N', '2N', '3N', '4N', '5N', '6N', '7N'])
+        self.assertEqual(list(Call.notrump_names_between('3N', '5N')), ['3N', '4N', '5N'])

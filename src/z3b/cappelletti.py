@@ -40,17 +40,51 @@ class Cappelletti(Rule):
     # The book suggests "decent strength".
     # The book bids Cappelletti with 11 hcp, but seems to want 12 hcp when responding.
     # Wikipedia says Cappelletti is 9-14 hcp.
-    shared_constraints = points >= 10
+    # playing_points here is sorta compensating for us not using length_points?
+    shared_constraints = points >= 10, playing_points >= 12
+    explanations_per_call = {
+        'X': """Indicates a 1NT opening hand.  NT conventional responses are off.
+Responder can pass with enough points to penalize opener, but more likely should escape to a suit fit.""",
+        '2C': "Indicates one-suited hand (6+ cards in an un-named suit).",
+    }
 
 
 rule_order.order(
     DefaultPass,
     cappelletti_calls,
+    # p112, h14 seems to imply we'd rather preempt than cappelletti when available.
+    set([weak_preemptive_overcalls.WeakFourLevel, weak_preemptive_overcalls.WeakThreeLevel]),
 )
 
 
 class ResponseToCappelletti(Rule):
-    preconditions = LastBidHasAnnotation(positions.Partner, annotations.Cappelletti)
+    preconditions = [
+        LastBidHasAnnotation(positions.Partner, annotations.Cappelletti),
+        LastBidWas(positions.RHO, 'P'),
+    ]
+
+
+class PassResponseToOneNotrumpPenaltyDouble(ResponseToCappelletti):
+    preconditions = LastBidWas(positions.Partner, 'X')
+    constraints = {
+        'P': MinimumCombinedPoints(21), # We have a point majority and should penalize 1N.
+    }
+
+
+class NewSuitResponseToOneNotrumpPenaltyDouble(ResponseToCappelletti):
+    preconditions = [
+        LastBidWas(positions.Partner, 'X'),
+        UnbidSuit(),
+        NotJumpFromLastContract(),
+    ]
+    call_names = ['2C', '2D', '2H', '2S']
+    shared_constraints = [MinLength(4), LongestSuitExceptOpponentSuits()]
+
+
+rule_order.order(
+    NewSuitResponseToOneNotrumpPenaltyDouble,
+    PassResponseToOneNotrumpPenaltyDouble,
+)
 
 
 cappelletti_two_club_responses = enum.Enum(
@@ -77,6 +111,25 @@ class ResponseToCappellettiTwoClubs(ResponseToCappelletti):
     annotations_per_call = {
         '2D': annotations.Artificial,
     }
+    explanations_per_call = {
+        '2D': "Waiting. Asks partners to name their 6-card suit.",
+    }
+
+
+class RebidAfterCappelleti(Rule):
+    preconditions = LastBidHasAnnotation(positions.Me, annotations.Cappelletti)
+
+
+
+class SuitRebidAfterCappellettiTwoClubs(RebidAfterCappelleti):
+    preconditions = [
+        LastBidWas(positions.Me, '2C'),
+        UnbidSuit(),
+    ]
+    # FIXME: What if they interfere?
+    call_names = ('2H', '2S', '3C', '3D')
+    shared_constraints = MinLength(6)
+
 
 
 cappelletti_two_diamonds_responses = enum.Enum(
@@ -110,8 +163,9 @@ class ResponseToCappellettiTwoDiamonds(ResponseToCappelletti):
         '3C': [(clubs >= 6, ThreeOfTheTopFiveOrBetter(suit.CLUBS)), cappelletti_two_diamonds_responses.LongClubs],
 
         # Could these be natural too?  They imply invitational points?  But how many does partner have?
-        '3H': [(MinimumCombinedLength(9), MinimumCombinedPoints(22)), cappelletti_two_diamonds_responses.InvitationalHeartSupport], 
-        '3S': [(MinimumCombinedLength(9), MinimumCombinedPoints(22)), cappelletti_two_diamonds_responses.InvitationalSpadeSupport],
+        # Currently we're assuming that 2D promises 5-5 in the majors.
+        '3H': [(MinimumCombinedLength(9), MinimumCombinedSupportPoints(22)), cappelletti_two_diamonds_responses.InvitationalHeartSupport],
+        '3S': [(MinimumCombinedLength(9), MinimumCombinedSupportPoints(22)), cappelletti_two_diamonds_responses.InvitationalSpadeSupport],
     }
     annotations_per_call = {
         '2N': annotations.Artificial,
@@ -129,7 +183,20 @@ rule_order.order(
 )
 
 
-class RaiseResponseToMajorCappelletti(ResponseToCappelletti):
+class ResponseToMajorCappelletti(ResponseToCappelletti):
+    preconditions = LastBidHasStrain(positions.Partner, suit.MAJORS)
+
+
+class NewSuitResponseToMajorCappelletti(ResponseToMajorCappelletti):
+    preconditions = UnbidSuit()
+    call_names = ('2S', '3C', '3D', '3H')
+    shared_constraints = [
+        MinLength(6),
+        ThreeOfTheTopFiveOrBetter(),
+    ]
+
+
+class RaiseResponseToMajorCappelletti(ResponseToMajorCappelletti):
     preconditions = [
         LastBidHasStrain(positions.Partner, suit.MAJORS),
         RaiseOfPartnersLastSuit(),
@@ -145,4 +212,42 @@ class RaiseResponseToMajorCappelletti(ResponseToCappelletti):
         MinimumCombinedPoints(18)
     ]
 
-	
+
+rule_order.order(
+    DefaultPass,
+    NewSuitResponseToMajorCappelletti,
+    cappelletti_major_raise_responses,
+)
+
+
+class CappellettiMinorRequest(ResponseToMajorCappelletti):
+    call_names = '2N'
+    requires_planning = True # FIXME: Can't we do this with constraints?
+    annotations = annotations.CappellettiMinorRequest
+    shared_constraints = NO_CONSTRAINTS
+
+
+class ResponseToCappellettiMinorRequest(RebidAfterCappelleti):
+    preconditions = [
+        NotJumpFromLastContract(),
+        LastBidHasAnnotation(positions.Partner, annotations.CappellettiMinorRequest),
+    ]
+    call_names = ('3C', '3D')
+    shared_constraints = MinLength(5)
+
+
+class RaiseAfterCappellettiMinorRequest(Rule):
+    preconditions = [
+        LastBidHasAnnotation(positions.Me, annotations.CappellettiMinorRequest),
+        PartnerHasAtLeastLengthInSuit(5),
+    ]
+    call_names = ('3H', '3S')
+    shared_constraints = [
+        MinimumCombinedLength(8),
+        MinimumCombinedSupportPoints(22), # Matches limit raise
+    ]
+
+rule_order.order(
+    DefaultPass,
+    RaiseAfterCappellettiMinorRequest,
+)

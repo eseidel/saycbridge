@@ -6,16 +6,31 @@ from z3b import enum
 import core.suit as suit
 import z3
 
-spades, hearts, diamonds, clubs = z3.Ints('spades hearts diamonds clubs')
 
-ace_of_spades, king_of_spades, queen_of_spades, jack_of_spades, ten_of_spades = z3.Ints(
-    'ace_of_spades king_of_spades queen_of_spades jack_of_spades ten_of_spades')
-ace_of_hearts, king_of_hearts, queen_of_hearts, jack_of_hearts, ten_of_hearts = z3.Ints(
-    'ace_of_hearts king_of_hearts queen_of_hearts jack_of_hearts ten_of_hearts')
-ace_of_diamonds, king_of_diamonds, queen_of_diamonds, jack_of_diamonds, ten_of_diamonds = z3.Ints(
-    'ace_of_diamonds king_of_diamonds queen_of_diamonds jack_of_diamonds ten_of_diamonds')
-ace_of_clubs, king_of_clubs, queen_of_clubs, jack_of_clubs, ten_of_clubs = z3.Ints(
-    'ace_of_clubs king_of_clubs queen_of_clubs jack_of_clubs ten_of_clubs')
+
+_honor_names = ('ace', 'king', 'queen', 'jack', 'ten')
+_honor_values = (4, 3, 2, 1, 0)
+
+
+def _honor_vars(suit):
+    return map(z3.Int, map(("{}_of_" + suit.name.lower()).format, _honor_names))
+
+
+def _suit_count_var(suit):
+    return z3.Int(suit.name.lower())
+
+
+clubs, diamonds, hearts, spades = map(_suit_count_var, suit.SUITS)
+
+
+def expr_for_suit(suit):
+    return (clubs, diamonds, hearts, spades)[suit.index]
+
+
+ace_of_spades, king_of_spades, queen_of_spades, jack_of_spades, ten_of_spades = _honor_vars(suit.SPADES)
+ace_of_hearts, king_of_hearts, queen_of_hearts, jack_of_hearts, ten_of_hearts = _honor_vars(suit.HEARTS)
+ace_of_diamonds, king_of_diamonds, queen_of_diamonds, jack_of_diamonds, ten_of_diamonds = _honor_vars(suit.DIAMONDS)
+ace_of_clubs, king_of_clubs, queen_of_clubs, jack_of_clubs, ten_of_clubs = _honor_vars(suit.CLUBS)
 
 high_card_points, points, playing_points = z3.Ints('high_card_points points playing_points')
 
@@ -31,6 +46,35 @@ doubleton_in_spades, doubleton_in_hearts, doubleton_in_diamonds, doubleton_in_cl
 
 voids, singletons, doubletons = z3.Ints('voids singletons doubletons')
 
+
+def named_count_expr(count_name, count):
+    exprs = []
+    suit_count_vars = map(expr_for_suit, suit.SUITS)
+    suit_matches_count_vars = [z3.Int("%s_in_%s" % (count_name, s.name.lower())) for s in suit.SUITS] # void_in_spades, etc.
+    exprs = [
+        # FIXME: Can z3 support writing this as "void_in_spades == (spades == 0)"?
+        z3.Or(
+            z3.And(suit_count == count, suit_matches_count == 1),
+            z3.And(suit_count != count, suit_matches_count == 0),
+        )
+            for suit_count, suit_matches_count in zip(suit_count_vars, suit_matches_count_vars)
+    ]
+    exprs.append(z3.Int(count_name + "s") == sum(suit_matches_count_vars))
+    return z3.And(*exprs)
+
+
+def constrain_honors_expr():
+    exprs = []
+    for honor_suit in suit.SUITS:
+        # The easiest way to have an Int var and constrain it to bool values is to just:
+        # z3.And(0 <= ace_of_spades, ace_of_spades <= 1)
+        honor_vars = _honor_vars(honor_suit)
+        exprs.extend([z3.And(0 <= honor_var, honor_var <= 1) for honor_var in honor_vars])
+        # Also make sure that total number of honors is <= total number of cards
+        exprs.append(sum(honor_vars) <= expr_for_suit(honor_suit))
+    return z3.And(*exprs)
+
+
 axioms = [
     spades + hearts + diamonds + clubs == 13,
     spades >= 0,
@@ -42,30 +86,10 @@ axioms = [
     high_card_points <= playing_points,
     playing_points <= 55, # Just to make the model finite.
 
-    z3.Or(z3.And(spades   == 0, void_in_spades   == 1), z3.And(spades   != 0, void_in_spades   == 0)),
-    z3.Or(z3.And(hearts   == 0, void_in_hearts   == 1), z3.And(hearts   != 0, void_in_hearts   == 0)),
-    z3.Or(z3.And(diamonds == 0, void_in_diamonds == 1), z3.And(diamonds != 0, void_in_diamonds == 0)),
-    z3.Or(z3.And(clubs    == 0, void_in_clubs    == 1), z3.And(clubs    != 0, void_in_clubs    == 0)),
-    voids == void_in_spades + void_in_hearts + void_in_diamonds + void_in_clubs,
-
-    z3.Or(z3.And(spades   == 1, singleton_in_spades   == 1), z3.And(spades   != 1, singleton_in_spades   == 0)),
-    z3.Or(z3.And(hearts   == 1, singleton_in_hearts   == 1), z3.And(hearts   != 1, singleton_in_hearts   == 0)),
-    z3.Or(z3.And(diamonds == 1, singleton_in_diamonds == 1), z3.And(diamonds != 1, singleton_in_diamonds == 0)),
-    z3.Or(z3.And(clubs    == 1, singleton_in_clubs    == 1), z3.And(clubs    != 1, singleton_in_clubs    == 0)),
-    singletons == singleton_in_spades + singleton_in_hearts + singleton_in_diamonds + singleton_in_clubs,
-
-    z3.Or(z3.And(spades   == 2, doubleton_in_spades   == 1), z3.And(spades   != 2, doubleton_in_spades   == 0)),
-    z3.Or(z3.And(hearts   == 2, doubleton_in_hearts   == 1), z3.And(hearts   != 2, doubleton_in_hearts   == 0)),
-    z3.Or(z3.And(diamonds == 2, doubleton_in_diamonds == 1), z3.And(diamonds != 2, doubleton_in_diamonds == 0)),
-    z3.Or(z3.And(clubs    == 2, doubleton_in_clubs    == 1), z3.And(clubs    != 2, doubleton_in_clubs    == 0)),
-    doubletons == doubleton_in_spades + doubleton_in_hearts + doubleton_in_diamonds + doubleton_in_clubs,
-
-    0 <= ace_of_spades, ace_of_spades <= 1,
-    0 <= king_of_spades, king_of_spades <= 1,
-    0 <= queen_of_spades, queen_of_spades <= 1,
-    0 <= jack_of_spades, jack_of_spades <= 1,
-    0 <= ten_of_spades, ten_of_spades <= 1,
-    ace_of_spades + king_of_spades + queen_of_spades + jack_of_spades + ten_of_spades <= spades,
+    named_count_expr('void', 0),
+    named_count_expr('singleton', 1),
+    named_count_expr('doubleton', 2),
+    constrain_honors_expr(),
 
     z3.Or(
         z3.And(spades <= 2, points_supporting_spades == high_card_points),
@@ -73,25 +97,11 @@ axioms = [
         z3.And(spades >= 4, points_supporting_spades == high_card_points + doubletons + 3 * singletons + 5 * voids),
     ),
 
-    0 <= ace_of_hearts, ace_of_hearts <= 1,
-    0 <= king_of_hearts, king_of_hearts <= 1,
-    0 <= queen_of_hearts, queen_of_hearts <= 1,
-    0 <= jack_of_hearts, jack_of_hearts <= 1,
-    0 <= ten_of_hearts, ten_of_hearts <= 1,
-    ace_of_hearts + king_of_hearts + queen_of_hearts + jack_of_hearts + ten_of_hearts <= hearts,
-
     z3.Or(
         z3.And(hearts <= 2, points_supporting_hearts == high_card_points),
         z3.And(hearts == 3, points_supporting_hearts == high_card_points + doubletons + 2 * singletons + 3 * voids),
         z3.And(hearts >= 4, points_supporting_hearts == high_card_points + doubletons + 3 * singletons + 5 * voids),
     ),
-
-    0 <= ace_of_diamonds, ace_of_diamonds <= 1,
-    0 <= king_of_diamonds, king_of_diamonds <= 1,
-    0 <= queen_of_diamonds, queen_of_diamonds <= 1,
-    0 <= jack_of_diamonds, jack_of_diamonds <= 1,
-    0 <= ten_of_diamonds, ten_of_diamonds <= 1,
-    ace_of_diamonds + king_of_diamonds + queen_of_diamonds + jack_of_diamonds + ten_of_diamonds <= diamonds,
 
     z3.Or(
         z3.And(diamonds <= 2, points_supporting_diamonds == high_card_points),
@@ -99,23 +109,17 @@ axioms = [
         z3.And(diamonds >= 4, points_supporting_diamonds == high_card_points + doubletons + 3 * singletons + 5 * voids),
     ),
 
-    0 <= ace_of_clubs, ace_of_clubs <= 1,
-    0 <= king_of_clubs, king_of_clubs <= 1,
-    0 <= queen_of_clubs, queen_of_clubs <= 1,
-    0 <= jack_of_clubs, jack_of_clubs <= 1,
-    0 <= ten_of_clubs, ten_of_clubs <= 1,
-    ace_of_clubs + king_of_clubs + queen_of_clubs + jack_of_clubs + ten_of_clubs <= clubs,
-
     z3.Or(
         z3.And(clubs <= 2, points_supporting_clubs == high_card_points),
         z3.And(clubs == 3, points_supporting_clubs == high_card_points + doubletons + 2 * singletons + 3 * voids),
         z3.And(clubs >= 4, points_supporting_clubs == high_card_points + doubletons + 3 * singletons + 5 * voids),
     ),
 
-    4 * ace_of_spades   + 3 * king_of_spades   + 2 * queen_of_spades   + 1 * jack_of_spades   +
-    4 * ace_of_hearts   + 3 * king_of_hearts   + 2 * queen_of_hearts   + 1 * jack_of_hearts   +
-    4 * ace_of_diamonds + 3 * king_of_diamonds + 2 * queen_of_diamonds + 1 * jack_of_diamonds +
-    4 * ace_of_clubs    + 3 * king_of_clubs    + 2 * queen_of_clubs    + 1 * jack_of_clubs    == high_card_points
+    sum([ # Sum the sums for all suits.
+        sum([ # Sum the honors for a single suit
+            a * b for a, b in zip(_honor_values, honor_vars)])
+                for honor_vars in map(_honor_vars, suit.SUITS)
+        ]) == high_card_points, # The total is our hcp.
 ]
 
 min_hcp_for_open = 8
@@ -173,17 +177,13 @@ stopper_clubs = z3.Or(ace_of_clubs == 1, z3.And(king_of_clubs == 1, clubs >= 2),
 NO_CONSTRAINTS = z3.BoolVal(True)
 
 
-def expr_for_suit(suit):
-    return (clubs, diamonds, hearts, spades)[suit]
-
-
 def stopper_expr_for_suit(suit):
     return (
         stopper_clubs,
         stopper_diamonds,
         stopper_hearts,
         stopper_spades,
-    )[suit]
+    )[suit.index]
 
 
 def support_points_expr_for_suit(suit):
@@ -192,7 +192,7 @@ def support_points_expr_for_suit(suit):
         points_supporting_diamonds,
         points_supporting_hearts,
         points_supporting_spades,
-    )[suit]
+    )[suit.index]
 
 
 def expr_for_hand(hand):

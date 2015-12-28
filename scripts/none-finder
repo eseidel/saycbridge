@@ -3,13 +3,16 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import operator
 import sys
 import find_src
 
 from core.callhistory import CallHistory
 from z3b.bidder import Interpreter, RuleSelector
 from core.callexplorer import CallExplorer
-from z3b import model
+from z3b import model as z3b_model
+from z3b.prettymodel import pretty_print_model, hand_from_model
+from tests.harness import expectation_line
 import z3
 
 
@@ -18,20 +21,6 @@ def _print_usage_and_exit():
     print " HISTORY is space or comma separated"
     print
     sys.exit(1)
-
-
-def _decl_cmp(*args):
-    names = map(lambda key: key.name(), args)
-    # Sort names without _ in them to the top.
-    are_primary = map(lambda name: name.find("_") != -1, names)
-    cmp_result = cmp(*are_primary)
-    if cmp_result:
-        return cmp_result
-    return cmp(*names)
-
-def _pretty_print_model(model):
-    for decl in sorted(model.decls(), cmp=_decl_cmp):
-        print "%s: %s" % (decl, model[decl])
 
 
 class NoneFinder(object):
@@ -46,19 +35,21 @@ class NoneFinder(object):
         constraints = []
         for call in CallExplorer().possible_calls_over(call_history):
             rule = selector.rule_for_call(call)
-            if rule and not rule.requires_planning(history):
+            if rule and not rule.requires_planning:
                 constraints.append(selector.constraints_for_call(call))
 
         constraints_expr = z3.Not(z3.Or(*constraints))
         solver = z3.SolverFor('QF_LIA')
-        solver.add(model.axioms)
+        solver.add(z3b_model.axioms)
+        # FIXME: This only works for last-call, need to go back further too.
+        solver.add(history.constraints_for_last_call(z3b_model.positions.Me))
         solver.add(constraints_expr)
 
         if solver.check() == z3.unsat:
             print "Calls found for all possible hands."
         else:
-            print "Unbiddable hand:"
-            _pretty_print_model(solver.model())
+            pretty_print_model(solver.model())
+            print expectation_line(hand_from_model(solver.model()), call_history), "# from none-finder"
 
 
 if __name__ == '__main__':

@@ -27,13 +27,13 @@ class Card(object):
 
     @classmethod
     def identifier_for_card(cls, suit, value):
-        return suit * 13 + cls.index_for_card(value)
+        return suit.index * 13 + cls.index_for_card(value)
 
     @classmethod
     def suit_and_index_from_identifier(cls, identifier):
-        suit = identifier / 13
-        card_index = identifier - suit * 13
-        return (suit, card_index)
+        suit_index = identifier / 13
+        card_index = identifier - suit_index * 13
+        return (Suit.from_index(suit_index), card_index)
 
     @classmethod
     def suit_and_value_from_identifier(cls, identifier):
@@ -42,7 +42,7 @@ class Card(object):
 
     @classmethod
     def card_name(cls, suit, value_char):
-        return "%s of %s" % (value_char, suit_name(suit))
+        return "%s of %s" % (value_char, suit.name)
 
     @classmethod
     def high_card_points(self, value_char):
@@ -58,14 +58,6 @@ class Card(object):
         self.value_char = value_char
         assert value_char in ('A', 'K', 'Q', 'J', 'T', '9', '8', '7', '6', '5', '4', '3', '2')
 
-    def two_char_name(self):
-        return "%s%s" % (self.value_char, suit_char(self.suit))
-
-    @classmethod
-    def from_two_char_name(self, name):
-        assert len(name) == 2, "%s is not a valid two-char card name" % name
-        return Card(suit_from_char(name[1]), name[0])
-
     def display_value(self):
         if self.value_char == 'T':
             return '10'
@@ -73,7 +65,7 @@ class Card(object):
 
     @property
     def name(self):
-        return "%s%s" % (self.display_value(), suit_char(self.suit))
+        return "%s%s" % (self.display_value(), self.suit.char)
 
     def index(self):
         return self.index_for_card(self.value_char)

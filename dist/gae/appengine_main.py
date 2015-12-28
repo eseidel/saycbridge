@@ -5,47 +5,41 @@
 
 import webapp2
 
-from handlers.bidder_handler import JSONAutobidHandler
+from handlers.autobid_handler import JSONAutobidHandler
 from handlers.explore_handler import ExploreHandler, JSONExploreHandler
-from handlers.explore2_handler import Explore2Handler, JSONExplore2Handler
-from handlers.new_bidder_handler import NewBidderHandler
+from handlers.bidder_handler import BidderHandler
 from handlers.scores_handler import ScoresHandler
 from handlers.score_flashcards_handler import ScoreFlashcardsHandler
 from handlers.unittest_handler import UnittestHandler
+from handlers.priorities_handler import JSONPrioritiesHandler
 
 
 routes = [
-    ('/', NewBidderHandler),
+    ('/', BidderHandler),
+    (r'/bid', BidderHandler),
+    (r'/bid/.*', BidderHandler),
     (r'/explore/(.*)', ExploreHandler),
     (r'/explore', ExploreHandler),
-    (r'/explore2/(.*)', Explore2Handler),
-    (r'/explore2', Explore2Handler),
-    (r'/unittests', UnittestHandler),
     (r'/json/autobid', JSONAutobidHandler),
     (r'/json/interpret', JSONExploreHandler),
-    (r'/json/interpret2', JSONExplore2Handler),
-    (r'/bid', NewBidderHandler),
-    (r'/bid/.*', NewBidderHandler),
-    (r'/play', NewBidderHandler),
-    (r'/play/.*', NewBidderHandler),
+
+    # Low usage:
     (r'/scores', ScoresHandler),
     (r'/scoring', ScoreFlashcardsHandler),
     (r'/scoring/.*', ScoreFlashcardsHandler),
 
-    # Deprecated handlers:
-    (r'/bidder', NewBidderHandler),
-    (r'/bidder/.*', NewBidderHandler),
-    (r'/autobid/.*', NewBidderHandler),  # exists for compatibility with old URLs.
-    (r'/new_bidder', NewBidderHandler),
-    (r'/new_bidder/.*', NewBidderHandler),
-]
+    # Don't actually work:
+    (r'/play', BidderHandler),
+    (r'/play/.*', BidderHandler),
+    (r'/json/priorities', JSONPrioritiesHandler),
 
-try:
-    from handlers.priorities_handler import JSONPrioritiesHandler
-    routes.append(
-        (r'/json/priorities', JSONPrioritiesHandler)
-    )
-except:
-    pass
+    # Debugging:
+    (r'/unittests', UnittestHandler),
+
+    # Back-compat:
+    (r'/explore2/(.*)', ExploreHandler),
+    (r'/explore2', ExploreHandler),
+    (r'/json/interpret2', JSONExploreHandler),
+]
 
 app = webapp2.WSGIApplication(routes, debug=True)

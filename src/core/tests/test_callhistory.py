@@ -39,7 +39,7 @@ class VulnerabilityTest(unittest2.TestCase):
 class CallHistoryTest(unittest2.TestCase):
 
     def _assert_declarer(self, history_string, dealer, declarer):
-        self.assertEquals(CallHistory.from_string(history_string, position_char(dealer)).declarer(), declarer)
+        self.assertEquals(CallHistory.from_string(history_string, dealer.char).declarer(), declarer)
 
     def test_declarer(self):
         self._assert_declarer("", NORTH, None)
@@ -76,18 +76,6 @@ class CallHistoryTest(unittest2.TestCase):
         self.assertEquals(CallHistory.from_string("P P P P").is_passout(), True)
         self.assertEquals(CallHistory.from_string("P 1N P P P").is_passout(), False)
 
-    def test_bidding_rounds(self):
-        self.assertEquals(CallHistory.from_string("")._bidding_rounds_count(), 0)
-        self.assertEquals(CallHistory.from_string("").bidding_rounds(last_call_only=True), [['?', None, None, None]])
-        self.assertEquals(CallHistory.from_string("").bidding_rounds(last_call_only=True, mark_to_bid=False), [])
-        self.assertEquals(CallHistory.from_string("P").bidding_rounds(last_call_only=True), [['P', '?', None, None]])
-        self.assertEquals(CallHistory.from_string("P P").bidding_rounds(last_call_only=True), [['P', 'P', '?', None]])
-        self.assertEquals(CallHistory.from_string("P P", dealer_string="E").bidding_rounds(last_call_only=True), [[None, 'P', 'P', '?']])
-        self.assertEquals(CallHistory.from_string("P P", dealer_string="W").bidding_rounds(last_call_only=True), [[None, None, None, 'P'], ['P', '?', None, None]])
-        self.assertEquals(CallHistory.from_string("2H P 3H P").bidding_rounds(last_call_only=True), [['2H', 'P', '3H', 'P'], ['?', None, None, None]])
-        self.assertEquals(CallHistory.from_string("P P P P").bidding_rounds(last_call_only=True), [['P', 'P', 'P', 'P']])
-        self.assertEquals(CallHistory.from_string("P P P P", dealer_string="E").bidding_rounds(last_call_only=True), [[None, 'P', 'P', 'P'], ['P', None, None, None]])
-
     def test_copy_with_partial_history(self):
         history = CallHistory.from_string("P P 1N P P P")
         self.assertEquals(len(history.calls), 6)
@@ -108,33 +96,28 @@ class CallHistoryTest(unittest2.TestCase):
         self._assert_competative_auction("1D P 1H P", False)
 
     def _assert_opener(self, history_string, dealer, opener):
-        self.assertEquals(CallHistory.from_string(history_string, position_char(dealer)).opener(), opener)
+        self.assertEquals(CallHistory.from_string(history_string, dealer.char).opener(), opener)
 
     def test_opener(self):
         self._assert_opener("P 1C P 1D P", NORTH, EAST)
         self._assert_opener("P 1C P 1D P", EAST, SOUTH)
         self._assert_opener("P 1C P 1D P", WEST, NORTH)
 
-    def test_suits_bid_by(self):
-        self.assertEqual(CallHistory.from_string("P 1C P 1D P 1H P 1S").suits_bid_by(EAST), set([CLUBS, HEARTS]))
-        self.assertEqual(CallHistory.from_string("P 1C P 1D P 1H P 1S").suits_bid_by(WEST), set([DIAMONDS, SPADES]))
-
     def test_from_identifier(self):
-        self.assertEqual(CallHistory.from_identifier('E:EW:P').identifier(), CallHistory.from_string('P', 'E', 'E-W').identifier())
+        self.assertEqual(CallHistory.from_identifier('E:EW:P').identifier, CallHistory.from_string('P', 'E', 'E-W').identifier)
         # Test that from_identifier is forgiving of a missing trailing colon
-        self.assertEqual(CallHistory.from_identifier('E:EW:').identifier(), CallHistory.from_string('', 'E', 'E-W').identifier())
-        self.assertEqual(CallHistory.from_identifier('E:EW').identifier(), CallHistory.from_string('', 'E', 'E-W').identifier())
+        self.assertEqual(CallHistory.from_identifier('E:EW:').identifier, CallHistory.from_string('', 'E', 'E-W').identifier)
+        self.assertEqual(CallHistory.from_identifier('E:EW').identifier, CallHistory.from_string('', 'E', 'E-W').identifier)
         # Test that from_identifier is forgiving of a trailing comma.
         self.assertEqual(CallHistory.from_identifier('N:NO:P,').calls_string(), "P")
-
 
     def test_can_double(self):
         self.assertTrue(CallHistory.from_string("1S 2H 2S").can_double())
 
-    def _assert_is_legal_call(self, history_string, bid, is_legal=True):
+    def _assert_is_legal_call(self, history_string, call_name, is_legal=True):
         call_history = CallHistory.from_string(history_string)
-        bid = Call.from_string(bid)
-        self.assertEquals(call_history.is_legal_call(bid), is_legal)
+        call = Call.from_string(call_name)
+        self.assertEquals(call_history.is_legal_call(call), is_legal)
 
     def test_is_legal_call(self):
         self._assert_is_legal_call("", "P", True)
@@ -147,6 +130,11 @@ class CallHistoryTest(unittest2.TestCase):
         self._assert_is_legal_call("1N X", "X", False)
         self._assert_is_legal_call("1N X", "XX", True)
         self._assert_is_legal_call("P 1D 2S P", "X", False)
+
+    def test_empty_for_board_number(self):
+        self.assertEquals(CallHistory.empty_for_board_number(1).dealer, NORTH)
+        self.assertEquals(CallHistory.empty_for_board_number(6).dealer, EAST)
+        self.assertEquals(CallHistory.empty_for_board_number(16).dealer, WEST)
 
 
 if __name__ == '__main__':

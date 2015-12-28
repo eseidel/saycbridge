@@ -1,4 +1,4 @@
-.PHONY: all clean baseline baseline-z3 accept accept-z3 check check-z3 compile serve publish chromeapp
+.PHONY: all clean baseline accept check compile serve publish chromeapp
 
 src_dir = src
 scripts_dir = scripts
@@ -6,22 +6,6 @@ scripts_dir = scripts
 appengine_dir = dist/gae
 appengine_scripts_dir = $(appengine_dir)/scripts
 
-THIRD_PARTY_SCRIPTS = \
-	third_party/jquery-1.6.2.min.js \
-	third_party/jquery.history.js \
-	third_party/bignumber.js \
-
-SCRIPTS = \
-	model.js \
-	controller.js \
-	fight.js \
-	view.js \
-	controller.js \
-	controller.test.js \
-	new_bidder.js \
-	play.js \
-	play.test.js \
-	recap.js \
 
 PYTHON_PACKAGES=networkx unittest2 werkzeug webapp2 webob jinja2
 # Prod packages: cherrypy
@@ -53,31 +37,16 @@ check: clean env
 	@$(scripts_dir)/test-sayc -f > $(src_dir)/z3b_actual.txt && diff -U 7 $(src_dir)/z3b_baseline.txt $(src_dir)/z3b_actual.txt ; true
 
 serve: clean
-	coffee --watch --compile $(appengine_scripts_dir)/*.coffee &
+	# Source map generation uses passed-in paths.
+	cd $(appengine_dir); coffee --watch --map --compile scripts/*.coffee &
 	# FIXME: Doesn't python just have a -C to change CWD before executing?
 	cd $(appengine_dir); python2.7 standalone_main.py
 
 serve-prod: clean compile
 	@. sayc-env/bin/activate && cd $(appengine_dir) && python2.7 production_main.py
 
-# Support for the old Knowledge Based Bidder:
-
-accept-kbb:
-	@mv $(src_dir)/kbb_actual.txt $(src_dir)/kbb_baseline.txt
-
-check-kbb: clean
-	@$(scripts_dir)/test-sayc -k > $(src_dir)/kbb_actual.txt ; true
-	@diff -U 7 $(src_dir)/kbb_baseline.txt $(src_dir)/kbb_actual.txt ; true
-
-serve-kbb: clean
-	coffee --watch --compile $(appengine_scripts_dir)/*.coffee &
-	python2.7 `which dev_appserver.py` $(appengine_dir)
-
 compile:
 	coffee --compile $(appengine_scripts_dir)/*.coffee
-
-publish: compile
-	@appcfg.py --oauth2 update $(appengine_dir)
 
 deploy:
 	git push origin origin/master:production

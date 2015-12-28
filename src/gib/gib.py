@@ -73,14 +73,14 @@ class Gib(object):
         self._write_line(command_text)
 
     def _double_dummy_command(self, board):
-        input_text = "\n".join([position_char(position) + " " + board.deal.hands[position].shdc_dot_string() for position in POSITIONS])
+        input_text = "\n".join([position.char + " " + board.deal.hands[position].shdc_dot_string() for position in POSITIONS])
         if board.call_history.is_complete():
-            leader = lho_of(board.call_history.declarer())
+            leader = board.call_history.declarer().lho
             trump = board.call_history.last_contract().strain
         else:
             leader = NORTH
             trump = SPADES
-        input_text += "\n%s %s\n" % (position_char(leader), strain_char(trump))
+        input_text += "\n%s %s\n" % (leader.char, trump.char)
         input_text += "dq"
         return input_text
 
@@ -102,7 +102,7 @@ class Gib(object):
     def _next_bid_command(self, hand, history):
         return "\n".join([
             hand.shdc_dot_string(),
-            position_char(history.dealer),
+            history.dealer.char,
             history.vulnerability.gib_name(),
             history.calls_string(),
         ])
@@ -114,7 +114,7 @@ class Gib(object):
             input_text = "\n"  # Causes gib to actually spit out the answer.
             input_text += "q\n-q -x" # Actually cause gib to quit.
             args = [command_file.name]
-            args.append("-%s" % position_char(history.position_to_call()).upper())
+            args.append("-%s" % history.position_to_call().char)
             gib_output = self._run_gib(args, input_text)
             bid_name = re.search(r"I bid (\S{1,2})", gib_output).group(1)
             interpretation = re.search(r"^That bid shows: (.*)$", gib_output, re.MULTILINE).group(1)
@@ -128,7 +128,7 @@ class Gib(object):
         played_cards = played_cards_string.split(" ")
         git_input_lines = [
             hand.shdc_dot_string(),
-            position_char(history.dealer),
+            history.dealer.char,
             history.vulnerability.gib_name(),
             history.calls_string(),
         ]
@@ -143,7 +143,7 @@ class Gib(object):
             input_text = "\n"  # Causes gib to actually spit out the answer.
             input_text += "q\n-q -x" # Actually cause gib to quit.
             args = [command_file.name]
-            args.append("-%s" % position_char(history.position_to_call()).upper())
+            args.append("-%s" % history.position_to_call().char)
             gib_output = self._run_gib(args, input_text)
             return gib_output
 
@@ -156,7 +156,7 @@ class Gib(object):
         self._send_command("-H")  # We could pass -z here to always make the "book" bid, but that results in some crazy bids...
         for _ in range(4):
             self._write_line(hand.shdc_dot_string())
-        self._write_line(position_char(history.dealer))
+        self._write_line(history.dealer.char)
         self._write_line(history.vulnerability.gib_name())
         if history.calls:
             self._write_line(history.calls_string())

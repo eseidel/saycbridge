@@ -5,13 +5,29 @@
 from suit import *
 from third_party.memoized import memoized
 
+
+# FIXME: Doesn't python have a nicer way to do this?
+def _values_between(start, stop, iterable):
+    # FIXME: Should assert that start/stop are in iterable?
+    yielding = False
+    for value in iterable:
+        if value == start:
+            yielding = True
+        if yielding:
+            yield value
+        # Putting this after the yield to make the range inclusive.
+        if value == stop:
+            break
+
 # Call objects should be global singletons and thus immutable.
 class Call(object):
     def __init__(self, name):
         self.name = name.upper()
-        self.strain = None if self.name in ('P', 'X', 'XX') else strain_from_char(self.name[1])
+        self.strain = None if self.name in ('P', 'X', 'XX') else Strain.from_char(self.name[1])
         self.level = int(self.name[0]) if self.is_contract() else None
         self._validate()
+
+    LEVELS = (1, 2, 3, 4, 5, 6, 7)
 
     def __str__(self):
         return self.name
@@ -26,24 +42,15 @@ class Call(object):
         else:
             assert self.name in ('P', 'X', 'XX'), "%s is not a valid call name" % self.name
 
-    # It's unclear how forgiving we should be with this method.
-    # We may want to split this into different methods for different
-    # input sources.
     @classmethod
     @memoized
     def from_string(self, string):
-        string = string.upper()
-        string = string.replace("NT", "N")
-        string = string.replace("PASS", "P")
-        string = string.replace("DOUBLE", "X")
-        if len(string) != 2 and string not in ("P", "X"):
-            return None
         return Call(string)
 
     @classmethod
     def from_level_and_strain(self, level, strain):
         # Use from_string to share the @memoized cache.
-        return Call.from_string("%s%s" % (level, strain_char(strain)))
+        return Call.from_string("%s%s" % (level, strain.char))
 
     # This is an odd way of saying "not pass, not double, not redouble"
     def is_contract(self):
@@ -88,6 +95,28 @@ class Call(object):
             return cmp(self.level, other.level)
         # Using the suit enum, this comparison is very easy and will correctly order C, D, H, S
         return cmp(self.strain, other.strain)
+
+    # These should also operate on Call objects and we should use map(Call.name, calls)
+    @classmethod
+    def suited_names(cls):
+        for level in cls.LEVELS:
+            for strain in SUITS:
+                yield "%s%s" % (level, strain.char)
+
+    @classmethod
+    def suited_names_between(cls, start_name, stop_name):
+        # We don't want to return a generator because folks might want to enumerate
+        # these lists more than once.
+        return list(_values_between(start_name, stop_name, cls.suited_names()))
+
+    @classmethod
+    def notrump_names(cls):
+        for level in cls.LEVELS:
+            yield "%s%s" % (level, NOTRUMP.char)
+
+    @classmethod
+    def notrump_names_between(cls, start_name, stop_name):
+        return list(_values_between(start_name, stop_name, cls.notrump_names()))
 
 
 # This is a convenience for an old method of specifying calls.

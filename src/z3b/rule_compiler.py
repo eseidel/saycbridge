@@ -4,6 +4,7 @@
 
 from core.call import Call
 from itertools import chain
+from third_party.memoized import memoized
 from z3b import enum
 from z3b import model
 from z3b import ordering
@@ -33,7 +34,7 @@ class RuleOrdering(object):
         return key
 
     def order(self, *args):
-        self.ordering.order(*map(self._check_key, args))
+        return self.ordering.order(*map(self._check_key, args))
 
     def lt(self, left, right):
         try:
@@ -46,8 +47,13 @@ class RuleOrdering(object):
 rule_order = RuleOrdering()
 
 
-# This is a public interface from RuleGenerators to the rest of the system.
-# This class knows nothing about the DSL.
+# FIXME: We should integrate this function into RuleOrdering.
+def all_priorities_for_rule(dsl_rule):
+    compiled_rule = RuleCompiler.compile(dsl_rule)
+    return compiled_rule.all_priorities
+
+
+# This is a public interface from DSL Rules to the rest of the system.
 class CompiledRule(object):
     def __init__(self, rule, preconditions, known_calls, shared_constraints, annotations, constraints, default_priority, conditional_priorities_per_call, priorities_per_call):
         self.dsl_rule = rule
@@ -59,8 +65,16 @@ class CompiledRule(object):
         self.default_priority = default_priority
         self.conditional_priorities_per_call = conditional_priorities_per_call
         self.priorities_per_call = priorities_per_call
+        # FIXME: Should forcing be an annotation instead?  It has an awkward tri-state currently.
+        self.forcing = self.dsl_rule.forcing
 
-    def requires_planning(self, history):
+    @property
+    def all_priorities(self):
+        conditional_priorities = [priority for _, priority in self.conditional_priorities_per_call.values()]
+        return set([self.default_priority] + self.priorities_per_call.values() + conditional_priorities)
+
+    @property
+    def requires_planning(self):
         return self.dsl_rule.requires_planning
 
     def annotations_for_call(self, call):
@@ -81,13 +95,12 @@ class CompiledRule(object):
         # List printing looks nicer if we lie here.
         return self.dsl_rule.name()
 
-    # FIXME: This exists for compatiblity with KBB's Rule interface and is used by bidder_handler.py
+    # FIXME: This exists for compatiblity with KBB's Rule interface and is used by autobid_handler.py
     def explanation_for_bid(self, call):
-        return None
-
-    # FIXME: This exists for compatiblity with KBB's Rule interface and is used by bidder_handler.py
-    def sayc_page_for_bid(self, call):
-        return None
+        explanation = self.dsl_rule.explanations_per_call.get(call.name)
+        if explanation:
+            return explanation
+        return self.dsl_rule.explanation
 
     def _fits_preconditions(self, history, call, expected_call=None):
         try:
@@ -115,20 +128,24 @@ class CompiledRule(object):
         return exprs
 
     def meaning_of(self, history, call):
-        exprs = self._constraint_exprs_for_call(history, call)
-        per_call_conditionals = self.conditional_priorities_per_call.get(call.name)
-        if per_call_conditionals:
-            for condition, priority in per_call_conditionals:
+        try:
+            exprs = self._constraint_exprs_for_call(history, call)
+            per_call_conditionals = self.conditional_priorities_per_call.get(call.name)
+            if per_call_conditionals:
+                for condition, priority in per_call_conditionals:
+                    condition_exprs = RuleCompiler.exprs_from_constraints(condition, history, call)
+                    yield priority, z3.And(exprs + condition_exprs)
+
+            for condition, priority in self.dsl_rule.conditional_priorities:
                 condition_exprs = RuleCompiler.exprs_from_constraints(condition, history, call)
                 yield priority, z3.And(exprs + condition_exprs)
 
-        for condition, priority in self.dsl_rule.conditional_priorities:
-            condition_exprs = RuleCompiler.exprs_from_constraints(condition, history, call)
-            yield priority, z3.And(exprs + condition_exprs)
-
-        _, priority = self.per_call_constraints_and_priority(history, call)
-        assert priority
-        yield priority, z3.And(exprs)
+            _, priority = self.per_call_constraints_and_priority(history, call)
+            assert priority
+            yield priority, z3.And(exprs)
+        except:
+            print "Exception compiling meaning_of %s over %s with %s" % (call, history.call_history.calls_string(), self)
+            raise
 
     # constraints accepts various forms including:
     # constraints = { '1H': hearts > 5 }
@@ -222,24 +239,9 @@ class RuleCompiler(object):
         # conditional_priorities doesn't work with self.constraints
         assert not dsl_class.conditional_priorities or not dsl_class.constraints
         assert not dsl_class.conditional_priorities or dsl_class.call_names
-        # FIXME: We should also walk the class and assert that no unexpected properties are found.
-        allowed_keys = set([
-            "annotations",
-            "annotations_per_call",
-            "call_names",
-            "category",
-            "conditional_priorities",
-            "constraints",
-            "preconditions",
-            "priority",
-            "priorities_per_call",
-            "requires_planning",
-            "shared_constraints",
-            "conditional_priorities_per_call",
-        ])
         properties = dsl_class.__dict__.keys()
         public_properties = filter(lambda p: not p.startswith("_"), properties)
-        unexpected_properties = set(public_properties) - allowed_keys
+        unexpected_properties = set(public_properties) - Rule.ALLOWED_KEYS
         assert not unexpected_properties, "%s defines unexpected properties: %s" % (dsl_class, unexpected_properties)
 
     @classmethod
@@ -249,49 +251,70 @@ class RuleCompiler(object):
         return dsl_rule # Use the class as the default priority.
 
     @classmethod
+    @memoized
     def compile(cls, dsl_rule):
-        cls._validate_rule(dsl_rule)
-        constraints = cls._flatten_tuple_keyed_dict(dsl_rule.constraints)
-        priorities_per_call = cls._flatten_tuple_keyed_dict(dsl_rule.priorities_per_call)
-        # Unclear if compiled results should be memoized on the rule?
-        return CompiledRule(dsl_rule,
-            known_calls=cls._compile_known_calls(dsl_rule, constraints, priorities_per_call),
-            annotations=cls._compile_annotations(dsl_rule),
-            preconditions=cls._joined_list_from_ancestors(dsl_rule, 'preconditions'),
-            shared_constraints=cls._joined_list_from_ancestors(dsl_rule, 'shared_constraints'),
-            constraints=constraints,
-            default_priority=cls._default_priority(dsl_rule),
-            conditional_priorities_per_call=cls._flatten_tuple_keyed_dict(dsl_rule.conditional_priorities_per_call),
-            priorities_per_call=priorities_per_call,
-        )
+        try:
+            cls._validate_rule(dsl_rule)
+            constraints = cls._flatten_tuple_keyed_dict(dsl_rule.constraints)
+            priorities_per_call = cls._flatten_tuple_keyed_dict(dsl_rule.priorities_per_call)
+            # Unclear if compiled results should be memoized on the rule?
+            return CompiledRule(dsl_rule,
+                known_calls=cls._compile_known_calls(dsl_rule, constraints, priorities_per_call),
+                annotations=cls._compile_annotations(dsl_rule),
+                preconditions=cls._joined_list_from_ancestors(dsl_rule, 'preconditions'),
+                shared_constraints=cls._joined_list_from_ancestors(dsl_rule, 'shared_constraints'),
+                constraints=constraints,
+                default_priority=cls._default_priority(dsl_rule),
+                conditional_priorities_per_call=cls._flatten_tuple_keyed_dict(dsl_rule.conditional_priorities_per_call),
+                priorities_per_call=priorities_per_call,
+            )
+        except:
+            print "Exception compiling %s" % dsl_rule
+            raise
 
 
 # The rules of SAYC are all described in terms of Rule.
 # These classes exist to support the DSL and make it easy to concisely express
 # the conventions of SAYC.
 class Rule(object):
-    # FIXME: Consider splitting call_preconditions out from preconditions
-    # for preconditions which only operate on the call?
-    preconditions = [] # Auto-collects from parent classes
-    category = categories.Default # Intra-bid priority
-    requires_planning = False
-
-    # All possible call names must be listed.
-    # Having an up-front list makes the bidder's rule-evaluation faster.
-    call_names = None # Required.
-
-    constraints = {}
-    shared_constraints = [] # Auto-collects from parent classes
+    # All properties with [] (empty list) defaults, auto-collect
+    # from parent classes.  foo = Parent.foo + [bar] is never necessary in this DSL.
     annotations = []
-    conditional_priorities = []
-    # FIXME: conditional_priorities_per_call is a stepping-stone to allow us to
-    # write more conditional priorities and better understand what rules we should
-    # develop to generate them.  The syntax is:
-    # {'1C': [(condition, priority), (condition, priority)]}
-    conditional_priorities_per_call = {}
-    annotations_per_call = {}
-    priority = None
-    priorities_per_call = {}
+    annotations_per_call = {} # { '1C' : (annotations.Foo, annotations.Bar) }
+    call_names = None # For when all calls share the same constraints
+    category = categories.Default # Intra-bid priority
+    conditional_priorities = [] # e.g. [(condition, priority), (condition, priority)]
+    conditional_priorities_per_call = {} # e.g. {'1C': [(condition, priority), (condition, priority)]}
+    constraints = {} # { '1C' : constraints, '1D': (constraints, priority), '1H' : constraints }
+    forcing = None
+    preconditions = []
+    priorities_per_call = {} # { '1C': priority, '1D': another_priority }
+    priority = None # Defaults to the class if None.
+    requires_planning = False
+    shared_constraints = [] # constraints which apply to call possible call_names.
+    explanations_per_call = {}
+    explanation = None
+
+    # These are the only properties which are allowed to be defined in subclasses.
+    # The RuleCompiler with enforce this.
+    # FIXME: Should we autogenerate this list from this Rule declaration?
+    ALLOWED_KEYS = set([
+        "annotations",
+        "annotations_per_call",
+        "call_names",
+        "category",
+        "conditional_priorities",
+        "conditional_priorities_per_call",
+        "constraints",
+        "forcing",
+        "preconditions",
+        "priorities_per_call",
+        "priority",
+        "requires_planning",
+        "shared_constraints",
+        "explanations_per_call",
+        "explanation",
+    ])
 
     def __init__(self):
         assert False, "Rule objects should be compiled into EngineRule objects instead of instantiating them."
@@ -302,4 +325,3 @@ class Rule(object):
 
     def __repr__(self):
         return "%s()" % self.name
-
