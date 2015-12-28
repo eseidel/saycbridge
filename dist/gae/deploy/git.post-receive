@@ -1,12 +1,13 @@
 #!/bin/bash
 
 DEPLOY_BRANCH="master"
-
 GIT_DIR=$(pwd)
+
 echo "checking for deploy branch \"$DEPLOY_BRANCH\""
 while read oldrev newrev refname
 do
-  if [ "$(git rev-parse --symbolic --abbrev-ref $refname)" == "$DEPLOY_BRANCH" ]; then
+  BRANCH=$(git rev-parse --symbolic --abbrev-ref --verify -q $refname)
+  if [ "$BRANCH" == "$DEPLOY_BRANCH" ]; then
     DEPLOY=1
   fi
 done
@@ -45,3 +46,4 @@ popd
 sudo service saycbridge restart
 
 echo "deployed"
+exit 0
