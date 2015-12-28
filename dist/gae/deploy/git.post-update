@@ -1,0 +1,47 @@
+#!/bin/bash
+
+DEPLOY_BRANCH="master"
+
+GIT_DIR=$(pwd)
+echo "checking for deploy branch \"$DEPLOY_BRANCH\""
+while read oldrev newrev refname
+do
+  if [ "$(git rev-parse --symbolic --abbrev-ref $refname)" == "$DEPLOY_BRANCH" ]; then
+    DEPLOY=1
+  fi
+done
+
+if [ -z "${DEPLOY}" ]; then
+  echo "not deploying"
+  exit 0
+fi
+
+echo "deploying"
+
+pushd $HOME
+OLD_DEPLOYS=(deploy.*)
+NEW_DEPLOY="deploy.`date +%s`"
+
+mkdir $NEW_DEPLOY
+pushd $NEW_DEPLOY
+git archive --format=tar --remote=$GIT_DIR $DEPLOY_BRANCH | tar -xf -
+
+mkdir -p ../virtualenv
+[ -e ../virtualenv/bin/activate ] || virtualenv ../virtualenv
+. ../virtualenv/bin/activate
+pip install -q networkx unittest2 werkzeug webapp2 webob jinja2 cherrypy
+
+cd dist/gae && coffee --map --compile scripts/*.coffee
+
+deactivate
+popd
+
+ln -s $NEW_DEPLOY deploy.link
+mv -T deploy.link deploy
+
+rm -rf $OLD_DEPLOYS
+popd
+
+sudo service saycbridge restart
+
+echo "deployed"
