@@ -43,7 +43,7 @@ mv -T deploy.link deploy
 rm -rf $OLD_DEPLOYS
 popd
 
-service saycbridge restart
+restart saycbridge
 
 echo "deployed"
 exit 0
