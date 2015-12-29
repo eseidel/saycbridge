@@ -1,4 +1,7 @@
 #!/bin/bash
+# WARNING: Don't move me!
+
+set -e
 
 DEPLOY_BRANCH="master"
 GIT_DIR=$(pwd)
