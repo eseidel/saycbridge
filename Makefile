@@ -49,10 +49,10 @@ serve-prod: clean compile
 	@cd $(appengine_dir) && python2.7 production_main.py
 
 compile:
-	coffee --compile $(appengine_scripts_dir)/*.coffee
+	@coffee --compile $(appengine_scripts_dir)/*.coffee
 
 deploy:
-	git push deploy master
+	@git push deploy master
 
 # FIXME: Need some way to make this work from a macro instead of an explicit list of files.
 closure:
