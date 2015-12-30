@@ -42,18 +42,16 @@ The typical development cycle:
 Testing Setup
 -------------
 
-The SAYCBridge python code uses virtualenv:
+We highly recommend you use virtualenv:
 
     sudo pip install virtualenv
-    make env
-    source sayc-env/bin/activate
+    virtualenv sayc-env
+    . sayc-env/bin/activate
 
-You will also need a copy of MSR's z3:
-http://z3.codeplex.com/SourceControl/latest
+To get and compile all the dependencies:
 
-You can either download a zip of the latest sources, or clone their git repo (requires git 1.7 or later).
-
-Follow the instructions in their README (while in the virtualenv) to install z3py into your virtualenv.
+    git submodule update --init
+    make deps
 
 
 Running SAYCBridge.com Locally
