@@ -1,0 +1,7 @@
+networkx
+unittest2
+werkzeug
+webapp2
+webob
+jinja2
+-e third_party/z3/build

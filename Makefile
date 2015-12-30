@@ -1,4 +1,4 @@
-.PHONY: all deps z3_install clean check accept compile serve deploy
+.PHONY: all deps z3_build clean check accept compile serve deploy
 
 src_dir = src
 scripts_dir = scripts
@@ -7,27 +7,20 @@ appengine_dir = dist/gae
 appengine_scripts_dir = $(appengine_dir)/scripts
 
 z3_dir = third_party/z3
-python_prefix = $(shell python2.7 -c "import sys; print sys.prefix")
-# Super hacky!
-python_package_dir = $(python_prefix)/lib/python2.7/site-packages
-PYTHON_PACKAGES=networkx unittest2 werkzeug webapp2 webob jinja2
 
 all:
 	@echo "Run 'make deps' to bring your dependencies up-to-date."
 	@echo "Run 'make check' to check against the current baseline and 'make accept' to set a new baseline from the last results."
 
-deps: z3_install
-	@pip install --upgrade $(PYTHON_PACKAGES)
+deps: z3_build
+	@pip install --upgrade -r requirements.txt
 
 $(z3_dir)/build/config.mk:
-	@cd $(z3_dir) && python scripts/mk_make.py --prefix=$(python_prefix)
+	@cd $(z3_dir) && python scripts/mk_make.py
 
-z3_install: $(z3_dir)/build/config.mk
-	@make -C $(z3_dir)/build all install
-	@mkdir -p $(python_package_dir)/z3
-	@cp $(z3_dir)/build/libz3* $(python_package_dir)/z3/
-	@cp $(z3_dir)/build/*.py $(python_package_dir)/z3/
-	@echo "from z3 import *" > $(python_package_dir)/z3/__init__.py
+z3_build: $(z3_dir)/build/config.mk
+	@make -C $(z3_dir)/build
+	@cp third_party/z3_setup.py $(z3_dir)/build/setup.py
 
 clean:
 	@find . -name "*.pyc" | perl -nle unlink
