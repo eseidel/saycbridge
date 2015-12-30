@@ -22,13 +22,14 @@ fi
 
 echo "deploying"
 
-pushd $HOME
+pushd "$HOME"
 OLD_DEPLOYS=(deploy.*)
 NEW_DEPLOY="deploy.`date +%s`"
 
-mkdir $NEW_DEPLOY
-pushd $NEW_DEPLOY
-git archive --format=tar --remote=$GIT_DIR $DEPLOY_BRANCH | tar -xf -
+mkdir "$NEW_DEPLOY"
+pushd "$NEW_DEPLOY"
+git clone -n --depth=1 "$GIT_DIR" . 2>/dev/null
+git checkout "$DEPLOY_BRANCH"
 
 mkdir -p ../virtualenv
 [ -e ../virtualenv/bin/activate ] || virtualenv ../virtualenv
@@ -40,10 +41,10 @@ cd dist/gae && coffee --map --compile scripts/*.coffee
 deactivate
 popd
 
-ln -s $NEW_DEPLOY deploy.link
+ln -s "$NEW_DEPLOY" deploy.link
 mv -T deploy.link deploy
 
-rm -rf $OLD_DEPLOYS
+rm -rf "${OLD_DEPLOYS[@]}"
 popd
 
 /bin/bash -l -c "restart saycbridge"
