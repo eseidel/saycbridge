@@ -9,7 +9,7 @@ GIT_DIR=$(pwd)
 echo "checking for deploy branch \"$DEPLOY_BRANCH\""
 while read oldrev newrev refname
 do
-  BRANCH=$(git rev-parse --symbolic --abbrev-ref --verify -q $refname)
+  BRANCH=$(git rev-parse --symbolic --abbrev-ref --verify -q $refname) || true
   if [ "$BRANCH" == "$DEPLOY_BRANCH" ]; then
     DEPLOY=1
   fi
@@ -28,8 +28,7 @@ NEW_DEPLOY="deploy.`date +%s`"
 
 mkdir "$NEW_DEPLOY"
 pushd "$NEW_DEPLOY"
-git clone -n --depth=1 "$GIT_DIR" . 2>/dev/null
-git checkout "$DEPLOY_BRANCH"
+git clone --depth=1 --branch "$DEPLOY_BRANCH" "$GIT_DIR" .
 
 mkdir -p ../virtualenv
 [ -e ../virtualenv/bin/activate ] || virtualenv ../virtualenv
@@ -47,7 +46,7 @@ mv -T deploy.link deploy
 rm -rf "${OLD_DEPLOYS[@]}"
 popd
 
-/bin/bash -l -c "restart saycbridge"
+/bin/bash -l -c "initctl reload-configuration && stop saycbridge; start saycbridge"
 
 echo "deployed"
 exit 0
