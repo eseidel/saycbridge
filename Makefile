@@ -1,4 +1,4 @@
-.PHONY: all deps z3_install z3py_install clean check accept compile serve deploy
+.PHONY: all deps z3_install clean check accept compile serve deploy
 
 src_dir = src
 scripts_dir = scripts
@@ -16,7 +16,7 @@ all:
 	@echo "Run 'make deps' to bring your dependencies up-to-date."
 	@echo "Run 'make check' to check against the current baseline and 'make accept' to set a new baseline from the last results."
 
-deps: z3py_install
+deps: z3_install
 	@pip install --upgrade $(PYTHON_PACKAGES)
 
 $(z3_dir)/build/config.mk:
@@ -24,9 +24,8 @@ $(z3_dir)/build/config.mk:
 
 z3_install: $(z3_dir)/build/config.mk
 	@make -C $(z3_dir)/build all install
-
-z3py_install: z3_install
 	@mkdir -p $(python_package_dir)/z3
+	@cp $(z3_dir)/build/libz3* $(python_package_dir)/z3/
 	@cp $(z3_dir)/build/*.py $(python_package_dir)/z3/
 	@echo "from z3 import *" > $(python_package_dir)/z3/__init__.py
 
