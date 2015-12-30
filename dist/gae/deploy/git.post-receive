@@ -28,7 +28,7 @@ NEW_DEPLOY="deploy.`date +%s`"
 
 mkdir "$NEW_DEPLOY"
 pushd "$NEW_DEPLOY"
-git clone --depth=1 --branch="$DEPLOY_BRANCH" "$GIT_DIR" .
+git clone --depth=1 --branch="$DEPLOY_BRANCH" "$GIT_DIR" . 2>/dev/null
 
 mkdir -p ../virtualenv
 [ -e ../virtualenv/bin/activate ] || virtualenv ../virtualenv
