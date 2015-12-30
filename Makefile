@@ -1,4 +1,4 @@
-.PHONY: all clean baseline accept check compile serve publish chromeapp
+.PHONY: all deps z3_install z3py_install clean check accept compile serve deploy
 
 src_dir = src
 scripts_dir = scripts
@@ -6,51 +6,53 @@ scripts_dir = scripts
 appengine_dir = dist/gae
 appengine_scripts_dir = $(appengine_dir)/scripts
 
-
+z3_dir = third_party/z3
+python_prefix = $(shell python2.7 -c "import sys; print sys.prefix")
+# Super hacky!
+python_package_dir = $(python_prefix)/lib/python2.7/site-packages
 PYTHON_PACKAGES=networkx unittest2 werkzeug webapp2 webob jinja2
-# Prod packages: cherrypy
-
-PYTHON_EGGS=$(patsubst %,sayc-env/%.STAMP,$(PYTHON_PACKAGES))
 
 all:
+	@echo "Run 'make deps' to bring your dependencies up-to-date."
 	@echo "Run 'make check' to check against the current baseline and 'make accept' to set a new baseline from the last results."
 
-sayc-env:
-	@virtualenv sayc-env
+deps: z3py_install
+	@pip install --upgrade $(PYTHON_PACKAGES)
 
-sayc-env/%.STAMP: sayc-env
-	# source doesn't seem to play nice with /bin/sh
-	@. sayc-env/bin/activate && easy_install $(patsubst sayc-env/%.STAMP,%,$@) && touch $@
+$(z3_dir)/build/config.mk:
+	@cd $(z3_dir) && python scripts/mk_make.py --prefix=$(python_prefix)
 
-env: $(PYTHON_EGGS)
-ifndef VIRTUAL_ENV
-	@echo "Type 'source sayc-env/bin/activate' to activate the virtual environment."
-endif
+z3_install: $(z3_dir)/build/config.mk
+	@make -C $(z3_dir)/build all install
+
+z3py_install: z3_install
+	@mkdir -p $(python_package_dir)/z3
+	@cp $(z3_dir)/build/*.py $(python_package_dir)/z3/
+	@echo "from z3 import *" > $(python_package_dir)/z3/__init__.py
 
 clean:
-	@find . -name "*.pyc" -print0 | xargs -0 rm
+	@find . -name "*.pyc" | perl -nle unlink
 
 accept:
 	@mv $(src_dir)/z3b_actual.txt $(src_dir)/z3b_baseline.txt
 
-check: clean env
-	@$(scripts_dir)/test-sayc -f > $(src_dir)/z3b_actual.txt && diff -U 7 $(src_dir)/z3b_baseline.txt $(src_dir)/z3b_actual.txt ; true
+check: clean
+	@$(scripts_dir)/test-sayc -f > $(src_dir)/z3b_actual.txt && diff -U 7 $(src_dir)/z3b_baseline.txt $(src_dir)/z3b_actual.txt
 
 serve: clean
 	# Source map generation uses passed-in paths.
-	cd $(appengine_dir); coffee --watch --map --compile scripts/*.coffee &
+	@cd $(appengine_dir) && coffee --watch --map --compile scripts/*.coffee &
 	# FIXME: Doesn't python just have a -C to change CWD before executing?
-	cd $(appengine_dir); python2.7 standalone_main.py
+	@cd $(appengine_dir) && python2.7 standalone_main.py
 
 serve-prod: clean compile
-	@. sayc-env/bin/activate && cd $(appengine_dir) && python2.7 production_main.py
+	@cd $(appengine_dir) && python2.7 production_main.py
 
 compile:
-	coffee --compile $(appengine_scripts_dir)/*.coffee
+	@coffee --compile $(appengine_scripts_dir)/*.coffee
 
 deploy:
-	git push origin origin/master:production
-	ssh serve@z3b.saycbridge.com 'killall python2.7 -INT'
+	@git push deploy master
 
 # FIXME: Need some way to make this work from a macro instead of an explicit list of files.
 closure:
