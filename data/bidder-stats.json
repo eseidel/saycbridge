@@ -1,0 +1,6112 @@
+{
+    "1C-OneLevelSuitOpening": {
+        "1D": 47901,
+        "1H": 39039,
+        "1N": 2785,
+        "1S": 33014,
+        "2C": 1899,
+        "2D": 212,
+        "2H": 210,
+        "2N": 2524,
+        "2S": 221,
+        "3C": 2223,
+        "3N": 993,
+        "4C": 135,
+        "5C": 40,
+        "6N": 2,
+        "P": 19123
+    },
+    "1C-OneLevelSuitOpening-Interference": {
+        "1D": 2294,
+        "1H": 3952,
+        "1N": 4536,
+        "1S": 4737,
+        "2C": 1464,
+        "2D": 1939,
+        "2H": 474,
+        "2N": 1620,
+        "2S": 439,
+        "3C": 1303,
+        "3D": 3,
+        "3N": 182,
+        "4C": 176,
+        "4N": 23,
+        "5C": 30,
+        "6N": 1,
+        "P": 27966,
+        "X": 7693,
+        "XX": 2302
+    },
+    "1D-BalancingSuitedOvercall": {
+        "2D": 92,
+        "P": 88
+    },
+    "1D-BalancingSuitedOvercall-Interference": {
+        "2D": 267,
+        "3D": 49,
+        "5D": 5,
+        "P": 463
+    },
+    "1D-OneLevelNewSuitResponse": {
+        "1H": 15396,
+        "1N": 5402,
+        "1S": 11002,
+        "2C": 4220,
+        "2D": 1269,
+        "2H": 346,
+        "2N": 3862,
+        "2S": 511,
+        "3C": 1117,
+        "3N": 157,
+        "4C": 343,
+        "P": 332
+    },
+    "1D-OneLevelNewSuitResponse-Interference": {
+        "1H": 421,
+        "1N": 1717,
+        "1S": 972,
+        "2C": 908,
+        "2D": 246,
+        "2H": 63,
+        "2N": 217,
+        "2S": 41,
+        "3C": 87,
+        "3D": 26,
+        "3H": 9,
+        "3N": 22,
+        "3S": 9,
+        "4C": 27,
+        "4H": 7,
+        "P": 1466
+    },
+    "1D-OneLevelStandardOvercall": {
+        "1H": 34,
+        "1S": 47,
+        "2C": 529,
+        "2D": 312,
+        "3D": 203,
+        "5D": 7,
+        "P": 890
+    },
+    "1D-OneLevelStandardOvercall-Interference": {
+        "1S": 7,
+        "2C": 665,
+        "2D": 1021,
+        "3C": 75,
+        "3D": 1300,
+        "4D": 8,
+        "5D": 33,
+        "P": 3350
+    },
+    "1D-OneLevelSuitOpening": {
+        "1H": 61536,
+        "1N": 13269,
+        "1S": 51604,
+        "2C": 9798,
+        "2D": 1861,
+        "2H": 259,
+        "2N": 2852,
+        "2S": 243,
+        "3C": 203,
+        "3D": 2029,
+        "3N": 1012,
+        "4D": 135,
+        "5D": 58,
+        "P": 20842
+    },
+    "1D-OneLevelSuitOpening-Interference": {
+        "1H": 2968,
+        "1N": 5822,
+        "1S": 3952,
+        "2C": 1415,
+        "2D": 1683,
+        "2H": 745,
+        "2N": 1781,
+        "2S": 544,
+        "3C": 91,
+        "3D": 1404,
+        "3H": 1,
+        "3N": 177,
+        "4D": 176,
+        "4N": 18,
+        "5D": 25,
+        "6N": 1,
+        "P": 33114,
+        "X": 7465,
+        "XX": 2510
+    },
+    "1D-SuitResponseToTakeoutDouble": {
+        "1H": 34,
+        "1N": 40,
+        "1S": 44,
+        "2C": 1,
+        "2D": 6,
+        "2H": 1,
+        "2N": 3,
+        "2S": 2,
+        "3N": 1,
+        "P": 60
+    },
+    "1D-SuitResponseToTakeoutDouble-Interference": {
+        "1N": 134,
+        "1S": 62,
+        "2C": 5,
+        "2D": 54,
+        "2H": 91,
+        "2N": 30,
+        "2S": 37,
+        "3C": 2,
+        "3D": 2,
+        "3H": 8,
+        "3N": 19,
+        "3S": 4,
+        "P": 338
+    },
+    "1H-BalancingSuitedOvercall": {
+        "2H": 157,
+        "4H": 23,
+        "P": 243
+    },
+    "1H-BalancingSuitedOvercall-Interference": {
+        "2H": 386,
+        "3H": 64,
+        "4H": 79,
+        "P": 692
+    },
+    "1H-NewOneLevelMajorByOpener": {
+        "1N": 3928,
+        "1S": 5357,
+        "2C": 187,
+        "2D": 933,
+        "2H": 1683,
+        "2S": 1744,
+        "3C": 79,
+        "3D": 1166,
+        "3N": 215,
+        "4H": 550,
+        "6N": 7,
+        "P": 3143
+    },
+    "1H-NewOneLevelMajorByOpener-Interference": {
+        "1N": 24,
+        "1S": 1,
+        "2C": 17,
+        "2D": 20,
+        "2H": 98,
+        "2N": 14,
+        "3D": 2,
+        "3H": 2,
+        "3N": 1,
+        "4H": 5,
+        "P": 482
+    },
+    "1H-NewSuitAfterTakeoutDouble": {
+        "1N": 18,
+        "2H": 9,
+        "3N": 1,
+        "4H": 2,
+        "P": 1
+    },
+    "1H-NewSuitAfterTakeoutDouble-Interference": {
+        "2N": 2,
+        "P": 1
+    },
+    "1H-NewSuitResponseToStandardOvercall": {
+        "1N": 4,
+        "2H": 2,
+        "3N": 2
+    },
+    "1H-NewSuitResponseToStandardOvercall-Interference": {
+        "1N": 9,
+        "2H": 9,
+        "2N": 5,
+        "P": 3
+    },
+    "1H-OneLevelNewSuitResponse": {
+        "1N": 13904,
+        "1S": 26254,
+        "2C": 17891,
+        "2D": 6498,
+        "2H": 11244,
+        "2N": 5195,
+        "2S": 973,
+        "3C": 1520,
+        "3D": 1792,
+        "3H": 4082,
+        "3N": 1,
+        "4C": 312,
+        "4D": 448,
+        "4H": 4321
+    },
+    "1H-OneLevelNewSuitResponse-Interference": {
+        "1N": 1812,
+        "1S": 726,
+        "2C": 1899,
+        "2D": 1025,
+        "2H": 1828,
+        "2N": 333,
+        "2S": 99,
+        "3C": 80,
+        "3D": 108,
+        "3H": 816,
+        "3N": 55,
+        "3S": 15,
+        "4C": 26,
+        "4D": 25,
+        "4H": 435,
+        "P": 3786
+    },
+    "1H-OneLevelStandardOvercall": {
+        "1S": 70,
+        "2C": 452,
+        "2D": 554,
+        "2H": 542,
+        "3H": 290,
+        "4H": 72,
+        "P": 1533
+    },
+    "1H-OneLevelStandardOvercall-Interference": {
+        "2C": 520,
+        "2D": 813,
+        "2H": 1997,
+        "2S": 1,
+        "3C": 85,
+        "3D": 75,
+        "3H": 1944,
+        "4H": 628,
+        "P": 6777
+    },
+    "1H-OneLevelSuitOpening": {
+        "1N": 9115,
+        "1S": 34881,
+        "2C": 9807,
+        "2D": 3904,
+        "2H": 13026,
+        "2N": 3240,
+        "2S": 180,
+        "3C": 183,
+        "3D": 161,
+        "3H": 15520,
+        "3N": 1321,
+        "4H": 1839,
+        "P": 10593
+    },
+    "1H-OneLevelSuitOpening-Interference": {
+        "1N": 1122,
+        "1S": 1238,
+        "2C": 300,
+        "2D": 507,
+        "2H": 6577,
+        "2N": 4240,
+        "2S": 321,
+        "3C": 68,
+        "3D": 55,
+        "3H": 6791,
+        "3N": 242,
+        "4H": 2509,
+        "4N": 14,
+        "5H": 113,
+        "6N": 3,
+        "P": 17062,
+        "X": 4472,
+        "XX": 768
+    },
+    "1H-RaiseResponseToNegativeDouble": {
+        "1S": 90,
+        "P": 5
+    },
+    "1H-SuitResponseToTakeoutDouble": {
+        "1N": 167,
+        "1S": 182,
+        "2C": 29,
+        "2D": 26,
+        "2H": 81,
+        "2N": 28,
+        "2S": 5,
+        "3H": 58,
+        "3N": 9,
+        "4H": 1,
+        "P": 276
+    },
+    "1H-SuitResponseToTakeoutDouble-Interference": {
+        "1N": 241,
+        "2C": 47,
+        "2D": 83,
+        "2H": 208,
+        "2N": 87,
+        "2S": 267,
+        "3C": 45,
+        "3D": 16,
+        "3H": 159,
+        "3N": 20,
+        "3S": 19,
+        "4H": 8,
+        "P": 963
+    },
+    "1N-BalancingNotrumpOvercall": {
+        "2C": 310,
+        "2D": 187,
+        "2H": 198,
+        "2N": 152,
+        "2S": 53,
+        "3C": 9,
+        "3D": 2,
+        "3N": 28,
+        "P": 686
+    },
+    "1N-BalancingNotrumpOvercall-Interference": {
+        "2D": 116,
+        "2H": 171,
+        "2N": 157,
+        "2S": 54,
+        "3C": 10,
+        "3D": 11,
+        "3N": 70,
+        "4H": 1,
+        "P": 1170,
+        "X": 98
+    },
+    "1N-DirectOvercall1N": {
+        "2C": 2745,
+        "2D": 2919,
+        "2H": 2778,
+        "2N": 878,
+        "2S": 822,
+        "3C": 34,
+        "3D": 22,
+        "3N": 382,
+        "3S": 2,
+        "P": 7235
+    },
+    "1N-DirectOvercall1N-Interference": {
+        "2D": 294,
+        "2H": 483,
+        "2N": 289,
+        "2S": 297,
+        "3C": 16,
+        "3D": 7,
+        "3N": 25,
+        "4D": 3,
+        "4H": 3,
+        "4N": 2,
+        "4S": 4,
+        "P": 3995,
+        "X": 29
+    },
+    "1N-NaturalNotrump": {
+        "2C": 262,
+        "2D": 72,
+        "2H": 438,
+        "2N": 4767,
+        "2S": 2,
+        "3C": 7,
+        "3D": 40,
+        "3H": 162,
+        "3N": 1147,
+        "3S": 35,
+        "4H": 83,
+        "6N": 5,
+        "P": 15923
+    },
+    "1N-NaturalNotrump-Interference": {
+        "2N": 22,
+        "3C": 7,
+        "3D": 3,
+        "P": 126
+    },
+    "1N-NotrumpAfterTakeoutDouble": {
+        "2N": 954,
+        "3N": 72,
+        "P": 347
+    },
+    "1N-NotrumpAfterTakeoutDouble-Interference": {
+        "2N": 169,
+        "3N": 9,
+        "P": 202
+    },
+    "1N-NotrumpOpening": {
+        "2C": 32201,
+        "2D": 14911,
+        "2H": 15102,
+        "2N": 8140,
+        "2S": 2826,
+        "3C": 173,
+        "3D": 169,
+        "3H": 135,
+        "3N": 9318,
+        "3S": 137,
+        "4N": 1534,
+        "6N": 455,
+        "7N": 9,
+        "P": 24983
+    },
+    "1N-NotrumpOpening-Interference": {
+        "2C": 499,
+        "2D": 1837,
+        "2H": 1813,
+        "2N": 795,
+        "2S": 569,
+        "3C": 35,
+        "3D": 37,
+        "3H": 5,
+        "3N": 720,
+        "3S": 2,
+        "4D": 2,
+        "4H": 1,
+        "4N": 21,
+        "4S": 3,
+        "5D": 4,
+        "5H": 1,
+        "6N": 1,
+        "P": 6578,
+        "X": 887,
+        "XX": 266
+    },
+    "1N-NotrumpResponseToNegativeDouble": {
+        "2C": 87,
+        "2D": 178,
+        "2H": 73,
+        "2N": 322,
+        "3C": 23,
+        "3D": 58,
+        "3H": 5,
+        "3N": 74,
+        "4H": 8,
+        "5D": 1,
+        "P": 436
+    },
+    "1N-NotrumpResponseToTakeoutDouble": {
+        "2C": 25,
+        "2D": 30,
+        "2H": 46,
+        "2N": 24,
+        "2S": 44,
+        "3C": 1,
+        "4D": 2,
+        "4H": 3,
+        "4N": 3,
+        "4S": 4,
+        "P": 309
+    },
+    "1N-NotrumpResponseToTakeoutDouble-Interference": {
+        "2D": 15,
+        "2H": 46,
+        "2N": 28,
+        "2S": 56,
+        "3C": 42,
+        "3D": 21,
+        "3H": 7,
+        "4D": 2,
+        "4H": 9,
+        "4N": 3,
+        "4S": 7,
+        "P": 481
+    },
+    "1N-OneNotrumpResponse": {
+        "2C": 10592,
+        "2D": 8771,
+        "2H": 8510,
+        "2N": 901,
+        "2S": 6235,
+        "3C": 832,
+        "3D": 948,
+        "3H": 1662,
+        "3N": 578,
+        "3S": 3418,
+        "4D": 115,
+        "P": 17848
+    },
+    "1N-OneNotrumpResponse-Interference": {
+        "2D": 11,
+        "2H": 16,
+        "2N": 101,
+        "2S": 39,
+        "3C": 2,
+        "3H": 2,
+        "3N": 43,
+        "3S": 6,
+        "4D": 4,
+        "4H": 6,
+        "P": 3910
+    },
+    "1N-RebidOneNotrumpByOpener": {
+        "2C": 4745,
+        "2D": 4635,
+        "2H": 2260,
+        "2N": 13055,
+        "2S": 3640,
+        "3C": 2460,
+        "3D": 2054,
+        "3H": 1078,
+        "3N": 4850,
+        "3S": 2289,
+        "4H": 152,
+        "4S": 1,
+        "6N": 16,
+        "P": 12943
+    },
+    "1N-RebidOneNotrumpByOpener-Interference": {
+        "2D": 89,
+        "2H": 53,
+        "2N": 264,
+        "2S": 73,
+        "3C": 13,
+        "3D": 69,
+        "3H": 39,
+        "3N": 34,
+        "3S": 21,
+        "4H": 1,
+        "4N": 1,
+        "5C": 1,
+        "5D": 1,
+        "P": 1398
+    },
+    "1S-BalancingSuitedOvercall": {
+        "2S": 303,
+        "4S": 43,
+        "P": 397
+    },
+    "1S-BalancingSuitedOvercall-Interference": {
+        "2S": 424,
+        "3S": 102,
+        "4S": 98,
+        "P": 771
+    },
+    "1S-NewOneLevelMajorByOpener": {
+        "1N": 15924,
+        "2C": 2089,
+        "2D": 2877,
+        "2H": 3194,
+        "2S": 4294,
+        "3C": 968,
+        "3D": 1688,
+        "3H": 2685,
+        "3N": 2067,
+        "4S": 1228,
+        "5C": 1,
+        "6N": 19,
+        "7N": 1,
+        "P": 5300
+    },
+    "1S-NewOneLevelMajorByOpener-Interference": {
+        "1N": 6,
+        "2C": 26,
+        "2D": 51,
+        "2H": 27,
+        "2N": 51,
+        "2S": 314,
+        "3D": 25,
+        "3N": 17,
+        "3S": 27,
+        "4S": 32,
+        "5C": 1,
+        "P": 1332
+    },
+    "1S-NewSuitAfterTakeoutDouble": {
+        "1N": 154,
+        "2S": 130,
+        "3N": 13,
+        "4S": 24,
+        "P": 13
+    },
+    "1S-NewSuitAfterTakeoutDouble-Interference": {
+        "2N": 35,
+        "2S": 68,
+        "3N": 1,
+        "4S": 10,
+        "P": 28
+    },
+    "1S-NewSuitResponseToStandardOvercall": {
+        "1N": 26,
+        "2S": 28,
+        "3N": 2,
+        "4S": 3
+    },
+    "1S-NewSuitResponseToStandardOvercall-Interference": {
+        "2N": 18,
+        "2S": 24,
+        "3N": 2,
+        "4S": 5,
+        "P": 16
+    },
+    "1S-OneLevelNewSuitResponse": {
+        "1N": 33936,
+        "2C": 26967,
+        "2D": 15260,
+        "2H": 8577,
+        "2N": 4982,
+        "2S": 11820,
+        "3C": 1762,
+        "3D": 1931,
+        "3H": 3322,
+        "3N": 24,
+        "3S": 4879,
+        "4C": 278,
+        "4D": 331,
+        "4S": 4641,
+        "P": 1500
+    },
+    "1S-OneLevelNewSuitResponse-Interference": {
+        "1N": 1500,
+        "2C": 1330,
+        "2D": 1187,
+        "2H": 898,
+        "2N": 272,
+        "2S": 2171,
+        "3C": 28,
+        "3D": 61,
+        "3H": 122,
+        "3N": 32,
+        "3S": 958,
+        "4C": 20,
+        "4D": 18,
+        "4H": 10,
+        "4S": 463,
+        "P": 5605
+    },
+    "1S-OneLevelStandardOvercall": {
+        "2C": 541,
+        "2D": 616,
+        "2H": 453,
+        "2S": 778,
+        "3S": 440,
+        "4S": 105,
+        "P": 2260
+    },
+    "1S-OneLevelStandardOvercall-Interference": {
+        "2C": 582,
+        "2D": 842,
+        "2H": 576,
+        "2S": 3274,
+        "3C": 108,
+        "3D": 100,
+        "3H": 406,
+        "3S": 3676,
+        "4S": 1275,
+        "P": 11945
+    },
+    "1S-OneLevelSuitOpening": {
+        "1N": 25768,
+        "2C": 19637,
+        "2D": 11524,
+        "2H": 3899,
+        "2N": 3875,
+        "2S": 14342,
+        "3C": 174,
+        "3D": 175,
+        "3H": 186,
+        "3N": 2731,
+        "3S": 17646,
+        "4S": 2055,
+        "P": 11427
+    },
+    "1S-OneLevelSuitOpening-Interference": {
+        "1N": 2133,
+        "2C": 170,
+        "2D": 392,
+        "2H": 258,
+        "2N": 4480,
+        "2S": 6843,
+        "3C": 54,
+        "3D": 53,
+        "3H": 59,
+        "3N": 236,
+        "3S": 6891,
+        "4N": 15,
+        "4S": 2553,
+        "5S": 99,
+        "6N": 1,
+        "P": 17964,
+        "X": 3087,
+        "XX": 813
+    },
+    "1S-RaiseResponseToNegativeDouble": {
+        "2S": 141,
+        "3D": 12,
+        "4S": 12,
+        "P": 294
+    },
+    "1S-SuitResponseToTakeoutDouble": {
+        "1N": 442,
+        "2C": 82,
+        "2D": 87,
+        "2H": 234,
+        "2N": 79,
+        "2S": 213,
+        "3H": 5,
+        "3N": 23,
+        "3S": 203,
+        "4S": 1,
+        "P": 567
+    },
+    "1S-SuitResponseToTakeoutDouble-Interference": {
+        "2D": 127,
+        "2H": 308,
+        "2N": 168,
+        "2S": 310,
+        "3C": 153,
+        "3D": 66,
+        "3H": 43,
+        "3N": 20,
+        "3S": 204,
+        "4S": 3,
+        "P": 1443
+    },
+    "2C-AcceptTransferToTwoClubs": {
+        "2D": 137,
+        "P": 129
+    },
+    "2C-BalancingMichaelsCuebid": {
+        "2H": 22,
+        "2S": 27,
+        "P": 64
+    },
+    "2C-BalancingMichaelsCuebid-Interference": {
+        "2H": 1,
+        "2S": 8,
+        "3H": 1,
+        "3S": 1,
+        "4H": 1,
+        "4S": 4,
+        "P": 12
+    },
+    "2C-BalancingSuitedOvercall": {
+        "3C": 136,
+        "5C": 8,
+        "P": 608
+    },
+    "2C-BalancingSuitedOvercall-Interference": {
+        "3C": 230,
+        "4C": 20,
+        "5C": 11,
+        "P": 866
+    },
+    "2C-Cappelletti": {
+        "2D": 1600,
+        "2H": 93,
+        "2N": 70,
+        "2S": 99,
+        "P": 16
+    },
+    "2C-Cappelletti-Interference": {
+        "P": 3673
+    },
+    "2C-CueBidAfterTakeoutDouble": {
+        "2N": 13,
+        "3N": 2,
+        "P": 3
+    },
+    "2C-CueBidAfterTakeoutDouble-Interference": {
+        "2N": 9
+    },
+    "2C-CuebidResponseToStandardOvercall": {
+        "2D": 877,
+        "2H": 633,
+        "2S": 745,
+        "4H": 29,
+        "4S": 26,
+        "5D": 3
+    },
+    "2C-CuebidResponseToStandardOvercall-Interference": {
+        "2H": 47,
+        "2S": 186,
+        "3D": 28,
+        "3H": 6,
+        "3S": 2,
+        "4D": 3,
+        "4H": 4,
+        "4S": 7,
+        "P": 540
+    },
+    "2C-CuebidResponseToTakeoutDouble": {
+        "P": 12
+    },
+    "2C-DirectMichaelsCuebid": {
+        "2H": 238,
+        "2S": 205,
+        "P": 872
+    },
+    "2C-DirectMichaelsCuebid-Interference": {
+        "2H": 118,
+        "2S": 266,
+        "3H": 26,
+        "3S": 38,
+        "4H": 49,
+        "4S": 55,
+        "P": 184
+    },
+    "2C-ForcedRebidOriginalSuitByOpener": {
+        "2D": 259,
+        "2H": 607,
+        "2N": 1034,
+        "2S": 1040,
+        "3C": 2711,
+        "3D": 799,
+        "3H": 1110,
+        "3N": 1069,
+        "3S": 1320,
+        "5C": 3,
+        "6N": 8,
+        "7N": 1,
+        "P": 5408
+    },
+    "2C-ForcedRebidOriginalSuitByOpener-Interference": {
+        "2D": 7,
+        "2H": 12,
+        "2N": 1,
+        "2S": 26,
+        "3C": 15,
+        "3D": 1,
+        "3H": 1,
+        "3S": 1,
+        "4C": 1,
+        "P": 309
+    },
+    "2C-LawOfTotalTricks": {
+        "2H": 1,
+        "3C": 18,
+        "P": 117
+    },
+    "2C-LawOfTotalTricks-Interference": {
+        "3C": 62,
+        "P": 167
+    },
+    "2C-MinimumRaise": {
+        "2D": 39,
+        "2H": 203,
+        "2N": 67,
+        "2S": 145,
+        "3C": 16,
+        "3D": 28,
+        "3H": 95,
+        "3N": 49,
+        "3S": 119,
+        "P": 1627
+    },
+    "2C-MinimumRaise-Interference": {
+        "2D": 1,
+        "2H": 12,
+        "2N": 13,
+        "2S": 20,
+        "3C": 35,
+        "3D": 18,
+        "3H": 18,
+        "3N": 26,
+        "3S": 29,
+        "4D": 2,
+        "4H": 9,
+        "P": 792
+    },
+    "2C-NaturalSuited": {
+        "2H": 44,
+        "2S": 7,
+        "3C": 77,
+        "P": 263
+    },
+    "2C-NaturalSuited-Interference": {
+        "P": 9
+    },
+    "2C-NewSuitAfterTakeoutDouble": {
+        "2N": 65,
+        "3C": 83,
+        "3N": 26,
+        "P": 58
+    },
+    "2C-NewSuitAfterTakeoutDouble-Interference": {
+        "2N": 8,
+        "3C": 55,
+        "3N": 5,
+        "P": 74
+    },
+    "2C-NewSuitAtTheTwoLevel": {
+        "2D": 8526,
+        "2H": 8016,
+        "2N": 9280,
+        "2S": 4528,
+        "3C": 2097,
+        "3D": 199,
+        "3H": 689,
+        "3N": 2785,
+        "3S": 1346,
+        "4D": 43,
+        "P": 596
+    },
+    "2C-NewSuitAtTheTwoLevel-Interference": {
+        "2D": 38,
+        "2H": 220,
+        "2N": 831,
+        "2S": 295,
+        "3C": 258,
+        "3D": 22,
+        "3H": 11,
+        "3N": 101,
+        "3S": 15,
+        "4H": 1,
+        "4N": 5,
+        "5C": 8,
+        "P": 1217
+    },
+    "2C-NewSuitByOpener": {
+        "2D": 7847,
+        "2H": 5667,
+        "2N": 4275,
+        "2S": 6656,
+        "3C": 1598,
+        "3D": 2005,
+        "3H": 1940,
+        "3N": 3171,
+        "3S": 3153,
+        "4H": 444,
+        "6N": 23,
+        "P": 12318
+    },
+    "2C-NewSuitByOpener-Interference": {
+        "2D": 57,
+        "2H": 76,
+        "2N": 52,
+        "2S": 152,
+        "3C": 157,
+        "3D": 39,
+        "3H": 17,
+        "3N": 26,
+        "3S": 8,
+        "4C": 2,
+        "5C": 2,
+        "5D": 2,
+        "P": 2630
+    },
+    "2C-NewSuitResponseToNegativeDouble": {
+        "2D": 61,
+        "2H": 48,
+        "2N": 64,
+        "3C": 50,
+        "3D": 12,
+        "3H": 10,
+        "3N": 10,
+        "4H": 3,
+        "P": 169
+    },
+    "2C-NewSuitResponseToOneNotrumpPenaltyDouble": {
+        "3C": 2,
+        "P": 267
+    },
+    "2C-NewSuitResponseToStandardOvercall": {
+        "2N": 26,
+        "3C": 12,
+        "3N": 3,
+        "P": 31
+    },
+    "2C-NewSuitResponseToStandardOvercall-Interference": {
+        "2N": 22,
+        "3C": 21,
+        "3N": 5,
+        "P": 33
+    },
+    "2C-NonJumpFourthSuitForcing": {
+        "2D": 248,
+        "2H": 191,
+        "2N": 1087,
+        "3C": 12,
+        "3N": 276,
+        "P": 20
+    },
+    "2C-NonJumpFourthSuitForcing-Interference": {
+        "P": 1
+    },
+    "2C-ResponderSignoffInPartnersSuit": {
+        "2D": 8,
+        "2H": 16,
+        "2S": 4,
+        "3C": 88,
+        "P": 5060
+    },
+    "2C-ResponderSignoffInPartnersSuit-Interference": {
+        "3C": 4,
+        "P": 114
+    },
+    "2C-StrongTwoClubs": {
+        "2D": 10072,
+        "2H": 186,
+        "2N": 3034,
+        "2S": 185,
+        "3C": 170,
+        "3D": 167,
+        "P": 6
+    },
+    "2C-StrongTwoClubs-Interference": {
+        "2N": 2,
+        "3D": 1,
+        "3N": 152,
+        "4N": 8,
+        "6N": 1,
+        "P": 306
+    },
+    "2C-SuitResponseToTakeoutDouble": {
+        "2D": 64,
+        "2H": 155,
+        "2N": 162,
+        "2S": 147,
+        "3C": 53,
+        "3H": 3,
+        "3N": 21,
+        "3S": 3,
+        "4C": 11,
+        "P": 247
+    },
+    "2C-SuitResponseToTakeoutDouble-Interference": {
+        "2H": 84,
+        "2N": 106,
+        "2S": 121,
+        "3C": 14,
+        "3D": 78,
+        "3H": 42,
+        "3N": 17,
+        "3S": 17,
+        "4C": 38,
+        "4H": 1,
+        "P": 594
+    },
+    "2C-TwoLevelStandardOvercall": {
+        "2D": 926,
+        "2H": 495,
+        "2S": 497,
+        "3C": 2426,
+        "4C": 232,
+        "5C": 26,
+        "P": 6006
+    },
+    "2C-TwoLevelStandardOvercall-Interference": {
+        "2D": 41,
+        "2H": 86,
+        "2S": 119,
+        "3C": 2273,
+        "3D": 89,
+        "3H": 296,
+        "4C": 735,
+        "5C": 159,
+        "P": 7658
+    },
+    "2C-TwoLevelStayman": {
+        "2D": 12311,
+        "2H": 12197,
+        "2S": 9663
+    },
+    "2C-TwoLevelStayman-Interference": {
+        "2H": 255,
+        "2S": 325,
+        "P": 855,
+        "X": 149
+    },
+    "2C-UnforcedRebidOriginalSuitByOpener": {
+        "2D": 62,
+        "2H": 87,
+        "2N": 136,
+        "2S": 113,
+        "3C": 868,
+        "3D": 72,
+        "3H": 84,
+        "3N": 100,
+        "3S": 71,
+        "5C": 4,
+        "P": 2505
+    },
+    "2C-UnforcedRebidOriginalSuitByOpener-Interference": {
+        "2H": 1,
+        "2N": 30,
+        "2S": 17,
+        "3C": 351,
+        "3D": 16,
+        "3H": 21,
+        "3N": 39,
+        "3S": 13,
+        "4C": 13,
+        "4D": 1,
+        "4N": 1,
+        "5C": 9,
+        "P": 1316
+    },
+    "2D-BalancingJumpSuitedOvercall": {
+        "3D": 104,
+        "5D": 5,
+        "P": 144
+    },
+    "2D-BalancingJumpSuitedOvercall-Interference": {
+        "3D": 18,
+        "4D": 3,
+        "5D": 1,
+        "P": 35
+    },
+    "2D-BalancingMichaelsCuebid": {
+        "2H": 26,
+        "2S": 33,
+        "P": 86
+    },
+    "2D-BalancingMichaelsCuebid-Interference": {
+        "4H": 1,
+        "P": 25
+    },
+    "2D-BalancingSuitedOvercall": {
+        "3D": 72,
+        "5D": 2,
+        "P": 332
+    },
+    "2D-BalancingSuitedOvercall-Interference": {
+        "3D": 88,
+        "4D": 14,
+        "5D": 7,
+        "P": 389
+    },
+    "2D-Cappelletti": {
+        "2H": 34,
+        "2N": 7,
+        "2S": 51,
+        "3C": 1,
+        "3H": 6,
+        "3S": 6,
+        "4H": 4,
+        "P": 26
+    },
+    "2D-Cappelletti-Interference": {
+        "3H": 15,
+        "3S": 20,
+        "4H": 8,
+        "4S": 5,
+        "P": 123
+    },
+    "2D-CueBidAfterTakeoutDouble": {
+        "2N": 50,
+        "3N": 8,
+        "P": 5
+    },
+    "2D-CueBidAfterTakeoutDouble-Interference": {
+        "2N": 3,
+        "3N": 2,
+        "P": 3
+    },
+    "2D-CuebidReponseToNegativeDouble": {
+        "2N": 8,
+        "3N": 1
+    },
+    "2D-CuebidResponseToStandardOvercall": {
+        "2H": 938,
+        "2S": 1003,
+        "3C": 287,
+        "4H": 20,
+        "4S": 31,
+        "5C": 8,
+        "P": 550
+    },
+    "2D-CuebidResponseToStandardOvercall-Interference": {
+        "2S": 127,
+        "3C": 28,
+        "3H": 29,
+        "3S": 14,
+        "4H": 9,
+        "4S": 5,
+        "P": 552
+    },
+    "2D-CuebidResponseToTakeoutDouble": {
+        "P": 23
+    },
+    "2D-DelayedSupportResponseToFourthSuitForcing": {
+        "3D": 4,
+        "3N": 1
+    },
+    "2D-DiamondStaymanResponse": {
+        "2H": 336,
+        "2N": 4219,
+        "2S": 321,
+        "3C": 338,
+        "3D": 362,
+        "3H": 351,
+        "3N": 4969,
+        "3S": 393,
+        "P": 975
+    },
+    "2D-DiamondStaymanResponse-Interference": {
+        "2N": 29,
+        "3N": 16,
+        "P": 2
+    },
+    "2D-DirectMichaelsCuebid": {
+        "2H": 354,
+        "2S": 356,
+        "P": 1517
+    },
+    "2D-DirectMichaelsCuebid-Interference": {
+        "3H": 43,
+        "3S": 40,
+        "4H": 21,
+        "4S": 25,
+        "P": 174
+    },
+    "2D-ForcedRebidOriginalSuitByOpener": {
+        "2H": 331,
+        "2N": 1297,
+        "2S": 653,
+        "3C": 649,
+        "3D": 2825,
+        "3H": 566,
+        "3N": 1085,
+        "3S": 867,
+        "4C": 825,
+        "5D": 1,
+        "6N": 6,
+        "P": 4417
+    },
+    "2D-ForcedRebidOriginalSuitByOpener-Interference": {
+        "2H": 7,
+        "2N": 5,
+        "2S": 14,
+        "3C": 3,
+        "3D": 19,
+        "3H": 2,
+        "3S": 1,
+        "4D": 2,
+        "P": 215
+    },
+    "2D-HelpSuitGameTry": {
+        "3C": 10,
+        "P": 30
+    },
+    "2D-JacobyTransferToHearts": {
+        "2H": 18193,
+        "3H": 1103
+    },
+    "2D-JacobyTransferToHearts-Interference": {
+        "2H": 114,
+        "3H": 54,
+        "4H": 5,
+        "P": 795
+    },
+    "2D-JumpShiftResponseToOpen": {
+        "3N": 175,
+        "6N": 32,
+        "P": 3
+    },
+    "2D-JumpShiftResponseToOpen-Interference": {
+        "3N": 1,
+        "5D": 1
+    },
+    "2D-JumpShiftResponseToOpenAfterRHODouble": {
+        "3D": 1,
+        "3S": 1,
+        "P": 67
+    },
+    "2D-JumpShiftResponseToOpenAfterRHODouble-Interference": {
+        "P": 2
+    },
+    "2D-JumpSuitResponseToTakeoutDouble": {
+        "2H": 10,
+        "2N": 1,
+        "2S": 11,
+        "3D": 5,
+        "5D": 1,
+        "P": 262
+    },
+    "2D-JumpSuitResponseToTakeoutDouble-Interference": {
+        "P": 7
+    },
+    "2D-LawOfTotalTricks": {
+        "3D": 539,
+        "5D": 18,
+        "P": 1081
+    },
+    "2D-LawOfTotalTricks-Interference": {
+        "3D": 143,
+        "4D": 5,
+        "5D": 7,
+        "P": 219
+    },
+    "2D-MinimumRaise": {
+        "2H": 198,
+        "2N": 79,
+        "2S": 107,
+        "3C": 82,
+        "3D": 27,
+        "3H": 92,
+        "3N": 51,
+        "3S": 102,
+        "4C": 56,
+        "P": 1812
+    },
+    "2D-MinimumRaise-Interference": {
+        "2H": 2,
+        "2N": 6,
+        "2S": 7,
+        "3C": 19,
+        "3D": 32,
+        "3H": 20,
+        "3N": 20,
+        "3S": 18,
+        "4C": 8,
+        "4D": 1,
+        "4H": 6,
+        "P": 799
+    },
+    "2D-NaturalSuited": {
+        "2H": 74,
+        "2S": 60,
+        "3D": 621,
+        "3H": 51,
+        "3N": 49,
+        "3S": 41,
+        "P": 651
+    },
+    "2D-NaturalSuited-Interference": {
+        "3D": 31,
+        "3N": 7,
+        "P": 152
+    },
+    "2D-NewSuitAfterTakeoutDouble": {
+        "2N": 131,
+        "3D": 207,
+        "3N": 49,
+        "5D": 2,
+        "P": 231
+    },
+    "2D-NewSuitAfterTakeoutDouble-Interference": {
+        "2N": 25,
+        "3D": 74,
+        "3N": 26,
+        "P": 120
+    },
+    "2D-NewSuitAtTheTwoLevel": {
+        "2H": 4028,
+        "2N": 4542,
+        "2S": 3920,
+        "3C": 1032,
+        "3D": 690,
+        "3H": 219,
+        "3N": 959,
+        "3S": 652,
+        "4C": 155,
+        "5D": 2,
+        "P": 346
+    },
+    "2D-NewSuitAtTheTwoLevel-Interference": {
+        "2H": 18,
+        "2N": 525,
+        "2S": 81,
+        "3C": 6,
+        "3D": 111,
+        "3N": 75,
+        "4D": 3,
+        "4N": 6,
+        "5D": 2,
+        "P": 823
+    },
+    "2D-NewSuitByOpener": {
+        "2H": 3279,
+        "2N": 2652,
+        "2S": 4180,
+        "3C": 1550,
+        "3D": 1332,
+        "3H": 1177,
+        "3N": 1236,
+        "3S": 1259,
+        "4C": 697,
+        "4H": 699,
+        "4S": 293,
+        "6N": 2,
+        "P": 6261
+    },
+    "2D-NewSuitByOpener-Interference": {
+        "2H": 24,
+        "2N": 7,
+        "2S": 86,
+        "3D": 95,
+        "3H": 10,
+        "3N": 2,
+        "3S": 8,
+        "4D": 2,
+        "4H": 6,
+        "5D": 2,
+        "P": 1156
+    },
+    "2D-NewSuitResponseToNegativeDouble": {
+        "2H": 65,
+        "2N": 69,
+        "2S": 13,
+        "3C": 59,
+        "3D": 66,
+        "3H": 4,
+        "3N": 7,
+        "3S": 8,
+        "4H": 9,
+        "4S": 4,
+        "P": 177
+    },
+    "2D-NewSuitResponseToNegativeDouble-Interference": {
+        "2N": 1,
+        "3C": 5,
+        "3D": 9,
+        "3S": 2,
+        "P": 89
+    },
+    "2D-NewSuitResponseToOneNotrumpPenaltyDouble": {
+        "3D": 6,
+        "P": 290
+    },
+    "2D-NewSuitResponseToStandardOvercall": {
+        "2N": 47,
+        "3D": 19,
+        "3N": 6,
+        "P": 59
+    },
+    "2D-NewSuitResponseToStandardOvercall-Interference": {
+        "2N": 23,
+        "3D": 16,
+        "3N": 4,
+        "P": 17
+    },
+    "2D-NonJumpFourthSuitForcing": {
+        "2H": 418,
+        "2N": 1263,
+        "2S": 256,
+        "3C": 7,
+        "3D": 2,
+        "3N": 274,
+        "P": 30
+    },
+    "2D-NonJumpFourthSuitForcing-Interference": {
+        "P": 4
+    },
+    "2D-PreemptiveOpen": {
+        "2H": 151,
+        "2S": 129,
+        "3C": 121,
+        "3D": 1684,
+        "3H": 8,
+        "3N": 54,
+        "3S": 11,
+        "4S": 1,
+        "5D": 88,
+        "P": 3135
+    },
+    "2D-PreemptiveOpen-Interference": {
+        "2H": 7,
+        "2S": 6,
+        "3C": 13,
+        "3D": 1462,
+        "3H": 1,
+        "3S": 4,
+        "4C": 1,
+        "4D": 39,
+        "5D": 140,
+        "P": 1517
+    },
+    "2D-PreemptiveOvercall": {
+        "2H": 3,
+        "2S": 7,
+        "3D": 764,
+        "5D": 39,
+        "P": 1028
+    },
+    "2D-PreemptiveOvercall-Interference": {
+        "3D": 675,
+        "4D": 4,
+        "5D": 46,
+        "P": 556
+    },
+    "2D-RaiseAfterTakeoutDouble": {
+        "3D": 5,
+        "P": 1
+    },
+    "2D-RaiseResponseToStandardOvercall": {
+        "3D": 160,
+        "5D": 4,
+        "P": 706
+    },
+    "2D-RaiseResponseToStandardOvercall-Interference": {
+        "3D": 81,
+        "4D": 1,
+        "5D": 3,
+        "P": 378
+    },
+    "2D-RebidResponderSuitByResponder": {
+        "2H": 39,
+        "2N": 168,
+        "2S": 37,
+        "3D": 50,
+        "P": 2092
+    },
+    "2D-RebidResponderSuitByResponder-Interference": {
+        "P": 48
+    },
+    "2D-RebidResponseToFourthSuitForcing": {
+        "2N": 85,
+        "3C": 12,
+        "3D": 52,
+        "3N": 28,
+        "3S": 66
+    },
+    "2D-ResponderSignoffInPartnersSuit": {
+        "2H": 122,
+        "2N": 141,
+        "2S": 186,
+        "3D": 769,
+        "P": 11028
+    },
+    "2D-ResponderSignoffInPartnersSuit-Interference": {
+        "2N": 1,
+        "3D": 17,
+        "P": 282
+    },
+    "2D-ResponseAfterTransferToTwoClubs": {
+        "3D": 84,
+        "5D": 3,
+        "P": 50
+    },
+    "2D-ResponseToCappellettiTwoClubs": {
+        "2H": 446,
+        "2S": 464,
+        "3C": 332,
+        "3D": 358
+    },
+    "2D-ReverseByOpener": {
+        "2H": 627,
+        "2N": 149,
+        "2S": 649,
+        "3C": 156,
+        "3D": 39,
+        "3H": 12,
+        "3N": 285,
+        "3S": 18,
+        "6N": 5,
+        "P": 721
+    },
+    "2D-ReverseByOpener-Interference": {
+        "2N": 2,
+        "3C": 8,
+        "3D": 7,
+        "3N": 8,
+        "P": 156
+    },
+    "2D-SuitResponseToTakeoutDouble": {
+        "2H": 124,
+        "2N": 98,
+        "2S": 112,
+        "3C": 54,
+        "3D": 118,
+        "3H": 1,
+        "3N": 9,
+        "4D": 12,
+        "P": 300
+    },
+    "2D-SuitResponseToTakeoutDouble-Interference": {
+        "2N": 84,
+        "2S": 69,
+        "3C": 82,
+        "3D": 8,
+        "3H": 76,
+        "3N": 17,
+        "3S": 26,
+        "4D": 20,
+        "4H": 1,
+        "P": 392
+    },
+    "2D-TwoLevelStandardOvercall": {
+        "2H": 502,
+        "2S": 501,
+        "3C": 95,
+        "3D": 1384,
+        "4D": 159,
+        "5D": 21,
+        "P": 3106
+    },
+    "2D-TwoLevelStandardOvercall-Interference": {
+        "2H": 44,
+        "2S": 79,
+        "3C": 29,
+        "3D": 1792,
+        "3H": 282,
+        "4D": 582,
+        "5D": 121,
+        "P": 6460
+    },
+    "2D-UnforcedRebidOriginalSuitByOpener": {
+        "2H": 74,
+        "2N": 138,
+        "2S": 104,
+        "3C": 7,
+        "3D": 790,
+        "3H": 92,
+        "3N": 97,
+        "3S": 76,
+        "4C": 18,
+        "5D": 1,
+        "P": 3837
+    },
+    "2D-UnforcedRebidOriginalSuitByOpener-Interference": {
+        "2N": 19,
+        "2S": 9,
+        "3D": 345,
+        "3H": 14,
+        "3N": 13,
+        "3S": 9,
+        "4C": 1,
+        "4D": 16,
+        "4N": 1,
+        "5D": 10,
+        "P": 1093
+    },
+    "2D-WaitingResponseToStrongTwoClubs": {
+        "2H": 1229,
+        "2N": 3383,
+        "2S": 1219,
+        "3C": 1224,
+        "3D": 1262,
+        "3H": 36,
+        "3N": 825,
+        "3S": 51,
+        "4C": 43,
+        "4D": 49,
+        "P": 611
+    },
+    "2D-WaitingResponseToStrongTwoClubs-Interference": {
+        "2N": 38,
+        "2S": 10,
+        "3C": 14,
+        "3D": 29,
+        "3H": 8,
+        "3N": 2,
+        "3S": 2,
+        "4C": 2,
+        "4D": 3,
+        "P": 32
+    },
+    "2H-AcceptTransferToHearts": {
+        "2N": 4736,
+        "2S": 216,
+        "3C": 152,
+        "3D": 119,
+        "3H": 1726,
+        "3N": 2813,
+        "3S": 2,
+        "4H": 1060,
+        "P": 7347
+    },
+    "2H-AcceptTransferToHearts-Interference": {
+        "2N": 39,
+        "3C": 1,
+        "3D": 2,
+        "3H": 14,
+        "3N": 15,
+        "4H": 5,
+        "P": 60
+    },
+    "2H-BalancingJumpSuitedOvercall": {
+        "3H": 153,
+        "4H": 70,
+        "P": 323
+    },
+    "2H-BalancingJumpSuitedOvercall-Interference": {
+        "3H": 8,
+        "4H": 13,
+        "P": 37
+    },
+    "2H-BalancingMichaelsCuebid": {
+        "2S": 90,
+        "P": 73
+    },
+    "2H-BalancingMichaelsCuebid-Interference": {
+        "4S": 4,
+        "P": 21
+    },
+    "2H-BalancingSuitedOvercall": {
+        "3H": 53,
+        "4H": 14,
+        "P": 216
+    },
+    "2H-BalancingSuitedOvercall-Interference": {
+        "3H": 17,
+        "4H": 15,
+        "P": 159
+    },
+    "2H-Cappelletti": {
+        "2S": 5,
+        "3C": 3,
+        "3D": 11,
+        "3H": 131,
+        "4H": 1,
+        "P": 190
+    },
+    "2H-Cappelletti-Interference": {
+        "3H": 32,
+        "4H": 15,
+        "P": 231
+    },
+    "2H-CueBidAfterTakeoutDouble": {
+        "2N": 63,
+        "3N": 3,
+        "P": 9
+    },
+    "2H-CueBidAfterTakeoutDouble-Interference": {
+        "2N": 3,
+        "P": 3
+    },
+    "2H-CuebidReponseToNegativeDouble": {
+        "2N": 29,
+        "3C": 1,
+        "3D": 1,
+        "3N": 11,
+        "5D": 1
+    },
+    "2H-CuebidResponseToStandardOvercall": {
+        "2S": 706,
+        "3C": 173,
+        "3D": 169,
+        "4S": 16,
+        "5C": 4,
+        "5D": 1,
+        "P": 604
+    },
+    "2H-CuebidResponseToStandardOvercall-Interference": {
+        "3C": 6,
+        "3D": 16,
+        "3S": 11,
+        "4C": 2,
+        "4S": 6,
+        "P": 235
+    },
+    "2H-CuebidResponseToTakeoutDouble": {
+        "P": 3
+    },
+    "2H-DelayedSupportResponseToFourthSuitForcing": {
+        "2N": 85,
+        "2S": 1,
+        "3C": 19,
+        "3D": 38,
+        "3H": 92,
+        "3N": 25,
+        "3S": 85,
+        "4H": 33,
+        "P": 1
+    },
+    "2H-DirectMichaelsCuebid": {
+        "2S": 1131,
+        "P": 663
+    },
+    "2H-DirectMichaelsCuebid-Interference": {
+        "3S": 419,
+        "4S": 264,
+        "P": 1645
+    },
+    "2H-ForcedMajorRebid": {
+        "2N": 137,
+        "2S": 86,
+        "3H": 5,
+        "P": 62
+    },
+    "2H-ForcedMajorRebid-Interference": {
+        "P": 4
+    },
+    "2H-ForcedRebidOriginalSuitByOpener": {
+        "2N": 2042,
+        "2S": 278,
+        "3C": 453,
+        "3D": 1214,
+        "3H": 1286,
+        "3N": 352,
+        "3S": 294,
+        "4C": 268,
+        "4D": 722,
+        "4H": 790,
+        "P": 3035
+    },
+    "2H-ForcedRebidOriginalSuitByOpener-Interference": {
+        "2N": 20,
+        "2S": 2,
+        "3C": 3,
+        "3D": 4,
+        "3H": 6,
+        "P": 67
+    },
+    "2H-HelpSuitGameTry": {
+        "3C": 92,
+        "3D": 68,
+        "3H": 1,
+        "P": 244
+    },
+    "2H-HelpSuitGameTry-Interference": {
+        "3D": 2,
+        "P": 8
+    },
+    "2H-JacobyTransferToSpades": {
+        "2S": 18960,
+        "3S": 1187
+    },
+    "2H-JacobyTransferToSpades-Interference": {
+        "2S": 137,
+        "3S": 11,
+        "4S": 7,
+        "P": 243
+    },
+    "2H-JumpNewSuitAfterTakeoutDouble": {
+        "P": 1
+    },
+    "2H-JumpRaiseResponseToNegativeDouble": {
+        "3H": 5,
+        "4H": 4,
+        "P": 4
+    },
+    "2H-JumpShiftByOpener": {
+        "2N": 27,
+        "2S": 99,
+        "3C": 26,
+        "3D": 28,
+        "3H": 21,
+        "3N": 136,
+        "4H": 85,
+        "6N": 1,
+        "P": 39
+    },
+    "2H-JumpShiftByOpener-Interference": {
+        "2N": 1,
+        "3C": 3,
+        "3D": 5,
+        "3H": 6,
+        "P": 11
+    },
+    "2H-JumpShiftResponseToOpen": {
+        "3C": 62,
+        "3N": 182,
+        "4H": 131,
+        "6N": 37,
+        "7N": 2,
+        "P": 55
+    },
+    "2H-JumpShiftResponseToOpen-Interference": {
+        "2N": 1,
+        "3N": 1
+    },
+    "2H-JumpShiftResponseToOpenAfterRHODouble": {
+        "2N": 1,
+        "2S": 2,
+        "3H": 1,
+        "4H": 2,
+        "P": 148
+    },
+    "2H-JumpSuitResponseToTakeoutDouble": {
+        "2N": 2,
+        "2S": 14,
+        "3C": 8,
+        "3D": 7,
+        "3H": 30,
+        "4H": 1,
+        "5H": 1,
+        "5N": 1,
+        "P": 915
+    },
+    "2H-JumpSuitResponseToTakeoutDouble-Interference": {
+        "3D": 1,
+        "3H": 2,
+        "P": 17
+    },
+    "2H-LawOfTotalTricks": {
+        "2S": 1,
+        "3H": 830,
+        "4H": 280,
+        "P": 1984
+    },
+    "2H-LawOfTotalTricks-Interference": {
+        "3H": 108,
+        "4H": 42,
+        "P": 527
+    },
+    "2H-MichaelsSimplePreferenceResponse": {
+        "3H": 12,
+        "P": 612
+    },
+    "2H-MichaelsSimplePreferenceResponse-Interference": {
+        "P": 16
+    },
+    "2H-MinimumRaise": {
+        "2N": 298,
+        "2S": 785,
+        "3C": 881,
+        "3D": 819,
+        "3H": 768,
+        "3S": 298,
+        "4C": 319,
+        "4D": 374,
+        "4H": 427,
+        "P": 10477
+    },
+    "2H-MinimumRaise-Interference": {
+        "2N": 5,
+        "2S": 3,
+        "3C": 60,
+        "3D": 61,
+        "3H": 124,
+        "3S": 29,
+        "4C": 7,
+        "4D": 13,
+        "4H": 93,
+        "P": 3762
+    },
+    "2H-NaturalStaymanResponse": {
+        "2N": 2365,
+        "2S": 1,
+        "3C": 468,
+        "3D": 447,
+        "3H": 2435,
+        "3N": 2589,
+        "4H": 2844,
+        "P": 1217
+    },
+    "2H-NaturalStaymanResponse-Interference": {
+        "3C": 1,
+        "3D": 1,
+        "3H": 35,
+        "3N": 4,
+        "4H": 19,
+        "P": 26
+    },
+    "2H-NaturalSuited": {
+        "2S": 67,
+        "3H": 246,
+        "4H": 58,
+        "P": 1434
+    },
+    "2H-NaturalSuited-Interference": {
+        "3H": 11,
+        "4H": 1,
+        "P": 44
+    },
+    "2H-NewSuitAfterTakeoutDouble": {
+        "2N": 325,
+        "3H": 422,
+        "3N": 55,
+        "4H": 199,
+        "P": 682
+    },
+    "2H-NewSuitAfterTakeoutDouble-Interference": {
+        "2N": 34,
+        "3H": 108,
+        "3N": 12,
+        "4H": 45,
+        "P": 239
+    },
+    "2H-NewSuitAtTheTwoLevel": {
+        "2N": 1234,
+        "2S": 1378,
+        "3C": 273,
+        "3D": 195,
+        "3H": 581,
+        "3N": 78,
+        "3S": 152,
+        "4C": 35,
+        "4D": 40,
+        "4H": 643,
+        "P": 135
+    },
+    "2H-NewSuitAtTheTwoLevel-Interference": {
+        "2N": 21,
+        "2S": 4,
+        "3C": 1,
+        "3H": 101,
+        "3N": 14,
+        "4H": 94,
+        "4N": 1,
+        "P": 240
+    },
+    "2H-NewSuitByOpener": {
+        "2N": 1572,
+        "2S": 3249,
+        "3C": 777,
+        "3D": 693,
+        "3H": 1190,
+        "3N": 343,
+        "3S": 847,
+        "4C": 10,
+        "4D": 510,
+        "4H": 553,
+        "4S": 577,
+        "6N": 1,
+        "P": 3773
+    },
+    "2H-NewSuitByOpener-Interference": {
+        "2S": 41,
+        "3H": 47,
+        "3S": 5,
+        "4H": 13,
+        "4S": 4,
+        "P": 542
+    },
+    "2H-NewSuitResponseToOneNotrumpPenaltyDouble": {
+        "3H": 14,
+        "P": 356
+    },
+    "2H-NewSuitResponseToPreempt": {
+        "2N": 41,
+        "3C": 3,
+        "3D": 65,
+        "3H": 43,
+        "P": 3
+    },
+    "2H-NewSuitResponseToPreempt-Interference": {
+        "P": 6
+    },
+    "2H-NewSuitResponseToStandardOvercall": {
+        "2N": 64,
+        "3H": 34,
+        "3N": 11,
+        "4H": 1,
+        "P": 61
+    },
+    "2H-NewSuitResponseToStandardOvercall-Interference": {
+        "2N": 10,
+        "3H": 7,
+        "4H": 5,
+        "P": 14
+    },
+    "2H-NonJumpFourthSuitForcing": {
+        "2N": 2511,
+        "2S": 574,
+        "3C": 451,
+        "3D": 153,
+        "3H": 18,
+        "3N": 480,
+        "P": 71
+    },
+    "2H-NonJumpFourthSuitForcing-Interference": {
+        "P": 1
+    },
+    "2H-OpenerSuitedRebidAfterStrongTwoClubs": {
+        "2N": 2,
+        "3C": 212,
+        "3H": 4,
+        "3N": 480,
+        "4H": 539
+    },
+    "2H-OpenerSuitedRebidAfterStrongTwoClubs-Interference": {
+        "3H": 1
+    },
+    "2H-OtherMajorRebidAfterStayman": {
+        "2N": 79,
+        "3H": 177,
+        "3N": 31,
+        "4H": 54,
+        "P": 2
+    },
+    "2H-OtherMajorRebidAfterStayman-Interference": {
+        "3H": 1
+    },
+    "2H-PreemptiveOpen": {
+        "2S": 161,
+        "3C": 150,
+        "3D": 152,
+        "3H": 1599,
+        "3N": 34,
+        "3S": 19,
+        "4D": 1,
+        "4H": 730,
+        "4S": 1,
+        "P": 3619
+    },
+    "2H-PreemptiveOpen-Interference": {
+        "2S": 2,
+        "3C": 7,
+        "3D": 8,
+        "3H": 888,
+        "3S": 4,
+        "4C": 3,
+        "4D": 5,
+        "4H": 656,
+        "P": 1545
+    },
+    "2H-PreemptiveOvercall": {
+        "2S": 10,
+        "3C": 4,
+        "3D": 5,
+        "3H": 1099,
+        "4H": 515,
+        "P": 1950
+    },
+    "2H-PreemptiveOvercall-Interference": {
+        "3H": 748,
+        "4H": 553,
+        "P": 1144
+    },
+    "2H-RaiseAfterTakeoutDouble": {
+        "2N": 2,
+        "3H": 35,
+        "3N": 2,
+        "4H": 23,
+        "P": 14
+    },
+    "2H-RaiseAfterTakeoutDouble-Interference": {
+        "3H": 3,
+        "4H": 2
+    },
+    "2H-RaiseResponseToNegativeDouble": {
+        "3C": 43,
+        "3D": 26,
+        "3H": 248,
+        "3S": 6,
+        "4H": 24,
+        "4S": 8,
+        "P": 520
+    },
+    "2H-RaiseResponseToNegativeDouble-Interference": {
+        "3H": 26,
+        "3S": 3,
+        "4H": 1,
+        "P": 186
+    },
+    "2H-RaiseResponseToStandardOvercall": {
+        "3H": 259,
+        "4H": 48,
+        "P": 1196
+    },
+    "2H-RaiseResponseToStandardOvercall-Interference": {
+        "3H": 128,
+        "4H": 50,
+        "P": 858
+    },
+    "2H-RebidResponderSuitByResponder": {
+        "2N": 288,
+        "2S": 60,
+        "3H": 189,
+        "P": 4816
+    },
+    "2H-RebidResponderSuitByResponder-Interference": {
+        "3H": 2,
+        "P": 113
+    },
+    "2H-RebidResponseToFourthSuitForcing": {
+        "2N": 49,
+        "3C": 73,
+        "3D": 14,
+        "3H": 60,
+        "3N": 31,
+        "P": 2
+    },
+    "2H-RebidResponseToFourthSuitForcing-Interference": {
+        "3H": 1
+    },
+    "2H-ResponderReverse": {
+        "2N": 98,
+        "2S": 161,
+        "3C": 5,
+        "3D": 18,
+        "3H": 4,
+        "3N": 191,
+        "4H": 3
+    },
+    "2H-ResponderSignoffInPartnersSuit": {
+        "2N": 1237,
+        "2S": 20,
+        "3C": 3,
+        "3D": 2,
+        "3N": 1,
+        "P": 5434
+    },
+    "2H-ResponderSignoffInPartnersSuit-Interference": {
+        "2N": 2,
+        "3D": 1,
+        "3H": 2,
+        "P": 126
+    },
+    "2H-ResponseToCappellettiTwoClubs": {
+        "P": 93
+    },
+    "2H-ReverseByOpener": {
+        "2N": 1187,
+        "2S": 1089,
+        "3C": 408,
+        "3D": 382,
+        "3H": 41,
+        "3N": 912,
+        "4C": 33,
+        "4D": 11,
+        "4H": 187,
+        "5C": 1,
+        "6N": 12,
+        "P": 1035
+    },
+    "2H-ReverseByOpener-Interference": {
+        "2N": 13,
+        "3C": 1,
+        "3D": 1,
+        "3H": 13,
+        "3N": 5,
+        "4H": 5,
+        "P": 236
+    },
+    "2H-SuitRebidAfterCappellettiTwoClubs": {
+        "3H": 79,
+        "4H": 17,
+        "P": 251
+    },
+    "2H-SuitRebidAfterCappellettiTwoClubs-Interference": {
+        "3H": 13,
+        "4H": 6,
+        "P": 80
+    },
+    "2H-SuitResponseToStrongTwoClubs": {
+        "2S": 24,
+        "3C": 35,
+        "3D": 41,
+        "3N": 25,
+        "3S": 2,
+        "4C": 2,
+        "4D": 2,
+        "4H": 38,
+        "6N": 7,
+        "P": 7
+    },
+    "2H-SuitResponseToStrongTwoClubs-Interference": {
+        "4H": 1,
+        "4N": 2
+    },
+    "2H-SuitResponseToTakeoutDouble": {
+        "2N": 110,
+        "2S": 111,
+        "3C": 88,
+        "3D": 85,
+        "3H": 224,
+        "3N": 10,
+        "3S": 2,
+        "4H": 125,
+        "P": 697
+    },
+    "2H-SuitResponseToTakeoutDouble-Interference": {
+        "2N": 35,
+        "3C": 44,
+        "3D": 39,
+        "3H": 9,
+        "3N": 2,
+        "3S": 22,
+        "4H": 54,
+        "P": 246
+    },
+    "2H-SupportPartnerMajorSuit": {
+        "2S": 256,
+        "3H": 4009,
+        "4H": 1502,
+        "6N": 7,
+        "7N": 1,
+        "P": 6465
+    },
+    "2H-SupportPartnerMajorSuit-Interference": {
+        "3H": 133,
+        "4H": 28,
+        "P": 671
+    },
+    "2H-TwoLevelStandardOvercall": {
+        "2N": 10,
+        "2S": 598,
+        "3C": 51,
+        "3D": 98,
+        "3H": 1083,
+        "3N": 4,
+        "4H": 168,
+        "P": 2300
+    },
+    "2H-TwoLevelStandardOvercall-Interference": {
+        "2S": 72,
+        "3C": 16,
+        "3D": 13,
+        "3H": 1450,
+        "3N": 3,
+        "3S": 7,
+        "4H": 470,
+        "P": 4222
+    },
+    "2H-UnforcedRebidOriginalSuitByOpener": {
+        "2N": 111,
+        "2S": 54,
+        "3C": 14,
+        "3D": 8,
+        "3H": 258,
+        "3N": 12,
+        "3S": 52,
+        "4C": 9,
+        "4D": 2,
+        "4H": 73,
+        "P": 4126
+    },
+    "2H-UnforcedRebidOriginalSuitByOpener-Interference": {
+        "2N": 1,
+        "3H": 177,
+        "3N": 3,
+        "3S": 12,
+        "4D": 1,
+        "4H": 12,
+        "6N": 1,
+        "P": 817
+    },
+    "2N-BalancingNotrumpOvercall": {
+        "3C": 95,
+        "3D": 104,
+        "3H": 84,
+        "3N": 67,
+        "P": 241
+    },
+    "2N-BalancingNotrumpOvercall-Interference": {
+        "P": 2
+    },
+    "2N-Cappelletti": {
+        "3C": 36,
+        "3D": 51,
+        "P": 198
+    },
+    "2N-Cappelletti-Interference": {
+        "P": 42
+    },
+    "2N-Jacoby2N": {
+        "3C": 1103,
+        "3D": 1056,
+        "3H": 670,
+        "3N": 156,
+        "3S": 593,
+        "4C": 373,
+        "4D": 368,
+        "4H": 1410,
+        "4S": 1352
+    },
+    "2N-Jacoby2N-Interference": {
+        "4D": 2,
+        "4H": 8,
+        "4N": 1,
+        "4S": 19,
+        "P": 4
+    },
+    "2N-Jordan": {
+        "3C": 773,
+        "3D": 883,
+        "3H": 1292,
+        "3N": 97,
+        "3S": 1345,
+        "4D": 6,
+        "4H": 152,
+        "4S": 141,
+        "P": 2597
+    },
+    "2N-Jordan-Interference": {
+        "3D": 1,
+        "3H": 4,
+        "3N": 2,
+        "3S": 6,
+        "4H": 2,
+        "P": 11
+    },
+    "2N-JumpNotrumpResponseToNegativeDouble": {
+        "3C": 2,
+        "3D": 14,
+        "3N": 77,
+        "4H": 2,
+        "5D": 1,
+        "P": 132
+    },
+    "2N-JumpNotrumpResponseToTakeoutDouble": {
+        "4N": 25,
+        "5C": 3,
+        "5D": 5,
+        "5H": 1,
+        "5S": 1,
+        "P": 580
+    },
+    "2N-JumpNotrumpResponseToTakeoutDouble-Interference": {
+        "P": 2
+    },
+    "2N-JumpTwoNotrumpAfterTakeoutDouble": {
+        "3N": 96,
+        "P": 110
+    },
+    "2N-JumpTwoNotrumpAfterTakeoutDouble-Interference": {
+        "3N": 2,
+        "P": 5
+    },
+    "2N-Lebensohl": {
+        "3C": 119,
+        "3D": 3,
+        "3N": 18,
+        "P": 3489
+    },
+    "2N-Lebensohl-Interference": {
+        "P": 119
+    },
+    "2N-NaturalNotrump": {
+        "3C": 3241,
+        "3D": 3119,
+        "3H": 6144,
+        "3N": 9909,
+        "3S": 4558,
+        "4D": 469,
+        "4H": 569,
+        "4S": 538,
+        "5C": 4,
+        "5D": 4,
+        "P": 57056
+    },
+    "2N-NaturalNotrump-Interference": {
+        "3D": 8,
+        "3H": 9,
+        "3N": 145,
+        "3S": 13,
+        "4H": 1,
+        "4N": 17,
+        "4S": 2,
+        "5D": 2,
+        "P": 1691
+    },
+    "2N-NonJumpTwoNotrumpAfterTakeoutDouble": {
+        "3N": 447,
+        "P": 1222
+    },
+    "2N-NonJumpTwoNotrumpAfterTakeoutDouble-Interference": {
+        "3N": 46,
+        "P": 109
+    },
+    "2N-NotrumpAfterPreempt": {
+        "3N": 86,
+        "4H": 20,
+        "4S": 4,
+        "6N": 1
+    },
+    "2N-NotrumpGameInvitation": {
+        "3N": 2505,
+        "P": 7738
+    },
+    "2N-NotrumpGameInvitation-Interference": {
+        "3N": 15,
+        "P": 153
+    },
+    "2N-NotrumpInvitationByOpener": {
+        "3C": 43,
+        "3D": 54,
+        "3H": 126,
+        "3N": 41,
+        "3S": 188,
+        "4H": 165,
+        "4S": 189,
+        "P": 24
+    },
+    "2N-NotrumpInvitationByOpener-Interference": {
+        "3S": 1,
+        "P": 9
+    },
+    "2N-NotrumpJumpRebid": {
+        "3C": 6109,
+        "3D": 2557,
+        "3H": 2668,
+        "3N": 1679,
+        "3S": 14,
+        "4N": 209,
+        "6N": 249,
+        "7N": 3,
+        "P": 3002
+    },
+    "2N-NotrumpJumpRebid-Interference": {
+        "3D": 2,
+        "3H": 21,
+        "3N": 31,
+        "3S": 5,
+        "P": 142,
+        "X": 1
+    },
+    "2N-NotrumpOpening": {
+        "3C": 5200,
+        "3D": 2324,
+        "3H": 2244,
+        "3N": 3445,
+        "4N": 319,
+        "6N": 347,
+        "7N": 11,
+        "P": 2975
+    },
+    "2N-NotrumpOpening-Interference": {
+        "4H": 1,
+        "4N": 5,
+        "4S": 3,
+        "5D": 1,
+        "P": 10
+    },
+    "2N-NotrumpRebidOverTwoClubs": {
+        "3C": 1225,
+        "3D": 507,
+        "3H": 474,
+        "3N": 839,
+        "P": 372
+    },
+    "2N-NotrumpRebidOverTwoClubs-Interference": {
+        "4N": 1,
+        "P": 3
+    },
+    "2N-NotrumpResponseToFourthSuitForcing": {
+        "3C": 986,
+        "3D": 1008,
+        "3H": 590,
+        "3N": 1598,
+        "3S": 763,
+        "P": 2863
+    },
+    "2N-NotrumpResponseToFourthSuitForcing-Interference": {
+        "P": 1
+    },
+    "2N-NotrumpResponseToMinorOpen": {
+        "3C": 787,
+        "3D": 187,
+        "3N": 4824,
+        "4D": 4,
+        "4H": 41,
+        "5C": 12,
+        "5D": 9,
+        "6N": 11,
+        "P": 469
+    },
+    "2N-NotrumpResponseToMinorOpen-Interference": {
+        "3D": 3,
+        "3N": 134,
+        "4D": 1,
+        "4N": 1,
+        "5C": 7,
+        "5D": 3,
+        "P": 159
+    },
+    "2N-NotrumpResponseToNegativeDouble": {
+        "3C": 20,
+        "3D": 56,
+        "3H": 43,
+        "3N": 120,
+        "3S": 43,
+        "4D": 25,
+        "4H": 26,
+        "4S": 28,
+        "5C": 2,
+        "5D": 1,
+        "P": 1281
+    },
+    "2N-NotrumpResponseToNegativeDouble-Interference": {
+        "P": 68
+    },
+    "2N-NotrumpResponseToStrongTwoClubs": {
+        "3C": 394,
+        "3D": 388,
+        "3H": 406,
+        "3N": 1232,
+        "3S": 374,
+        "4D": 10,
+        "4H": 7,
+        "4S": 13,
+        "6N": 118,
+        "7N": 3,
+        "P": 90
+    },
+    "2N-NotrumpResponseToStrongTwoClubs-Interference": {
+        "4N": 1
+    },
+    "2N-ResponseToCappellettiTwoClubs": {
+        "3H": 15,
+        "3S": 5,
+        "4H": 2,
+        "P": 48
+    },
+    "2N-ResponseToCappellettiTwoDiamonds": {
+        "P": 7
+    },
+    "2N-Unusual2N": {
+        "3C": 1909,
+        "3D": 1828,
+        "3H": 1573,
+        "P": 2723
+    },
+    "2N-Unusual2N-Interference": {
+        "3D": 42,
+        "3H": 57,
+        "4C": 88,
+        "4D": 65,
+        "4H": 32,
+        "5C": 27,
+        "5D": 25,
+        "P": 1482
+    },
+    "2S-AcceptTransferToSpades": {
+        "2N": 4848,
+        "3C": 124,
+        "3D": 121,
+        "3H": 46,
+        "3N": 2969,
+        "3S": 1771,
+        "4H": 116,
+        "4S": 1186,
+        "P": 7790
+    },
+    "2S-AcceptTransferToSpades-Interference": {
+        "2N": 1,
+        "3N": 4,
+        "3S": 11,
+        "4S": 1,
+        "P": 109
+    },
+    "2S-BalancingJumpSuitedOvercall": {
+        "3S": 214,
+        "4S": 119,
+        "P": 467
+    },
+    "2S-BalancingJumpSuitedOvercall-Interference": {
+        "3S": 10,
+        "4S": 21,
+        "P": 35
+    },
+    "2S-BalancingMichaelsCuebid": {
+        "3H": 145,
+        "P": 37
+    },
+    "2S-BalancingMichaelsCuebid-Interference": {
+        "4H": 1,
+        "P": 21
+    },
+    "2S-Cappelletti": {
+        "3C": 3,
+        "3D": 5,
+        "3H": 8,
+        "3S": 135,
+        "4S": 1,
+        "P": 221
+    },
+    "2S-Cappelletti-Interference": {
+        "3S": 17,
+        "4S": 4,
+        "P": 224
+    },
+    "2S-CueBidAfterTakeoutDouble": {
+        "2N": 84,
+        "3N": 7,
+        "P": 6
+    },
+    "2S-CueBidAfterTakeoutDouble-Interference": {
+        "P": 4
+    },
+    "2S-CuebidReponseToNegativeDouble": {
+        "2N": 52,
+        "3N": 10
+    },
+    "2S-CuebidResponseToStandardOvercall": {
+        "3C": 163,
+        "3D": 168,
+        "3H": 159,
+        "4H": 25,
+        "5C": 1,
+        "5D": 3,
+        "P": 1108
+    },
+    "2S-CuebidResponseToStandardOvercall-Interference": {
+        "3D": 5,
+        "3H": 20,
+        "4H": 1,
+        "5D": 1,
+        "P": 127
+    },
+    "2S-CuebidResponseToTakeoutDouble": {
+        "P": 7
+    },
+    "2S-DelayedSupportResponseToFourthSuitForcing": {
+        "2N": 23,
+        "3C": 34,
+        "3D": 34,
+        "3H": 7,
+        "3N": 27,
+        "3S": 96,
+        "4S": 18,
+        "P": 2
+    },
+    "2S-DelayedSupportResponseToFourthSuitForcing-Interference": {
+        "4S": 1,
+        "P": 1
+    },
+    "2S-DirectMichaelsCuebid": {
+        "3H": 1511,
+        "P": 391
+    },
+    "2S-DirectMichaelsCuebid-Interference": {
+        "3H": 190,
+        "4H": 180,
+        "P": 1992
+    },
+    "2S-ForcedMajorRebid": {
+        "2N": 931,
+        "3S": 145,
+        "P": 227
+    },
+    "2S-ForcedMajorRebid-Interference": {
+        "P": 9
+    },
+    "2S-ForcedRebidOriginalSuitByOpener": {
+        "2N": 2893,
+        "3C": 330,
+        "3D": 1019,
+        "3H": 2741,
+        "3N": 239,
+        "3S": 562,
+        "4C": 15,
+        "4D": 429,
+        "4S": 429,
+        "P": 971
+    },
+    "2S-ForcedRebidOriginalSuitByOpener-Interference": {
+        "2N": 25,
+        "3C": 1,
+        "3H": 7,
+        "3N": 1,
+        "4S": 1
+    },
+    "2S-HelpSuitGameTry": {
+        "3C": 51,
+        "3D": 44,
+        "3H": 367,
+        "3S": 97,
+        "4H": 42,
+        "4S": 4,
+        "P": 444
+    },
+    "2S-HelpSuitGameTry-Interference": {
+        "3C": 1,
+        "3H": 1,
+        "P": 16
+    },
+    "2S-JumpNewSuitAfterTakeoutDouble": {
+        "2N": 4,
+        "3S": 3,
+        "4S": 6
+    },
+    "2S-JumpNewSuitAfterTakeoutDouble-Interference": {
+        "4S": 1
+    },
+    "2S-JumpRaiseResponseToNegativeDouble": {
+        "3H": 2,
+        "3S": 26,
+        "4S": 23,
+        "P": 15
+    },
+    "2S-JumpShiftByOpener": {
+        "2N": 89,
+        "3C": 208,
+        "3D": 147,
+        "3H": 188,
+        "3N": 639,
+        "3S": 43,
+        "4S": 307,
+        "5C": 2,
+        "6N": 16,
+        "7N": 1,
+        "P": 110
+    },
+    "2S-JumpShiftByOpener-Interference": {
+        "3H": 1,
+        "3S": 10,
+        "4S": 1,
+        "P": 19
+    },
+    "2S-JumpShiftResponseToOpen": {
+        "3C": 122,
+        "3D": 46,
+        "3N": 210,
+        "4S": 168,
+        "6N": 36,
+        "7N": 1,
+        "P": 62
+    },
+    "2S-JumpShiftResponseToOpenAfterRHODouble": {
+        "2N": 5,
+        "3N": 1,
+        "3S": 9,
+        "4D": 1,
+        "4S": 1,
+        "P": 224
+    },
+    "2S-JumpSuitResponseToTakeoutDouble": {
+        "2N": 3,
+        "3C": 21,
+        "3D": 14,
+        "3H": 19,
+        "3S": 45,
+        "4S": 3,
+        "5N": 4,
+        "5S": 5,
+        "P": 1467
+    },
+    "2S-JumpSuitResponseToTakeoutDouble-Interference": {
+        "3S": 2,
+        "P": 12
+    },
+    "2S-LawOfTotalTricks": {
+        "3S": 1406,
+        "4S": 548,
+        "P": 3302
+    },
+    "2S-LawOfTotalTricks-Interference": {
+        "3S": 115,
+        "4S": 47,
+        "P": 794
+    },
+    "2S-MichaelsSimplePreferenceResponse": {
+        "3S": 22,
+        "P": 1749
+    },
+    "2S-MichaelsSimplePreferenceResponse-Interference": {
+        "P": 71
+    },
+    "2S-MinimumRaise": {
+        "2N": 371,
+        "3C": 1021,
+        "3D": 1000,
+        "3H": 911,
+        "3S": 784,
+        "4C": 350,
+        "4D": 365,
+        "4H": 380,
+        "4S": 474,
+        "P": 12204
+    },
+    "2S-MinimumRaise-Interference": {
+        "2N": 1,
+        "3C": 5,
+        "3D": 26,
+        "3H": 31,
+        "3S": 129,
+        "4C": 1,
+        "4D": 2,
+        "4H": 2,
+        "4S": 89,
+        "P": 3039
+    },
+    "2S-NaturalStaymanResponse": {
+        "2N": 1894,
+        "3C": 338,
+        "3D": 367,
+        "3H": 2,
+        "3N": 2172,
+        "3S": 1985,
+        "4S": 2202,
+        "P": 978
+    },
+    "2S-NaturalStaymanResponse-Interference": {
+        "3N": 3,
+        "3S": 16,
+        "4S": 7,
+        "5C": 1,
+        "P": 23
+    },
+    "2S-NaturalSuited": {
+        "3S": 1186,
+        "4S": 324,
+        "6N": 4,
+        "P": 3909
+    },
+    "2S-NaturalSuited-Interference": {
+        "3S": 21,
+        "4S": 3,
+        "P": 67
+    },
+    "2S-NewSuitAfterTakeoutDouble": {
+        "2N": 309,
+        "3N": 52,
+        "3S": 431,
+        "4S": 200,
+        "P": 844
+    },
+    "2S-NewSuitAfterTakeoutDouble-Interference": {
+        "3N": 17,
+        "3S": 65,
+        "4S": 29,
+        "P": 116
+    },
+    "2S-NewSuitAtTheTwoLevel": {
+        "2N": 272,
+        "3C": 4,
+        "3D": 7,
+        "3N": 14,
+        "3S": 169,
+        "4C": 1,
+        "4H": 2,
+        "4S": 103,
+        "P": 163
+    },
+    "2S-NewSuitAtTheTwoLevel-Interference": {
+        "3N": 10,
+        "3S": 77,
+        "4H": 3,
+        "4N": 1,
+        "4S": 70,
+        "P": 166
+    },
+    "2S-NewSuitResponseToMajorCappelletti": {
+        "P": 5
+    },
+    "2S-NewSuitResponseToOneNotrumpPenaltyDouble": {
+        "3S": 9,
+        "4S": 2,
+        "P": 384
+    },
+    "2S-NewSuitResponseToPreempt": {
+        "2N": 70,
+        "3C": 16,
+        "3D": 60,
+        "3H": 75,
+        "3S": 69,
+        "P": 17
+    },
+    "2S-NewSuitResponseToPreempt-Interference": {
+        "P": 8
+    },
+    "2S-NewSuitResponseToStandardOvercall": {
+        "2N": 39,
+        "3N": 4,
+        "3S": 24,
+        "4S": 10
+    },
+    "2S-NewSuitResponseToStandardOvercall-Interference": {
+        "3S": 3,
+        "P": 6
+    },
+    "2S-NonJumpFourthSuitForcing": {
+        "2N": 1686,
+        "3C": 467,
+        "3D": 209,
+        "3H": 176,
+        "3N": 451,
+        "3S": 10,
+        "P": 180
+    },
+    "2S-NonJumpFourthSuitForcing-Interference": {
+        "P": 2
+    },
+    "2S-OpenerSuitedRebidAfterStrongTwoClubs": {
+        "2N": 8,
+        "3C": 211,
+        "3N": 489,
+        "3S": 6,
+        "4S": 549,
+        "6N": 7
+    },
+    "2S-OpenerSuitedRebidAfterStrongTwoClubs-Interference": {
+        "2N": 1,
+        "4S": 1
+    },
+    "2S-OtherMajorRebidAfterStayman": {
+        "2N": 79,
+        "3N": 21,
+        "3S": 157,
+        "4S": 69,
+        "P": 3
+    },
+    "2S-OtherMajorRebidAfterStayman-Interference": {
+        "3S": 1
+    },
+    "2S-PreemptiveOpen": {
+        "3C": 136,
+        "3D": 158,
+        "3H": 158,
+        "3N": 41,
+        "3S": 1768,
+        "4D": 2,
+        "4H": 3,
+        "4S": 841,
+        "5C": 1,
+        "P": 3929
+    },
+    "2S-PreemptiveOpen-Interference": {
+        "3C": 3,
+        "3D": 1,
+        "3H": 8,
+        "3S": 681,
+        "4H": 1,
+        "4S": 554,
+        "P": 1207
+    },
+    "2S-PreemptiveOvercall": {
+        "3C": 10,
+        "3D": 8,
+        "3H": 11,
+        "3S": 1698,
+        "4S": 884,
+        "P": 2792
+    },
+    "2S-PreemptiveOvercall-Interference": {
+        "3S": 1335,
+        "4S": 1000,
+        "P": 1953
+    },
+    "2S-RaiseAfterTakeoutDouble": {
+        "2N": 20,
+        "3N": 2,
+        "3S": 111,
+        "4S": 49,
+        "P": 31
+    },
+    "2S-RaiseResponseToNegativeDouble": {
+        "3C": 36,
+        "3D": 24,
+        "3H": 32,
+        "3S": 248,
+        "4S": 22,
+        "P": 431
+    },
+    "2S-RaiseResponseToNegativeDouble-Interference": {
+        "3S": 7,
+        "4S": 2,
+        "P": 81
+    },
+    "2S-RaiseResponseToStandardOvercall": {
+        "3S": 455,
+        "4S": 91,
+        "P": 1959
+    },
+    "2S-RaiseResponseToStandardOvercall-Interference": {
+        "3S": 187,
+        "4S": 74,
+        "P": 1286
+    },
+    "2S-RebidResponderSuitByResponder": {
+        "2N": 259,
+        "3S": 209,
+        "4S": 1,
+        "P": 6807
+    },
+    "2S-RebidResponderSuitByResponder-Interference": {
+        "3S": 2,
+        "P": 182
+    },
+    "2S-RebidResponseToFourthSuitForcing": {
+        "2N": 177,
+        "3C": 81,
+        "3D": 66,
+        "3H": 29,
+        "3N": 59,
+        "3S": 175
+    },
+    "2S-ResponderReverse": {
+        "2N": 667,
+        "3C": 99,
+        "3D": 132,
+        "3H": 180,
+        "3N": 658,
+        "3S": 27,
+        "4H": 108,
+        "4S": 38,
+        "P": 12
+    },
+    "2S-ResponderSignoffInPartnersSuit": {
+        "2N": 2029,
+        "3C": 2,
+        "3H": 1,
+        "3N": 1,
+        "P": 7249
+    },
+    "2S-ResponderSignoffInPartnersSuit-Interference": {
+        "2N": 5,
+        "P": 262
+    },
+    "2S-ResponseToCappellettiTwoClubs": {
+        "3S": 1,
+        "P": 98
+    },
+    "2S-ReverseByOpener": {
+        "2N": 2412,
+        "3C": 222,
+        "3D": 87,
+        "3H": 167,
+        "3N": 1034,
+        "3S": 79,
+        "4D": 26,
+        "4H": 129,
+        "4S": 17,
+        "6N": 3,
+        "P": 59
+    },
+    "2S-ReverseByOpener-Interference": {
+        "2N": 2,
+        "3D": 5,
+        "3N": 4,
+        "3S": 9,
+        "4S": 2,
+        "5D": 1,
+        "P": 238
+    },
+    "2S-SpadesRebidAfterHeartsTransfer": {
+        "3H": 40,
+        "3S": 129,
+        "4H": 12,
+        "4S": 31
+    },
+    "2S-SpadesRebidAfterHeartsTransfer-Interference": {
+        "3S": 4
+    },
+    "2S-SuitRebidAfterCappellettiTwoClubs": {
+        "3S": 92,
+        "4S": 15,
+        "P": 244
+    },
+    "2S-SuitRebidAfterCappellettiTwoClubs-Interference": {
+        "3S": 30,
+        "4S": 6,
+        "P": 77
+    },
+    "2S-SuitResponseToStrongTwoClubs": {
+        "3C": 32,
+        "3D": 31,
+        "3H": 33,
+        "3N": 26,
+        "4C": 4,
+        "4D": 2,
+        "4H": 1,
+        "4S": 45,
+        "6N": 3,
+        "P": 6
+    },
+    "2S-SuitResponseToStrongTwoClubs-Interference": {
+        "3N": 1,
+        "4S": 1
+    },
+    "2S-SuitResponseToTakeoutDouble": {
+        "2N": 89,
+        "3C": 135,
+        "3D": 118,
+        "3H": 121,
+        "3N": 20,
+        "3S": 396,
+        "4H": 2,
+        "4S": 126,
+        "P": 1158
+    },
+    "2S-SuitResponseToTakeoutDouble-Interference": {
+        "3D": 2,
+        "3H": 1,
+        "3S": 3,
+        "4S": 1,
+        "P": 25
+    },
+    "2S-SupportPartnerMajorSuit": {
+        "3S": 4296,
+        "4S": 1897,
+        "6N": 6,
+        "P": 6281
+    },
+    "2S-SupportPartnerMajorSuit-Interference": {
+        "3S": 144,
+        "4S": 35,
+        "P": 608
+    },
+    "2S-TwoLevelStandardOvercall": {
+        "2N": 18,
+        "3C": 39,
+        "3D": 84,
+        "3H": 193,
+        "3N": 5,
+        "3S": 538,
+        "4S": 71,
+        "P": 1081
+    },
+    "2S-TwoLevelStandardOvercall-Interference": {
+        "3C": 3,
+        "3D": 2,
+        "3H": 18,
+        "3N": 4,
+        "3S": 344,
+        "4S": 78,
+        "P": 859
+    },
+    "2S-TwoSpadesJumpFourthSuitForcing": {
+        "2N": 1262,
+        "3C": 132,
+        "3D": 115,
+        "3N": 199,
+        "3S": 33,
+        "P": 2
+    },
+    "2S-TwoSpadesJumpFourthSuitForcing-Interference": {
+        "P": 1
+    },
+    "2S-TwoSpadesRelay": {
+        "3C": 4469
+    },
+    "2S-TwoSpadesRelay-Interference": {
+        "3C": 34,
+        "P": 118
+    },
+    "2S-UnforcedRebidOriginalSuitByOpener": {
+        "2N": 93,
+        "3C": 28,
+        "3D": 32,
+        "3H": 20,
+        "3N": 6,
+        "3S": 295,
+        "4C": 7,
+        "4D": 5,
+        "4S": 74,
+        "P": 6186
+    },
+    "2S-UnforcedRebidOriginalSuitByOpener-Interference": {
+        "3H": 6,
+        "3N": 1,
+        "3S": 145,
+        "4S": 18,
+        "P": 758
+    },
+    "3C-AcceptTransferToClubs": {
+        "3D": 2188,
+        "P": 2259
+    },
+    "3C-AcceptTransferToClubs-Interference": {
+        "P": 56
+    },
+    "3C-BalancingJumpSuitedOvercall": {
+        "4C": 82,
+        "5C": 18,
+        "P": 589
+    },
+    "3C-BalancingJumpSuitedOvercall-Interference": {
+        "P": 15
+    },
+    "3C-CueBidAfterTakeoutDouble": {
+        "3N": 20,
+        "P": 32
+    },
+    "3C-CueBidAfterTakeoutDouble-Interference": {
+        "P": 3
+    },
+    "3C-CueBidRebidAfterNegativeDouble": {
+        "3H": 12,
+        "3N": 1,
+        "3S": 3,
+        "P": 134
+    },
+    "3C-CueBidRebidAfterNegativeDouble-Interference": {
+        "P": 2
+    },
+    "3C-CuebidReponseToNegativeDouble": {
+        "3N": 9
+    },
+    "3C-CuebidResponseToStandardOvercall": {
+        "3D": 27,
+        "3H": 19,
+        "3S": 20,
+        "4H": 3,
+        "4S": 6,
+        "5D": 1,
+        "P": 267
+    },
+    "3C-CuebidResponseToStandardOvercall-Interference": {
+        "3S": 4,
+        "P": 53
+    },
+    "3C-DelayedSupportResponseToFourthSuitForcing": {
+        "3D": 38,
+        "3H": 18,
+        "3N": 25,
+        "3S": 9,
+        "P": 49
+    },
+    "3C-DirectMichaelsCuebid": {
+        "3H": 11,
+        "3S": 11,
+        "P": 12
+    },
+    "3C-DirectMichaelsCuebid-Interference": {
+        "4S": 2,
+        "P": 6
+    },
+    "3C-FourthSuitResponseToFourthSuitForcing": {
+        "3D": 6,
+        "3N": 4,
+        "3S": 2
+    },
+    "3C-HelpSuitGameTry": {
+        "3D": 37,
+        "3H": 531,
+        "3S": 610,
+        "4H": 72,
+        "4S": 71,
+        "P": 709
+    },
+    "3C-HelpSuitGameTry-Interference": {
+        "3H": 1,
+        "3S": 2,
+        "P": 35
+    },
+    "3C-InvitationalUnsupportedRebidByOpener": {
+        "3D": 64,
+        "3H": 124,
+        "3N": 1440,
+        "3S": 77,
+        "4C": 2,
+        "4D": 29,
+        "5C": 1,
+        "6N": 14,
+        "P": 2081
+    },
+    "3C-InvitationalUnsupportedRebidByOpener-Interference": {
+        "3N": 10,
+        "4C": 3,
+        "5C": 1,
+        "P": 98
+    },
+    "3C-JumpNewSuitResponseToNegativeDouble": {
+        "3D": 1,
+        "3N": 3,
+        "P": 2
+    },
+    "3C-JumpRaiseResponseToAfterRHOTakeoutDouble": {
+        "3D": 3,
+        "3H": 7,
+        "3S": 12,
+        "4D": 4,
+        "4H": 5,
+        "P": 176
+    },
+    "3C-JumpShiftByOpener": {
+        "3D": 164,
+        "3H": 239,
+        "3N": 1420,
+        "3S": 244,
+        "4H": 26,
+        "4S": 5,
+        "5C": 1,
+        "5D": 1,
+        "6N": 28,
+        "P": 222
+    },
+    "3C-JumpShiftByOpener-Interference": {
+        "3H": 1,
+        "3N": 1,
+        "3S": 2,
+        "4N": 1,
+        "P": 42
+    },
+    "3C-JumpShiftResponderRebid": {
+        "3D": 66,
+        "3H": 119,
+        "3N": 1929,
+        "3S": 80,
+        "P": 47
+    },
+    "3C-JumpShiftResponseToOpen": {
+        "3D": 89,
+        "3H": 43,
+        "3N": 327,
+        "6N": 78,
+        "7N": 1,
+        "P": 26
+    },
+    "3C-JumpShiftResponseToOpenAfterRHODouble": {
+        "3N": 1,
+        "P": 207
+    },
+    "3C-JumpShiftResponseToOpenAfterRHODouble-Interference": {
+        "P": 1
+    },
+    "3C-JumpSuitResponseToTakeoutDouble": {
+        "3D": 7,
+        "3H": 10,
+        "3S": 17,
+        "4C": 11,
+        "5C": 4,
+        "5N": 2,
+        "P": 530
+    },
+    "3C-JumpSuitResponseToTakeoutDouble-Interference": {
+        "P": 10
+    },
+    "3C-LawOfTotalTricks": {
+        "4C": 397,
+        "5C": 105,
+        "P": 1428
+    },
+    "3C-LawOfTotalTricks-Interference": {
+        "4C": 49,
+        "5C": 9,
+        "P": 186
+    },
+    "3C-LimitRaise": {
+        "3N": 227,
+        "4D": 8,
+        "4H": 78,
+        "5C": 9,
+        "P": 2486
+    },
+    "3C-LimitRaise-Interference": {
+        "3N": 41,
+        "4H": 2,
+        "5C": 18,
+        "P": 450
+    },
+    "3C-LongMinorGameInvitation": {
+        "P": 261
+    },
+    "3C-LongMinorGameInvitation-Interference": {
+        "P": 16
+    },
+    "3C-MinorGameForceRebid": {
+        "3N": 1152,
+        "5C": 3
+    },
+    "3C-NaturalSuited": {
+        "3D": 399,
+        "3H": 263,
+        "3N": 1107,
+        "3S": 129,
+        "4D": 237,
+        "4H": 28,
+        "4S": 30,
+        "5C": 3,
+        "5D": 1,
+        "P": 11523
+    },
+    "3C-NaturalSuited-Interference": {
+        "3H": 1,
+        "3N": 4,
+        "3S": 2,
+        "4S": 1,
+        "5C": 1,
+        "5D": 1,
+        "P": 252
+    },
+    "3C-NewMinorRebidAfterJacobyTransfer": {
+        "3N": 86,
+        "4H": 109,
+        "4S": 82
+    },
+    "3C-NewSuitAfterPreempt": {
+        "3H": 2,
+        "3N": 7,
+        "4H": 6,
+        "4S": 4
+    },
+    "3C-NewSuitAfterTakeoutDouble": {
+        "3N": 194,
+        "3S": 1,
+        "4C": 59,
+        "5C": 17,
+        "P": 1193
+    },
+    "3C-NewSuitAfterTakeoutDouble-Interference": {
+        "3N": 35,
+        "4C": 7,
+        "5C": 1,
+        "P": 119
+    },
+    "3C-NewSuitByOpener": {
+        "3D": 263,
+        "3H": 156,
+        "3N": 1175,
+        "3S": 55,
+        "4D": 10,
+        "4H": 135,
+        "4S": 232,
+        "5D": 1,
+        "6N": 32,
+        "P": 147
+    },
+    "3C-NewSuitByOpener-Interference": {
+        "3N": 2
+    },
+    "3C-NewSuitResponseToMajorCappelletti": {
+        "P": 6
+    },
+    "3C-NewSuitResponseToNegativeDouble": {
+        "3D": 45,
+        "3H": 51,
+        "3N": 26,
+        "3S": 47,
+        "4H": 11,
+        "4S": 12,
+        "P": 730
+    },
+    "3C-NewSuitResponseToNegativeDouble-Interference": {
+        "3H": 1,
+        "3S": 1,
+        "4C": 2,
+        "P": 112
+    },
+    "3C-NewSuitResponseToPreempt": {
+        "3D": 58,
+        "3H": 63,
+        "3N": 100,
+        "3S": 46,
+        "4C": 142,
+        "P": 14
+    },
+    "3C-NewSuitResponseToPreempt-Interference": {
+        "P": 21
+    },
+    "3C-NewSuitResponseToStandardOvercall": {
+        "3N": 30,
+        "P": 60
+    },
+    "3C-NewSuitResponseToStandardOvercall-Interference": {
+        "3N": 1,
+        "P": 10
+    },
+    "3C-NonJumpFourthSuitForcing": {
+        "3D": 109,
+        "3H": 10,
+        "3N": 485,
+        "3S": 15,
+        "4C": 3,
+        "P": 48
+    },
+    "3C-OpenerSuitedRebidAfterStrongTwoClubs": {
+        "3N": 1417,
+        "5C": 6,
+        "6N": 76,
+        "7N": 2,
+        "P": 240
+    },
+    "3C-OpenerSuitedRebidAfterStrongTwoClubs-Interference": {
+        "5C": 1,
+        "P": 2
+    },
+    "3C-PreemptiveOpen": {
+        "3D": 23,
+        "3H": 42,
+        "3N": 81,
+        "3S": 37,
+        "4C": 743,
+        "4D": 1,
+        "5C": 125,
+        "P": 7173
+    },
+    "3C-PreemptiveOpen-Interference": {
+        "3H": 1,
+        "3S": 2,
+        "4C": 386,
+        "4D": 1,
+        "5C": 121,
+        "P": 2137
+    },
+    "3C-PreemptiveOvercall": {
+        "4C": 673,
+        "5C": 285,
+        "P": 1631
+    },
+    "3C-PreemptiveOvercall-Interference": {
+        "4C": 131,
+        "5C": 68,
+        "P": 431
+    },
+    "3C-RaiseAfterTakeoutDouble": {
+        "3N": 14,
+        "P": 39
+    },
+    "3C-RaiseResponseToStandardOvercall": {
+        "4C": 99,
+        "5C": 8,
+        "P": 3943
+    },
+    "3C-RaiseResponseToStandardOvercall-Interference": {
+        "4C": 21,
+        "5C": 5,
+        "P": 623
+    },
+    "3C-RebidResponseToFourthSuitForcing": {
+        "3D": 129,
+        "3H": 44,
+        "3N": 217,
+        "P": 528
+    },
+    "3C-ResponderReverse": {
+        "3N": 24,
+        "P": 32
+    },
+    "3C-ResponseToCappellettiTwoDiamonds": {
+        "P": 1
+    },
+    "3C-SecondNegative": {
+        "3N": 45,
+        "P": 378
+    },
+    "3C-SingletonResponseToJacoby2N": {
+        "4H": 418,
+        "4S": 510,
+        "6N": 9,
+        "P": 166
+    },
+    "3C-SuitRebidAfterCappellettiTwoClubs": {
+        "4C": 10,
+        "P": 322
+    },
+    "3C-SuitResponseToStrongTwoClubs": {
+        "3D": 34,
+        "3H": 30,
+        "3N": 54,
+        "3S": 35,
+        "4D": 3,
+        "4H": 2,
+        "4S": 2,
+        "6N": 3,
+        "P": 7
+    },
+    "3C-SuitResponseToTakeoutDouble": {
+        "3D": 134,
+        "3H": 148,
+        "3N": 13,
+        "3S": 161,
+        "4C": 282,
+        "4D": 2,
+        "4H": 1,
+        "4S": 4,
+        "5C": 48,
+        "P": 981
+    },
+    "3C-SuitResponseToTakeoutDouble-Interference": {
+        "3H": 1,
+        "3S": 1,
+        "P": 13
+    },
+    "3C-ThreeLevelStayman": {
+        "3D": 5455,
+        "3H": 3942,
+        "3S": 3225
+    },
+    "3C-ThreeLevelStayman-Interference": {
+        "3S": 1,
+        "P": 6
+    },
+    "3C-ThreeLevelSuitRebidByResponder": {
+        "3D": 82,
+        "3H": 107,
+        "3N": 521,
+        "3S": 63,
+        "5C": 1,
+        "P": 4775
+    },
+    "3C-ThreeLevelSuitRebidByResponder-Interference": {
+        "P": 26
+    },
+    "3C-Unusual2NSimplePreferenceResponse": {
+        "P": 1886
+    },
+    "3C-Unusual2NSimplePreferenceResponse-Interference": {
+        "P": 23
+    },
+    "3D-BalancingJumpSuitedOvercall": {
+        "4D": 51,
+        "5D": 15,
+        "P": 359
+    },
+    "3D-BalancingJumpSuitedOvercall-Interference": {
+        "P": 1
+    },
+    "3D-BalancingMichaelsCuebid": {
+        "3H": 10,
+        "3S": 8,
+        "P": 7
+    },
+    "3D-CueBidAfterTakeoutDouble": {
+        "3N": 26,
+        "P": 25
+    },
+    "3D-CueBidAfterTakeoutDouble-Interference": {
+        "4N": 1,
+        "P": 4
+    },
+    "3D-CueBidRebidAfterNegativeDouble": {
+        "3H": 4,
+        "3N": 1,
+        "3S": 2,
+        "P": 112
+    },
+    "3D-CueBidRebidAfterNegativeDouble-Interference": {
+        "P": 4
+    },
+    "3D-CuebidReponseToNegativeDouble": {
+        "3N": 7
+    },
+    "3D-CuebidResponseToStandardOvercall": {
+        "3H": 18,
+        "3S": 17,
+        "4C": 6,
+        "4H": 6,
+        "4S": 3,
+        "P": 349
+    },
+    "3D-CuebidResponseToStandardOvercall-Interference": {
+        "P": 36
+    },
+    "3D-DelayedSupportResponseToFourthSuitForcing": {
+        "3H": 48,
+        "3N": 34,
+        "3S": 44,
+        "P": 199
+    },
+    "3D-DiamondStaymanResponse": {
+        "3H": 387,
+        "3N": 4694,
+        "3S": 366,
+        "5C": 3
+    },
+    "3D-DiamondStaymanResponse-Interference": {
+        "3N": 4,
+        "5D": 1
+    },
+    "3D-DirectMichaelsCuebid": {
+        "3H": 39,
+        "3S": 36,
+        "P": 42
+    },
+    "3D-DirectMichaelsCuebid-Interference": {
+        "4H": 1,
+        "P": 35
+    },
+    "3D-FourthSuitResponseToFourthSuitForcing": {
+        "P": 2
+    },
+    "3D-HelpSuitGameTry": {
+        "3H": 504,
+        "3S": 601,
+        "4H": 57,
+        "4S": 71,
+        "P": 669
+    },
+    "3D-HelpSuitGameTry-Interference": {
+        "P": 25
+    },
+    "3D-InvitationalUnsupportedRebidByOpener": {
+        "3H": 72,
+        "3N": 1483,
+        "3S": 79,
+        "5D": 1,
+        "6N": 18,
+        "P": 2147
+    },
+    "3D-InvitationalUnsupportedRebidByOpener-Interference": {
+        "3N": 3,
+        "4D": 7,
+        "P": 56
+    },
+    "3D-JacobyTransferToHearts": {
+        "3H": 5489
+    },
+    "3D-JacobyTransferToHearts-Interference": {
+        "P": 5
+    },
+    "3D-JumpNewSuitResponseToNegativeDouble": {
+        "3N": 14,
+        "3S": 2,
+        "4H": 1,
+        "P": 10
+    },
+    "3D-JumpRaiseAfterTakeoutDouble": {
+        "P": 1
+    },
+    "3D-JumpRaiseAfterTakeoutDouble-Interference": {
+        "P": 1
+    },
+    "3D-JumpRaiseResponseToAfterRHOTakeoutDouble": {
+        "3H": 9,
+        "3S": 4,
+        "4H": 4,
+        "P": 174
+    },
+    "3D-JumpShiftByOpener": {
+        "3H": 169,
+        "3N": 1437,
+        "3S": 205,
+        "4H": 37,
+        "4S": 27,
+        "5C": 3,
+        "6N": 43,
+        "P": 297
+    },
+    "3D-JumpShiftByOpener-Interference": {
+        "3S": 2,
+        "P": 34
+    },
+    "3D-JumpShiftResponderRebid": {
+        "3H": 92,
+        "3N": 1467,
+        "3S": 82,
+        "4H": 238,
+        "4S": 220,
+        "P": 241
+    },
+    "3D-JumpShiftResponseToOpen": {
+        "3H": 41,
+        "3N": 243,
+        "5D": 1,
+        "6N": 46,
+        "P": 9
+    },
+    "3D-JumpShiftResponseToOpenAfterRHODouble": {
+        "P": 107
+    },
+    "3D-JumpSuitResponseToTakeoutDouble": {
+        "3H": 6,
+        "3S": 7,
+        "4D": 13,
+        "5D": 1,
+        "5N": 1,
+        "P": 363
+    },
+    "3D-JumpSuitResponseToTakeoutDouble-Interference": {
+        "P": 13
+    },
+    "3D-LawOfTotalTricks": {
+        "4D": 558,
+        "5D": 115,
+        "P": 6486
+    },
+    "3D-LawOfTotalTricks-Interference": {
+        "4D": 92,
+        "5D": 31,
+        "P": 1672
+    },
+    "3D-LimitRaise": {
+        "3N": 321,
+        "4H": 76,
+        "5D": 10,
+        "P": 2372
+    },
+    "3D-LimitRaise-Interference": {
+        "3N": 40,
+        "4D": 2,
+        "5D": 26,
+        "P": 395
+    },
+    "3D-LongMinorGameInvitation": {
+        "P": 243
+    },
+    "3D-LongMinorGameInvitation-Interference": {
+        "P": 5
+    },
+    "3D-MinimumRebidOfPreemptSuit": {
+        "3H": 5,
+        "3N": 38,
+        "3S": 5,
+        "4H": 2,
+        "4S": 2,
+        "P": 115
+    },
+    "3D-MinorGameForceRebid": {
+        "3N": 1184
+    },
+    "3D-MinorGameForceRebid-Interference": {
+        "3N": 1
+    },
+    "3D-NaturalSuited": {
+        "3H": 336,
+        "3N": 1617,
+        "3S": 158,
+        "4H": 25,
+        "4S": 25,
+        "5D": 2,
+        "P": 13601
+    },
+    "3D-NaturalSuited-Interference": {
+        "3N": 12,
+        "4D": 1,
+        "5D": 2,
+        "P": 230
+    },
+    "3D-NewMinorRebidAfterJacobyTransfer": {
+        "3N": 71,
+        "4H": 91,
+        "4S": 85
+    },
+    "3D-NewSuitAfterPreempt": {
+        "3N": 5,
+        "4H": 3,
+        "4S": 8
+    },
+    "3D-NewSuitAfterTakeoutDouble": {
+        "3N": 114,
+        "3S": 1,
+        "4D": 46,
+        "5D": 8,
+        "P": 963
+    },
+    "3D-NewSuitAfterTakeoutDouble-Interference": {
+        "3N": 11,
+        "4D": 5,
+        "P": 99
+    },
+    "3D-NewSuitByOpener": {
+        "3H": 93,
+        "3N": 164,
+        "3S": 13,
+        "4H": 44,
+        "4S": 61,
+        "6N": 31,
+        "P": 38
+    },
+    "3D-NewSuitByOpener-Interference": {
+        "4S": 1,
+        "5D": 1,
+        "P": 1
+    },
+    "3D-NewSuitResponseToMajorCappelletti": {
+        "P": 16
+    },
+    "3D-NewSuitResponseToNegativeDouble": {
+        "3H": 50,
+        "3N": 19,
+        "3S": 39,
+        "4H": 9,
+        "4S": 5,
+        "P": 609
+    },
+    "3D-NewSuitResponseToNegativeDouble-Interference": {
+        "3S": 1,
+        "4C": 2,
+        "4D": 1,
+        "P": 95
+    },
+    "3D-NewSuitResponseToPreempt": {
+        "3H": 62,
+        "3N": 73,
+        "3S": 66,
+        "4C": 28,
+        "4D": 103,
+        "P": 13
+    },
+    "3D-NewSuitResponseToPreempt-Interference": {
+        "P": 10
+    },
+    "3D-NewSuitResponseToStandardOvercall": {
+        "3N": 10,
+        "P": 14
+    },
+    "3D-NewSuitResponseToStandardOvercall-Interference": {
+        "P": 2
+    },
+    "3D-NonJumpFourthSuitForcing": {
+        "3H": 57,
+        "3N": 505,
+        "3S": 34,
+        "4C": 30,
+        "4D": 1,
+        "P": 36
+    },
+    "3D-OpenerSuitedRebidAfterStrongTwoClubs": {
+        "3N": 1519,
+        "5D": 4,
+        "6N": 66,
+        "7N": 3,
+        "P": 208
+    },
+    "3D-OpenerSuitedRebidAfterStrongTwoClubs-Interference": {
+        "P": 3
+    },
+    "3D-PreemptiveOpen": {
+        "3H": 10,
+        "3N": 13,
+        "3S": 10,
+        "4C": 15,
+        "4D": 435,
+        "5D": 119,
+        "P": 1501
+    },
+    "3D-PreemptiveOpen-Interference": {
+        "4D": 214,
+        "5D": 95,
+        "P": 481
+    },
+    "3D-PreemptiveOvercall": {
+        "4D": 725,
+        "5D": 251,
+        "P": 1723
+    },
+    "3D-PreemptiveOvercall-Interference": {
+        "4D": 130,
+        "5D": 77,
+        "P": 421
+    },
+    "3D-RaiseAfterTakeoutDouble": {
+        "3N": 15,
+        "4D": 3,
+        "P": 105
+    },
+    "3D-RaiseResponseToStandardOvercall": {
+        "4D": 84,
+        "5D": 14,
+        "P": 2800
+    },
+    "3D-RaiseResponseToStandardOvercall-Interference": {
+        "4D": 5,
+        "5D": 1,
+        "P": 324
+    },
+    "3D-RebidResponseToFourthSuitForcing": {
+        "3H": 61,
+        "3N": 127,
+        "P": 73
+    },
+    "3D-ResponderReverse": {
+        "3H": 123,
+        "3N": 530,
+        "3S": 105,
+        "4H": 3,
+        "P": 1018
+    },
+    "3D-ResponderReverse-Interference": {
+        "P": 1
+    },
+    "3D-ResponseAfterTransferToClubs": {
+        "4D": 20,
+        "5D": 4,
+        "P": 2164
+    },
+    "3D-SingletonResponseToJacoby2N": {
+        "4H": 458,
+        "4S": 589,
+        "6N": 8,
+        "7N": 1
+    },
+    "3D-SuitRebidAfterCappellettiTwoClubs": {
+        "4D": 12,
+        "5D": 3,
+        "P": 343
+    },
+    "3D-SuitResponseToStrongTwoClubs": {
+        "3H": 28,
+        "3N": 56,
+        "3S": 34,
+        "4C": 41,
+        "4H": 2,
+        "5C": 2,
+        "6N": 1,
+        "P": 4
+    },
+    "3D-SuitResponseToTakeoutDouble": {
+        "3H": 249,
+        "3N": 28,
+        "3S": 213,
+        "4D": 307,
+        "4H": 4,
+        "4S": 9,
+        "5C": 2,
+        "5D": 88,
+        "P": 1405
+    },
+    "3D-SuitResponseToTakeoutDouble-Interference": {
+        "3S": 2,
+        "5D": 1,
+        "P": 19
+    },
+    "3D-ThreeLevelSuitRebidByResponder": {
+        "3H": 116,
+        "3N": 700,
+        "3S": 93,
+        "P": 5118
+    },
+    "3D-ThreeLevelSuitRebidByResponder-Interference": {
+        "3N": 3,
+        "P": 52
+    },
+    "3D-Unusual2NSimplePreferenceResponse": {
+        "P": 1811
+    },
+    "3D-Unusual2NSimplePreferenceResponse-Interference": {
+        "P": 17
+    },
+    "3H-AcceptTransferToHearts": {
+        "3N": 2855,
+        "4H": 1097,
+        "4S": 1,
+        "P": 1526
+    },
+    "3H-AcceptTransferToHearts-Interference": {
+        "3N": 3,
+        "4H": 4,
+        "P": 3
+    },
+    "3H-BalancingJumpSuitedOvercall": {
+        "4H": 36,
+        "P": 177
+    },
+    "3H-BalancingMichaelsCuebid": {
+        "3S": 59,
+        "P": 13
+    },
+    "3H-CueBidAfterTakeoutDouble": {
+        "3N": 49,
+        "P": 73
+    },
+    "3H-CueBidRebidAfterNegativeDouble": {
+        "3N": 1,
+        "3S": 10,
+        "P": 108
+    },
+    "3H-CueBidRebidAfterNegativeDouble-Interference": {
+        "P": 3
+    },
+    "3H-CuebidReponseToNegativeDouble": {
+        "3N": 13
+    },
+    "3H-CuebidResponseToStandardOvercall": {
+        "3S": 73,
+        "4C": 8,
+        "4D": 15,
+        "4S": 19,
+        "5C": 1,
+        "5D": 2,
+        "P": 1047
+    },
+    "3H-CuebidResponseToStandardOvercall-Interference": {
+        "4C": 1,
+        "P": 10
+    },
+    "3H-CuebidResponseToTakeoutDouble": {
+        "6N": 1
+    },
+    "3H-DelayedSupportResponseToFourthSuitForcing": {
+        "3N": 30,
+        "4H": 24,
+        "P": 142
+    },
+    "3H-DirectMichaelsCuebid": {
+        "3S": 592,
+        "P": 93
+    },
+    "3H-DirectMichaelsCuebid-Interference": {
+        "4S": 2,
+        "P": 124
+    },
+    "3H-FourthSuitResponseToFourthSuitForcing": {
+        "3N": 4,
+        "P": 14
+    },
+    "3H-HeartsRebidAfterSpadesTransfer": {
+        "4H": 13,
+        "4S": 33
+    },
+    "3H-HelpSuitGameTry": {
+        "3S": 540,
+        "4S": 63,
+        "P": 377
+    },
+    "3H-HelpSuitGameTry-Interference": {
+        "P": 15
+    },
+    "3H-InvitationalUnsupportedRebidByOpener": {
+        "3N": 793,
+        "3S": 90,
+        "4H": 1279,
+        "6N": 32,
+        "7N": 1,
+        "P": 2638
+    },
+    "3H-InvitationalUnsupportedRebidByOpener-Interference": {
+        "4H": 1,
+        "P": 49
+    },
+    "3H-JacobyTransferToSpades": {
+        "3S": 5490
+    },
+    "3H-JacobyTransferToSpades-Interference": {
+        "P": 1
+    },
+    "3H-JumpNewSuitAfterTakeoutDouble": {
+        "3N": 4,
+        "4H": 7,
+        "P": 20
+    },
+    "3H-JumpNewSuitAfterTakeoutDouble-Interference": {
+        "P": 3
+    },
+    "3H-JumpRaiseAfterTakeoutDouble": {
+        "4H": 60,
+        "P": 136
+    },
+    "3H-JumpRaiseAfterTakeoutDouble-Interference": {
+        "4H": 5,
+        "P": 16
+    },
+    "3H-JumpRaiseResponseToAfterRHOTakeoutDouble": {
+        "3S": 61,
+        "P": 1756
+    },
+    "3H-JumpRaiseResponseToNegativeDouble": {
+        "3S": 3,
+        "4H": 39,
+        "P": 58
+    },
+    "3H-JumpShiftByOpener": {
+        "3N": 1673,
+        "3S": 134,
+        "4H": 357,
+        "4S": 59,
+        "5C": 1,
+        "5D": 1,
+        "6N": 33,
+        "7N": 1,
+        "P": 492
+    },
+    "3H-JumpShiftByOpener-Interference": {
+        "4H": 4,
+        "P": 27
+    },
+    "3H-JumpShiftResponderRebid": {
+        "3N": 2057,
+        "3S": 262,
+        "4H": 239,
+        "4S": 424,
+        "P": 351
+    },
+    "3H-JumpShiftResponseToOpen": {
+        "3N": 129,
+        "4H": 33,
+        "6N": 20,
+        "P": 6
+    },
+    "3H-JumpShiftResponseToOpenAfterRHODouble": {
+        "P": 58
+    },
+    "3H-JumpSuitResponseToTakeoutDouble": {
+        "3S": 10,
+        "4H": 17,
+        "5H": 1,
+        "5N": 3,
+        "P": 413
+    },
+    "3H-JumpSuitResponseToTakeoutDouble-Interference": {
+        "P": 1
+    },
+    "3H-LawOfTotalTricks": {
+        "3N": 3,
+        "4D": 4,
+        "4H": 947,
+        "P": 8113
+    },
+    "3H-LawOfTotalTricks-Interference": {
+        "4H": 63,
+        "P": 1133
+    },
+    "3H-LimitRaise": {
+        "4H": 16446,
+        "P": 2615
+    },
+    "3H-LimitRaise-Interference": {
+        "4H": 935,
+        "5H": 19,
+        "5N": 3,
+        "P": 476
+    },
+    "3H-LongMajorSlamInvitation": {
+        "4H": 139
+    },
+    "3H-LongMajorSlamInvitation-Interference": {
+        "4H": 1
+    },
+    "3H-MichaelsSimplePreferenceResponse": {
+        "P": 1714
+    },
+    "3H-MichaelsSimplePreferenceResponse-Interference": {
+        "P": 2
+    },
+    "3H-MinimumRebidOfPreemptSuit": {
+        "3N": 14,
+        "3S": 4,
+        "4H": 31,
+        "P": 151
+    },
+    "3H-NaturalStaymanResponse": {
+        "3N": 2173,
+        "3S": 89,
+        "4H": 1680
+    },
+    "3H-NaturalSuited": {
+        "3S": 2,
+        "4H": 1838,
+        "4S": 4,
+        "P": 21564
+    },
+    "3H-NaturalSuited-Interference": {
+        "4H": 3,
+        "P": 181
+    },
+    "3H-NewSuitAfterTakeoutDouble": {
+        "3N": 72,
+        "4C": 1,
+        "4H": 132,
+        "P": 929
+    },
+    "3H-NewSuitAfterTakeoutDouble-Interference": {
+        "3N": 4,
+        "4H": 21,
+        "P": 83
+    },
+    "3H-NewSuitByOpener": {
+        "3N": 35,
+        "4H": 11,
+        "4S": 32,
+        "6N": 19
+    },
+    "3H-NewSuitByOpener-Interference": {
+        "4S": 1,
+        "P": 3
+    },
+    "3H-NewSuitResponseToMajorCappelletti": {
+        "P": 8
+    },
+    "3H-NewSuitResponseToPreempt": {
+        "3N": 62,
+        "3S": 106,
+        "4C": 35,
+        "4D": 14,
+        "P": 11
+    },
+    "3H-NewSuitResponseToPreempt-Interference": {
+        "P": 3
+    },
+    "3H-NewSuitResponseToStandardOvercall": {
+        "3N": 5,
+        "4H": 3,
+        "P": 10
+    },
+    "3H-NewSuitResponseToStandardOvercall-Interference": {
+        "4H": 1
+    },
+    "3H-NonJumpFourthSuitForcing": {
+        "3N": 1142,
+        "3S": 101,
+        "4C": 79,
+        "4D": 27,
+        "4H": 2,
+        "P": 123
+    },
+    "3H-OpenerSuitedJumpRebidAfterStrongTwoClubs": {
+        "3N": 3,
+        "4H": 29,
+        "P": 4
+    },
+    "3H-OpenerSuitedRebidAfterStrongTwoClubs": {
+        "3N": 219,
+        "4H": 203,
+        "6N": 83,
+        "7N": 2,
+        "P": 9
+    },
+    "3H-OpenerSuitedRebidAfterStrongTwoClubs-Interference": {
+        "P": 2
+    },
+    "3H-OtherMajorRebidAfterStayman": {
+        "3N": 237,
+        "4H": 509,
+        "4S": 2
+    },
+    "3H-PreemptiveOpen": {
+        "3N": 10,
+        "3S": 8,
+        "4C": 13,
+        "4D": 17,
+        "4H": 538,
+        "P": 1509
+    },
+    "3H-PreemptiveOpen-Interference": {
+        "3S": 1,
+        "4H": 303,
+        "P": 478
+    },
+    "3H-PreemptiveOvercall": {
+        "4C": 2,
+        "4D": 1,
+        "4H": 1159,
+        "P": 2111
+    },
+    "3H-PreemptiveOvercall-Interference": {
+        "4H": 152,
+        "P": 315
+    },
+    "3H-RaiseAfterTakeoutDouble": {
+        "3N": 1,
+        "4H": 60,
+        "P": 193
+    },
+    "3H-RaiseOfPartnersPreemptResponse": {
+        "4H": 14,
+        "P": 29
+    },
+    "3H-RaiseResponseToMajorCappelletti": {
+        "P": 131
+    },
+    "3H-RaiseResponseToNegativeDouble": {
+        "3S": 41,
+        "4H": 63,
+        "4S": 2,
+        "P": 588
+    },
+    "3H-RaiseResponseToNegativeDouble-Interference": {
+        "4H": 5,
+        "P": 108
+    },
+    "3H-RaiseResponseToStandardOvercall": {
+        "4H": 89,
+        "P": 2382
+    },
+    "3H-RaiseResponseToStandardOvercall-Interference": {
+        "4H": 9,
+        "P": 213
+    },
+    "3H-RebidResponseToFourthSuitForcing": {
+        "3N": 44,
+        "4H": 1,
+        "P": 2
+    },
+    "3H-ResponderReverse": {
+        "3N": 1464,
+        "3S": 18,
+        "4H": 3,
+        "4S": 1,
+        "5C": 1,
+        "P": 2241
+    },
+    "3H-ResponseToCappellettiTwoDiamonds": {
+        "P": 6
+    },
+    "3H-SingletonResponseToJacoby2N": {
+        "4S": 609,
+        "6N": 3
+    },
+    "3H-SlamResponseToJacoby2N": {
+        "4H": 45,
+        "6N": 13
+    },
+    "3H-SuitResponseToTakeoutDouble": {
+        "3N": 16,
+        "3S": 173,
+        "4H": 570,
+        "4S": 5,
+        "5C": 4,
+        "5D": 1,
+        "P": 1656
+    },
+    "3H-SuitResponseToTakeoutDouble-Interference": {
+        "P": 41
+    },
+    "3H-SuperAcceptTransferToHearts": {
+        "4H": 497,
+        "P": 638
+    },
+    "3H-SuperAcceptTransferToHearts-Interference": {
+        "4H": 5,
+        "5H": 1,
+        "P": 16
+    },
+    "3H-SupportPartnerMajorSuit": {
+        "3S": 78,
+        "4H": 3006,
+        "4S": 71,
+        "6H": 1,
+        "6N": 114,
+        "7N": 4,
+        "P": 2034
+    },
+    "3H-SupportPartnerMajorSuit-Interference": {
+        "4H": 84,
+        "5H": 12,
+        "5N": 6,
+        "6H": 1,
+        "6N": 4,
+        "P": 166
+    },
+    "3H-ThreeLevelSuitRebidByResponder": {
+        "3N": 633,
+        "3S": 30,
+        "4H": 486,
+        "P": 5208
+    },
+    "3H-ThreeLevelSuitRebidByResponder-Interference": {
+        "P": 37
+    },
+    "3H-Unusual2NSimplePreferenceResponse": {
+        "P": 1573
+    },
+    "3N-JumpNotrumpResponseToTakeoutDouble": {
+        "4H": 1,
+        "4N": 11,
+        "4S": 1,
+        "P": 527
+    },
+    "3N-NaturalNotrump": {
+        "4D": 611,
+        "4H": 4862,
+        "4N": 5812,
+        "4S": 5909,
+        "5C": 236,
+        "5D": 277,
+        "6N": 671,
+        "7N": 4,
+        "P": 99689
+    },
+    "3N-NaturalNotrump-Interference": {
+        "4D": 1,
+        "4H": 2,
+        "4N": 21,
+        "4S": 21,
+        "5D": 2,
+        "6C": 2,
+        "P": 205
+    },
+    "3N-NotrumpAfterPreempt": {
+        "4H": 55,
+        "4N": 9,
+        "4S": 79,
+        "5C": 4,
+        "6N": 8,
+        "P": 120
+    },
+    "3N-NotrumpAfterTakeoutDouble": {
+        "4N": 68,
+        "P": 290
+    },
+    "3N-NotrumpAfterTakeoutDouble-Interference": {
+        "4N": 3,
+        "P": 8
+    },
+    "3N-NotrumpGameAccept": {
+        "P": 16541
+    },
+    "3N-NotrumpGameAccept-Interference": {
+        "P": 63
+    },
+    "3N-NotrumpJumpResponseToFourthSuitForcing": {
+        "4H": 130,
+        "4N": 11,
+        "4S": 169,
+        "5C": 33,
+        "5D": 23,
+        "6N": 7,
+        "P": 1307
+    },
+    "3N-NotrumpRebidOverTwoClubs": {
+        "4D": 158,
+        "4H": 133,
+        "4N": 370,
+        "5C": 27,
+        "5D": 22,
+        "P": 117
+    },
+    "3N-NotrumpResponseToFourthSuitForcing": {
+        "4D": 120,
+        "4N": 120,
+        "5C": 22,
+        "5D": 49,
+        "P": 2900
+    },
+    "3N-NotrumpResponseToJacoby2N": {
+        "4H": 61,
+        "4S": 76,
+        "6N": 19
+    },
+    "3N-NotrumpResponseToMinorOpen": {
+        "4D": 107,
+        "4N": 1603,
+        "5C": 105,
+        "5D": 116,
+        "6N": 60,
+        "P": 341
+    },
+    "3N-NotrumpResponseToMinorOpen-Interference": {
+        "4D": 3,
+        "4N": 3,
+        "5C": 3,
+        "5D": 6,
+        "P": 17
+    },
+    "3N-NotrumpResponseToTakeoutDouble": {
+        "4N": 15,
+        "4S": 1,
+        "P": 159
+    },
+    "3N-NotrumpResponseToTakeoutDouble-Interference": {
+        "4N": 1
+    },
+    "3N-ThreeNotrumpMajorResponse": {
+        "4H": 538,
+        "4N": 148,
+        "4S": 1025,
+        "5C": 1,
+        "6N": 87,
+        "P": 2668
+    },
+    "3N-ThreeNotrumpMajorResponse-Interference": {
+        "4D": 1,
+        "4H": 7,
+        "4N": 9,
+        "4S": 12,
+        "5D": 1,
+        "5H": 2,
+        "P": 31
+    },
+    "3S-AcceptTransferToSpades": {
+        "3N": 2780,
+        "4H": 4,
+        "4S": 1130,
+        "P": 1571
+    },
+    "3S-AcceptTransferToSpades-Interference": {
+        "P": 5
+    },
+    "3S-BalancingMichaelsCuebid": {
+        "4H": 55,
+        "P": 11
+    },
+    "3S-CueBidAfterTakeoutDouble": {
+        "3N": 66,
+        "P": 70
+    },
+    "3S-CueBidRebidAfterNegativeDouble": {
+        "P": 93
+    },
+    "3S-CueBidRebidAfterNegativeDouble-Interference": {
+        "P": 12
+    },
+    "3S-CuebidReponseToNegativeDouble": {
+        "3N": 19,
+        "4H": 1
+    },
+    "3S-CuebidResponseToTakeoutDouble": {
+        "5N": 1
+    },
+    "3S-DelayedSupportResponseToFourthSuitForcing": {
+        "3N": 52,
+        "4S": 35
+    },
+    "3S-DirectMichaelsCuebid": {
+        "4H": 529,
+        "P": 77
+    },
+    "3S-DirectMichaelsCuebid-Interference": {
+        "4H": 1,
+        "P": 124
+    },
+    "3S-FourthSuitResponseToFourthSuitForcing": {
+        "3N": 4,
+        "P": 39
+    },
+    "3S-HelpSuitGameTry": {
+        "4H": 1,
+        "P": 123
+    },
+    "3S-HelpSuitGameTry-Interference": {
+        "P": 6
+    },
+    "3S-InvitationalUnsupportedRebidByOpener": {
+        "3N": 1022,
+        "4S": 1586,
+        "6N": 34,
+        "P": 3094
+    },
+    "3S-InvitationalUnsupportedRebidByOpener-Interference": {
+        "4S": 1,
+        "P": 30
+    },
+    "3S-JumpNewSuitAfterTakeoutDouble": {
+        "4S": 10,
+        "P": 11
+    },
+    "3S-JumpNewSuitAfterTakeoutDouble-Interference": {
+        "P": 2
+    },
+    "3S-JumpRaiseAfterTakeoutDouble": {
+        "3N": 5,
+        "4S": 114,
+        "P": 272
+    },
+    "3S-JumpRaiseAfterTakeoutDouble-Interference": {
+        "4S": 3,
+        "P": 13
+    },
+    "3S-JumpRaiseResponseToAfterRHOTakeoutDouble": {
+        "P": 1853
+    },
+    "3S-JumpRaiseResponseToNegativeDouble": {
+        "4S": 27,
+        "P": 26
+    },
+    "3S-JumpShiftByOpener": {
+        "3N": 1124,
+        "4H": 186,
+        "4S": 93,
+        "6N": 23,
+        "P": 607
+    },
+    "3S-JumpShiftByOpener-Interference": {
+        "4D": 1,
+        "4S": 4,
+        "P": 9
+    },
+    "3S-JumpShiftResponderRebid": {
+        "3N": 2382,
+        "4S": 8,
+        "P": 210
+    },
+    "3S-JumpSuitResponseToTakeoutDouble": {
+        "4S": 6,
+        "5N": 8,
+        "6N": 1,
+        "P": 299
+    },
+    "3S-LawOfTotalTricks": {
+        "3N": 15,
+        "4C": 1,
+        "4D": 7,
+        "4S": 1342,
+        "P": 10881
+    },
+    "3S-LawOfTotalTricks-Interference": {
+        "4S": 72,
+        "P": 1323
+    },
+    "3S-LimitRaise": {
+        "4S": 18992,
+        "P": 3014
+    },
+    "3S-LimitRaise-Interference": {
+        "4S": 552,
+        "5S": 6,
+        "P": 120
+    },
+    "3S-LongMajorSlamInvitation": {
+        "4S": 141
+    },
+    "3S-MichaelsSimplePreferenceResponse": {
+        "P": 706
+    },
+    "3S-MinimumRebidOfPreemptSuit": {
+        "3N": 16,
+        "4H": 2,
+        "4S": 44,
+        "P": 156
+    },
+    "3S-NaturalStaymanResponse": {
+        "3N": 1764,
+        "4S": 1462
+    },
+    "3S-NaturalSuited": {
+        "4S": 1775,
+        "P": 22285
+    },
+    "3S-NaturalSuited-Interference": {
+        "4S": 6,
+        "P": 107
+    },
+    "3S-NewSuitAfterTakeoutDouble": {
+        "3N": 100,
+        "4S": 127,
+        "P": 869
+    },
+    "3S-NewSuitAfterTakeoutDouble-Interference": {
+        "4N": 1,
+        "4S": 11,
+        "P": 31
+    },
+    "3S-NewSuitResponseToPreempt": {
+        "3N": 22,
+        "4C": 21,
+        "4D": 8,
+        "4S": 2,
+        "P": 5
+    },
+    "3S-NewSuitResponseToStandardOvercall": {
+        "3N": 5,
+        "4S": 2
+    },
+    "3S-NonJumpFourthSuitForcing": {
+        "3N": 1079,
+        "4C": 76,
+        "4D": 20,
+        "4H": 43,
+        "P": 176
+    },
+    "3S-OpenerSuitedJumpRebidAfterStrongTwoClubs": {
+        "3N": 3,
+        "4S": 43,
+        "P": 9
+    },
+    "3S-OpenerSuitedRebidAfterStrongTwoClubs": {
+        "3N": 198,
+        "4S": 183,
+        "6N": 61,
+        "7N": 1,
+        "P": 3
+    },
+    "3S-OpenerSuitedRebidAfterStrongTwoClubs-Interference": {
+        "4S": 1
+    },
+    "3S-OtherMajorRebidAfterStayman": {
+        "3N": 257,
+        "4H": 1,
+        "4S": 507
+    },
+    "3S-PreemptiveOpen": {
+        "3N": 24,
+        "4C": 13,
+        "4D": 13,
+        "4S": 565,
+        "P": 1518
+    },
+    "3S-PreemptiveOpen-Interference": {
+        "4D": 1,
+        "4S": 306,
+        "P": 443
+    },
+    "3S-PreemptiveOvercall": {
+        "4D": 1,
+        "4S": 1224,
+        "P": 2251
+    },
+    "3S-PreemptiveOvercall-Interference": {
+        "4S": 95,
+        "P": 193
+    },
+    "3S-RaiseAfterTakeoutDouble": {
+        "3N": 12,
+        "4S": 88,
+        "P": 341
+    },
+    "3S-RaiseOfPartnersPreemptResponse": {
+        "4S": 21,
+        "P": 48
+    },
+    "3S-RaiseResponseToMajorCappelletti": {
+        "P": 135
+    },
+    "3S-RaiseResponseToStandardOvercall": {
+        "4S": 34,
+        "P": 1151
+    },
+    "3S-RaiseResponseToStandardOvercall-Interference": {
+        "4S": 23,
+        "P": 400
+    },
+    "3S-RebidResponseToFourthSuitForcing": {
+        "3N": 63
+    },
+    "3S-ResponseToCappellettiTwoDiamonds": {
+        "P": 6
+    },
+    "3S-SingletonResponseToJacoby2N": {
+        "4H": 521,
+        "6N": 4
+    },
+    "3S-SlamResponseToJacoby2N": {
+        "4S": 56,
+        "6N": 12
+    },
+    "3S-SuperAcceptTransferToSpades": {
+        "4S": 489,
+        "P": 708
+    },
+    "3S-SuperAcceptTransferToSpades-Interference": {
+        "P": 1
+    },
+    "3S-SupportPartnerMajorSuit": {
+        "4S": 3615,
+        "6N": 146,
+        "P": 2181
+    },
+    "3S-SupportPartnerMajorSuit-Interference": {
+        "4S": 65,
+        "5S": 6,
+        "6N": 1,
+        "P": 78
+    },
+    "3S-ThreeLevelSuitRebidByResponder": {
+        "3N": 725,
+        "4S": 643,
+        "P": 6162
+    },
+    "3S-ThreeLevelSuitRebidByResponder-Interference": {
+        "P": 18
+    },
+    "4C-DelayedSupportResponseToFourthSuitForcing": {
+        "4D": 18,
+        "4N": 3,
+        "5C": 4,
+        "5D": 4,
+        "P": 67
+    },
+    "4C-FourthSuitResponseToFourthSuitForcing": {
+        "4D": 1,
+        "5D": 1,
+        "P": 1
+    },
+    "4C-GameForcingUnsupportedRebidByOpener": {
+        "4N": 96,
+        "5C": 314,
+        "6N": 18,
+        "P": 878
+    },
+    "4C-GameForcingUnsupportedRebidByOpener-Interference": {
+        "P": 11
+    },
+    "4C-JumpRaiseAfterTakeoutDouble": {
+        "5C": 2,
+        "P": 45
+    },
+    "4C-JumpRaiseAfterTakeoutDouble-Interference": {
+        "P": 2
+    },
+    "4C-JumpShiftByOpener": {
+        "4D": 33,
+        "4H": 271,
+        "4N": 113,
+        "4S": 299,
+        "5C": 6,
+        "5D": 9,
+        "6N": 30,
+        "7N": 1,
+        "P": 602
+    },
+    "4C-JumpShiftByOpener-Interference": {
+        "P": 20
+    },
+    "4C-JumpShiftResponderRebid": {
+        "4H": 3,
+        "4N": 425,
+        "5C": 8,
+        "P": 1511
+    },
+    "4C-JumpSuitResponseToTakeoutDouble": {
+        "4N": 36,
+        "P": 226
+    },
+    "4C-LawOfTotalTricks": {
+        "5C": 301,
+        "P": 2995
+    },
+    "4C-LawOfTotalTricks-Interference": {
+        "5C": 91,
+        "P": 527
+    },
+    "4C-MinimumRebidOfPreemptSuit": {
+        "4H": 1,
+        "4N": 3,
+        "5C": 7,
+        "6N": 1,
+        "P": 49
+    },
+    "4C-NaturalSuited": {
+        "5C": 25,
+        "P": 243
+    },
+    "4C-NaturalSuited-Interference": {
+        "5C": 6,
+        "P": 40
+    },
+    "4C-NewSuitAfterPreempt": {
+        "4D": 1,
+        "4H": 10,
+        "4N": 2,
+        "4S": 4,
+        "5C": 2,
+        "5D": 1,
+        "P": 4
+    },
+    "4C-NewSuitResponseToPreempt": {
+        "4D": 16,
+        "4N": 10,
+        "5C": 1,
+        "P": 18
+    },
+    "4C-NewSuitResponseToPreempt-Interference": {
+        "P": 1
+    },
+    "4C-OpenerSuitedJumpRebidAfterStrongTwoClubs": {
+        "4N": 2,
+        "5C": 14,
+        "6N": 1,
+        "P": 32
+    },
+    "4C-OpenerSuitedRebidAfterStrongTwoClubs": {
+        "4N": 22,
+        "5C": 7,
+        "6N": 12,
+        "P": 12
+    },
+    "4C-OpenerSuitedRebidAfterStrongTwoClubs-Interference": {
+        "4N": 1
+    },
+    "4C-PreemptiveOpen": {
+        "4D": 2,
+        "5C": 55,
+        "P": 229
+    },
+    "4C-PreemptiveOpen-Interference": {
+        "5C": 31,
+        "P": 105
+    },
+    "4C-PreemptiveOvercall": {
+        "5C": 146,
+        "P": 560
+    },
+    "4C-PreemptiveOvercall-Interference": {
+        "5C": 16,
+        "P": 60
+    },
+    "4C-RaiseAfterTakeoutDouble": {
+        "5C": 2,
+        "P": 291
+    },
+    "4C-RaiseOfPartnersPreemptResponse": {
+        "4D": 7,
+        "4H": 8,
+        "4S": 9,
+        "5C": 1,
+        "5D": 1,
+        "P": 116
+    },
+    "4C-RebidResponseToFourthSuitForcing": {
+        "4D": 16,
+        "4N": 4,
+        "5C": 3,
+        "5D": 10,
+        "P": 56
+    },
+    "4C-SolidSuitResponseToJacoby2N": {
+        "4H": 159,
+        "4S": 207,
+        "6N": 7
+    },
+    "4D-DelayedSupportResponseToFourthSuitForcing": {
+        "4N": 3,
+        "5D": 2,
+        "P": 36
+    },
+    "4D-FourthSuitResponseToFourthSuitForcing": {
+        "P": 1
+    },
+    "4D-GameForcingUnsupportedRebidByOpener": {
+        "4N": 92,
+        "5D": 335,
+        "6N": 26,
+        "P": 819
+    },
+    "4D-GameForcingUnsupportedRebidByOpener-Interference": {
+        "4N": 1,
+        "P": 4
+    },
+    "4D-JacobyTransferToHearts": {
+        "4H": 111,
+        "4N": 5,
+        "P": 42
+    },
+    "4D-JumpNewSuitAfterTakeoutDouble": {
+        "P": 3
+    },
+    "4D-JumpRaiseAfterTakeoutDouble": {
+        "5D": 1,
+        "P": 31
+    },
+    "4D-JumpShiftByOpener": {
+        "4H": 317,
+        "4N": 31,
+        "4S": 293,
+        "5C": 5,
+        "5D": 5,
+        "6N": 4,
+        "P": 396
+    },
+    "4D-JumpShiftByOpener-Interference": {
+        "P": 10
+    },
+    "4D-JumpShiftResponderRebid": {
+        "4H": 5,
+        "4N": 446,
+        "4S": 11,
+        "5C": 35,
+        "5D": 3,
+        "P": 2024
+    },
+    "4D-JumpSuitResponseToTakeoutDouble": {
+        "4N": 76,
+        "5D": 4,
+        "P": 403
+    },
+    "4D-LawOfTotalTricks": {
+        "5D": 290,
+        "P": 3065
+    },
+    "4D-LawOfTotalTricks-Interference": {
+        "5D": 66,
+        "P": 469
+    },
+    "4D-MinimumRebidOfPreemptSuit": {
+        "5D": 4,
+        "P": 40
+    },
+    "4D-NaturalSuited": {
+        "4H": 1,
+        "4S": 1,
+        "5D": 386,
+        "6D": 2,
+        "6N": 6,
+        "P": 830
+    },
+    "4D-NaturalSuited-Interference": {
+        "5D": 5,
+        "P": 38
+    },
+    "4D-NewSuitAfterPreempt": {
+        "4H": 1,
+        "4S": 3,
+        "5D": 1
+    },
+    "4D-NewSuitResponseToPreempt": {
+        "4N": 7,
+        "5D": 7,
+        "P": 25
+    },
+    "4D-OpenerSuitedJumpRebidAfterStrongTwoClubs": {
+        "4N": 3,
+        "5D": 33,
+        "6N": 3,
+        "P": 30
+    },
+    "4D-OpenerSuitedJumpRebidAfterStrongTwoClubs-Interference": {
+        "P": 1
+    },
+    "4D-PreemptiveOpen": {
+        "5D": 49,
+        "P": 253
+    },
+    "4D-PreemptiveOpen-Interference": {
+        "5D": 27,
+        "P": 101
+    },
+    "4D-PreemptiveOvercall": {
+        "5D": 130,
+        "P": 521
+    },
+    "4D-PreemptiveOvercall-Interference": {
+        "5D": 24,
+        "P": 53
+    },
+    "4D-RaiseAfterTakeoutDouble": {
+        "5D": 2,
+        "P": 318
+    },
+    "4D-RaiseOfPartnersPreemptResponse": {
+        "4H": 5,
+        "4S": 10,
+        "5D": 3,
+        "P": 85
+    },
+    "4D-RebidResponseToFourthSuitForcing": {
+        "4N": 3,
+        "P": 3
+    },
+    "4D-SolidSuitResponseToJacoby2N": {
+        "4H": 174,
+        "4S": 193,
+        "6N": 3
+    },
+    "4H-DelayedSupportResponseToFourthSuitForcing": {
+        "5C": 1,
+        "5D": 3,
+        "P": 38
+    },
+    "4H-FourthSuitResponseToFourthSuitForcing": {
+        "P": 2
+    },
+    "4H-GameAccept": {
+        "P": 17284
+    },
+    "4H-GameAccept-Interference": {
+        "P": 97
+    },
+    "4H-HeartsRebidAfterSpadesTransfer": {
+        "4N": 1,
+        "4S": 87,
+        "P": 29
+    },
+    "4H-JacobyTransferToSpades": {
+        "4N": 3,
+        "4S": 94,
+        "P": 36
+    },
+    "4H-JumpNewSuitAfterTakeoutDouble": {
+        "4N": 3,
+        "5H": 1,
+        "P": 9
+    },
+    "4H-JumpRaiseAfterTakeoutDouble": {
+        "4N": 4,
+        "5H": 6,
+        "P": 169
+    },
+    "4H-JumpRaiseAfterTakeoutDouble-Interference": {
+        "P": 1
+    },
+    "4H-JumpRaiseResponseToNegativeDouble": {
+        "5H": 2,
+        "5N": 1,
+        "P": 59
+    },
+    "4H-JumpShiftByOpener": {
+        "4N": 33,
+        "4S": 131,
+        "5C": 34,
+        "5D": 19,
+        "5H": 3,
+        "6N": 20,
+        "P": 637
+    },
+    "4H-JumpShiftByOpener-Interference": {
+        "5H": 1,
+        "P": 3
+    },
+    "4H-JumpSuitResponseToTakeoutDouble": {
+        "4N": 104,
+        "5H": 2,
+        "P": 531
+    },
+    "4H-LawOfTotalTricks": {
+        "P": 7851
+    },
+    "4H-LawOfTotalTricks-Interference": {
+        "P": 814
+    },
+    "4H-MajorJumpToGame": {
+        "P": 4141
+    },
+    "4H-MajorJumpToGame-Interference": {
+        "P": 207
+    },
+    "4H-MichaelsSimplePreferenceResponse": {
+        "P": 584
+    },
+    "4H-MinimumResponseToJacoby2N": {
+        "5H": 1,
+        "5N": 110,
+        "6N": 10,
+        "P": 1149
+    },
+    "4H-MinimumResponseToJacoby2N-Interference": {
+        "P": 2
+    },
+    "4H-NaturalSuited": {
+        "4S": 18,
+        "5C": 38,
+        "5D": 27,
+        "5H": 1156,
+        "5N": 492,
+        "6N": 35,
+        "7N": 1,
+        "P": 31559
+    },
+    "4H-NaturalSuited-Interference": {
+        "5H": 1,
+        "P": 32
+    },
+    "4H-OpenerSuitedJumpRebidAfterStrongTwoClubs": {
+        "4N": 8,
+        "6N": 4,
+        "P": 1
+    },
+    "4H-PreemptiveOpen": {
+        "P": 331
+    },
+    "4H-PreemptiveOpen-Interference": {
+        "P": 136
+    },
+    "4H-PreemptiveOvercall": {
+        "P": 725
+    },
+    "4H-PreemptiveOvercall-Interference": {
+        "P": 54
+    },
+    "4H-RaiseAfterTakeoutDouble": {
+        "4N": 6,
+        "5H": 1,
+        "P": 580
+    },
+    "4H-RebidResponseToFourthSuitForcing": {
+        "P": 1
+    },
+    "4H-SolidSuitResponseToJacoby2N": {
+        "4S": 141,
+        "6N": 4
+    },
+    "4H-SolidSuitResponseToJacoby2N-Interference": {
+        "P": 1
+    },
+    "4H-SupportPartnerMajorSuit": {
+        "4S": 152,
+        "5C": 9,
+        "5D": 16,
+        "5H": 109,
+        "5N": 509,
+        "6H": 3,
+        "6N": 227,
+        "7N": 10,
+        "P": 4540
+    },
+    "4H-SupportPartnerMajorSuit-Interference": {
+        "5C": 1,
+        "5D": 5,
+        "5H": 21,
+        "5N": 5,
+        "6H": 1,
+        "6N": 2,
+        "P": 49
+    },
+    "4N-NaturalNotrump": {
+        "5C": 285,
+        "5D": 243,
+        "5H": 10,
+        "5N": 1753,
+        "5S": 14,
+        "6N": 511,
+        "P": 7462
+    },
+    "4N-NaturalNotrump-Interference": {
+        "P": 7
+    },
+    "4N-QuantitativeFourNotrumpJump": {
+        "5C": 1,
+        "5H": 1,
+        "5N": 458,
+        "6N": 447,
+        "P": 1167
+    },
+    "4S-GameAccept": {
+        "P": 19485
+    },
+    "4S-GameAccept-Interference": {
+        "P": 59
+    },
+    "4S-JumpNewSuitAfterTakeoutDouble": {
+        "4N": 4,
+        "5S": 9,
+        "P": 17
+    },
+    "4S-JumpRaiseAfterTakeoutDouble": {
+        "4N": 11,
+        "5S": 2,
+        "P": 117
+    },
+    "4S-LawOfTotalTricks": {
+        "P": 9931
+    },
+    "4S-LawOfTotalTricks-Interference": {
+        "P": 532
+    },
+    "4S-MajorJumpToGame": {
+        "P": 4561
+    },
+    "4S-MajorJumpToGame-Interference": {
+        "P": 47
+    },
+    "4S-MinimumResponseToJacoby2N": {
+        "5N": 85,
+        "5S": 4,
+        "6N": 13,
+        "P": 1241
+    },
+    "4S-MinimumResponseToJacoby2N-Interference": {
+        "5N": 1,
+        "5S": 2,
+        "P": 4
+    },
+    "4S-NaturalSuited": {
+        "5C": 56,
+        "5D": 41,
+        "5N": 637,
+        "5S": 1563,
+        "6N": 40,
+        "P": 33773
+    },
+    "4S-NaturalSuited-Interference": {
+        "5S": 1,
+        "P": 19
+    },
+    "4S-OpenerSuitedJumpRebidAfterStrongTwoClubs": {
+        "4N": 13,
+        "6N": 2,
+        "P": 1
+    },
+    "4S-PreemptiveOpen": {
+        "P": 300
+    },
+    "4S-PreemptiveOpen-Interference": {
+        "P": 129
+    },
+    "4S-PreemptiveOvercall": {
+        "P": 781
+    },
+    "4S-PreemptiveOvercall-Interference": {
+        "P": 49
+    },
+    "4S-SolidSuitResponseToJacoby2N": {
+        "5H": 3,
+        "5N": 4,
+        "5S": 1,
+        "P": 13
+    },
+    "4S-SupportPartnerMajorSuit": {
+        "5C": 8,
+        "5D": 6,
+        "5N": 556,
+        "5S": 31,
+        "6N": 282,
+        "6S": 4,
+        "7N": 9,
+        "P": 4533
+    },
+    "4S-SupportPartnerMajorSuit-Interference": {
+        "5S": 9,
+        "6S": 1,
+        "P": 4
+    },
+    "5C-JumpNewSuitAfterTakeoutDouble": {
+        "P": 21
+    },
+    "5C-JumpRaiseAfterTakeoutDouble": {
+        "5N": 1,
+        "P": 51
+    },
+    "5C-LawOfTotalTricks": {
+        "P": 1617
+    },
+    "5C-LawOfTotalTricks-Interference": {
+        "P": 87
+    },
+    "5C-NaturalSuited": {
+        "5D": 9,
+        "5H": 1,
+        "5N": 275,
+        "5S": 2,
+        "6N": 11,
+        "P": 1216
+    },
+    "5C-NaturalSuited-Interference": {
+        "P": 1
+    },
+    "5C-OpenerSuitedJumpRebidAfterStrongTwoClubs": {
+        "5N": 2,
+        "P": 1
+    },
+    "5D-JumpNewSuitAfterTakeoutDouble": {
+        "5N": 1,
+        "P": 15
+    },
+    "5D-JumpRaiseAfterTakeoutDouble": {
+        "P": 90
+    },
+    "5D-LawOfTotalTricks": {
+        "P": 1872
+    },
+    "5D-LawOfTotalTricks-Interference": {
+        "P": 98
+    },
+    "5D-NaturalSuited": {
+        "5N": 286,
+        "5S": 3,
+        "6N": 10,
+        "P": 1596
+    },
+    "5H-NaturalSuited": {
+        "5N": 77,
+        "6N": 30,
+        "P": 1393
+    },
+    "5N-NaturalNotrump": {
+        "6D": 1,
+        "6H": 1,
+        "6N": 613,
+        "P": 4333
+    },
+    "5N-ResponseToQuantitativeFourNotrump": {
+        "6N": 154,
+        "P": 304
+    },
+    "5S-NaturalSuited": {
+        "5N": 114,
+        "6N": 47,
+        "6S": 1,
+        "P": 1602
+    },
+    "6C-NaturalSuited": {
+        "6N": 2
+    },
+    "6D-NaturalSuited": {
+        "6N": 2,
+        "P": 1
+    },
+    "6H-NaturalSuited": {
+        "6N": 1,
+        "P": 8
+    },
+    "6N-NaturalNotrump": {
+        "7N": 16,
+        "P": 5932
+    },
+    "6S-NaturalSuited": {
+        "6N": 1,
+        "P": 5
+    },
+    "7N-NaturalNotrump": {
+        "P": 90
+    },
+    "P-DefaultPass": {
+        "1C": 56607,
+        "1D": 61009,
+        "1H": 38668,
+        "1N": 45368,
+        "1S": 44048,
+        "2C": 10814,
+        "2D": 5226,
+        "2H": 5318,
+        "2N": 11006,
+        "2S": 4985,
+        "3C": 3162,
+        "3D": 2218,
+        "3H": 2642,
+        "3N": 1988,
+        "3S": 2830,
+        "4C": 470,
+        "4D": 380,
+        "4H": 647,
+        "4N": 219,
+        "4S": 513,
+        "5C": 59,
+        "5D": 62,
+        "5H": 28,
+        "5N": 8,
+        "5S": 3,
+        "6H": 2,
+        "6N": 2,
+        "P": 1048461,
+        "X": 17925
+    },
+    "P-DefaultPass-Interference": {
+        "1D": 5291,
+        "1H": 10698,
+        "1N": 15992,
+        "1S": 19894,
+        "2C": 21727,
+        "2D": 16112,
+        "2H": 16124,
+        "2N": 7157,
+        "2S": 14031,
+        "3C": 2880,
+        "3D": 2773,
+        "3H": 3849,
+        "3N": 242,
+        "3S": 3693,
+        "4C": 719,
+        "4D": 688,
+        "4H": 707,
+        "4N": 49,
+        "4S": 600,
+        "5C": 28,
+        "5D": 22,
+        "5H": 1,
+        "5N": 2,
+        "5S": 2,
+        "6N": 3,
+        "P": 2115194,
+        "X": 65058
+    },
+    "P-GarbagePassStaymanRebid": {
+        "P": 31
+    },
+    "P-GarbagePassStaymanRebid-Interference": {
+        "3D": 4,
+        "P": 50
+    },
+    "P-None": {
+        "1N": 7,
+        "1S": 7,
+        "2C": 4,
+        "2D": 8,
+        "2H": 16,
+        "2N": 17,
+        "2S": 23,
+        "3D": 3,
+        "3H": 1,
+        "3N": 6,
+        "3S": 3,
+        "4C": 5,
+        "4H": 2,
+        "5C": 3,
+        "P": 2380,
+        "X": 3
+    },
+    "P-None-Interference": {
+        "1H": 18,
+        "1N": 19,
+        "1S": 16,
+        "2C": 3,
+        "2D": 16,
+        "2H": 16,
+        "2N": 45,
+        "2S": 11,
+        "3C": 6,
+        "3D": 20,
+        "3H": 21,
+        "3N": 31,
+        "3S": 20,
+        "4C": 1,
+        "4H": 4,
+        "4N": 2,
+        "4S": 2,
+        "P": 3131,
+        "X": 2
+    },
+    "P-NotrumpSlamIsRemote-Interference": {
+        "4D": 2,
+        "4N": 1,
+        "P": 38
+    },
+    "P-PassAfterPreempt": {
+        "2S": 1,
+        "3H": 3,
+        "3S": 1,
+        "4C": 1,
+        "4D": 218,
+        "P": 11231
+    },
+    "P-PassAfterPreempt-Interference": {
+        "2S": 2,
+        "3C": 1,
+        "3D": 1,
+        "3H": 4,
+        "3S": 6,
+        "4D": 159,
+        "4H": 1,
+        "4S": 1,
+        "P": 6904
+    },
+    "P-PassAfterTakeoutDouble-Interference": {
+        "2D": 1,
+        "2S": 5,
+        "4H": 1,
+        "P": 46
+    },
+    "P-PassReseponseToLimitRaise": {
+        "P": 30
+    },
+    "P-PassResponseToLimitRaise": {
+        "P": 520
+    },
+    "P-PassResponseToLimitRaise-Interference": {
+        "P": 8
+    },
+    "P-PassResponseToPreempt": {
+        "P": 5167
+    },
+    "P-PassResponseToPreempt-Interference": {
+        "P": 13262
+    },
+    "P-PassResponseToSuitedOpen-Interference": {
+        "1H": 2186,
+        "1N": 53,
+        "1S": 2453,
+        "2C": 3492,
+        "2D": 2258,
+        "2H": 1825,
+        "2N": 1432,
+        "2S": 1248,
+        "3C": 532,
+        "3D": 531,
+        "3H": 702,
+        "3S": 698,
+        "4C": 263,
+        "4D": 179,
+        "4H": 14,
+        "P": 10117,
+        "X": 127
+    },
+    "P-PassStaymanResponse": {
+        "2H": 7,
+        "2N": 279,
+        "2S": 8,
+        "3C": 6,
+        "3D": 4,
+        "3H": 8,
+        "3N": 216,
+        "3S": 4,
+        "4D": 2,
+        "4H": 1,
+        "4N": 8,
+        "5C": 2,
+        "5D": 1,
+        "P": 199
+    },
+    "P-PassStaymanResponse-Interference": {
+        "2H": 1,
+        "2N": 16,
+        "3C": 2,
+        "3N": 20,
+        "3S": 2,
+        "4N": 2,
+        "5C": 1,
+        "5D": 4,
+        "P": 108
+    },
+    "P-ResponseAfterTransferToClubs": {
+        "4C": 3,
+        "5C": 1,
+        "P": 23
+    },
+    "P-ResponseAfterTransferToClubs-Interference": {
+        "P": 4
+    },
+    "P-SuitGameIsRemote-Interference": {
+        "2S": 36,
+        "3C": 2,
+        "3H": 25,
+        "3S": 37,
+        "4C": 11,
+        "4D": 3,
+        "P": 2777
+    },
+    "P-SuitSlamIsRemote-Interference": {
+        "P": 5
+    },
+    "Start": {
+        "1C": 154848,
+        "1D": 169548,
+        "1H": 113385,
+        "1N": 82768,
+        "1S": 118336,
+        "2C": 7783,
+        "2D": 7611,
+        "2H": 8579,
+        "2N": 9588,
+        "2S": 8502,
+        "3C": 9728,
+        "3D": 2624,
+        "3H": 2584,
+        "3S": 2639,
+        "4C": 397,
+        "4D": 401,
+        "4H": 433,
+        "4S": 395,
+        "P": 820289
+    },
+    "Start-Interference": {
+        "1D": 3190,
+        "1H": 5953,
+        "1N": 7540,
+        "1S": 9229,
+        "2C": 10484,
+        "2D": 7469,
+        "2H": 7588,
+        "2N": 4384,
+        "2S": 6570,
+        "3C": 1305,
+        "3D": 1420,
+        "3H": 1607,
+        "3S": 1678,
+        "4C": 298,
+        "4D": 296,
+        "4H": 317,
+        "4S": 321,
+        "P": 320182,
+        "X": 29731
+    },
+    "X-BalancingDouble": {
+        "1D": 55,
+        "1H": 175,
+        "1N": 67,
+        "1S": 244,
+        "2C": 65,
+        "2D": 111,
+        "2H": 201,
+        "2N": 88,
+        "2S": 250,
+        "3C": 79,
+        "3D": 55,
+        "3H": 37,
+        "3N": 173,
+        "3S": 5,
+        "4S": 1,
+        "P": 7
+    },
+    "X-BalancingDouble-Interference": {
+        "2C": 84,
+        "2D": 157,
+        "2H": 178,
+        "2S": 218,
+        "3C": 20,
+        "3D": 18,
+        "3H": 11,
+        "3S": 18,
+        "4C": 1,
+        "4D": 1,
+        "4H": 5,
+        "4S": 2,
+        "5D": 1,
+        "P": 9944
+    },
+    "X-Cappelletti": {
+        "2C": 269,
+        "2D": 296,
+        "2H": 370,
+        "2S": 395,
+        "P": 1297
+    },
+    "X-Cappelletti-Interference": {
+        "P": 2718
+    },
+    "X-OneLevelNegativeDouble": {
+        "1H": 95,
+        "1N": 1265,
+        "1S": 459,
+        "2C": 1162,
+        "2D": 891,
+        "2H": 946,
+        "2N": 228,
+        "2S": 128,
+        "3C": 8,
+        "3D": 4,
+        "3H": 64,
+        "P": 233
+    },
+    "X-OneLevelNegativeDouble-Interference": {
+        "2D": 111,
+        "2H": 284,
+        "2N": 659,
+        "2S": 376,
+        "3C": 432,
+        "3D": 279,
+        "3H": 353,
+        "3N": 31,
+        "3S": 53,
+        "4H": 38,
+        "4S": 19,
+        "P": 3656
+    },
+    "X-OneLevelTakeoutDouble": {
+        "1D": 923,
+        "1H": 2850,
+        "1N": 1141,
+        "1S": 4537,
+        "2C": 1925,
+        "2D": 1538,
+        "2H": 1795,
+        "2N": 529,
+        "2S": 1352,
+        "3C": 512,
+        "3D": 339,
+        "3H": 309,
+        "3N": 259,
+        "3S": 3,
+        "4H": 1,
+        "4S": 1,
+        "P": 6
+    },
+    "X-OneLevelTakeoutDouble-Interference": {
+        "2C": 198,
+        "2D": 185,
+        "2H": 358,
+        "2S": 435,
+        "3C": 59,
+        "3D": 46,
+        "3H": 42,
+        "3S": 23,
+        "4C": 7,
+        "4D": 2,
+        "4H": 29,
+        "4S": 29,
+        "5C": 2,
+        "5D": 6,
+        "P": 52011
+    },
+    "X-ReopeningDouble": {
+        "2D": 20,
+        "2H": 66,
+        "2S": 138,
+        "3C": 90,
+        "3D": 89,
+        "3H": 76,
+        "3S": 21,
+        "4C": 13,
+        "4D": 6,
+        "4H": 9,
+        "4S": 6,
+        "5C": 1,
+        "P": 56
+    },
+    "X-ReopeningDouble-Interference": {
+        "3H": 2,
+        "3S": 1,
+        "4D": 2,
+        "4H": 1,
+        "P": 126
+    },
+    "X-StolenThreeClubStayman": {
+        "P": 60
+    },
+    "X-StolenThreeClubStayman-Interference": {
+        "P": 13
+    },
+    "X-StolenThreeHeartStaymanResponse": {
+        "3N": 1,
+        "P": 1
+    },
+    "X-StolenThreeSpadeStaymanResponse": {
+        "3N": 1,
+        "5D": 1,
+        "P": 5
+    },
+    "X-StolenTwoClubStayman": {
+        "P": 917
+    },
+    "X-StolenTwoClubStayman-Interference": {
+        "P": 25
+    },
+    "X-StolenTwoHeartStaymanResponse": {
+        "2N": 34,
+        "3C": 1,
+        "3D": 2,
+        "3N": 15,
+        "4H": 3,
+        "P": 10
+    },
+    "X-StolenTwoHeartStaymanResponse-Interference": {
+        "2N": 1,
+        "3N": 1,
+        "4H": 1,
+        "P": 4
+    },
+    "X-StolenTwoSpadeStaymanResponse": {
+        "2N": 37,
+        "3C": 1,
+        "3D": 2,
+        "3N": 16,
+        "P": 9
+    },
+    "X-StolenTwoSpadeStaymanResponse-Interference": {
+        "3N": 2,
+        "P": 1
+    },
+    "X-TakeoutDoubleAfterPreempt": {
+        "2H": 323,
+        "2S": 858,
+        "3C": 711,
+        "3D": 1319,
+        "3H": 1867,
+        "3N": 284,
+        "3S": 295,
+        "4C": 248,
+        "4D": 478,
+        "4H": 627,
+        "4N": 34,
+        "4S": 7,
+        "P": 5069
+    },
+    "X-TakeoutDoubleAfterPreempt-Interference": {
+        "3N": 91,
+        "4N": 19,
+        "P": 4830
+    },
+    "X-TakeoutDoubleAfterTakeoutDouble": {
+        "1N": 15,
+        "2C": 1,
+        "2D": 2,
+        "2H": 8,
+        "2N": 24,
+        "2S": 29,
+        "3C": 4,
+        "3D": 7,
+        "3H": 3,
+        "3N": 5,
+        "4H": 5,
+        "4S": 6,
+        "P": 191
+    },
+    "X-TakeoutDoubleAfterTakeoutDouble-Interference": {
+        "3H": 1,
+        "3S": 2,
+        "P": 72
+    },
+    "X-TwoLevelNegativeDouble": {
+        "2D": 381,
+        "2H": 872,
+        "2N": 1045,
+        "2S": 1397,
+        "3C": 568,
+        "3D": 381,
+        "3H": 241,
+        "3N": 63,
+        "3S": 126,
+        "4H": 22,
+        "P": 682
+    },
+    "X-TwoLevelNegativeDouble-Interference": {
+        "2H": 13,
+        "2N": 9,
+        "2S": 30,
+        "3C": 47,
+        "3D": 214,
+        "3H": 294,
+        "3N": 119,
+        "3S": 112,
+        "4D": 1,
+        "4H": 24,
+        "4N": 6,
+        "4S": 40,
+        "5D": 1,
+        "5H": 1,
+        "5S": 1,
+        "P": 4253
+    },
+    "X-TwoLevelTakeoutDouble": {
+        "2D": 254,
+        "2H": 521,
+        "2S": 1202,
+        "3C": 988,
+        "3D": 931,
+        "3H": 631,
+        "3S": 7,
+        "4C": 5,
+        "4D": 4,
+        "4H": 3,
+        "4S": 4,
+        "5D": 1,
+        "P": 29
+    },
+    "X-TwoLevelTakeoutDouble-Interference": {
+        "2H": 2,
+        "2N": 37,
+        "2S": 24,
+        "3C": 6,
+        "3D": 14,
+        "3H": 8,
+        "3S": 8,
+        "4C": 2,
+        "4D": 1,
+        "4H": 7,
+        "4S": 6,
+        "P": 925
+    },
+    "XX-RedoubleResponseAfterRHOTakeoutDouble": {
+        "1H": 1110,
+        "1N": 855,
+        "1S": 1161,
+        "2C": 1527,
+        "2D": 859,
+        "2H": 401,
+        "2N": 19,
+        "2S": 248,
+        "3H": 13,
+        "3N": 95,
+        "3S": 11,
+        "4C": 1,
+        "4D": 1,
+        "P": 37
+    },
+    "XX-RedoubleResponseAfterRHOTakeoutDouble-Interference": {
+        "2D": 2,
+        "2H": 2,
+        "2N": 36,
+        "2S": 4,
+        "3C": 1,
+        "3N": 2,
+        "P": 8
+    },
+    "XX-RedoubleTransferToMinor": {
+        "2C": 266
+    }
+}
