@@ -19,7 +19,7 @@ $(z3_dir)/build/config.mk:
 	@cd $(z3_dir) && python scripts/mk_make.py
 
 z3_build: $(z3_dir)/build/config.mk
-	@make -C $(z3_dir)/build
+	@make -j4 -C $(z3_dir)/build
 	@cp third_party/z3_setup.py $(z3_dir)/build/setup.py
 
 clean:
