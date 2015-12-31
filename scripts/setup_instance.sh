@@ -4,7 +4,6 @@
 # found in the LICENSE file.
 apt-get update
 apt-get install git build-essentials python-pip python-dev
-git clone https://github.com/eseidel/saycbridge.git
+git clone --recursive https://github.com/eseidel/saycbridge.git
 cd saycbridge
-git submodule update --init
 make deps -j$(nproc)
