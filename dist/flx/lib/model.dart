@@ -191,7 +191,9 @@ class CallHistory {
       if (lastContract != null && level < lastContract.level)
         continue;
       for (Strain strain in Strain.values) {
-        if (lastContract != null && level == lastContract.level && level <= lastContract.level)
+        if (lastContract != null &&
+            level == lastContract.level &&
+            strain.index <= lastContract.strain.index)
           continue;
         yield new Call(level, strain);
       }
