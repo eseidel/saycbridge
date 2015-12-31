@@ -49,7 +49,11 @@ String getStringSpecialCall(SpecialCall specialCall) {
 }
 
 class Call {
-  const Call(this.level, this.strain) : specialCall = null;
+  Call(this.level, this.strain) : specialCall = null {
+    assert(level != null);
+    assert(strain != null);
+  }
+
   const Call.special(this.specialCall) : level = null, strain = null;
 
   factory Call.fromName(String callName) {
@@ -66,7 +70,7 @@ class Call {
   final Strain strain;
   final SpecialCall specialCall;
 
-  bool get isBid => specialCall == null;
+  bool get isContract => specialCall == null;
 
   bool get isPass => specialCall == SpecialCall.pass;
   bool get isDouble => specialCall == SpecialCall.double;
@@ -77,7 +81,7 @@ class Call {
   static const Call xx = const Call.special(SpecialCall.redouble);
 
   String toString() {
-    if (isBid)
+    if (isContract)
       return '$level${getStringForStrain(strain)}';
     return getStringSpecialCall(specialCall);
   }
@@ -104,5 +108,64 @@ class CallHistory {
       calls: new List<Call>.from(calls)..add(call),
       dealer: dealer
     );
+  }
+
+  bool get isComplete {
+    if (calls.length < 4)
+      return false;
+    for (int i = calls.length - 4; i < calls.length; ++i) {
+      if (!calls[i].isPass)
+        return false;
+    }
+    return true;
+  }
+
+  int get lastNonPassIndex {
+    for (int i = calls.length - 1; i >= 0; --i) {
+      if (!calls[i].isPass)
+        return i;
+    }
+    return null;
+  }
+
+  Positions getPositionForIndex(int index) {
+    return Positions.values[
+      (dealer.index + index) % Positions.values.length
+    ];
+  }
+
+  Call get lastContract {
+    for (Call call in calls.reversed) {
+      if (call.isContract)
+        return call;
+    }
+    return null;
+  }
+
+  Iterable<Call> get possibleCalls sync* {
+    if (isComplete)
+      return;
+
+    yield Call.pass;
+
+    int lastNonPassIndex = this.lastNonPassIndex;
+    if (lastNonPassIndex == calls.length - 1 || lastNonPassIndex == calls.length - 3) {
+      Call lastNonPass = calls[lastNonPassIndex];
+      if (lastNonPass.isContract)
+        yield Call.x;
+      else if (lastNonPass.isDouble)
+        yield Call.xx;
+    }
+
+    Call lastContract = this.lastContract;
+    for (int level = 1; level < 8; ++level) {
+      if (lastContract != null && level < lastContract.level)
+        continue;
+      for (Strain strain in Strain.values) {
+        if (lastContract != null && level == lastContract.level && level <= lastContract.level)
+          continue;
+        yield new Call(level, strain);
+      }
+    }
   }
 }
