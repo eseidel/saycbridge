@@ -270,18 +270,38 @@ class CallMenu extends StatefulComponent {
 class _CallMenuState extends State<CallMenu> {
   void initState() {
     super.initState();
-    _fetchInterpretations();
+    _updateInterpretations();
   }
 
   void didUpdateConfig(CallMenu oldConfig) {
-    if (config.callHistory != oldConfig.callHistory) {
-      _interpretations = null;
-      _fetchInterpretations();
-    }
+    if (config.callHistory != oldConfig.callHistory)
+      _updateInterpretations();
   }
 
   List<CallInterpretation> _interpretations;
+  List<Widget> _menuItems;
   int _currentFetchNumber = 0;
+
+  void _updateMenuItems(Iterable<CallInterpretation> interpretations) {
+    setState(() {
+      _menuItems = <Widget>[];
+      for (CallInterpretation interpretation in interpretations) {
+        _menuItems.add(new CallMenuItem(
+          key: new ObjectKey(interpretation),
+          interpretation: interpretation,
+          onCall: config.onCall
+        ));
+      }
+    });
+  }
+
+  void _updateInterpretations() {
+    _interpretations = null;
+    _updateMenuItems(config.callHistory.possibleCalls.map((Call call) {
+      return new CallInterpretation(call: call, isTentative: true);
+    }));
+    _fetchInterpretations();
+  }
 
   Future _fetchInterpretations() async {
     int fetchNumber = ++_currentFetchNumber;
@@ -290,29 +310,16 @@ class _CallMenuState extends State<CallMenu> {
     if (fetchNumber != _currentFetchNumber)
       return;
     _interpretations = interpretations;
-    setState(() { });
+    _updateMenuItems(_interpretations);
   }
 
   Widget build(BuildContext context) {
     List<Widget> children = <Widget>[];
-    List<CallInterpretation> interpretations = _interpretations;
 
-    if (interpretations == null) {
-      interpretations = config.callHistory.possibleCalls.map((Call call) {
-        return new CallInterpretation(call: call, isTentative: true);
-      }).toList();
-    }
-
-    children.add(new MaterialList<CallInterpretation>(
+    children.add(new MaterialList<Widget>(
       key: new ObjectKey(config.callHistory),
-      items: interpretations,
-      itemBuilder: (BuildContext context, CallInterpretation item, int index) {
-        return new CallMenuItem(
-          key: new ObjectKey(item),
-          interpretation: item,
-          onCall: config.onCall
-        );
-      }
+      items: _menuItems,
+      itemBuilder: (BuildContext context, Widget item, int index) => item
     ));
 
     if (_interpretations == null)
