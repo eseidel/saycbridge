@@ -538,7 +538,7 @@ class RaiseResponseToNegativeDouble(ResponseToNegativeDouble):
     # Min: 1C 1D X P 1H, Max: 1C 2S X P 3H
     priorities_per_call = {
         # FIXME: It's a bit awkward to re-use raise_responses here.
-        ('2C', '2D', 
+        ('2C', '2D',
          '3C', '3D'): raise_responses.MinorMinimum,
         ('1H', '1S',
          '2H', '2S',
@@ -801,7 +801,7 @@ class MinimumResponseToLimitRaise(OpenerRebid):
     preconditions = LastBidHasAnnotation(positions.Partner, annotations.LimitRaise)
 
 
-class PassReseponseToLimitRaise(MinimumResponseToLimitRaise):
+class PassResponseToLimitRaise(MinimumResponseToLimitRaise):
     call_names = 'P'
     shared_constraints = (balanced, points <= 14)
 
@@ -815,7 +815,7 @@ class GameAccept(MinimumResponseToLimitRaise):
 rule_order.order(
     # GameAccept is defined in terms of pass, we could write it the other way around and reverse the priorities.
     GameAccept,
-    PassReseponseToLimitRaise,
+    PassResponseToLimitRaise,
 )
 
 rule_order.order(
@@ -1423,7 +1423,7 @@ class TwoLevelStayman(NotrumpResponse):
         two_club_stayman_constraint,
         # Garbage stayman is a trade-off.  The fewer points you have the less likely
         # your partner will make 1N.  2D with only 6 is better than 1N with only 18 points.
-        z3.And(spades >= 3, hearts >= 3, 
+        z3.And(spades >= 3, hearts >= 3,
             z3.Or(diamonds >= 5,
                 z3.And(diamonds >= 4, points <= 3)
             ),
