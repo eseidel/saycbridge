@@ -5,11 +5,12 @@
 
 import sys
 import find_src
-import collections
 import logging
 import json
+import argparse
+import datetime
 
-from z3b.bidder import Bidder, Interpreter
+from z3b.bidder import Bidder
 from core.board import Board
 from core.call import Pass
 
@@ -37,28 +38,40 @@ class CompileExplorer:
             result['rules'].append(str(rule))
         return result
 
-    def configure_logging(self):
+    def configure_logging(self, verbose):
         handler = logging.StreamHandler(sys.stderr)
         formatter = logging.Formatter("%(levelname)-8s: %(message)s")
         handler.setFormatter(formatter)
 
         logger = logging.getLogger()
         logger.addHandler(handler)
+        if verbose:
+            logger.setLevel(logging.NOTSET)
 
     def main(self, args):
-        self.configure_logging()
+        parser = argparse.ArgumentParser()
+        parser.add_argument('output_path', type=str)
+        parser.add_argument('count', type=int)
+        parser.add_argument('--verbose', '-v')
+        args = parser.parse_args()
+        start = datetime.datetime.now()
+
+        self.configure_logging(args.verbose)
         bidder = Bidder()
         results = []
         output_path = 'results.json'
         try:
-            while True:
+            for _ in xrange(args.count):
                 results.append(self._bid_board(Board.random(), bidder))
         except KeyboardInterrupt:
             print
-            print "%s results written to %s" % (len(results), output_path)
-            with open(output_path, 'w') as results_file:
-                json.dump(results, results_file, indent=1)
-            return 0
+            print "User Interrupted."
+
+        with open(output_path, 'w') as results_file:
+            json.dump(results, results_file, indent=1)
+        end = datetime.datetime.now()
+        duration = round((end - start).total_seconds(), 1)
+        print "%s results written to %s in %ss" % (len(results), output_path, duration)
 
 if __name__ == '__main__':
     CompileExplorer().main(sys.argv[1:])
