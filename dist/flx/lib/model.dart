@@ -34,6 +34,35 @@ Strain getStrainFromString(String name) {
   return null;
 }
 
+final int _runeC = 'C'.codeUnitAt(0);
+final int _runeD = 'D'.codeUnitAt(0);
+final int _runeH = 'H'.codeUnitAt(0);
+final int _runeS = 'S'.codeUnitAt(0);
+
+Strain getStrainFromRune(int rune) {
+  if (rune == _runeC)
+    return Strain.clubs;
+  if (rune == _runeD)
+    return Strain.diamonds;
+  if (rune == _runeH)
+    return Strain.hearts;
+  if (rune == _runeS)
+    return Strain.spades;
+  if (rune == 'N')
+    return Strain.notrump;
+  return null;
+}
+
+String getSymbolForStrain(Strain strain) {
+  return const {
+    Strain.clubs: '\u2663',
+    Strain.diamonds: '\u2666',
+    Strain.hearts: '\u2665',
+    Strain.spades: '\u2660',
+    Strain.notrump: 'NT',
+  }[strain];
+}
+
 enum SpecialCall {
   pass,
   double,
@@ -168,4 +197,20 @@ class CallHistory {
       }
     }
   }
+}
+
+class CallInterpretation {
+  const CallInterpretation({
+    this.ruleName,
+    this.knowledge,
+    this.call,
+    this.isTentative: false
+  });
+
+  final String ruleName;
+  final String knowledge;
+  final Call call;
+  final bool isTentative;
+
+  bool get hasInterpretation => ruleName != null && knowledge != null;
 }

@@ -55,6 +55,86 @@ class PositionLabel extends StatelessComponent {
   }
 }
 
+Color getColorForStrain(Strain strain) {
+  return const {
+    Strain.clubs: const Color(0xFF191970),
+    Strain.diamonds: const Color(0xFFFF4200),
+    Strain.hearts: const Color(0xFFFF0000),
+    Strain.spades: Colors.black,
+    Strain.notrump: Colors.black,
+  }[strain];
+}
+
+TextStyle getTextStyleForStrain(Strain strain, TextStyle defaultStyle) {
+  return defaultStyle.merge(new TextStyle(color: getColorForStrain(strain)));
+}
+
+StyledTextSpan getTextSpanForStrain(Strain strain, TextStyle defaultStyle) {
+  return new StyledTextSpan(getTextStyleForStrain(strain, defaultStyle),
+    <TextSpan>[ new PlainTextSpan(getSymbolForStrain(strain)) ]
+  );
+}
+
+TextSpan getTextSpanForCall(Call call, TextStyle defaultStyle) {
+  if (call.isContract) {
+    return new StyledTextSpan(defaultStyle, <TextSpan>[
+      new PlainTextSpan(call.level.toString()),
+      getTextSpanForStrain(call.strain, defaultStyle),
+    ]);
+  }
+  return new StyledTextSpan(defaultStyle, <TextSpan>[
+    new PlainTextSpan(call.toString())
+  ]);
+}
+
+class KnowledgeText extends StatelessComponent {
+  KnowledgeText({
+    Key key,
+    this.knowledge
+  }) : super(key: key);
+
+  final String knowledge;
+
+  // FIXME: This is a horrible hack for the explorer page which uses "4rS" and expects the "S" not to be replaced.
+  bool _isReplacementPoint(int rune) {
+    // ASCII 0-9
+    if (rune >= 0x30 && rune <= 0x39)
+      return true;
+    // ASCII + and -
+    if (rune == 0x2B || rune == 0x2D)
+      return true;
+    return false;
+  }
+
+  TextSpan _getTextSpan(TextStyle defaultStyle) {
+    List<TextSpan> children = <TextSpan>[];
+    List<int> buffer = <int>[];
+
+    void flushBuffer() {
+      children.add(new PlainTextSpan(new String.fromCharCodes(buffer)));
+      buffer = <int>[];
+    }
+
+    for (int rune in knowledge.runes) {
+      Strain strain = getStrainFromRune(rune);
+      if (strain != null && buffer.isNotEmpty && _isReplacementPoint(buffer.last)) {
+        flushBuffer();
+        children.add(getTextSpanForStrain(strain, defaultStyle));
+      } else {
+        buffer.add(rune);
+      }
+    }
+
+    flushBuffer();
+
+    return new StyledTextSpan(defaultStyle, children);
+  }
+
+  Widget build(BuildContext context) {
+    return new RawText(text: _getTextSpan(DefaultTextStyle.of(context)));
+  }
+}
+
 class CallTable extends StatelessComponent {
   CallTable({
     Key key,
@@ -75,7 +155,7 @@ class CallTable extends StatelessComponent {
       children.add(_kPlaceholder);
 
     for (Call call in callHistory.calls)
-      children.add(new Center(child: new Text(call.toString())));
+      children.add(new Center(child: new CallText(call: call)));
 
     children.add(new Center(child: new Text('?')));
 
@@ -92,6 +172,44 @@ class CallTable extends StatelessComponent {
   }
 }
 
+class CallText extends StatelessComponent {
+  CallText({
+    Key key,
+    this.call
+  }) : super(key: key);
+
+  final Call call;
+
+  Widget build(BuildContext context) {
+    return new RawText(
+      text: getTextSpanForCall(call, DefaultTextStyle.of(context))
+    );
+  }
+}
+
+class CallAvatar extends StatelessComponent {
+  CallAvatar({
+    Key key,
+    this.call
+  }) : super(key: key);
+
+  final Call call;
+
+  Widget build(BuildContext context) {
+    return new Container(
+      width: 40.0,
+      height: 40.0,
+      decoration: new BoxDecoration(
+        shape: BoxShape.circle,
+        backgroundColor: Colors.grey[200]
+      ),
+      child: new Center(
+        child: new CallText(call: call)
+      )
+    );
+  }
+}
+
 class CallMenuItem extends StatelessComponent {
   CallMenuItem({
     Key key,
@@ -102,28 +220,33 @@ class CallMenuItem extends StatelessComponent {
   final ValueChanged<Call> onCall;
   final CallInterpretation interpretation;
 
-  bool get _hasInterpretation => interpretation.hasInterpretation;
+  static final Text _kLoading = new Text('...',
+      style: new TextStyle(color: Colors.black26));
+  static final Text _kUnknown = new Text('Unknown',
+      style: new TextStyle(color: Colors.black26));
 
-  Widget _getDescription(BuildContext context) {
-    return new Column([
-      new Text(interpretation.ruleName, style: const TextStyle(fontWeight: FontWeight.bold)),
-      new Text(interpretation.knowledge),
-    ], justifyContent: FlexJustifyContent.center, alignItems: FlexAlignItems.start);
+  Widget get _description {
+    if (interpretation.hasInterpretation) {
+      return new Block([
+        new Column([
+          new Text(interpretation.ruleName, style: const TextStyle(fontWeight: FontWeight.bold)),
+          new KnowledgeText(knowledge: interpretation.knowledge),
+        ], justifyContent: FlexJustifyContent.center, alignItems: FlexAlignItems.start)
+      ], scrollDirection: ScrollDirection.horizontal);
+    }
+    if (interpretation.isTentative)
+      return _kLoading;
+    return _kUnknown;
   }
 
   void _handleTap() {
     onCall(interpretation.call);
   }
 
-  static final Text _kUnknownCall = new Text('Unknown',
-      style: new TextStyle(color: Colors.black26));
-
   Widget build(BuildContext context) {
     return new ListItem(
-      left: new CircleAvatar(
-        label: interpretation.call.toString()
-      ),
-      center: _hasInterpretation ? _getDescription(context) : _kUnknownCall,
+      left: new CallAvatar(call: interpretation.call),
+      center: _description,
       onTap: _handleTap
     );
   }
@@ -174,7 +297,7 @@ class _CallMenuState extends State<CallMenu> {
 
     if (interpretations == null) {
       interpretations = config.callHistory.possibleCalls.map((Call call) {
-        return new CallInterpretation(call: call);
+        return new CallInterpretation(call: call, isTentative: true);
       }).toList();
     }
 
@@ -217,7 +340,13 @@ class _BidExplorerState extends State<BidExplorer> {
   void _clearHistory() {
     _setCallHistory(new CallHistory());
     _scaffoldKey.currentState.showSnackBar(new SnackBar(
-      content: new Text('Call history cleared.')
+      content: new Text('Call history cleared.'),
+      actions: <SnackBarAction>[
+        new SnackBarAction(
+          label: 'UNDO',
+          onPressed: () { Navigator.pop(context); }
+        )
+      ]
     ));
   }
 
@@ -235,6 +364,17 @@ class _BidExplorerState extends State<BidExplorer> {
     setState(() {
       _callHistory = newCallHistory;
     });
+  }
+
+  Widget get _clearButton {
+    if (_callHistory.calls.isEmpty)
+      return null;
+    return new FloatingActionButton(
+      onPressed: _clearHistory,
+      child: new Icon(
+        icon: 'navigation/close'
+      )
+    );
   }
 
   Widget build(BuildContext context) {
@@ -256,12 +396,7 @@ class _BidExplorerState extends State<BidExplorer> {
           ),
         ])
       ),
-      floatingActionButton: new FloatingActionButton(
-        onPressed: _clearHistory,
-        child: new Icon(
-          icon: 'navigation/close'
-        )
-      )
+      floatingActionButton: _clearButton
     );
   }
 }

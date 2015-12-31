@@ -17,20 +17,6 @@ String _getUrl({
   return 'https://sayc.abortz.net/json/interpret2?calls_string=${Uri.encodeQueryComponent(callString)}&dealer=${Uri.encodeQueryComponent(dealer)}&vulnerability=${Uri.encodeQueryComponent(vulnerability)}';
 }
 
-class CallInterpretation {
-  const CallInterpretation({
-    this.ruleName,
-    this.knowledge,
-    this.call
-  });
-
-  final String ruleName;
-  final String knowledge;
-  final Call call;
-
-  bool get hasInterpretation => ruleName != null && knowledge != null;
-}
-
 final Map<String, Future<List<CallInterpretation>>> _memoryCache =
     new Map<String, Future<List<CallInterpretation>>>();
 
