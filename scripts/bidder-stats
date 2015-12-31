@@ -11,14 +11,18 @@ import sys
 def main():
   data = {}
 
-  for board in ijson.items(sys.stdin, "item"):
-    for index in range(0, len(board['calls'])):
-      if index < 2:
-        state = "Start"
-      else:
-        state = "%s-%s" % (board['calls'][index-2], board['rules'][index-2])
-      state_data = data.setdefault(state, defaultdict(lambda: 0))
-      state_data[board['calls'][index]] += 1
+  for filename in sys.argv[1:]:
+    with open(filename) as f:
+      for board in ijson.items(f, "item"):
+        for index in range(0, len(board['calls'])):
+          if index < 2:
+            state = "Start"
+          else:
+            state = "%s-%s" % (board['calls'][index-2], board['rules'][index-2])
+          if index > 0 and board['calls'][index-1] != "P":
+            state += "-Interference"
+          state_data = data.setdefault(state, defaultdict(lambda: 0))
+          state_data[board['calls'][index]] += 1
 
   print json.dumps(data, sort_keys=True, indent=4, separators=(',', ': '))
 
