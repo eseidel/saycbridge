@@ -142,7 +142,7 @@ class CallHistory {
   bool get isComplete {
     if (calls.length < 4)
       return false;
-    for (int i = calls.length - 4; i < calls.length; ++i) {
+    for (int i = calls.length - 3; i < calls.length; ++i) {
       if (!calls[i].isPass)
         return false;
     }

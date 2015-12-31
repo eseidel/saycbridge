@@ -157,7 +157,8 @@ class CallTable extends StatelessComponent {
     for (Call call in callHistory.calls)
       children.add(new Center(child: new CallText(call: call)));
 
-    children.add(new Center(child: new Text('?')));
+    if (!callHistory.isComplete)
+      children.add(new Center(child: new Text('?')));
 
     return new Container(
       padding: const EdgeDims.all(16.0),
