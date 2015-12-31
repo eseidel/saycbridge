@@ -1,6 +1,8 @@
 SAYC Bridge
 ===========
 
+[![Build Status](https://travis-ci.org/eseidel/saycbridge.png?branch=master)](https://travis-ci.org/eseidel/saycbridge)
+
 A Python library and Google App Engine instance for bidding bridge hands
 using Standard American Yellow Card conventions.
 
