@@ -48,30 +48,40 @@ class CompileExplorer:
         if verbose:
             logger.setLevel(logging.NOTSET)
 
+    def _bid_boards_into_file(self, count, results_file):
+        bidder = Bidder()
+        results_file.write('[')
+        written = 0
+        try:
+            for _ in xrange(count):
+                # This whole dance is to avoid ^C adding a trailing comma.
+                result = self._bid_board(Board.random(), bidder)
+                if written != 0:
+                    results_file.write(',')
+                results_file.write('\n')
+                json.dump(result, results_file)
+                written += 1
+        except KeyboardInterrupt:
+            print
+            print "User Interrupted."
+        results_file.write('\n]\n')
+        return written
+
     def main(self, args):
         parser = argparse.ArgumentParser()
         parser.add_argument('output_path', type=str)
         parser.add_argument('count', type=int)
         parser.add_argument('--verbose', '-v')
         args = parser.parse_args()
-        start = datetime.datetime.now()
 
         self.configure_logging(args.verbose)
-        bidder = Bidder()
-        results = []
-        output_path = 'results.json'
-        try:
-            for _ in xrange(args.count):
-                results.append(self._bid_board(Board.random(), bidder))
-        except KeyboardInterrupt:
-            print
-            print "User Interrupted."
+        with open(args.output_path, 'w') as results_file:
+            start = datetime.datetime.now()
+            written_count = self._bid_boards_into_file(args.count, results_file)
+            end = datetime.datetime.now()
+            duration = round((end - start).total_seconds(), 1)
+            print "%s results written to %s in %ss" % (written_count, args.output_path, duration)
 
-        with open(output_path, 'w') as results_file:
-            json.dump(results, results_file, indent=1)
-        end = datetime.datetime.now()
-        duration = round((end - start).total_seconds(), 1)
-        print "%s results written to %s in %ss" % (len(results), output_path, duration)
 
 if __name__ == '__main__':
     CompileExplorer().main(sys.argv[1:])
