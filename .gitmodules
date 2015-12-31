@@ -1,3 +1,6 @@
 [submodule "third_party/z3"]
 	path = third_party/z3
 	url = https://github.com/Z3Prover/z3
+[submodule "third_party/flutter"]
+	path = third_party/flutter
+	url = https://github.com/flutter/flutter.git

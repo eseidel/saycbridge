@@ -1,0 +1,5 @@
+name: saycbridge
+description: Bridge bidding using Standard American Yellow Card conventions.
+dependencies:
+  flutter:
+    path: ../../third_party/flutter/packages/flutter
