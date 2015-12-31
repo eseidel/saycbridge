@@ -82,3 +82,27 @@ class Call {
     return getStringSpecialCall(specialCall);
   }
 }
+
+enum Positions {
+  west,
+  north,
+  east,
+  south
+}
+
+class CallHistory {
+  CallHistory({
+    this.calls: const [],
+    this.dealer: Positions.north
+  });
+
+  final List<Call> calls;
+  final Positions dealer;
+
+  CallHistory extendWithCall(Call call) {
+    return new CallHistory(
+      calls: new List<Call>.from(calls)..add(call),
+      dealer: dealer
+    );
+  }
+}

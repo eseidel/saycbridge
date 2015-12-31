@@ -1,4 +1,4 @@
-// Copyright 2016 The SAYCBridge Authors. All rights reserved.               
+// Copyright 2016 The SAYCBridge Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -30,8 +30,8 @@ class CallInterpretation {
   final Map<String, String> _data;
 }
 
-Future<List<CallInterpretation>> getInterpretations(List<Call> callHistory) async {
-  String url = _getUrl(callString: callHistory.join(','));
+Future<List<CallInterpretation>> getInterpretations(CallHistory callHistory) async {
+  String url = _getUrl(callString: callHistory.calls.join(','));
   List interpretations = JSON.decode(await http.read(url));
 
   return interpretations.map((item) {
