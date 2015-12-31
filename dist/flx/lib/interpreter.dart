@@ -18,23 +18,31 @@ String _getUrl({
 }
 
 class CallInterpretation {
-  String get callName => _data['call_name'];
-  String get ruleName => _data['rule_name'];
-  String get knowledge => _data['knowledge_string'];
+  const CallInterpretation({
+    this.ruleName,
+    this.knowledge,
+    this.call
+  });
 
-  Call get call => new Call.fromName(callName);
+  final String ruleName;
+  final String knowledge;
+  final Call call;
+
   bool get hasInterpretation => ruleName != null && knowledge != null;
-
-  CallInterpretation._(this._data);
-
-  final Map<String, String> _data;
 }
 
-Future<List<CallInterpretation>> getInterpretations(CallHistory callHistory) async {
-  String url = _getUrl(callString: callHistory.calls.join(','));
-  List interpretations = JSON.decode(await http.read(url));
+final Map<String, Future<List<CallInterpretation>>> _memoryCache =
+    new Map<String, Future<List<CallInterpretation>>>();
 
-  return interpretations.map((item) {
-    return new CallInterpretation._(item);
-  }).toList();
+Future<List<CallInterpretation>> getInterpretations(CallHistory callHistory) {
+  String url = _getUrl(callString: callHistory.calls.join(','));
+  return _memoryCache.putIfAbsent(url, () async {
+    return JSON.decode(await http.read(url)).map((item) {
+      return new CallInterpretation(
+        ruleName: item['rule_name'],
+        knowledge: item['knowledge_string'],
+        call: new Call.fromName(item['call_name'])
+      );
+    }).toList();
+  });
 }

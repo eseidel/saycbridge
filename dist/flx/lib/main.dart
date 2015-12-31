@@ -81,6 +81,9 @@ class CallTable extends StatelessComponent {
 
     return new Container(
       padding: const EdgeDims.all(16.0),
+      decoration: new BoxDecoration(
+        backgroundColor: Colors.grey[200]
+      ),
       child: new FlexTable(
         columnCount: 4,
         children: children
@@ -153,20 +156,31 @@ class _CallMenuState extends State<CallMenu> {
   }
 
   List<CallInterpretation> _interpretations;
+  int _currentFetchNumber = 0;
 
   Future _fetchInterpretations() async {
-    _interpretations = await getInterpretations(config.callHistory);
+    int fetchNumber = ++_currentFetchNumber;
+    List<CallInterpretation> interpretations =
+        await getInterpretations(config.callHistory);
+    if (fetchNumber != _currentFetchNumber)
+      return;
+    _interpretations = interpretations;
     setState(() { });
   }
 
   Widget build(BuildContext context) {
-    if (_interpretations == null) {
-      return new Center(
-        child: new CircularProgressIndicator()
-      );
+    List<Widget> children = <Widget>[];
+    List<CallInterpretation> interpretations = _interpretations;
+
+    if (interpretations == null) {
+      interpretations = config.callHistory.possibleCalls.map((Call call) {
+        return new CallInterpretation(call: call);
+      }).toList();
     }
-    return new MaterialList<CallInterpretation>(
-      items: _interpretations,
+
+    children.add(new MaterialList<CallInterpretation>(
+      key: new ObjectKey(config.callHistory),
+      items: interpretations,
       itemBuilder: (BuildContext context, CallInterpretation item, int index) {
         return new CallMenuItem(
           key: new ObjectKey(item),
@@ -174,7 +188,12 @@ class _CallMenuState extends State<CallMenu> {
           onCall: config.onCall
         );
       }
-    );
+    ));
+
+    if (_interpretations == null)
+      children.add(new Center(child: new CircularProgressIndicator()));
+
+    return new Stack(children);
   }
 }
 
@@ -188,24 +207,41 @@ class _BidExplorerState extends State<BidExplorer> {
     _callHistory = new CallHistory();
   }
 
+  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   CallHistory _callHistory;
 
   void _handleCall(Call call) {
-    setState(() {
-      _callHistory = _callHistory.extendWithCall(call);
-    });
+    _setCallHistory(_callHistory.extendWithCall(call));
   }
 
   void _clearHistory() {
+    _setCallHistory(new CallHistory());
+    _scaffoldKey.currentState.showSnackBar(new SnackBar(
+      content: new Text('Call history cleared.')
+    ));
+  }
+
+  void _setCallHistory(CallHistory newCallHistory) {
+    CallHistory oldCallHistory = _callHistory;
+    ModalRoute.of(context).addLocalHistoryEntry(
+      new LocalHistoryEntry(
+        onRemove: () {
+          setState(() {
+            _callHistory = oldCallHistory;
+          });
+        }
+      )
+    );
     setState(() {
-      _callHistory = new CallHistory();
+      _callHistory = newCallHistory;
     });
   }
 
   Widget build(BuildContext context) {
     return new Scaffold(
+      key: _scaffoldKey,
       toolBar: new ToolBar(
-        center: new Text("Bid Explorer")
+        center: new Text('Bid Explorer')
       ),
       body: new Material(
         child: new Column([
@@ -233,7 +269,7 @@ class _BidExplorerState extends State<BidExplorer> {
 void main() {
   runApp(
     new MaterialApp(
-      title: "Bid Explorer",
+      title: 'Bid Explorer',
       routes: {
         '/': (RouteArguments args) => new BidExplorer()
       }
