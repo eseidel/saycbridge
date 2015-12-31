@@ -230,7 +230,8 @@ class CallMenuItem extends StatelessComponent {
     if (interpretation.hasInterpretation) {
       return new Block([
         new Column([
-          new Text(interpretation.ruleName, style: const TextStyle(fontWeight: FontWeight.bold)),
+          new Text(displayRuleName(interpretation.ruleName),
+            style: const TextStyle(fontWeight: FontWeight.bold)),
           new KnowledgeText(knowledge: interpretation.knowledge),
         ], justifyContent: FlexJustifyContent.center, alignItems: FlexAlignItems.start)
       ], scrollDirection: ScrollDirection.horizontal);
