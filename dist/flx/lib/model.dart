@@ -201,6 +201,16 @@ class CallHistory {
   }
 }
 
+String displayRuleName(String ruleName) {
+  String displayName = ruleName.replaceAllMapped(
+      new RegExp(r'([1-9A-Z])'), (Match m) => ' ${m[1]}');
+  // A couple exceptions to the spacing rules:
+  displayName = displayName.replaceAll('R H O', 'RHO');
+  displayName = displayName.replaceAll('L H O', 'LHO');
+  displayName = displayName.replaceAll(new RegExp(r'\sN$'), 'NT');
+  return displayName;
+}
+
 class CallInterpretation {
   const CallInterpretation({
     this.ruleName,
