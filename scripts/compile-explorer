@@ -1,0 +1,64 @@
+#!/usr/bin/env python
+# Copyright (c) 2016 The SAYCBridge Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import sys
+import find_src
+import collections
+import logging
+import json
+
+from z3b.bidder import Bidder, Interpreter
+from core.board import Board
+from core.call import Pass
+
+log = logging.getLogger(__name__)
+
+class CompileExplorer:
+    def _bid_board(self, board, bidder):
+        result = {}
+        result['board'] = str(board.identifier)
+        result['calls'] = []
+        result['rules'] = []
+        while not board.call_history.is_complete():
+            position_to_call = board.call_history.position_to_call().index
+            hand = board.deal.hands[position_to_call]
+            selection = bidder.call_selection_for(hand, board.call_history)
+            if not selection:
+                log.warn("None Call for: %s" % board.identifier)
+                call = Pass()
+                rule = None
+            else:
+                call = selection.call
+                rule = selection.rule
+            board.call_history.calls.append(call)
+            result['calls'].append(str(call))
+            result['rules'].append(str(rule))
+        return result
+
+    def configure_logging(self):
+        handler = logging.StreamHandler(sys.stderr)
+        formatter = logging.Formatter("%(levelname)-8s: %(message)s")
+        handler.setFormatter(formatter)
+
+        logger = logging.getLogger()
+        logger.addHandler(handler)
+
+    def main(self, args):
+        self.configure_logging()
+        bidder = Bidder()
+        results = []
+        output_path = 'results.json'
+        try:
+            while True:
+                results.append(self._bid_board(Board.random(), bidder))
+        except KeyboardInterrupt:
+            print
+            print "%s results written to %s" % (len(results), output_path)
+            with open(output_path, 'w') as results_file:
+                json.dump(results, results_file, indent=1)
+            return 0
+
+if __name__ == '__main__':
+    CompileExplorer().main(sys.argv[1:])
