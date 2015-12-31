@@ -40,8 +40,9 @@ class SolverPool(object):
         solver.push()
         return solver
 
-    @memoized
-    def solver_for_hand(self, hand):
+    # This cannot be memoized, or we would leak a solver on every call if
+    # the caller fails to restore it, or worse, corrupt the solver if they do.
+    def borrow_solver_for_hand(self, hand):
         solver = self.borrow()
         solver.add(model.expr_for_hand(hand))
         return solver
@@ -567,7 +568,7 @@ class RuleSelector(object):
 
     def possible_calls_for_hand(self, hand, expected_call):
         possible_calls = PossibleCalls(self.system.priority_ordering)
-        solver = _solver_pool.solver_for_hand(hand)
+        solver = _solver_pool.borrow_solver_for_hand(hand)
         for call in self.history.legal_calls:
             rule = self.rule_for_call(call)
             if not rule:
@@ -578,7 +579,7 @@ class RuleSelector(object):
                     possible_calls.add_call_with_priority(call, priority)
                 elif call == expected_call:
                     print "%s does not fit hand: %s" % (rule, z3_meaning)
-
+        _solver_pool.restore(solver)
         return possible_calls
 
 
