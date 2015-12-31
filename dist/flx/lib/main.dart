@@ -9,15 +9,95 @@ import 'package:flutter/material.dart';
 import 'interpreter.dart';
 import 'model.dart';
 
+final Container _kPlaceholder = new Container(width: 0.0, height: 0.0);
+
+class FlexTable extends StatelessComponent {
+  FlexTable({
+    Key key,
+    this.columnCount,
+    this.children
+  }) : super(key: key);
+
+  final int columnCount;
+  final List<Widget> children;
+
+  Widget build(BuildContext context) {
+    List<Widget> rows = <Widget>[];
+    int rowCount = (children.length / columnCount).ceil();
+    for (int rowIndex = 0; rowIndex < rowCount; ++rowIndex) {
+      List<Widget> cols = <Widget>[];
+      for (int colIndex = 0; colIndex < columnCount; ++colIndex) {
+        int i = colIndex + rowIndex * columnCount;
+        cols.add(new Flexible(
+          child: i < children.length ? children[i] : _kPlaceholder
+        ));
+      }
+      rows.add(new Row(cols));
+    }
+    return new Column(rows);
+  }
+}
+
+class PositionLabel extends StatelessComponent {
+  PositionLabel({
+    Key key,
+    this.label
+  }) : super(key: key);
+
+  final String label;
+
+  Widget build(BuildContext context) {
+    return new Center(
+      child: new Text(label, style: const TextStyle(
+        fontWeight: FontWeight.bold
+      ))
+    );
+  }
+}
+
+class CallTable extends StatelessComponent {
+  CallTable({
+    Key key,
+    this.callHistory
+  }) : super(key: key);
+
+  final CallHistory callHistory;
+
+  Widget build(BuildContext context) {
+    List<Widget> children = <Widget>[
+      new PositionLabel(label: 'West'),
+      new PositionLabel(label: 'North'),
+      new PositionLabel(label: 'East'),
+      new PositionLabel(label: 'South')
+    ];
+
+    for (int i = 0; i < callHistory.dealer.index; ++i)
+      children.add(_kPlaceholder);
+
+    for (Call call in callHistory.calls)
+      children.add(new Center(child: new Text(call.toString())));
+
+    children.add(new Center(child: new Text('?')));
+
+    return new Container(
+      padding: const EdgeDims.all(16.0),
+      child: new FlexTable(
+        columnCount: 4,
+        children: children
+      )
+    );
+  }
+}
+
 class CallMenuItem extends StatelessComponent {
   CallMenuItem({
     Key key,
     this.interpretation,
-    this.backgroundColor
+    this.onCall
   }) : super(key: key);
 
+  final ValueChanged<Call> onCall;
   final CallInterpretation interpretation;
-  final Color backgroundColor;
 
   bool get _hasInterpretation => interpretation.hasInterpretation;
 
@@ -28,12 +108,20 @@ class CallMenuItem extends StatelessComponent {
     ], justifyContent: FlexJustifyContent.center, alignItems: FlexAlignItems.start);
   }
 
+  void _handleTap() {
+    onCall(interpretation.call);
+  }
+
+  static final Text _kUnknownCall = new Text('Unknown',
+      style: new TextStyle(color: Colors.black26));
+
   Widget build(BuildContext context) {
     return new ListItem(
       left: new CircleAvatar(
         label: interpretation.call.toString()
       ),
-      center: _hasInterpretation ? _getDescription(context) : new Text('Unknown')
+      center: _hasInterpretation ? _getDescription(context) : _kUnknownCall,
+      onTap: _handleTap
     );
   }
 }
@@ -41,10 +129,12 @@ class CallMenuItem extends StatelessComponent {
 class CallMenu extends StatefulComponent {
   CallMenu({
     Key key,
-    this.callHistory
+    this.callHistory,
+    this.onCall
   }) : super(key: key);
 
-  final List<Call> callHistory;
+  final CallHistory callHistory;
+  final ValueChanged<Call> onCall;
 
   _CallMenuState createState() => new _CallMenuState();
 }
@@ -53,6 +143,13 @@ class _CallMenuState extends State<CallMenu> {
   void initState() {
     super.initState();
     _fetchInterpretations();
+  }
+
+  void didUpdateConfig(CallMenu oldConfig) {
+    if (config.callHistory != oldConfig.callHistory) {
+      _interpretations = null;
+      _fetchInterpretations();
+    }
   }
 
   List<CallInterpretation> _interpretations;
@@ -65,7 +162,7 @@ class _CallMenuState extends State<CallMenu> {
   Widget build(BuildContext context) {
     if (_interpretations == null) {
       return new Center(
-        child: new Text('Loading...')
+        child: new CircularProgressIndicator()
       );
     }
     return new MaterialList<CallInterpretation>(
@@ -74,22 +171,59 @@ class _CallMenuState extends State<CallMenu> {
         return new CallMenuItem(
           key: new ObjectKey(item),
           interpretation: item,
-          backgroundColor: index % 2 == 0 ? Colors.amber[200] : Colors.green[200]
+          onCall: config.onCall
         );
       }
     );
   }
 }
 
-class FlutterDemo extends StatelessComponent {
+class BidExplorer extends StatefulComponent {
+  _BidExplorerState createState() => new _BidExplorerState();
+}
+
+class _BidExplorerState extends State<BidExplorer> {
+  void initState() {
+    super.initState();
+    _callHistory = new CallHistory();
+  }
+
+  CallHistory _callHistory;
+
+  void _handleCall(Call call) {
+    setState(() {
+      _callHistory = _callHistory.extendWithCall(call);
+    });
+  }
+
+  void _clearHistory() {
+    setState(() {
+      _callHistory = new CallHistory();
+    });
+  }
+
   Widget build(BuildContext context) {
     return new Scaffold(
       toolBar: new ToolBar(
-        center: new Text("SAYC Explorer")
+        center: new Text("Bid Explorer")
       ),
       body: new Material(
-        child: new CallMenu(
-          callHistory: []
+        child: new Column([
+          new CallTable(
+            callHistory: _callHistory
+          ),
+          new Flexible(
+            child: new CallMenu(
+              callHistory: _callHistory,
+              onCall: _handleCall
+            )
+          ),
+        ])
+      ),
+      floatingActionButton: new FloatingActionButton(
+        onPressed: _clearHistory,
+        child: new Icon(
+          icon: 'navigation/close'
         )
       )
     );
@@ -99,9 +233,9 @@ class FlutterDemo extends StatelessComponent {
 void main() {
   runApp(
     new MaterialApp(
-      title: "Flutter Demo",
+      title: "Bid Explorer",
       routes: {
-        '/': (RouteArguments args) => new FlutterDemo()
+        '/': (RouteArguments args) => new BidExplorer()
       }
     )
   );
