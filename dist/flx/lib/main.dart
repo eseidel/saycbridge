@@ -316,10 +316,9 @@ class _CallMenuState extends State<CallMenu> {
   Widget build(BuildContext context) {
     List<Widget> children = <Widget>[];
 
-    children.add(new MaterialList<Widget>(
+    children.add(new MaterialList(
       key: new ObjectKey(config.callHistory),
-      items: _menuItems,
-      itemBuilder: (BuildContext context, Widget item, int index) => item
+      children: _menuItems
     ));
 
     if (_interpretations == null)
