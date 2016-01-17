@@ -32,16 +32,13 @@ check: clean
 	@$(scripts_dir)/test-sayc -f > $(src_dir)/z3b_actual.txt && diff -U 7 $(src_dir)/z3b_baseline.txt $(src_dir)/z3b_actual.txt
 
 serve: clean
-	# Source map generation uses passed-in paths.
-	@cd $(appengine_dir) && coffee --watch --map --compile scripts/*.coffee &
-	# FIXME: Doesn't python just have a -C to change CWD before executing?
-	@cd $(appengine_dir) && python2.7 standalone_main.py
+	@cd $(appengine_dir) && make
 
 serve-prod: clean compile
-	@cd $(appengine_dir) && python2.7 production_main.py
+	@cd $(appengine_dir) && make run_prod
 
 compile:
-	@coffee --compile $(appengine_scripts_dir)/*.coffee
+	@cd $(appengine_dir) && make compile
 
 deploy:
 	@git push deploy master
