@@ -1,0 +1,9 @@
+networkx
+unittest2
+werkzeug
+webapp2
+jinja2
+ijson
+webob
+-e third_party/z3/build
+uwsgi

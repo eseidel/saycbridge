@@ -19,7 +19,7 @@ from core.position import Position
 from core.call import Pass
 from z3b.bidder import Interpreter, Bidder, InconsistentHistoryException
 
-from proxy import ConstraintsSerializer
+from lib.proxy import ConstraintsSerializer
 
 import json
 
