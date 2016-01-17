@@ -33,7 +33,7 @@ git clone --depth=1 --branch="$DEPLOY_BRANCH" "$GIT_DIR" . 2>/dev/null
 mkdir -p ../virtualenv
 [ -e ../virtualenv/bin/activate ] || virtualenv ../virtualenv
 . ../virtualenv/bin/activate
-pip install -q networkx unittest2 werkzeug webapp2 webob jinja2 cherrypy
+pip install -q networkx unittest2 werkzeug webapp2 jinja2
 
 cd dist/gae && coffee --map --compile scripts/*.coffee
 

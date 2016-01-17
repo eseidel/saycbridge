@@ -11,7 +11,7 @@ npm install -g coffee-script
 apt-get install python-dev # Headers for c-python modules
 apt-get install python-pip
 apt-get install vim # Generally useful
-pip install webapp2 webob jinja2 Werkzeug unittest2
+pip install webapp2 jinja2 Werkzeug unittest2
 
 Install git via:
 apt-get install autoconf

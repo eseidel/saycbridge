@@ -13,7 +13,7 @@ jinja_environment = jinja2.Environment(loader=jinja2.FileSystemLoader("templates
 from core.call import Pass
 from core.callexplorer import CallExplorer
 from core.callhistory import CallHistory
-from proxy import ConstraintsSerializer
+from lib.proxy import ConstraintsSerializer
 from z3b.bidder import Interpreter, Bidder, InconsistentHistoryException
 from z3b.forcing import SAYCForcingOracle
 from z3b.preconditions import annotations
