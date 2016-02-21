@@ -32,9 +32,9 @@ class FlexTable extends StatelessComponent {
           child: i < children.length ? children[i] : _kPlaceholder
         ));
       }
-      rows.add(new Row(cols));
+      rows.add(new Row(children: cols));
     }
-    return new Column(rows);
+    return new Column(children: rows);
   }
 }
 
@@ -228,13 +228,20 @@ class CallMenuItem extends StatelessComponent {
 
   Widget get _description {
     if (interpretation.hasInterpretation) {
-      return new Block([
-        new Column([
-          new Text(displayRuleName(interpretation.ruleName),
-            style: const TextStyle(fontWeight: FontWeight.bold)),
-          new KnowledgeText(knowledge: interpretation.knowledge),
-        ], justifyContent: FlexJustifyContent.center, alignItems: FlexAlignItems.start)
-      ], scrollDirection: ScrollDirection.horizontal);
+      return new Block(
+        scrollDirection: Axis.horizontal,
+        children: <Widget>[
+          new Column(
+            justifyContent: FlexJustifyContent.center,
+            alignItems: FlexAlignItems.start,
+            children: <Widget>[
+              new Text(displayRuleName(interpretation.ruleName),
+                style: const TextStyle(fontWeight: FontWeight.bold)),
+              new KnowledgeText(knowledge: interpretation.knowledge),
+            ]
+          )
+        ]
+      );
     }
     if (interpretation.isTentative)
       return _kLoading;
@@ -279,27 +286,12 @@ class _CallMenuState extends State<CallMenu> {
   }
 
   List<CallInterpretation> _interpretations;
-  List<Widget> _menuItems;
   int _currentFetchNumber = 0;
 
-  void _updateMenuItems(Iterable<CallInterpretation> interpretations) {
-    setState(() {
-      _menuItems = <Widget>[];
-      for (CallInterpretation interpretation in interpretations) {
-        _menuItems.add(new CallMenuItem(
-          key: new ObjectKey(interpretation),
-          interpretation: interpretation,
-          onCall: config.onCall
-        ));
-      }
-    });
-  }
-
   void _updateInterpretations() {
-    _interpretations = null;
-    _updateMenuItems(config.callHistory.possibleCalls.map((Call call) {
+    _interpretations = config.callHistory.possibleCalls.map((Call call) {
       return new CallInterpretation(call: call, isTentative: true);
-    }));
+    }).toList(growable: false);
     _fetchInterpretations();
   }
 
@@ -309,8 +301,9 @@ class _CallMenuState extends State<CallMenu> {
         await getInterpretations(config.callHistory);
     if (fetchNumber != _currentFetchNumber)
       return;
-    _interpretations = interpretations;
-    _updateMenuItems(_interpretations);
+    setState(() {
+      _interpretations = interpretations;
+    });
   }
 
   Widget build(BuildContext context) {
@@ -318,13 +311,19 @@ class _CallMenuState extends State<CallMenu> {
 
     children.add(new MaterialList(
       key: new ObjectKey(config.callHistory),
-      children: _menuItems
+      children: _interpretations.map((CallInterpretation interpretation) {
+        return new CallMenuItem(
+          key: new ObjectKey(interpretation),
+          interpretation: interpretation,
+          onCall: config.onCall
+        );
+      })
     ));
 
-    if (_interpretations == null)
+    if (_interpretations.isNotEmpty && _interpretations[0].isTentative)
       children.add(new Center(child: new CircularProgressIndicator()));
 
-    return new Stack(children);
+    return new Stack(children: children);
   }
 }
 
@@ -392,17 +391,19 @@ class _BidExplorerState extends State<BidExplorer> {
         center: new Text('Bid Explorer')
       ),
       body: new Material(
-        child: new Column([
-          new CallTable(
-            callHistory: _callHistory
-          ),
-          new Flexible(
-            child: new CallMenu(
-              callHistory: _callHistory,
-              onCall: _handleCall
-            )
-          ),
-        ])
+        child: new Column(
+          children: <Widget>[
+            new CallTable(
+              callHistory: _callHistory
+            ),
+            new Flexible(
+              child: new CallMenu(
+                callHistory: _callHistory,
+                onCall: _handleCall
+              )
+            ),
+          ]
+        )
       ),
       floatingActionButton: _clearButton
     );

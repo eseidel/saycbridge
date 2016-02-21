@@ -23,12 +23,17 @@ final Map<String, Future<List<CallInterpretation>>> _memoryCache =
 Future<List<CallInterpretation>> getInterpretations(CallHistory callHistory) {
   String url = _getUrl(callString: callHistory.calls.join(','));
   return _memoryCache.putIfAbsent(url, () async {
-    return JSON.decode(await http.read(url)).map((item) {
-      return new CallInterpretation(
-        ruleName: item['rule_name'],
-        knowledge: item['knowledge_string'],
-        call: new Call.fromName(item['call_name'])
-      );
-    }).toList();
+    try {
+      return JSON.decode(await http.read(url)).map((item) {
+        return new CallInterpretation(
+          ruleName: item['rule_name'],
+          knowledge: item['knowledge_string'],
+          call: new Call.fromName(item['call_name'])
+        );
+      }).toList();
+    } catch (e) {
+      _memoryCache.remove(url);
+      rethrow;
+    }
   });
 }
