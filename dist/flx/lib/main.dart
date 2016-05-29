@@ -11,33 +11,6 @@ import 'model.dart';
 
 final Container _kPlaceholder = new Container(width: 0.0, height: 0.0);
 
-class FlexTable extends StatelessWidget {
-  FlexTable({
-    Key key,
-    this.columnCount,
-    this.children
-  }) : super(key: key);
-
-  final int columnCount;
-  final List<Widget> children;
-
-  Widget build(BuildContext context) {
-    List<Widget> rows = <Widget>[];
-    int rowCount = (children.length / columnCount).ceil();
-    for (int rowIndex = 0; rowIndex < rowCount; ++rowIndex) {
-      List<Widget> cols = <Widget>[];
-      for (int colIndex = 0; colIndex < columnCount; ++colIndex) {
-        int i = colIndex + rowIndex * columnCount;
-        cols.add(new Flexible(
-          child: i < children.length ? children[i] : _kPlaceholder
-        ));
-      }
-      rows.add(new Row(children: cols));
-    }
-    return new Column(children: rows);
-  }
-}
-
 class PositionLabel extends StatelessWidget {
   PositionLabel({
     Key key,
@@ -170,7 +143,7 @@ class CallTable extends StatelessWidget {
       decoration: new BoxDecoration(
         backgroundColor: Colors.grey[200]
       ),
-      child: new FlexTable(
+      child: new FixedColumnCountGrid(
         columnCount: 4,
         children: children
       )
