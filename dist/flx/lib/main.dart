@@ -11,7 +11,7 @@ import 'model.dart';
 
 final Container _kPlaceholder = new Container(width: 0.0, height: 0.0);
 
-class FlexTable extends StatelessComponent {
+class FlexTable extends StatelessWidget {
   FlexTable({
     Key key,
     this.columnCount,
@@ -38,7 +38,7 @@ class FlexTable extends StatelessComponent {
   }
 }
 
-class PositionLabel extends StatelessComponent {
+class PositionLabel extends StatelessWidget {
   PositionLabel({
     Key key,
     this.label
@@ -69,25 +69,30 @@ TextStyle getTextStyleForStrain(Strain strain, TextStyle defaultStyle) {
   return defaultStyle.merge(new TextStyle(color: getColorForStrain(strain)));
 }
 
-StyledTextSpan getTextSpanForStrain(Strain strain, TextStyle defaultStyle) {
-  return new StyledTextSpan(getTextStyleForStrain(strain, defaultStyle),
-    <TextSpan>[ new PlainTextSpan(getSymbolForStrain(strain)) ]
+TextSpan getTextSpanForStrain(Strain strain, TextStyle defaultStyle) {
+  return new TextSpan(
+    text: getSymbolForStrain(strain),
+    style: getTextStyleForStrain(strain, defaultStyle)
   );
 }
 
 TextSpan getTextSpanForCall(Call call, TextStyle defaultStyle) {
   if (call.isContract) {
-    return new StyledTextSpan(defaultStyle, <TextSpan>[
-      new PlainTextSpan(call.level.toString()),
-      getTextSpanForStrain(call.strain, defaultStyle),
-    ]);
+    return new TextSpan(
+      style: defaultStyle,
+      text: call.level.toString(),
+      children: <TextSpan>[
+        getTextSpanForStrain(call.strain, defaultStyle),
+      ]
+    );
   }
-  return new StyledTextSpan(defaultStyle, <TextSpan>[
-    new PlainTextSpan(call.toString())
-  ]);
+  return new TextSpan(
+    style: defaultStyle,
+    text: call.toString()
+  );
 }
 
-class KnowledgeText extends StatelessComponent {
+class KnowledgeText extends StatelessWidget {
   KnowledgeText({
     Key key,
     this.knowledge
@@ -111,7 +116,7 @@ class KnowledgeText extends StatelessComponent {
     List<int> buffer = <int>[];
 
     void flushBuffer() {
-      children.add(new PlainTextSpan(new String.fromCharCodes(buffer)));
+      children.add(new TextSpan(text: new String.fromCharCodes(buffer)));
       buffer = <int>[];
     }
 
@@ -127,15 +132,15 @@ class KnowledgeText extends StatelessComponent {
 
     flushBuffer();
 
-    return new StyledTextSpan(defaultStyle, children);
+    return new TextSpan(style: defaultStyle, children: children);
   }
 
   Widget build(BuildContext context) {
-    return new RawText(text: _getTextSpan(DefaultTextStyle.of(context)));
+    return new RichText(text: _getTextSpan(DefaultTextStyle.of(context).style));
   }
 }
 
-class CallTable extends StatelessComponent {
+class CallTable extends StatelessWidget {
   CallTable({
     Key key,
     this.callHistory
@@ -161,7 +166,7 @@ class CallTable extends StatelessComponent {
       children.add(new Center(child: new Text('?')));
 
     return new Container(
-      padding: const EdgeDims.all(16.0),
+      padding: const EdgeInsets.all(16.0),
       decoration: new BoxDecoration(
         backgroundColor: Colors.grey[200]
       ),
@@ -173,7 +178,7 @@ class CallTable extends StatelessComponent {
   }
 }
 
-class CallText extends StatelessComponent {
+class CallText extends StatelessWidget {
   CallText({
     Key key,
     this.call
@@ -182,13 +187,13 @@ class CallText extends StatelessComponent {
   final Call call;
 
   Widget build(BuildContext context) {
-    return new RawText(
-      text: getTextSpanForCall(call, DefaultTextStyle.of(context))
+    return new RichText(
+      text: getTextSpanForCall(call, DefaultTextStyle.of(context).style)
     );
   }
 }
 
-class CallAvatar extends StatelessComponent {
+class CallAvatar extends StatelessWidget {
   CallAvatar({
     Key key,
     this.call
@@ -211,7 +216,7 @@ class CallAvatar extends StatelessComponent {
   }
 }
 
-class CallMenuItem extends StatelessComponent {
+class CallMenuItem extends StatelessWidget {
   CallMenuItem({
     Key key,
     this.interpretation,
@@ -232,8 +237,8 @@ class CallMenuItem extends StatelessComponent {
         scrollDirection: Axis.horizontal,
         children: <Widget>[
           new Column(
-            justifyContent: FlexJustifyContent.center,
-            alignItems: FlexAlignItems.start,
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               new Text(displayRuleName(interpretation.ruleName),
                 style: const TextStyle(fontWeight: FontWeight.bold)),
@@ -254,14 +259,14 @@ class CallMenuItem extends StatelessComponent {
 
   Widget build(BuildContext context) {
     return new ListItem(
-      left: new CallAvatar(call: interpretation.call),
-      center: _description,
+      leading: new CallAvatar(call: interpretation.call),
+      title: _description,
       onTap: _handleTap
     );
   }
 }
 
-class CallMenu extends StatefulComponent {
+class CallMenu extends StatefulWidget {
   CallMenu({
     Key key,
     this.callHistory,
@@ -327,7 +332,7 @@ class _CallMenuState extends State<CallMenu> {
   }
 }
 
-class BidExplorer extends StatefulComponent {
+class BidExplorer extends StatefulWidget {
   _BidExplorerState createState() => new _BidExplorerState();
 }
 
@@ -348,12 +353,10 @@ class _BidExplorerState extends State<BidExplorer> {
     _setCallHistory(new CallHistory());
     _scaffoldKey.currentState.showSnackBar(new SnackBar(
       content: new Text('Call history cleared.'),
-      actions: <SnackBarAction>[
-        new SnackBarAction(
-          label: 'UNDO',
-          onPressed: () { Navigator.pop(context); }
-        )
-      ]
+      action: new SnackBarAction(
+        label: 'UNDO',
+        onPressed: () { Navigator.pop(context); }
+      )
     ));
   }
 
@@ -378,17 +381,15 @@ class _BidExplorerState extends State<BidExplorer> {
       return null;
     return new FloatingActionButton(
       onPressed: _clearHistory,
-      child: new Icon(
-        icon: 'navigation/close'
-      )
+      child: new Icon(icon: Icons.close)
     );
   }
 
   Widget build(BuildContext context) {
     return new Scaffold(
       key: _scaffoldKey,
-      toolBar: new ToolBar(
-        center: new Text('Bid Explorer')
+      appBar: new AppBar(
+        title: new Text('Bid Explorer')
       ),
       body: new Material(
         child: new Column(
@@ -415,7 +416,7 @@ void main() {
     new MaterialApp(
       title: 'Bid Explorer',
       routes: {
-        '/': (RouteArguments args) => new BidExplorer()
+        '/': (BuildContext context) => new BidExplorer()
       }
     )
   );
