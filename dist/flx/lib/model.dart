@@ -208,7 +208,7 @@ String displayRuleName(String ruleName) {
   displayName = displayName.replaceAll('R H O', 'RHO');
   displayName = displayName.replaceAll('L H O', 'LHO');
   displayName = displayName.replaceAll(new RegExp(r'\sN$'), 'NT');
-  return displayName;
+  return displayName.trim();
 }
 
 class CallInterpretation {

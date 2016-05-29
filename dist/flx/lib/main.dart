@@ -145,6 +145,7 @@ class CallTable extends StatelessWidget {
       ),
       child: new FixedColumnCountGrid(
         columnCount: 4,
+        tileAspectRatio: 3.0,
         children: children
       )
     );
