@@ -355,7 +355,7 @@ class _BidExplorerState extends State<BidExplorer> {
       return null;
     return new FloatingActionButton(
       onPressed: _clearHistory,
-      child: new Icon(icon: Icons.close)
+      child: new Icon(Icons.close)
     );
   }
 
@@ -363,6 +363,12 @@ class _BidExplorerState extends State<BidExplorer> {
     return new Scaffold(
       key: _scaffoldKey,
       appBar: new AppBar(
+        leading: new IconButton(
+          icon: new Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.pop(context);
+          }
+        ),
         title: new Text('Bid Explorer')
       ),
       body: new Material(
