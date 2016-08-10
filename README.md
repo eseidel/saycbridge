@@ -48,7 +48,7 @@ We highly recommend you use virtualenv:
 
     sudo pip install virtualenv
     virtualenv sayc-env
-    . sayc-env/bin/activate
+    bash sayc-env/bin/activate
 
 To get and compile all the dependencies:
 
