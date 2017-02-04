@@ -1,3 +1,4 @@
+cherrypy
 networkx
 unittest2
 werkzeug
