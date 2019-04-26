@@ -15,8 +15,7 @@ class PositionLabel extends StatelessWidget {
   PositionLabel({
     Key key,
     this.label,
-  })
-      : super(key: key);
+  }) : super(key: key);
 
   final String label;
 
@@ -132,8 +131,9 @@ class CallTable extends StatelessWidget {
 
     return new Container(
       padding: const EdgeInsets.all(16.0),
-      decoration: new BoxDecoration(backgroundColor: Colors.grey[200]),
+      decoration: new BoxDecoration(color: Colors.grey[200]),
       child: new GridView.count(
+        shrinkWrap: true,
         crossAxisCount: 4,
         childAspectRatio: 3.0,
         children: children,
@@ -165,7 +165,7 @@ class CallAvatar extends StatelessWidget {
       height: 40.0,
       decoration: new BoxDecoration(
         shape: BoxShape.circle,
-        backgroundColor: Colors.grey[200],
+        color: Colors.grey[200],
       ),
       child: new Center(
         child: new CallText(call: call),
@@ -191,20 +191,15 @@ class CallMenuItem extends StatelessWidget {
 
   Widget get _description {
     if (interpretation.hasInterpretation) {
-      return new ListView(
-        scrollDirection: Axis.horizontal,
+      return new Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          new Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              new Text(
-                displayRuleName(interpretation.ruleName),
-                style: const TextStyle(fontWeight: FontWeight.bold),
-              ),
-              new KnowledgeText(knowledge: interpretation.knowledge),
-            ],
-          )
+          new Text(
+            displayRuleName(interpretation.ruleName),
+            style: const TextStyle(fontWeight: FontWeight.bold),
+          ),
+          new KnowledgeText(knowledge: interpretation.knowledge),
         ],
       );
     }
@@ -240,15 +235,16 @@ class _CallMenuState extends State<CallMenu> {
     _updateInterpretations();
   }
 
-  void didUpdateConfig(CallMenu oldConfig) {
-    if (config.callHistory != oldConfig.callHistory) _updateInterpretations();
+  void didUpdateWidget(CallMenu oldWidget) {
+    if (widget.callHistory != oldWidget.callHistory) _updateInterpretations();
+    super.didUpdateWidget(oldWidget);
   }
 
   List<CallInterpretation> _interpretations;
   int _currentFetchNumber = 0;
 
   void _updateInterpretations() {
-    _interpretations = config.callHistory.possibleCalls.map((Call call) {
+    _interpretations = widget.callHistory.possibleCalls.map((Call call) {
       return new CallInterpretation(call: call, isTentative: true);
     }).toList(growable: false);
     _fetchInterpretations();
@@ -257,7 +253,7 @@ class _CallMenuState extends State<CallMenu> {
   Future _fetchInterpretations() async {
     int fetchNumber = ++_currentFetchNumber;
     List<CallInterpretation> interpretations =
-        await getInterpretations(config.callHistory);
+        await getInterpretations(widget.callHistory);
     if (fetchNumber != _currentFetchNumber) return;
     setState(() {
       _interpretations = interpretations;
@@ -269,12 +265,12 @@ class _CallMenuState extends State<CallMenu> {
 
     children.add(
       new ListView(
-        key: new ObjectKey(config.callHistory),
+        key: new ObjectKey(widget.callHistory),
         children: _interpretations.map((CallInterpretation interpretation) {
           return new CallMenuItem(
             key: new ObjectKey(interpretation),
             interpretation: interpretation,
-            onCall: config.onCall,
+            onCall: widget.onCall,
           );
         }).toList(),
       ),

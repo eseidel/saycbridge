@@ -3,5 +3,6 @@ description: Bridge bidding using Standard American Yellow Card conventions.
 dependencies:
   flutter:
     sdk: flutter
+  http: any
 flutter:
   uses-material-design: true
