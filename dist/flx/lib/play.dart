@@ -69,14 +69,18 @@ class HandSummary extends StatelessWidget {
       Suit.clubs
     ];
     return material.Card(
-      child: SizedBox(
-        width: 100, // HACK?
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            new Text(position.name),
-            for (Suit suit in displayOrder) SuitLine(hand, suit),
-          ],
+      margin: EdgeInsets.all(10),
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: SizedBox(
+          width: 100, // HACK?
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              new Text(position.name),
+              for (Suit suit in displayOrder) SuitLine(hand, suit),
+            ],
+          ),
         ),
       ),
     );
@@ -92,6 +96,7 @@ class DealSummary extends StatelessWidget {
 
   Widget build(BuildContext context) {
     return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
       children: [
         _hand(Position.west),
         Column(
@@ -111,7 +116,7 @@ List<Card> sortForDisplay(List<Card> unsorted) {
   sorted.sort((a, b) {
     if (a.suit != b.suit)
       return suitOrder.indexOf(a.suit).compareTo(suitOrder.indexOf(b.suit));
-    return a.rank.index.compareTo(b.rank.index);
+    return -a.rank.index.compareTo(b.rank.index);
   });
   return sorted;
 }
@@ -121,43 +126,74 @@ typedef void CardSelectCallback(Card which);
 class CardSpread extends StatelessWidget {
   final Hand hand;
   final CardSelectCallback selectCard;
+  final Card selectedCard;
 
-  CardSpread(this.hand, this.selectCard);
+  CardSpread(this.hand, this.selectCard, {this.selectedCard});
 
   Widget _card(Card card) {
-    return Container(
-      decoration: BoxDecoration(
-        border: Border(top: BorderSide(), left: BorderSide()),
-      ),
-      padding: EdgeInsets.all(5),
-      child: Column(
-        children: [Text(card.rank.displayRank), Text(card.suit.codePoint)],
+    return GestureDetector(
+      onTapDown: (_) => selectCard(card),
+      child: Container(
+        decoration: BoxDecoration(
+          border: Border(
+            top: BorderSide(),
+            left: BorderSide(),
+          ),
+          color: (card == selectedCard) ? Colors.red : null,
+        ),
+        padding: EdgeInsets.all(5),
+        child: Column(
+          children: [Text(card.rank.displayRank), Text(card.suit.codePoint)],
+        ),
       ),
     );
   }
 
   Widget build(BuildContext context) {
     List<Card> sorted = sortForDisplay(hand.cards);
-    return Row(children: [for (Card card in sorted) _card(card)]);
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [for (Card card in sorted) _card(card)],
+    );
   }
 }
 
-class PlayControls extends StatelessWidget {
+class PlayControls extends StatefulWidget {
   final Hand hand;
   final Position position;
-  final String playerName = 'You';
+  final String playerName;
 
-  PlayControls(this.hand, this.position);
+  PlayControls(this.hand, this.position, this.playerName);
+
+  @override
+  _PlayControlsState createState() => _PlayControlsState();
+}
+
+class _PlayControlsState extends State<PlayControls> {
+  Card selected;
 
   Widget build(BuildContext context) {
     return Column(
       children: [
-        CardSpread(hand, (_) {}),
-        Row(
-          children: [Text(position.name), Text(playerName)],
+        CardSpread(widget.hand, (Card card) {
+          setState(() {
+            selected = card;
+          });
+        }, selectedCard: selected),
+        Container(
+          decoration: BoxDecoration(border: Border.all()),
+          child: Row(
+            children: [Text(widget.position.name), Text(widget.playerName)],
+          ),
         ),
       ],
     );
+  }
+}
+
+class CurrentTrick extends StatelessWidget {
+  Widget build(BuildContext context) {
+    return SizedBox(width: 200, height: 200);
   }
 }
 
@@ -167,11 +203,28 @@ class PlayTable extends StatelessWidget {
 
   PlayTable(this.deal);
 
+  PlayControls _hand(Position position) => PlayControls(
+      deal.handFor(position), position, position == player ? "You" : "");
+
   Widget build(BuildContext context) {
-    return Column(children: [
-      Text("Contract: 1S"),
-      DealSummary(deal),
-      PlayControls(deal.handFor(player), player),
-    ]);
+    return Center(
+      child: Column(children: [
+        Text("Contract: 1S"),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            _hand(Position.west),
+            Column(
+              children: [
+                _hand(Position.north),
+                CurrentTrick(),
+                _hand(Position.south),
+              ],
+            ),
+            _hand(Position.east),
+          ],
+        ),
+      ]),
+    );
   }
 }
