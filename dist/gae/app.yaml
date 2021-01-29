@@ -1,0 +1,24 @@
+runtime: python27
+api_version: 1
+threadsafe: false
+
+handlers:
+- url: /favicon.ico
+  static_files: public/favicon.ico
+  upload: public/favicon.ico
+- url: /robots.txt
+  static_files: public/robots.txt
+  upload: public/robots.txt
+- url: /apple-touch-icon-57x57.png
+  static_files: public/apple-touch-icon-57x57.png
+  upload: public/apple-touch-icon-57x57.png
+- url: /apple-touch-icon-72x72.png
+  static_files: public/apple-touch-icon-72x72.png
+  upload: public/apple-touch-icon-72x72.png
+- url: /apple-touch-icon-114x114.png
+  static_files: public/apple-touch-icon-114x114.png
+  upload: public/apple-touch-icon-114x114.png
+- url: /static
+  static_dir: public/static
+- url: /.*
+  script: main.application
