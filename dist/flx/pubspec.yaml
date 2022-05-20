@@ -1,12 +1,15 @@
 name: saycbridge
 description: Bridge bidding using Standard American Yellow Card conventions.
+environment:
+  sdk: ">=2.17.0 <3.0.0"
 dependencies:
   flutter:
     sdk: flutter
-  http: any
+  http: ^0.13.4
 dev_dependencies:
+  flutter_lints: ^2.0.1
   flutter_test:
     sdk: flutter
-  test: any
+  test: ^1.21.1
 flutter:
   uses-material-design: true

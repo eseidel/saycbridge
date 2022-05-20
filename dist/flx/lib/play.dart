@@ -3,11 +3,14 @@ import 'package:flutter/material.dart' as material show Card;
 import 'package:saycbridge/model.dart';
 
 class PlayHome extends StatefulWidget {
+  const PlayHome({super.key});
+
+  @override
   PlayHomeState createState() => PlayHomeState();
 }
 
 class PlayHomeState extends State<PlayHome> {
-  Deal deal;
+  late Deal deal;
 
   @override
   void initState() {
@@ -21,17 +24,18 @@ class PlayHomeState extends State<PlayHome> {
     });
   }
 
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Play'),
+        title: const Text('Play'),
       ),
       body: Material(
-        child: PlayTable(this.deal),
+        child: PlayTable(deal),
       ),
       floatingActionButton: FloatingActionButton(
-        child: Icon(Icons.refresh),
         onPressed: reDeal,
+        child: const Icon(Icons.refresh),
       ),
     );
   }
@@ -40,8 +44,9 @@ class PlayHomeState extends State<PlayHome> {
 class SuitLine extends StatelessWidget {
   final Hand hand;
   final Suit suit;
-  SuitLine(this.hand, this.suit);
+  const SuitLine(this.hand, this.suit, {super.key});
 
+  @override
   Widget build(BuildContext context) {
     List<Card> cards = hand.matchingSuit(suit).toList();
     // Flip the sort to put spades on top.
@@ -59,8 +64,9 @@ class SuitLine extends StatelessWidget {
 class HandSummary extends StatelessWidget {
   final Position position;
   final Hand hand;
-  HandSummary(this.position, this.hand);
+  const HandSummary(this.position, this.hand, {super.key});
 
+  @override
   Widget build(BuildContext context) {
     List<Suit> displayOrder = [
       Suit.spades,
@@ -69,7 +75,7 @@ class HandSummary extends StatelessWidget {
       Suit.clubs
     ];
     return material.Card(
-      margin: EdgeInsets.all(10),
+      margin: const EdgeInsets.all(10),
       child: Padding(
         padding: const EdgeInsets.all(8.0),
         child: SizedBox(
@@ -77,7 +83,7 @@ class HandSummary extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              new Text(position.name),
+              Text(position.name),
               for (Suit suit in displayOrder) SuitLine(hand, suit),
             ],
           ),
@@ -89,11 +95,12 @@ class HandSummary extends StatelessWidget {
 
 class DealSummary extends StatelessWidget {
   final Deal deal;
-  DealSummary(this.deal);
+  const DealSummary(this.deal, {super.key});
 
   HandSummary _hand(Position position) =>
       HandSummary(position, deal.handFor(position));
 
+  @override
   Widget build(BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
@@ -114,34 +121,35 @@ List<Card> sortForDisplay(List<Card> unsorted) {
   // Should eventually handle missing suits, trump, etc.
   List<Card> sorted = List.from(unsorted); // Is this copy needed?
   sorted.sort((a, b) {
-    if (a.suit != b.suit)
+    if (a.suit != b.suit) {
       return suitOrder.indexOf(a.suit).compareTo(suitOrder.indexOf(b.suit));
+    }
     return -a.rank.index.compareTo(b.rank.index);
   });
   return sorted;
 }
 
-typedef void CardSelectCallback(Card which);
+typedef CardSelectCallback = void Function(Card which);
 
 class CardSpread extends StatelessWidget {
   final Hand hand;
   final CardSelectCallback selectCard;
-  final Card selectedCard;
+  final Card? selectedCard;
 
-  CardSpread(this.hand, this.selectCard, {this.selectedCard});
+  const CardSpread(this.hand, this.selectCard, {this.selectedCard, super.key});
 
   Widget _card(Card card) {
     return GestureDetector(
       onTapDown: (_) => selectCard(card),
       child: Container(
         decoration: BoxDecoration(
-          border: Border(
+          border: const Border(
             top: BorderSide(),
             left: BorderSide(),
           ),
           color: (card == selectedCard) ? Colors.red : null,
         ),
-        padding: EdgeInsets.all(5),
+        padding: const EdgeInsets.all(5),
         child: Column(
           children: [Text(card.rank.displayRank), Text(card.suit.codePoint)],
         ),
@@ -149,6 +157,7 @@ class CardSpread extends StatelessWidget {
     );
   }
 
+  @override
   Widget build(BuildContext context) {
     List<Card> sorted = sortForDisplay(hand.cards);
     return Row(
@@ -163,15 +172,16 @@ class PlayControls extends StatefulWidget {
   final Position position;
   final String playerName;
 
-  PlayControls(this.hand, this.position, this.playerName);
+  const PlayControls(this.hand, this.position, this.playerName, {super.key});
 
   @override
   _PlayControlsState createState() => _PlayControlsState();
 }
 
 class _PlayControlsState extends State<PlayControls> {
-  Card selected;
+  Card? selected;
 
+  @override
   Widget build(BuildContext context) {
     return Column(
       children: [
@@ -192,8 +202,11 @@ class _PlayControlsState extends State<PlayControls> {
 }
 
 class CurrentTrick extends StatelessWidget {
+  const CurrentTrick({super.key});
+
+  @override
   Widget build(BuildContext context) {
-    return SizedBox(width: 200, height: 200);
+    return const SizedBox(width: 200, height: 200);
   }
 }
 
@@ -201,15 +214,16 @@ class PlayTable extends StatelessWidget {
   final Deal deal;
   final Position player = Position.south;
 
-  PlayTable(this.deal);
+  const PlayTable(this.deal, {super.key});
 
   PlayControls _hand(Position position) => PlayControls(
       deal.handFor(position), position, position == player ? "You" : "");
 
+  @override
   Widget build(BuildContext context) {
     return Center(
       child: Column(children: [
-        Text("Contract: 1S"),
+        const Text("Contract: 1S"),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -217,7 +231,7 @@ class PlayTable extends StatelessWidget {
             Column(
               children: [
                 _hand(Position.north),
-                CurrentTrick(),
+                const CurrentTrick(),
                 _hand(Position.south),
               ],
             ),

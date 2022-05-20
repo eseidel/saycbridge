@@ -10,25 +10,25 @@ import 'package:http/http.dart' as http;
 import 'model.dart';
 
 String _getUrl({
-  String callString: '',
-  String dealer: 'N',
-  String vulnerability: 'None',
+  String callString = '',
+  String dealer = 'N',
+  String vulnerability = 'None',
 }) {
   return 'https://sayc.abortz.net/json/interpret2?calls_string=${Uri.encodeQueryComponent(callString)}&dealer=${Uri.encodeQueryComponent(dealer)}&vulnerability=${Uri.encodeQueryComponent(vulnerability)}';
 }
 
-final Map<String, Future<List<CallInterpretation>>> _memoryCache =
-    new Map<String, Future<List<CallInterpretation>>>();
+final Map<String, Future<List<CallInterpretation>>> _memoryCache = {};
 
 Future<List<CallInterpretation>> getInterpretations(CallHistory callHistory) {
   String url = _getUrl(callString: callHistory.calls.join(','));
   return _memoryCache.putIfAbsent(url, () async {
     try {
-      return json.decode(await http.read(url)).map<CallInterpretation>((item) {
-        return new CallInterpretation(
+      var uri = Uri.parse(url);
+      return json.decode(await http.read(uri)).map<CallInterpretation>((item) {
+        return CallInterpretation(
           ruleName: item['rule_name'],
           knowledge: item['knowledge_string'],
-          call: new Call.fromName(item['call_name']),
+          call: Call.fromName(item['call_name']),
         );
       }).toList();
     } catch (e) {

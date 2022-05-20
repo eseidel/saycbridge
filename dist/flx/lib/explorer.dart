@@ -9,19 +9,16 @@ import 'package:flutter/material.dart';
 import 'interpreter.dart';
 import 'model.dart';
 
-final Container _kPlaceholder = new Container(width: 0.0, height: 0.0);
+const SizedBox _kPlaceholder = SizedBox(width: 0.0, height: 0.0);
 
 class PositionLabel extends StatelessWidget {
-  PositionLabel({
-    Key key,
-    this.label,
-  }) : super(key: key);
-
+  const PositionLabel({super.key, required this.label});
   final String label;
 
+  @override
   Widget build(BuildContext context) {
-    return new Center(
-      child: new Text(
+    return Center(
+      child: Text(
         label,
         style: const TextStyle(fontWeight: FontWeight.bold),
       ),
@@ -31,20 +28,20 @@ class PositionLabel extends StatelessWidget {
 
 Color getColorForStrain(Strain strain) {
   return const {
-    Strain.clubs: const Color(0xFF191970),
-    Strain.diamonds: const Color(0xFFFF4200),
-    Strain.hearts: const Color(0xFFFF0000),
+    Strain.clubs: Color(0xFF191970),
+    Strain.diamonds: Color(0xFFFF4200),
+    Strain.hearts: Color(0xFFFF0000),
     Strain.spades: Colors.black,
     Strain.notrump: Colors.black,
-  }[strain];
+  }[strain]!;
 }
 
 TextStyle getTextStyleForStrain(Strain strain, TextStyle defaultStyle) {
-  return defaultStyle.merge(new TextStyle(color: getColorForStrain(strain)));
+  return defaultStyle.merge(TextStyle(color: getColorForStrain(strain)));
 }
 
 TextSpan getTextSpanForStrain(Strain strain, TextStyle defaultStyle) {
-  return new TextSpan(
+  return TextSpan(
     text: getSymbolForStrain(strain),
     style: getTextStyleForStrain(strain, defaultStyle),
   );
@@ -52,19 +49,19 @@ TextSpan getTextSpanForStrain(Strain strain, TextStyle defaultStyle) {
 
 TextSpan getTextSpanForCall(Call call, TextStyle defaultStyle) {
   if (call.isContract) {
-    return new TextSpan(
+    return TextSpan(
       style: defaultStyle,
       text: call.level.toString(),
       children: <TextSpan>[
-        getTextSpanForStrain(call.strain, defaultStyle),
+        getTextSpanForStrain(call.strain!, defaultStyle),
       ],
     );
   }
-  return new TextSpan(style: defaultStyle, text: call.toString());
+  return TextSpan(style: defaultStyle, text: call.toString());
 }
 
 class KnowledgeText extends StatelessWidget {
-  KnowledgeText({Key key, this.knowledge}) : super(key: key);
+  const KnowledgeText({super.key, required this.knowledge});
 
   final String knowledge;
 
@@ -82,12 +79,12 @@ class KnowledgeText extends StatelessWidget {
     List<int> buffer = <int>[];
 
     void flushBuffer() {
-      children.add(new TextSpan(text: new String.fromCharCodes(buffer)));
+      children.add(TextSpan(text: String.fromCharCodes(buffer)));
       buffer = <int>[];
     }
 
     for (int rune in knowledge.runes) {
-      Strain strain = getStrainFromRune(rune);
+      Strain? strain = getStrainFromRune(rune);
       if (strain != null &&
           buffer.isNotEmpty &&
           _isReplacementPoint(buffer.last)) {
@@ -100,39 +97,42 @@ class KnowledgeText extends StatelessWidget {
 
     flushBuffer();
 
-    return new TextSpan(style: defaultStyle, children: children);
+    return TextSpan(style: defaultStyle, children: children);
   }
 
+  @override
   Widget build(BuildContext context) {
-    return new RichText(text: _getTextSpan(DefaultTextStyle.of(context).style));
+    return RichText(text: _getTextSpan(DefaultTextStyle.of(context).style));
   }
 }
 
 class CallTable extends StatelessWidget {
-  CallTable({Key key, this.callHistory}) : super(key: key);
+  const CallTable({super.key, required this.callHistory});
 
   final CallHistory callHistory;
 
+  @override
   Widget build(BuildContext context) {
     List<Widget> children = <Widget>[
-      new PositionLabel(label: 'West'),
-      new PositionLabel(label: 'North'),
-      new PositionLabel(label: 'East'),
-      new PositionLabel(label: 'South')
+      const PositionLabel(label: 'West'),
+      const PositionLabel(label: 'North'),
+      const PositionLabel(label: 'East'),
+      const PositionLabel(label: 'South')
     ];
 
-    for (int i = 0; i < callHistory.dealer.index; ++i)
+    for (int i = 0; i < callHistory.dealer.index; ++i) {
       children.add(_kPlaceholder);
+    }
 
-    for (Call call in callHistory.calls)
-      children.add(new Center(child: new CallText(call: call)));
+    for (Call call in callHistory.calls) {
+      children.add(Center(child: CallText(call: call)));
+    }
+    if (!callHistory.isComplete) children.add(const Center(child: Text('?')));
 
-    if (!callHistory.isComplete) children.add(new Center(child: new Text('?')));
-
-    return new Container(
+    return Container(
       padding: const EdgeInsets.all(16.0),
-      decoration: new BoxDecoration(color: Colors.grey[200]),
-      child: new GridView.count(
+      decoration: BoxDecoration(color: Colors.grey[200]),
+      child: GridView.count(
         shrinkWrap: true,
         crossAxisCount: 4,
         childAspectRatio: 3.0,
@@ -143,63 +143,66 @@ class CallTable extends StatelessWidget {
 }
 
 class CallText extends StatelessWidget {
-  CallText({Key key, this.call}) : super(key: key);
+  const CallText({super.key, required this.call});
 
   final Call call;
 
+  @override
   Widget build(BuildContext context) {
-    return new RichText(
+    return RichText(
       text: getTextSpanForCall(call, DefaultTextStyle.of(context).style),
     );
   }
 }
 
 class CallAvatar extends StatelessWidget {
-  CallAvatar({Key key, this.call}) : super(key: key);
+  const CallAvatar({super.key, required this.call});
 
   final Call call;
 
+  @override
   Widget build(BuildContext context) {
-    return new Container(
+    return Container(
       width: 40.0,
       height: 40.0,
-      decoration: new BoxDecoration(
+      decoration: BoxDecoration(
         shape: BoxShape.circle,
         color: Colors.grey[200],
       ),
-      child: new Center(
-        child: new CallText(call: call),
+      child: Center(
+        child: CallText(call: call),
       ),
     );
   }
 }
 
 class CallMenuItem extends StatelessWidget {
-  CallMenuItem({Key key, this.interpretation, this.onCall}) : super(key: key);
+  const CallMenuItem(
+      {super.key, required this.interpretation, required this.onCall});
 
   final ValueChanged<Call> onCall;
   final CallInterpretation interpretation;
 
-  static final Text _kLoading = new Text(
+  static const Text _kLoading = Text(
     '...',
-    style: new TextStyle(color: Colors.black26),
+    style: TextStyle(color: Colors.black26),
   );
-  static final Text _kUnknown = new Text(
+  static const Text _kUnknown = Text(
     'Unknown',
-    style: new TextStyle(color: Colors.black26),
+    style: TextStyle(color: Colors.black26),
   );
 
   Widget get _description {
     if (interpretation.hasInterpretation) {
-      return new Column(
+      return Column(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          new Text(
-            displayRuleName(interpretation.ruleName),
+          Text(
+            displayRuleName(interpretation.ruleName!),
             style: const TextStyle(fontWeight: FontWeight.bold),
           ),
-          new KnowledgeText(knowledge: interpretation.knowledge),
+          KnowledgeText(knowledge: interpretation.knowledge!),
         ],
       );
     }
@@ -211,9 +214,10 @@ class CallMenuItem extends StatelessWidget {
     onCall(interpretation.call);
   }
 
+  @override
   Widget build(BuildContext context) {
-    return new ListTile(
-      leading: new CallAvatar(call: interpretation.call),
+    return ListTile(
+      leading: CallAvatar(call: interpretation.call),
       title: _description,
       onTap: _handleTap,
     );
@@ -221,31 +225,34 @@ class CallMenuItem extends StatelessWidget {
 }
 
 class CallMenu extends StatefulWidget {
-  CallMenu({Key key, this.callHistory, this.onCall}) : super(key: key);
+  const CallMenu({super.key, required this.callHistory, required this.onCall});
 
   final CallHistory callHistory;
   final ValueChanged<Call> onCall;
 
-  _CallMenuState createState() => new _CallMenuState();
+  @override
+  _CallMenuState createState() => _CallMenuState();
 }
 
 class _CallMenuState extends State<CallMenu> {
+  @override
   void initState() {
     super.initState();
     _updateInterpretations();
   }
 
+  @override
   void didUpdateWidget(CallMenu oldWidget) {
     if (widget.callHistory != oldWidget.callHistory) _updateInterpretations();
     super.didUpdateWidget(oldWidget);
   }
 
-  List<CallInterpretation> _interpretations;
+  late List<CallInterpretation> _interpretations;
   int _currentFetchNumber = 0;
 
   void _updateInterpretations() {
     _interpretations = widget.callHistory.possibleCalls.map((Call call) {
-      return new CallInterpretation(call: call, isTentative: true);
+      return CallInterpretation(call: call, isTentative: true);
     }).toList(growable: false);
     _fetchInterpretations();
   }
@@ -260,15 +267,16 @@ class _CallMenuState extends State<CallMenu> {
     });
   }
 
+  @override
   Widget build(BuildContext context) {
     List<Widget> children = <Widget>[];
 
     children.add(
-      new ListView(
-        key: new ObjectKey(widget.callHistory),
+      ListView(
+        key: ObjectKey(widget.callHistory),
         children: _interpretations.map((CallInterpretation interpretation) {
-          return new CallMenuItem(
-            key: new ObjectKey(interpretation),
+          return CallMenuItem(
+            key: ObjectKey(interpretation),
             interpretation: interpretation,
             onCall: widget.onCall,
           );
@@ -276,36 +284,41 @@ class _CallMenuState extends State<CallMenu> {
       ),
     );
 
-    if (_interpretations.isNotEmpty && _interpretations[0].isTentative)
-      children.add(new Center(child: new CircularProgressIndicator()));
+    if (_interpretations.isNotEmpty && _interpretations[0].isTentative) {
+      children.add(const Center(child: CircularProgressIndicator()));
+    }
 
-    return new Stack(children: children);
+    return Stack(children: children);
   }
 }
 
 class BidExplorer extends StatefulWidget {
-  _BidExplorerState createState() => new _BidExplorerState();
+  const BidExplorer({super.key});
+
+  @override
+  _BidExplorerState createState() => _BidExplorerState();
 }
 
 class _BidExplorerState extends State<BidExplorer> {
+  @override
   void initState() {
     super.initState();
-    _callHistory = new CallHistory();
+    _callHistory = CallHistory();
   }
 
-  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
-  CallHistory _callHistory;
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  late CallHistory _callHistory;
 
   void _handleCall(Call call) {
     _setCallHistory(_callHistory.extendWithCall(call));
   }
 
   void _clearHistory() {
-    _setCallHistory(new CallHistory());
-    _scaffoldKey.currentState.showSnackBar(
-      new SnackBar(
-        content: new Text('Call history cleared.'),
-        action: new SnackBarAction(
+    _setCallHistory(CallHistory());
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: const Text('Call history cleared.'),
+        action: SnackBarAction(
           label: 'UNDO',
           onPressed: () {
             Navigator.pop(context);
@@ -315,41 +328,42 @@ class _BidExplorerState extends State<BidExplorer> {
     );
   }
 
-  void _setCallHistory(CallHistory newCallHistory) {
+  void _setCallHistory(CallHistory callHistory) {
     CallHistory oldCallHistory = _callHistory;
-    ModalRoute.of(context).addLocalHistoryEntry(
-      new LocalHistoryEntry(onRemove: () {
+    ModalRoute.of(context)!.addLocalHistoryEntry(
+      LocalHistoryEntry(onRemove: () {
         setState(() {
           _callHistory = oldCallHistory;
         });
       }),
     );
     setState(() {
-      _callHistory = newCallHistory;
+      _callHistory = callHistory;
     });
   }
 
-  Widget get _clearButton {
+  Widget? get _clearButton {
     if (_callHistory.calls.isEmpty) return null;
-    return new FloatingActionButton(
+    return FloatingActionButton(
       onPressed: _clearHistory,
-      child: new Icon(Icons.close),
+      child: const Icon(Icons.close),
     );
   }
 
+  @override
   Widget build(BuildContext context) {
-    return new Scaffold(
+    return Scaffold(
       key: _scaffoldKey,
-      appBar: new AppBar(
-        title: new Text('Bid Explorer'),
+      appBar: AppBar(
+        title: const Text('Bid Explorer'),
       ),
-      body: new Material(
-        child: new Column(
+      body: Material(
+        child: Column(
           children: <Widget>[
-            new CallTable(callHistory: _callHistory),
-            new Flexible(
-                child: new CallMenu(
-                    callHistory: _callHistory, onCall: _handleCall)),
+            CallTable(callHistory: _callHistory),
+            Flexible(
+                child:
+                    CallMenu(callHistory: _callHistory, onCall: _handleCall)),
           ],
         ),
       ),

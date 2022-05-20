@@ -4,7 +4,7 @@
 
 enum Strain { clubs, diamonds, hearts, spades, notrump }
 
-String getStringForStrain(Strain strain) {
+String? getStringForStrain(Strain? strain) {
   return const {
     Strain.clubs: 'C',
     Strain.diamonds: 'D',
@@ -14,7 +14,7 @@ String getStringForStrain(Strain strain) {
   }[strain];
 }
 
-Strain getStrainFromString(String name) {
+Strain? getStrainFromString(String name) {
   if (name == 'C') return Strain.clubs;
   if (name == 'D') return Strain.diamonds;
   if (name == 'H') return Strain.hearts;
@@ -29,7 +29,7 @@ final int _runeH = 'H'.codeUnitAt(0);
 final int _runeS = 'S'.codeUnitAt(0);
 final int _runeN = 'N'.codeUnitAt(0);
 
-Strain getStrainFromRune(int rune) {
+Strain? getStrainFromRune(int rune) {
   if (rune == _runeC) return Strain.clubs;
   if (rune == _runeD) return Strain.diamonds;
   if (rune == _runeH) return Strain.hearts;
@@ -38,19 +38,19 @@ Strain getStrainFromRune(int rune) {
   return null;
 }
 
-String getSymbolForStrain(Strain strain) {
+String getSymbolForStrain(Strain? strain) {
   return const {
     Strain.clubs: '\u2663',
     Strain.diamonds: '\u2666',
     Strain.hearts: '\u2665',
     Strain.spades: '\u2660',
     Strain.notrump: 'NT',
-  }[strain];
+  }[strain]!;
 }
 
 enum SpecialCall { pass, double, redouble }
 
-String getStringSpecialCall(SpecialCall specialCall) {
+String? getStringSpecialCall(SpecialCall? specialCall) {
   return const {
     SpecialCall.pass: 'P',
     SpecialCall.double: 'X',
@@ -72,12 +72,12 @@ class Call {
     if (callName == 'P') return pass;
     if (callName == 'X') return x;
     if (callName == 'XX') return xx;
-    return new Call(int.parse(callName[0]), getStrainFromString(callName[1]));
+    return Call(int.parse(callName[0]), getStrainFromString(callName[1]));
   }
 
-  final int level;
-  final Strain strain;
-  final SpecialCall specialCall;
+  final int? level;
+  final Strain? strain;
+  final SpecialCall? specialCall;
 
   bool get isContract => specialCall == null;
 
@@ -85,13 +85,14 @@ class Call {
   bool get isDouble => specialCall == SpecialCall.double;
   bool get isRedouble => specialCall == SpecialCall.redouble;
 
-  static const Call pass = const Call.special(SpecialCall.pass);
-  static const Call x = const Call.special(SpecialCall.double);
-  static const Call xx = const Call.special(SpecialCall.redouble);
+  static const Call pass = Call.special(SpecialCall.pass);
+  static const Call x = Call.special(SpecialCall.double);
+  static const Call xx = Call.special(SpecialCall.redouble);
 
+  @override
   String toString() {
     if (isContract) return '$level${getStringForStrain(strain)}';
-    return getStringSpecialCall(specialCall);
+    return getStringSpecialCall(specialCall)!;
   }
 }
 
@@ -111,14 +112,14 @@ class Position {
 }
 
 class CallHistory {
-  CallHistory({this.calls: const [], this.dealer: Position.north});
+  CallHistory({this.calls = const [], this.dealer = Position.north});
 
   final List<Call> calls;
   final Position dealer;
 
   CallHistory extendWithCall(Call call) {
-    return new CallHistory(
-      calls: new List<Call>.from(calls)..add(call),
+    return CallHistory(
+      calls: List<Call>.from(calls)..add(call),
       dealer: dealer,
     );
   }
@@ -131,7 +132,7 @@ class CallHistory {
     return true;
   }
 
-  int get lastNonPassIndex {
+  int? get lastNonPassIndex {
     for (int i = calls.length - 1; i >= 0; --i) {
       if (!calls[i].isPass) return i;
     }
@@ -142,7 +143,7 @@ class CallHistory {
     return Position.values[(dealer.index + index) % Position.values.length];
   }
 
-  Call get lastContract {
+  Call? get lastContract {
     for (Call call in calls.reversed) {
       if (call.isContract) return call;
     }
@@ -154,35 +155,37 @@ class CallHistory {
 
     yield Call.pass;
 
-    int lastNonPassIndex = this.lastNonPassIndex;
+    int? lastNonPassIndex = this.lastNonPassIndex;
     if (lastNonPassIndex == calls.length - 1 ||
         lastNonPassIndex == calls.length - 3) {
-      Call lastNonPass = calls[lastNonPassIndex];
-      if (lastNonPass.isContract)
+      Call lastNonPass = calls[lastNonPassIndex!];
+      if (lastNonPass.isContract) {
         yield Call.x;
-      else if (lastNonPass.isDouble) yield Call.xx;
+      } else if (lastNonPass.isDouble) {
+        yield Call.xx;
+      }
     }
 
-    Call lastContract = this.lastContract;
+    Call? lastContract = this.lastContract;
     for (int level = 1; level < 8; ++level) {
-      if (lastContract != null && level < lastContract.level) continue;
+      if (lastContract != null && level < lastContract.level!) continue;
       for (Strain strain in Strain.values) {
         if (lastContract != null &&
             level == lastContract.level &&
-            strain.index <= lastContract.strain.index) continue;
-        yield new Call(level, strain);
+            strain.index <= lastContract.strain!.index) continue;
+        yield Call(level, strain);
       }
     }
   }
 }
 
 String displayRuleName(String ruleName) {
-  String displayName = ruleName.replaceAllMapped(
-      new RegExp(r'([1-9A-Z])'), (Match m) => ' ${m[1]}');
+  String displayName =
+      ruleName.replaceAllMapped(RegExp(r'([1-9A-Z])'), (Match m) => ' ${m[1]}');
   // A couple exceptions to the spacing rules:
   displayName = displayName.replaceAll('R H O', 'RHO');
   displayName = displayName.replaceAll('L H O', 'LHO');
-  displayName = displayName.replaceAll(new RegExp(r'\sN$'), 'NT');
+  displayName = displayName.replaceAll(RegExp(r'\sN$'), 'NT');
   return displayName.trim();
 }
 
@@ -190,12 +193,12 @@ class CallInterpretation {
   const CallInterpretation({
     this.ruleName,
     this.knowledge,
-    this.call,
-    this.isTentative: false,
+    required this.call,
+    this.isTentative = false,
   });
 
-  final String ruleName;
-  final String knowledge;
+  final String? ruleName;
+  final String? knowledge;
   final Call call;
   final bool isTentative;
 
@@ -237,12 +240,12 @@ class Suit {
         'D': '\u2666',
         'H': '\u2665',
         'S': '\u2660',
-      }[name];
+      }[name]!;
 
-  static const Suit clubs = const Suit._('C');
-  static const Suit diamonds = const Suit._('D');
-  static const Suit hearts = const Suit._('H');
-  static const Suit spades = const Suit._('S');
+  static const Suit clubs = Suit._('C');
+  static const Suit diamonds = Suit._('D');
+  static const Suit hearts = Suit._('H');
+  static const Suit spades = Suit._('S');
 
   static const List<Suit> all = [clubs, diamonds, hearts, spades];
 }
@@ -284,14 +287,13 @@ class Deal {
     _validate(hands);
   }
 
-  Deal.empty() {
-    hands = List.generate(4, (index) => Hand());
-  }
+  Deal.empty() : hands = List.generate(4, (index) => Hand());
 
   void _validate(List<Hand> hands) {
     List<Card> allCards = hands.expand((hand) => hand.cards).toList();
-    if (allCards.length != 52)
+    if (allCards.length != 52) {
       throw ArgumentError("Incorrect number of cards ${allCards.length}");
+    }
     Set<Card> unique = Set.from(allCards);
     if (unique.length != 52) throw ArgumentError("Duplicate cards in deal");
   }
