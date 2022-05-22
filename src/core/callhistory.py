@@ -3,6 +3,9 @@ from __future__ import absolute_import
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+from builtins import map
+from builtins import range
+from builtins import object
 from core.position import *
 from core.call import Call
 from .suit import SUITS
@@ -20,7 +23,7 @@ class Vulnerability(object):
         assert self.name in ('E-W', 'N-S', 'None', 'Both'), "%s is not a valid vulnerability" % self.name
 
     name_to_identifier = { 'E-W': 'EW', 'N-S': 'NS', 'None': 'NO', 'Both': 'BO' }
-    identifier_to_name = dict([(identifier, name) for name, identifier in name_to_identifier.items()])
+    identifier_to_name = dict([(identifier, name) for name, identifier in list(name_to_identifier.items())])
 
     @property
     def identifier(self):
@@ -83,7 +86,7 @@ class CallHistory(object):
         if not call_names or not call_names[0]:
             return []
         # from_string may be more forgiving than we want...
-        calls = map(Call.from_string, call_names)
+        calls = list(map(Call.from_string, call_names))
         assert None not in calls, "Failed to parse calls string: '%s'" % calls_string
         return calls
 

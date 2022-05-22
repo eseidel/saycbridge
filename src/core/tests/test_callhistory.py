@@ -32,7 +32,7 @@ class VulnerabilityTest(unittest2.TestCase):
             31: 'N-S',
             33: 'None',
         }
-        for number, expected_vulnerability in expectations.items():
+        for number, expected_vulnerability in list(expectations.items()):
             self.assertEquals(Vulnerability.from_board_number(number).name, expected_vulnerability)
 
 

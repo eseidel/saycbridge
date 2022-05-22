@@ -3,6 +3,11 @@ from __future__ import print_function
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+from past.builtins import cmp
+from builtins import zip
+from builtins import str
+from builtins import map
+from builtins import range
 from z3b.model import _honor_vars
 from core.hand import Hand
 from core.suit import SUITS
@@ -16,13 +21,13 @@ def _suit_index(name):
 
 
 def _decl_cmp(*args):
-    names = map(lambda key: key.name(), args)
+    names = [key.name() for key in args]
     # Sort suit names first:
-    suit_cmp_result = cmp(*map(_suit_index, names))
+    suit_cmp_result = cmp(*list(map(_suit_index, names)))
     if suit_cmp_result:
         return suit_cmp_result
     # Sort names without _ in them to the top.
-    are_primary = map(lambda name: name.find("_") != -1, names)
+    are_primary = [name.find("_") != -1 for name in names]
     cmp_result = cmp(*are_primary)
     if cmp_result:
         return cmp_result
@@ -50,4 +55,4 @@ def _cards_from_model(suit, model):
 
 # model is the result of solver.model()
 def hand_from_model(model):
-    return Hand(map(lambda suit: _cards_from_model(suit, model), SUITS))
+    return Hand([_cards_from_model(suit, model) for suit in SUITS])

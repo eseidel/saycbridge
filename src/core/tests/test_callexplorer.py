@@ -9,7 +9,7 @@ from core.callexplorer import *
 class CallExplorerTest(unittest2.TestCase):
     def _assert_histories(self, glob_string, histories):
     	explorer = CallExplorer()
-        self.assertEqual(sorted(map(lambda history: history.calls_string(), explorer.history_glob(glob_string))), sorted(histories))
+        self.assertEqual(sorted([history.calls_string() for history in explorer.history_glob(glob_string)]), sorted(histories))
 
     def test_history_glob(self):
         self._assert_histories("", [])

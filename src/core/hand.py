@@ -1,8 +1,13 @@
 from __future__ import absolute_import
+from __future__ import division
 # Copyright (c) 2013 The SAYCBridge Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+from builtins import map
+from builtins import range
+from builtins import object
+from past.utils import old_div
 import math
 import random
 import itertools
@@ -14,12 +19,12 @@ from .card import Card
 class Hand(object):
     def __init__(self, cards_by_suit):
         hand_sorter = lambda cards: "".join(sorted(cards, key=Card.index_for_card, reverse=True))
-        self.cards_by_suit_index = map(hand_sorter, map(str.upper, cards_by_suit))
+        self.cards_by_suit_index = list(map(hand_sorter, list(map(str.upper, cards_by_suit))))
         self._validate()
 
     @classmethod
     def random(cls):
-        shuffled_cards = range(52)
+        shuffled_cards = list(range(52))
         random.shuffle(shuffled_cards)
         cards_by_suit_index = ["" for suit in SUITS]
         for card_identifier in shuffled_cards[:13]:
@@ -28,7 +33,7 @@ class Hand(object):
         return Hand(cards_by_suit_index)
 
     def _validate(self):
-        assert sum(map(lambda suit: self.length_of_suit(suit), SUITS)) == 13, self.cards_by_suit_index
+        assert sum([self.length_of_suit(suit) for suit in SUITS]) == 13, self.cards_by_suit_index
 
     # This is also referred to as "pbn notation": http://www.tistis.nl/pbn/
     # "The cards of each hand are given in the order:  spades, hearts, diamonds, clubs."
@@ -62,7 +67,7 @@ class Hand(object):
         return sorted(self.cards_in_suit(suit), key=Card.index_for_card)[-1]
 
     def _count_of_card(self, card):
-        return len(filter(lambda cards: card in cards, [self.cards_in_suit(suit) for suit in SUITS]))
+        return len([cards for cards in [self.cards_in_suit(suit) for suit in SUITS] if card in cards])
 
     def ace_count(self):
         return self._count_of_card('A')
@@ -71,7 +76,7 @@ class Hand(object):
         return self._count_of_card('K')
 
     def has_at_least(self, count, cards, suit):
-        return len(filter(lambda card: card in cards, self.cards_in_suit(suit))) >= count
+        return len([card for card in self.cards_in_suit(suit) if card in cards]) >= count
 
     def has_first_round_stopper(self, suit):
         # A singleton is only a stopper if it's an ace.
@@ -119,15 +124,15 @@ class Hand(object):
         return True
 
     def suit_lengths(self):
-        return map(len, self.cards_by_suit_index)
+        return list(map(len, self.cards_by_suit_index))
 
     def longest_suits(self):
         longest_suit_length = max(self.suit_lengths())
-        return filter(lambda suit: len(self.cards_by_suit_index[suit.index]) == longest_suit_length, SUITS)
+        return [suit for suit in SUITS if len(self.cards_by_suit_index[suit.index]) == longest_suit_length]
 
     def length_points(self):
         # FIXME: Should length_points return high_card_points() - 1 for a flat hand?
-        return self.high_card_points() + sum(map(lambda suit: max(self.length_of_suit(suit) - 4, 0), SUITS))
+        return self.high_card_points() + sum([max(self.length_of_suit(suit) - 4, 0) for suit in SUITS])
 
     def _runnability(self, suit):
         fast_winners = 0
@@ -135,7 +140,7 @@ class Hand(object):
         have_seen_loser = False
 
         cards_in_hand = self.cards_by_suit_index[suit.index]
-        for card_index in reversed(range(13)):
+        for card_index in reversed(list(range(13))):
             card = Card.card_for_index(card_index)
             if card not in cards_in_hand:
                 if have_seen_loser:
@@ -159,7 +164,7 @@ class Hand(object):
         for suit in SUITS:
             length = self.length_of_suit(suit)
             adverse_holding = 13 - length - partner_min_lengths[suit.index]
-            adverse_holding_per_hand = math.ceil(adverse_holding / 2)
+            adverse_holding_per_hand = math.ceil(old_div(adverse_holding, 2))
 
             fast_winners, slow_winners = self._runnability(suit)
             if fast_winners >= adverse_holding_per_hand:

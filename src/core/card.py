@@ -1,8 +1,13 @@
 from __future__ import absolute_import
+from __future__ import division
 # Copyright (c) 2013 The SAYCBridge Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+from builtins import str
+from builtins import range
+from builtins import object
+from past.utils import old_div
 from .suit import *
 
 
@@ -16,7 +21,7 @@ class Card(object):
     value_to_index['K'] = 11
     value_to_index['A'] = 12
 
-    index_to_value = dict([(index, value) for value, index in value_to_index.items()])
+    index_to_value = dict([(index, value) for value, index in list(value_to_index.items())])
 
     @classmethod
     def index_for_card(cls, value_char):
@@ -32,7 +37,7 @@ class Card(object):
 
     @classmethod
     def suit_and_index_from_identifier(cls, identifier):
-        suit_index = identifier / 13
+        suit_index = old_div(identifier, 13)
         card_index = identifier - suit_index * 13
         return (Suit.from_index(suit_index), card_index)
 

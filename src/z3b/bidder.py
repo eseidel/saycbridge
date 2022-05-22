@@ -1,8 +1,16 @@
 from __future__ import print_function
+from __future__ import division
 # Copyright (c) 2013 The SAYCBridge Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+from builtins import zip
+from builtins import filter
+from builtins import map
+from builtins import str
+from builtins import range
+from past.utils import old_div
+from builtins import object
 from core.call import Call
 from core.callexplorer import CallExplorer
 from core.callhistory import CallHistory
@@ -74,7 +82,7 @@ class GroupView(object):
 
     @property
     def annotations(self):
-        return chain.from_iterable(map(self.history.annotations_for_position, self.positions))
+        return chain.from_iterable(list(map(self.history.annotations_for_position, self.positions)))
 
     @property
     def unbid_suits(self):
@@ -325,7 +333,7 @@ class History(object):
         if lo == hi:
             return hi
         assert lo < hi
-        pos = int((lo + hi) / 2)
+        pos = int(old_div((lo + hi), 2))
         if predicate(pos):
             return self._lower_bound(predicate, lo, pos)
         return self._lower_bound(predicate, pos + 1, hi)
@@ -384,7 +392,7 @@ class History(object):
 
     @property
     def unbid_suits(self):
-        return filter(self.is_unbid_suit, suit.SUITS)
+        return list(filter(self.is_unbid_suit, suit.SUITS))
 
     @property
     def last_contract(self):
@@ -446,7 +454,7 @@ class PossibleCalls(object):
         for call, priority in self._calls_and_priorities:
             if self._is_dominated(priority, maximal_calls_and_priorities):
                 continue
-            maximal_calls_and_priorities = filter(lambda max_call_max_priority: not self.ordering.lt(max_call_max_priority[1], priority), maximal_calls_and_priorities)
+            maximal_calls_and_priorities = [max_call_max_priority for max_call_max_priority in maximal_calls_and_priorities if not self.ordering.lt(max_call_max_priority[1], priority)]
             maximal_calls_and_priorities.append([call, priority])
         return maximal_calls_and_priorities
 
@@ -479,13 +487,13 @@ class Bidder(object):
             # We don't currently support tie-breaking priorities, but we do have some bids that
             # we don't make without a planner.
             no_planning_filter = lambda call_priority_tuple: not rule_selector.rule_for_call(call_priority_tuple[0]).requires_planning
-            maximal_calls_and_priorities = filter(no_planning_filter, maximal_calls_and_priorities)
+            maximal_calls_and_priorities = list(filter(no_planning_filter, maximal_calls_and_priorities))
             if not maximal_calls_and_priorities:
                 return None # If we failed to find any call, this is an error.
-            maximal_calls, maximal_priorities = zip(*maximal_calls_and_priorities)
+            maximal_calls, maximal_priorities = list(zip(*maximal_calls_and_priorities))
             if len(maximal_calls) != 1:
-                rules = map(rule_selector.rule_for_call, maximal_calls)
-                call_names = map(lambda call: call.name, maximal_calls)
+                rules = list(map(rule_selector.rule_for_call, maximal_calls))
+                call_names = [call.name for call in maximal_calls]
                 print("WARNING: Unordered: %s rules: %s priorities: %s" % (call_names, rules, maximal_priorities))
                 return None
 
@@ -539,7 +547,7 @@ class RuleSelector(object):
                         existing_rules.append(rule)
 
         result = {}
-        for call, best in maximal.iteritems():
+        for call, best in maximal.items():
             category, rules = best
             if len(rules) > 1:
                 print("WARNING: Multiple rules have maximal category (%s) for %s: %s over: %s" % (category, call, rules, self.history.call_history))
@@ -556,7 +564,7 @@ class RuleSelector(object):
         rule = self.rule_for_call(call)
         for priority, z3_meaning in rule.meaning_of(self.history, call):
             situational_exprs = [z3_meaning]
-            for unmade_call, unmade_rule in self._call_to_rule.iteritems():
+            for unmade_call, unmade_rule in self._call_to_rule.items():
                 for unmade_priority, unmade_z3_meaning in unmade_rule.meaning_of(self.history, unmade_call):
                     if self.system.priority_ordering.lt(priority, unmade_priority):
                         if self.explain and self.expected_call == call:

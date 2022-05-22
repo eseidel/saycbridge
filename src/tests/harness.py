@@ -1,8 +1,14 @@
 from __future__ import print_function
+from __future__ import division
 # Copyright (c) 2013 The SAYCBridge Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+from builtins import str
+from builtins import map
+from builtins import range
+from past.utils import old_div
+from builtins import object
 import itertools
 import logging
 import multiprocessing
@@ -172,22 +178,22 @@ class ResultsAggregator(object):
     # These were explicitly tested and matched some hand.
     @property
     def called_rule_names(self):
-        rule_names = map(lambda result: result.rule_name, self._results_by_identifier.values())
-        return set(map(str, filter(None, rule_names)))
+        rule_names = [result.rule_name for result in list(self._results_by_identifier.values())]
+        return set(map(str, [_f for _f in rule_names if _f]))
 
     # These were tested via interpretation of a call_history.
     @property
     def interpreted_rule_names(self):
-        rule_name_tuples = map(lambda result: result.last_three_rule_names, self._results_by_identifier.values())
+        rule_name_tuples = [result.last_three_rule_names for result in list(self._results_by_identifier.values())]
         # result.last_three_rule_names can be None.
-        rule_name_tuples = filter(None, rule_name_tuples)
+        rule_name_tuples = [_f for _f in rule_name_tuples if _f]
         rule_names = itertools.chain.from_iterable(rule_name_tuples)
-        return set(map(str, filter(None, rule_names)))
+        return set(map(str, [_f for _f in rule_names if _f]))
 
     def print_summary(self):
         total_tests = len(self._results_by_identifier)
         total_pass = total_tests - self._total_failures
-        percent = 100.0 * total_pass / total_tests if total_tests else 0
+        percent = old_div(100.0 * total_pass, total_tests) if total_tests else 0
         print("Pass %s (%.1f%%) of %s total hands" % (total_pass, percent, total_tests))
 
 
@@ -240,7 +246,7 @@ class TestHarness(unittest2.TestCase):
         all_tests = list(itertools.chain.from_iterable(group.tests for group in self.groups))
         for x in range(0, len(all_tests), self.test_shard_size):
             shard = all_tests[x : x + self.test_shard_size]
-            results = map(_run_test, shard)
+            results = list(map(_run_test, shard))
             self.results.add_results_callback(results)
 
     def run_tests_multi_process(self):
@@ -276,7 +282,7 @@ class TestHarness(unittest2.TestCase):
         all_rule_names = set(map(str, all_rules))
 
         # Don't expect to see rules which are marked "requires_planning".
-        non_planned_rules = filter(lambda rule: not rule.requires_planning, all_rules)
+        non_planned_rules = [rule for rule in all_rules if not rule.requires_planning]
         non_planned_rule_names = set(map(str, non_planned_rules))
         called_rule_names = self.results.called_rule_names
         planned_rule_count = len(all_rule_names) - len(non_planned_rule_names)
@@ -331,7 +337,7 @@ class TestResult(object):
         last_three_positions = (positions.LHO, positions.Partner, positions.RHO)
         # This history is prior to the call_selection's call.
         history = call_selection.rule_selector.history
-        self.last_three_rule_names = map(str, map(history.rule_for_last_call, last_three_positions))
+        self.last_three_rule_names = list(map(str, list(map(history.rule_for_last_call, last_three_positions))))
 
     def save_captured_logs(self, stdout, stderr):
         self.stdout = stdout.getvalue()

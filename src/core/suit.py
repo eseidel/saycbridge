@@ -2,6 +2,10 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+from past.builtins import cmp
+from builtins import map
+from builtins import range
+from builtins import object
 from third_party.memoized import memoized
 
 
@@ -84,10 +88,10 @@ class Suit(Strain):
 
 
 # FIXME: These should eventually all move onto Strain e.g. Strain.SUITS, Strain.MINORS, etc.
-SUITS = map(Strain.from_index, range(4))
-CLUBS, DIAMONDS, HEARTS, SPADES = map(Strain.from_index, range(4))
+SUITS = list(map(Strain.from_index, list(range(4))))
+CLUBS, DIAMONDS, HEARTS, SPADES = list(map(Strain.from_index, list(range(4))))
 NOTRUMP = Strain.from_index(4)
-STRAINS = map(Strain.from_index, range(5))
+STRAINS = list(map(Strain.from_index, list(range(5))))
 
 MINORS = (CLUBS, DIAMONDS)
 MAJORS = (HEARTS, SPADES)

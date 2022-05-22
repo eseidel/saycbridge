@@ -3,6 +3,9 @@ from __future__ import absolute_import
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+from past.builtins import cmp
+from builtins import range
+from builtins import object
 from .suit import *
 from third_party.memoized import memoized
 

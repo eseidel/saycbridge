@@ -1,8 +1,14 @@
 from __future__ import absolute_import
+from __future__ import division
 # Copyright (c) 2013 The SAYCBridge Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+from builtins import str
+from builtins import map
+from builtins import range
+from builtins import object
+from past.utils import old_div
 from .position import *
 from .suit import Suit, SUITS
 from .card import Card
@@ -33,19 +39,19 @@ class Deal(object):
         # space is not compact.  We can generate identifiers
         # which are not valid deals.
         hands = cls._empty_hands()
-        shuffled_cards = range(52)
+        shuffled_cards = list(range(52))
         random.shuffle(shuffled_cards)
         for index_in_deck, card_identifier in enumerate(shuffled_cards):
             position = index_in_deck % len(POSITIONS)
             suit, card = Card.suit_and_value_from_identifier(card_identifier)
             hands[position][suit.index] += card
-        return Deal(map(Hand, hands))
+        return Deal(list(map(Hand, hands)))
 
     @classmethod
     def from_string(cls, string):
         hand_strings = string.split(' ')
         # Deal takes strings, not hand objects, currently.
-        return Deal(map(Hand.from_cdhs_string, hand_strings))
+        return Deal(list(map(Hand.from_cdhs_string, hand_strings)))
 
     @classmethod
     def from_hex_identifier(cls, identifier):
@@ -53,25 +59,25 @@ class Deal(object):
         hexChars = '0123456789abcdef'
         for charIndex, hexChar in enumerate(identifier):
             hexIndex = hexChars.index(hexChar)
-            highHandIndex = hexIndex / 4
+            highHandIndex = old_div(hexIndex, 4)
             lowHandIndex = hexIndex - highHandIndex * 4
             highSuit, highCard = Card.suit_and_value_from_identifier(charIndex * 2 + 0)
             lowSuit, lowCard = Card.suit_and_value_from_identifier(charIndex * 2 + 1)
             hands[highHandIndex][highSuit.index] += highCard
             hands[lowHandIndex][lowSuit.index] += lowCard
-        return Deal(map(Hand, hands))
+        return Deal(list(map(Hand, hands)))
 
     @classmethod
     def from_old_identifier(cls, identifier):
-        identifier = long(identifier)
+        identifier = int(identifier)
         hands = cls._empty_hands()
-        for card_identifier in reversed(range(52)):
+        for card_identifier in reversed(list(range(52))):
             power_of_four = pow(4, card_identifier)
-            position = identifier / power_of_four
+            position = old_div(identifier, power_of_four)
             identifier -= power_of_four * position
             suit, card = Card.suit_and_value_from_identifier(card_identifier)
             hands[position][suit.index] += card
-        return Deal(map(Hand, hands))
+        return Deal(list(map(Hand, hands)))
 
     @classmethod
     def from_identifier(cls, identifier):
