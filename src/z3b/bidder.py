@@ -1,3 +1,4 @@
+from __future__ import print_function
 # Copyright (c) 2013 The SAYCBridge Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -445,7 +446,7 @@ class PossibleCalls(object):
         for call, priority in self._calls_and_priorities:
             if self._is_dominated(priority, maximal_calls_and_priorities):
                 continue
-            maximal_calls_and_priorities = filter(lambda (max_call, max_priority): not self.ordering.lt(max_priority, priority), maximal_calls_and_priorities)
+            maximal_calls_and_priorities = filter(lambda max_call_max_priority: not self.ordering.lt(max_call_max_priority[1], priority), maximal_calls_and_priorities)
             maximal_calls_and_priorities.append([call, priority])
         return maximal_calls_and_priorities
 
@@ -485,7 +486,7 @@ class Bidder(object):
             if len(maximal_calls) != 1:
                 rules = map(rule_selector.rule_for_call, maximal_calls)
                 call_names = map(lambda call: call.name, maximal_calls)
-                print "WARNING: Unordered: %s rules: %s priorities: %s" % (call_names, rules, maximal_priorities)
+                print("WARNING: Unordered: %s rules: %s priorities: %s" % (call_names, rules, maximal_priorities))
                 return None
 
             call = maximal_calls[0]
@@ -512,7 +513,7 @@ class RuleSelector(object):
             return
         if self.rule_for_call(self.expected_call):
             return
-        print "WARNING: No rule can make: %s" % self.expected_call
+        print("WARNING: No rule can make: %s" % self.expected_call)
 
     @property
     @memoized
@@ -532,7 +533,7 @@ class RuleSelector(object):
                     # FIXME: It's lame that enum's < is backwards.
                     if category < existing_category:
                         if self.explain and call == self.expected_call:
-                            print "%s is higher category than %s" % (rule.name, str(maximal[call]))
+                            print("%s is higher category than %s" % (rule.name, str(maximal[call])))
                         maximal[call] = (category, [rule])
                     elif category == existing_category:
                         existing_rules.append(rule)
@@ -541,7 +542,7 @@ class RuleSelector(object):
         for call, best in maximal.iteritems():
             category, rules = best
             if len(rules) > 1:
-                print "WARNING: Multiple rules have maximal category (%s) for %s: %s over: %s" % (category, call, rules, self.history.call_history)
+                print("WARNING: Multiple rules have maximal category (%s) for %s: %s over: %s" % (category, call, rules, self.history.call_history))
             else:
                 result[call] = rules[0]
         return result
@@ -559,8 +560,8 @@ class RuleSelector(object):
                 for unmade_priority, unmade_z3_meaning in unmade_rule.meaning_of(self.history, unmade_call):
                     if self.system.priority_ordering.lt(priority, unmade_priority):
                         if self.explain and self.expected_call == call:
-                            print "Adding negation %s (%s) to %s:" % (unmade_rule.name, unmade_call.name, rule.name)
-                            print " %s" % z3.simplify(z3.Not(unmade_z3_meaning))
+                            print("Adding negation %s (%s) to %s:" % (unmade_rule.name, unmade_call.name, rule.name))
+                            print(" %s" % z3.simplify(z3.Not(unmade_z3_meaning)))
                         situational_exprs.append(z3.Not(unmade_z3_meaning))
             situations.append(z3.And(situational_exprs))
 
@@ -578,7 +579,7 @@ class RuleSelector(object):
                 if is_possible(solver, z3_meaning):
                     possible_calls.add_call_with_priority(call, priority)
                 elif call == expected_call:
-                    print "%s does not fit hand: %s" % (rule, z3_meaning)
+                    print("%s does not fit hand: %s" % (rule, z3_meaning))
         _solver_pool.restore(solver)
         return possible_calls
 
@@ -627,7 +628,7 @@ class Interpreter(object):
 
     def extend_history(self, history, call, explain=False):
         if explain:
-            print call.name
+            print(call.name)
 
         expected_call = call if explain else None
         selector = RuleSelector(self.system, history, expected_call=expected_call, explain=explain)
@@ -638,7 +639,7 @@ class Interpreter(object):
 
         annotations = rule.annotations_for_call(call)
         if explain:
-            print "Selected %s for %s:" % (rule, call)
+            print("Selected %s for %s:" % (rule, call))
         constraints = selector.constraints_for_call(call)
         if not history.is_consistent(positions.Me, constraints):
             raise InconsistentHistoryException(annotations, constraints, rule)
@@ -652,9 +653,9 @@ class Interpreter(object):
         for call in remaining_calls:
             try:
                 history = self.extend_history(history, call, explain=explain)
-            except InconsistentHistoryException, e:
+            except InconsistentHistoryException as e:
                 if explain:
-                    print "WARNING: History is not consistent, ignoring %s from %s" % (call.name, e.rule)
-                    print e.constraints
+                    print("WARNING: History is not consistent, ignoring %s from %s" % (call.name, e.rule))
+                    print(e.constraints)
                 history = history.extend_with(call, [], model.NO_CONSTRAINTS, None)
         return history

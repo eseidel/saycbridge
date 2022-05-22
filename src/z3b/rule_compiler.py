@@ -1,3 +1,4 @@
+from __future__ import print_function
 # Copyright (c) 2013 The SAYCBridge Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -39,8 +40,8 @@ class RuleOrdering(object):
     def lt(self, left, right):
         try:
             return self.ordering.lt(left, right)
-        except TypeError, e:
-            print "Exception during lt(%s, %s)" % (left, right)
+        except TypeError as e:
+            print("Exception during lt(%s, %s)" % (left, right))
             raise
 
 
@@ -107,10 +108,10 @@ class CompiledRule(object):
             for precondition in self.preconditions:
                 if not precondition.fits(history, call):
                     if call == expected_call and expected_call in self.known_calls:
-                        print " %s failed: %s" % (self, precondition)
+                        print(" %s failed: %s" % (self, precondition))
                     return False
-        except Exception, e:
-            print "Exception evaluating preconditions for %s" % self.name
+        except Exception as e:
+            print("Exception evaluating preconditions for %s" % self.name)
             raise
         return True
 
@@ -144,7 +145,7 @@ class CompiledRule(object):
             assert priority
             yield priority, z3.And(exprs)
         except:
-            print "Exception compiling meaning_of %s over %s with %s" % (call, history.call_history.calls_string(), self)
+            print("Exception compiling meaning_of %s over %s with %s" % (call, history.call_history.calls_string(), self))
             raise
 
     # constraints accepts various forms including:
@@ -269,7 +270,7 @@ class RuleCompiler(object):
                 priorities_per_call=priorities_per_call,
             )
         except:
-            print "Exception compiling %s" % dsl_rule
+            print("Exception compiling %s" % dsl_rule)
             raise
 
 

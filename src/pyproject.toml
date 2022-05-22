@@ -1,0 +1,17 @@
+[tool.poetry]
+name = "saycbridge"
+version = "0.1.0"
+description = "Bridge bidder"
+authors = ["Eric Seidel <github@eseidel.com>"]
+license = "BSD"
+
+[tool.poetry.dependencies]
+python = "*"
+z3-solver = "^4.8.17"
+
+[tool.poetry.dev-dependencies]
+unittest2 = "^1.1.0"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"

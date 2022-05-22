@@ -1,3 +1,4 @@
+from __future__ import print_function
 # Copyright (c) 2013 The SAYCBridge Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -137,7 +138,7 @@ class Gib(object):
             gib_input_lines.append(dummy_hand)
             gib_input_lines.append(played_cards[1:].join(" "))
         next_play_command = "\n".join(git_input_lines)
-        print next_play_command
+        print(next_play_command)
 
         with self._temp_file_with_contents(next_play_command) as command_file:
             input_text = "\n"  # Causes gib to actually spit out the answer.

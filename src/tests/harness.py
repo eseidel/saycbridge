@@ -1,3 +1,4 @@
+from __future__ import print_function
 # Copyright (c) 2013 The SAYCBridge Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -102,7 +103,7 @@ class TestGroup(object):
         try:
             test = CompiledTest.from_expectation_tuple_in_group(expectation, self)
         except:
-            print "Exception compiling: %s in group %s" % (expectation, self.name)
+            print("Exception compiling: %s in group %s" % (expectation, self.name))
             raise
         self.add_test(test)
         for test in test.subtests:
@@ -136,7 +137,7 @@ class ResultsAggregator(object):
 
     def _print_group_summary(self, group):
         fail_count = 0
-        print "%s:" % group.name
+        print("%s:" % group.name)
         for test in group.tests:
             result = self._results_by_identifier[test.identifier]
             result.print_captured_logs()
@@ -150,12 +151,12 @@ class ResultsAggregator(object):
                 _log.info("PASS: %s for %s" % (test.expected_call, test.test_string))
             else:
                 fail_count += 1
-                print "FAIL: %s (expected %s) for %s" % (result.call, test.expected_call, test.test_string)
+                print("FAIL: %s (expected %s) for %s" % (result.call, test.expected_call, test.test_string))
 
         # FIXME: We don't need to update _total_failures here.
         self._total_failures += fail_count
-        print "Pass %s of %s hands" % (len(group.tests) - fail_count, len(group.tests))
-        print
+        print("Pass %s of %s hands" % (len(group.tests) - fail_count, len(group.tests)))
+        print()
 
     def add_results_callback(self, results):
         for result in results:
@@ -187,7 +188,7 @@ class ResultsAggregator(object):
         total_tests = len(self._results_by_identifier)
         total_pass = total_tests - self._total_failures
         percent = 100.0 * total_pass / total_tests if total_tests else 0
-        print "Pass %s (%.1f%%) of %s total hands" % (total_pass, percent, total_tests)
+        print("Pass %s (%.1f%%) of %s total hands" % (total_pass, percent, total_tests))
 
 
 # Pickle gets mad at us if we make this a member or even static function.
@@ -208,7 +209,7 @@ def _run_test(test):
             result.fill_last_three_rule_names(call_selection)
 
             if result.last_three_rule_names and result.last_three_rule_names[-2] is None:
-                print "WARNING: Failed to interpret partner's last bid: %s" % test.call_history.copy_with_partial_history(-2)
+                print("WARNING: Failed to interpret partner's last bid: %s" % test.call_history.copy_with_partial_history(-2))
 
     except Exception:
         result.exc_str = ''.join(traceback.format_exception(*sys.exc_info()))
@@ -269,7 +270,7 @@ class TestHarness(unittest2.TestCase):
         try:
             all_rules = BidderFactory.default_bidder().system.rules
         except:
-            print "Ignoring coverage summary, failed to find rules."
+            print("Ignoring coverage summary, failed to find rules.")
             return
 
         all_rule_names = set(map(str, all_rules))
@@ -279,14 +280,14 @@ class TestHarness(unittest2.TestCase):
         non_planned_rule_names = set(map(str, non_planned_rules))
         called_rule_names = self.results.called_rule_names
         planned_rule_count = len(all_rule_names) - len(non_planned_rule_names)
-        print "Tested call generation of %s rules of %s total (excluding %s requires_planning rules)." % (len(called_rule_names), len(non_planned_rule_names), planned_rule_count)
+        print("Tested call generation of %s rules of %s total (excluding %s requires_planning rules)." % (len(called_rule_names), len(non_planned_rule_names), planned_rule_count))
         uncalled_rule_names = non_planned_rule_names - called_rule_names
         if uncalled_rule_names:
-            print "Never selected call from:"
-            print "\n".join(sorted(uncalled_rule_names))
+            print("Never selected call from:")
+            print("\n".join(sorted(uncalled_rule_names)))
 
         interpreted_rule_names = self.results.interpreted_rule_names
-        print "\nTested interpretation of %s rules of %s total." % (len(interpreted_rule_names), len(all_rule_names))
+        print("\nTested interpretation of %s rules of %s total." % (len(interpreted_rule_names), len(all_rule_names)))
         uninterpreted_rule_names = all_rule_names - interpreted_rule_names
         # FIXME: We should print these, but we have too many right now!
         # if uninterpreted_rule_names:
@@ -295,8 +296,8 @@ class TestHarness(unittest2.TestCase):
 
         never_tested_rule_names = uncalled_rule_names & uninterpreted_rule_names
         if uninterpreted_rule_names:
-            print "\n%s rules were never used for either bidding or interpretation:" % len(never_tested_rule_names)
-            print "\n".join(sorted(never_tested_rule_names))
+            print("\n%s rules were never used for either bidding or interpretation:" % len(never_tested_rule_names))
+            print("\n".join(sorted(never_tested_rule_names)))
 
     def test_main(self):
         self.collect_test_groups()
@@ -306,7 +307,7 @@ class TestHarness(unittest2.TestCase):
         else:
             self.run_tests_single_process()
         self.results.print_summary()
-        print
+        print()
         self._print_coverage_summary()
 
 

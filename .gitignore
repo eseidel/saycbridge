@@ -6,3 +6,4 @@ dist/android/gen
 dist/gae/scripts/*.js
 sayc_env
 src/z3b_actual.txt
+*.bak
