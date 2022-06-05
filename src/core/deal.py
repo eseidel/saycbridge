@@ -9,7 +9,6 @@ from builtins import str
 from builtins import map
 from builtins import range
 from builtins import object
-from past.utils import old_div
 from .position import *
 from .suit import Suit, SUITS
 from .card import Card
@@ -60,10 +59,12 @@ class Deal(object):
         hexChars = '0123456789abcdef'
         for charIndex, hexChar in enumerate(identifier):
             hexIndex = hexChars.index(hexChar)
-            highHandIndex = old_div(hexIndex, 4)
+            highHandIndex = hexIndex // 4
             lowHandIndex = hexIndex - highHandIndex * 4
-            highSuit, highCard = Card.suit_and_value_from_identifier(charIndex * 2 + 0)
-            lowSuit, lowCard = Card.suit_and_value_from_identifier(charIndex * 2 + 1)
+            highSuit, highCard = Card.suit_and_value_from_identifier(
+                charIndex * 2 + 0)
+            lowSuit, lowCard = Card.suit_and_value_from_identifier(
+                charIndex * 2 + 1)
             hands[highHandIndex][highSuit.index] += highCard
             hands[lowHandIndex][lowSuit.index] += lowCard
         return Deal(list(map(Hand, hands)))
@@ -74,7 +75,7 @@ class Deal(object):
         hands = cls._empty_hands()
         for card_identifier in reversed(list(range(52))):
             power_of_four = pow(4, card_identifier)
-            position = old_div(identifier, power_of_four)
+            position = identifier // power_of_four
             identifier -= power_of_four * position
             suit, card = Card.suit_and_value_from_identifier(card_identifier)
             hands[position][suit.index] += card
@@ -102,7 +103,8 @@ class Deal(object):
         hex_chars = '0123456789abcdef'
         for offset in range(26):
             # A single hex digit encodes 4 bits where as our previous encoding was 2.
-            hex_index = position_for_card[offset * 2 + 0] * 4 + position_for_card[offset * 2 + 1]
+            hex_index = position_for_card[offset * 2 +
+                                          0] * 4 + position_for_card[offset * 2 + 1]
             identifier += hex_chars[hex_index]
         return identifier
 
@@ -122,11 +124,13 @@ class Deal(object):
         return str(identifier)
 
     def to_json(self, **kwargs):
-        deal_dict = dict([(position.name.lower(), hand.cdhs_dot_string()) for position, hand in enumerate(self.hands)])
+        deal_dict = dict([(position.name.lower(), hand.cdhs_dot_string())
+                         for position, hand in enumerate(self.hands)])
         return json.dumps(deal_dict, **kwargs)
 
     def pretty_one_line(self):
-        pretty_position = lambda position: "%s: %s" % (position.char, self.hand_for(position).pretty_one_line())
+        def pretty_position(position): return "%s: %s" % (
+            position.char, self.hand_for(position).pretty_one_line())
         return " ".join(map(pretty_position, POSITIONS))
 
     def hand_for(self, position):
@@ -138,6 +142,7 @@ class Deal(object):
             for suit in SUITS:
                 for card in hand.cards_in_suit(suit):
                     card_identifier = Card.identifier_for_card(suit, card)
-                    assert card_identifier not in all_cards, ("Already seen %s" % Card.card_name(suit, card))
+                    assert card_identifier not in all_cards, ("Already seen %s" % Card.card_name(
+                        suit, card))
                     all_cards.add(card_identifier)
         assert len(all_cards) == 52

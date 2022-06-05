@@ -69,7 +69,8 @@ class MinimumCombinedSupportPoints(Constraint):
         self.use_partners_last_suit = use_partners_last_suit
 
     def expr(self, history, call):
-        implied_min_points = max(0, self.min_points - history.partner.min_points)
+        implied_min_points = max(
+            0, self.min_points - history.partner.min_points)
         suit = call.strain
         if self.use_partners_last_suit:
             assert annotations.Artificial not in history.partner.annotations_for_last_call
@@ -163,12 +164,15 @@ class SupportForMultipleSuits(Constraint):
 
     def _support_for_suits(self, suits, history):
         if len(suits) == 3:
-            three_card_support_expr = z3.And([expr_for_suit(suit) >= 3 for suit in suits])
-            four_card_support_expr = z3.Or([self._four_in_almost_every_suit(missing_suit, suits) for missing_suit in suits])
+            three_card_support_expr = z3.And(
+                [expr_for_suit(suit) >= 3 for suit in suits])
+            four_card_support_expr = z3.Or([self._four_in_almost_every_suit(
+                missing_suit, suits) for missing_suit in suits])
             return z3.And(three_card_support_expr, four_card_support_expr)
         if len(suits) == 2:
             return z3.And([expr_for_suit(suit) >= 4 for suit in suits])
-        assert False, "%s only supports 2 or 3 unbid suits, found %d: %s" % (self.__class__, len(suits), history.call_history)
+        assert False, "%s only supports 2 or 3 unbid suits, found %d: %s" % (
+            self.__class__, len(suits), history.call_history)
 
 
 class SupportForUnbidSuits(SupportForMultipleSuits):
@@ -239,7 +243,6 @@ class LongestOfPartnersSuits(Constraint):
         return z3.And([suit_expr >= expr_for_suit(suit) for suit in history.partner.bid_suits if suit != call.strain])
 
 
-
 class TwoOfTheTopThree(Constraint):
     def expr(self, history, call):
         return (
@@ -279,7 +282,7 @@ class OpeningRuleConstraint(Constraint):
         if history.rho.last_call is None or history.partner.last_call is None or history.lho.last_call is None:
             return model.rule_of_twenty
         # FIXME: We play rule-of-nineteen, but it's inconsistent with some test cases
-        #if history.lho.last_call is None:
+        # if history.lho.last_call is None:
         #    return model.rule_of_nineteen
         return model.rule_of_fifteen
 

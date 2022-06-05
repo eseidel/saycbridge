@@ -8,7 +8,6 @@ from __future__ import division
 from builtins import map
 from builtins import range
 from builtins import object
-from past.utils import old_div
 import math
 import random
 import itertools
@@ -19,8 +18,10 @@ from .card import Card
 
 class Hand(object):
     def __init__(self, cards_by_suit):
-        hand_sorter = lambda cards: "".join(sorted(cards, key=Card.index_for_card, reverse=True))
-        self.cards_by_suit_index = list(map(hand_sorter, list(map(str.upper, cards_by_suit))))
+        def hand_sorter(cards): return "".join(
+            sorted(cards, key=Card.index_for_card, reverse=True))
+        self.cards_by_suit_index = list(
+            map(hand_sorter, list(map(str.upper, cards_by_suit))))
         self._validate()
 
     @classmethod
@@ -34,7 +35,8 @@ class Hand(object):
         return Hand(cards_by_suit_index)
 
     def _validate(self):
-        assert sum([self.length_of_suit(suit) for suit in SUITS]) == 13, self.cards_by_suit_index
+        assert sum([self.length_of_suit(suit)
+                   for suit in SUITS]) == 13, self.cards_by_suit_index
 
     # This is also referred to as "pbn notation": http://www.tistis.nl/pbn/
     # "The cards of each hand are given in the order:  spades, hearts, diamonds, clubs."
@@ -48,7 +50,8 @@ class Hand(object):
 
     def play_card(self, suit, card_value):
         assert card_value in self.cards_by_suit_index[suit.index]
-        self.cards_by_suit_index[suit.index] = self.cards_by_suit_index[suit.index].replace(card_value, '')
+        self.cards_by_suit_index[suit.index] = self.cards_by_suit_index[suit.index].replace(
+            card_value, '')
 
     @classmethod
     def from_cdhs_string(cls, string):
@@ -165,7 +168,7 @@ class Hand(object):
         for suit in SUITS:
             length = self.length_of_suit(suit)
             adverse_holding = 13 - length - partner_min_lengths[suit.index]
-            adverse_holding_per_hand = math.ceil(old_div(adverse_holding, 2))
+            adverse_holding_per_hand = math.ceil(adverse_holding // 2)
 
             fast_winners, slow_winners = self._runnability(suit)
             if fast_winners >= adverse_holding_per_hand:
@@ -209,9 +212,12 @@ class Hand(object):
 
         minimum_trump_points = {2: 1, 1: 2, 0: 3}
         four_plus_trump_points = {2: 1, 1: 3, 0: 5}
-        short_suit_points = minimum_trump_points if self.length_of_suit(trump) < 4 else four_plus_trump_points
-        support_bonus = sum([short_suit_points.get(self.length_of_suit(suit), 0) for suit in SUITS if suit != trump])
-        support_bonus += self._support_point_adjustment_for_non_working_honors(trump)
+        short_suit_points = minimum_trump_points if self.length_of_suit(
+            trump) < 4 else four_plus_trump_points
+        support_bonus = sum([short_suit_points.get(
+            self.length_of_suit(suit), 0) for suit in SUITS if suit != trump])
+        support_bonus += self._support_point_adjustment_for_non_working_honors(
+            trump)
         return support_bonus + self.high_card_points()
 
     def generic_support_points(self):

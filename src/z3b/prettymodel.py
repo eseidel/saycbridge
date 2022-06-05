@@ -3,7 +3,6 @@ from __future__ import print_function
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-from past.builtins import cmp
 from builtins import zip
 from builtins import str
 from builtins import map
@@ -13,10 +12,11 @@ from core.hand import Hand
 from core.suit import SUITS
 import z3
 
+
 def _suit_index(name):
     suits = ('clubs', 'diamonds', 'hearts', 'spades')
     if name not in suits:
-        return len(suits) + 1 # Sort last
+        return len(suits) + 1  # Sort last
     return suits.index(name)
 
 

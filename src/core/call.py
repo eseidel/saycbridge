@@ -3,7 +3,7 @@ from __future__ import absolute_import
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-from past.builtins import cmp
+from functools import total_ordering
 from builtins import range
 from builtins import object
 from .suit import *
@@ -26,6 +26,7 @@ def _values_between(start, stop, iterable):
 # Call objects should be global singletons and thus immutable.
 
 
+@total_ordering
 class Call(object):
     def __init__(self, name):
         self.name = name.upper()
@@ -85,25 +86,23 @@ class Call(object):
     def __hash__(self):
         return hash(self.name)
 
-    def __cmp__(self, other):
+    def __lt__(self, other):
         if other is None:
             # We should never need this, but this sorts Call() objects after None.
             # FIXME: 'None not in calls' seems to require call.__cmp__(None), perhaps this is a Python 2.5 bug?
-            return 1
+            return False
         # This will order all non-contracts before contract bids.
         # So we'll end up with 'P', 'X', 'XX', '1C', ... '7N'.
         if self.is_contract() != other.is_contract():
-            if other.is_contract():
-                return -1
-            return 1
+            return other.is_contract()
         if not self.is_contract():
             # This should return 'P', 'X', 'XX' which seems reasonable.
-            return cmp(self.name, other.name)
+            return self.name < other.name
         # Level comparisons are more important than suit comparisons, so 1S will be before 2C.
         if self.level != other.level:
-            return cmp(self.level, other.level)
+            return self.level < other.level
         # Using the suit enum, this comparison is very easy and will correctly order C, D, H, S
-        return cmp(self.strain, other.strain)
+        return self.strain < other.strain
 
     # These should also operate on Call objects and we should use map(Call.name, calls)
     @classmethod

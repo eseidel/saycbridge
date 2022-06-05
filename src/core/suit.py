@@ -2,13 +2,14 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-from past.builtins import cmp
+from functools import total_ordering
 from builtins import map
 from builtins import range
 from builtins import object
 from third_party.memoized import memoized
 
 
+@total_ordering
 class Strain(object):
     def __init__(self, index, this_should_not_be_called_directly=False):
         assert(this_should_not_be_called_directly)
@@ -29,14 +30,11 @@ class Strain(object):
     def __eq__(self, other):
         return other and self.index == other.index
 
-    def __ne__(self, other):
-        return not self.__eq__(other)
+    def __lt__(self, other):
+        return self.index < other.index
 
     def __hash__(self):
         return hash(self.index)
-
-    def __cmp__(self, other):
-        return cmp(self.index, other.index)
 
     @staticmethod
     @memoized
@@ -61,7 +59,7 @@ class Strain(object):
         return self.name[0]
 
     def other_minor(self):
-        assert suit in MINORS
+        assert self in MINORS
         return DIAMONDS if self == CLUBS else CLUBS
 
     def other_major(self):

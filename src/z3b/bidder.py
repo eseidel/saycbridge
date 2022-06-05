@@ -10,7 +10,6 @@ from builtins import filter
 from builtins import map
 from builtins import str
 from builtins import range
-from past.utils import old_div
 from builtins import object
 from core.call import Call
 from core.callexplorer import CallExplorer
@@ -166,7 +165,8 @@ class History(object):
         self._annotations_for_last_call = annotations if annotations else []
         self._constraints_for_last_call = constraints if constraints else []
         self._rule_for_last_call = rule
-        self.call_history = copy.deepcopy(self._previous_history.call_history) if self._previous_history else CallHistory()
+        self.call_history = copy.deepcopy(
+            self._previous_history.call_history) if self._previous_history else CallHistory()
         if call:
             self.call_history.calls.append(call)
 
@@ -209,7 +209,8 @@ class History(object):
     @memoized
     def _solver(self):
         previous_history = self._four_calls_ago
-        solver = previous_history._solver.take() if previous_history else _solver_pool.borrow()
+        solver = previous_history._solver.take(
+        ) if previous_history else _solver_pool.borrow()
         solver.add(self._constraints_for_last_call)
         return solver
 
@@ -277,7 +278,8 @@ class History(object):
         return chain.from_iterable(self._walk_annotations())
 
     def is_consistent(self, position, constraints=None):
-        constraints = constraints if constraints is not None else z3.BoolVal(True)
+        constraints = constraints if constraints is not None else z3.BoolVal(
+            True)
         history = self._history_after_last_call_for(position)
         if not history:
             solver = _solver_pool.borrow()
@@ -334,7 +336,7 @@ class History(object):
         if lo == hi:
             return hi
         assert lo < hi
-        pos = int(old_div((lo + hi), 2))
+        pos = int((lo + hi) // 2)
         if predicate(pos):
             return self._lower_bound(predicate, lo, pos)
         return self._lower_bound(predicate, pos + 1, hi)
@@ -342,7 +344,8 @@ class History(object):
     @memoized
     def _solve_for_min_points(self):
         solver = self._solver()
-        predicate = lambda points: is_possible(solver, model.playing_points == points)
+        def predicate(points): return is_possible(
+            solver, model.playing_points == points)
         if predicate(0):
             return 0
         return self._lower_bound(predicate, 1, 37)
@@ -455,7 +458,8 @@ class PossibleCalls(object):
         for call, priority in self._calls_and_priorities:
             if self._is_dominated(priority, maximal_calls_and_priorities):
                 continue
-            maximal_calls_and_priorities = [max_call_max_priority for max_call_max_priority in maximal_calls_and_priorities if not self.ordering.lt(max_call_max_priority[1], priority)]
+            maximal_calls_and_priorities = [max_call_max_priority for max_call_max_priority in maximal_calls_and_priorities if not self.ordering.lt(
+                max_call_max_priority[1], priority)]
             maximal_calls_and_priorities.append([call, priority])
         return maximal_calls_and_priorities
 
@@ -483,26 +487,32 @@ class Bidder(object):
             rule_selector = RuleSelector(self.system, history, expected_call)
 
             # Compute inter-bid priorities (priority) for each using the hand.
-            possible_calls = rule_selector.possible_calls_for_hand(hand, expected_call)
+            possible_calls = rule_selector.possible_calls_for_hand(
+                hand, expected_call)
             maximal_calls_and_priorities = possible_calls.maximal_calls_and_priorities()
             # We don't currently support tie-breaking priorities, but we do have some bids that
             # we don't make without a planner.
-            no_planning_filter = lambda call_priority_tuple: not rule_selector.rule_for_call(call_priority_tuple[0]).requires_planning
-            maximal_calls_and_priorities = list(filter(no_planning_filter, maximal_calls_and_priorities))
+            def no_planning_filter(call_priority_tuple): return not rule_selector.rule_for_call(
+                call_priority_tuple[0]).requires_planning
+            maximal_calls_and_priorities = list(
+                filter(no_planning_filter, maximal_calls_and_priorities))
             if not maximal_calls_and_priorities:
-                return None # If we failed to find any call, this is an error.
-            maximal_calls, maximal_priorities = list(zip(*maximal_calls_and_priorities))
+                return None  # If we failed to find any call, this is an error.
+            maximal_calls, maximal_priorities = list(
+                zip(*maximal_calls_and_priorities))
             if len(maximal_calls) != 1:
                 rules = list(map(rule_selector.rule_for_call, maximal_calls))
                 call_names = [call.name for call in maximal_calls]
-                print("WARNING: Unordered: %s rules: %s priorities: %s" % (call_names, rules, maximal_priorities))
+                print("WARNING: Unordered: %s rules: %s priorities: %s" %
+                      (call_names, rules, maximal_priorities))
                 return None
 
             call = maximal_calls[0]
             return CallSelection(call, rule_selector)
 
     def find_call_for(self, hand, call_history, expected_call=None):
-        call_selection = self.call_selection_for(hand, call_history, expected_call)
+        call_selection = self.call_selection_for(
+            hand, call_history, expected_call)
         if not call_selection:
             return None
         return call_selection.call
@@ -542,7 +552,8 @@ class RuleSelector(object):
                     # FIXME: It's lame that enum's < is backwards.
                     if category < existing_category:
                         if self.explain and call == self.expected_call:
-                            print("%s is higher category than %s" % (rule.name, str(maximal[call])))
+                            print("%s is higher category than %s" %
+                                  (rule.name, str(maximal[call])))
                         maximal[call] = (category, [rule])
                     elif category == existing_category:
                         existing_rules.append(rule)
@@ -551,7 +562,8 @@ class RuleSelector(object):
         for call, best in maximal.items():
             category, rules = best
             if len(rules) > 1:
-                print("WARNING: Multiple rules have maximal category (%s) for %s: %s over: %s" % (category, call, rules, self.history.call_history))
+                print("WARNING: Multiple rules have maximal category (%s) for %s: %s over: %s" % (
+                    category, call, rules, self.history.call_history))
             else:
                 result[call] = rules[0]
         return result
@@ -569,8 +581,10 @@ class RuleSelector(object):
                 for unmade_priority, unmade_z3_meaning in unmade_rule.meaning_of(self.history, unmade_call):
                     if self.system.priority_ordering.lt(priority, unmade_priority):
                         if self.explain and self.expected_call == call:
-                            print("Adding negation %s (%s) to %s:" % (unmade_rule.name, unmade_call.name, rule.name))
-                            print(" %s" % z3.simplify(z3.Not(unmade_z3_meaning)))
+                            print("Adding negation %s (%s) to %s:" %
+                                  (unmade_rule.name, unmade_call.name, rule.name))
+                            print(" %s" % z3.simplify(
+                                z3.Not(unmade_z3_meaning)))
                         situational_exprs.append(z3.Not(unmade_z3_meaning))
             situations.append(z3.And(situational_exprs))
 
@@ -623,7 +637,8 @@ class HistoryCache(object):
         return History(), call_history.calls
 
     def add(self, history):
-        call_string_and_history = (history.call_history.calls_string(), history)
+        call_string_and_history = (
+            history.call_history.calls_string(), history)
         self.lru.append(call_string_and_history)
 
 
@@ -640,7 +655,8 @@ class Interpreter(object):
             print(call.name)
 
         expected_call = call if explain else None
-        selector = RuleSelector(self.system, history, expected_call=expected_call, explain=explain)
+        selector = RuleSelector(self.system, history,
+                                expected_call=expected_call, explain=explain)
 
         rule = selector.rule_for_call(call)
         if not rule:
@@ -664,7 +680,9 @@ class Interpreter(object):
                 history = self.extend_history(history, call, explain=explain)
             except InconsistentHistoryException as e:
                 if explain:
-                    print("WARNING: History is not consistent, ignoring %s from %s" % (call.name, e.rule))
+                    print("WARNING: History is not consistent, ignoring %s from %s" % (
+                        call.name, e.rule))
                     print(e.constraints)
-                history = history.extend_with(call, [], model.NO_CONSTRAINTS, None)
+                history = history.extend_with(
+                    call, [], model.NO_CONSTRAINTS, None)
         return history

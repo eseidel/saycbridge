@@ -10,7 +10,7 @@ python = "*"
 z3-solver = "^4.8.17"
 
 [tool.poetry.dev-dependencies]
-unittest2 = "^1.1.0"
+unittest = "^0.0"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

@@ -5,7 +5,7 @@
 
 from __future__ import print_function
 import logging
-import unittest2
+import unittest
 import sys
 
 import find_src
@@ -49,11 +49,11 @@ if __name__ == '__main__':
     if '-p' in sys.argv:
         sys.argv.remove('-p')
         import cProfile as profile
-        profile.run("unittest2.main()", "profile")
+        profile.run("unittest.main()", "profile")
         print("Use 'python -m pstats profile' to see results")
     else:
         try:
-            unittest2.main()
+            unittest.main()
         except KeyboardInterrupt:
             # Just quietly exit.
             pass

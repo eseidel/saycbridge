@@ -2,14 +2,15 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import unittest2
+import unittest
 from core.callexplorer import *
 
 
-class CallExplorerTest(unittest2.TestCase):
+class CallExplorerTest(unittest.TestCase):
     def _assert_histories(self, glob_string, histories):
-    	explorer = CallExplorer()
-        self.assertEqual(sorted([history.calls_string() for history in explorer.history_glob(glob_string)]), sorted(histories))
+        explorer = CallExplorer()
+        self.assertEqual(sorted([history.calls_string(
+        ) for history in explorer.history_glob(glob_string)]), sorted(histories))
 
     def test_history_glob(self):
         self._assert_histories("", [])
@@ -25,4 +26,4 @@ class CallExplorerTest(unittest2.TestCase):
 
 
 if __name__ == '__main__':
-    unittest2.main()
+    unittest.main()

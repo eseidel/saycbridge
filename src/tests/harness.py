@@ -7,14 +7,13 @@ from __future__ import print_function
 from builtins import str
 from builtins import map
 from builtins import range
-from past.utils import old_div
 from builtins import object
 import itertools
 import logging
 import multiprocessing
 import sys
 import traceback
-import unittest2
+import unittest
 
 from core.call import Call
 from core.callhistory import CallHistory, Vulnerability
@@ -207,11 +206,7 @@ class ResultsAggregator(object):
         total_pass = total_tests - self._total_failures
 
 
-<< << << < HEAD
-percent = 100.0 * total_pass / total_tests if total_tests else 0
-== == == =
-percent = old_div(100.0 * total_pass, total_tests) if total_tests else 0
->>>>>> > c7cd551(Attempt to convert to python3)
+percent = 100.0 * total_pass // total_tests if total_tests else 0
 print("Pass %s (%.1f%%) of %s total hands" %
       (total_pass, percent, total_tests))
 
@@ -245,7 +240,7 @@ def _run_test(test):
     return result
 
 
-class TestHarness(unittest2.TestCase):
+class TestHarness(unittest.TestCase):
     use_multi_process = True
     test_shard_size = 10
 

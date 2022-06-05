@@ -28,12 +28,15 @@ categories = enum.Enum(
 )
 
 # This class exists so that we can add asserts specific to how how orderings work for saycbridge.
+
+
 class RuleOrdering(object):
     def __init__(self):
         self.ordering = ordering.Ordering()
 
     def _check_key(self, key):
-        assert not hasattr(key, '__dict__') or not ('priority' in key.__dict__), "%s has a priority property and is being used as a priority" % key
+        assert not hasattr(key, '__dict__') or not (
+            'priority' in key.__dict__), "%s has a priority property and is being used as a priority" % key
         return key
 
     def order(self, *args):
@@ -73,7 +76,8 @@ class CompiledRule(object):
 
     @property
     def all_priorities(self):
-        conditional_priorities = [priority for _, priority in list(self.conditional_priorities_per_call.values())]
+        conditional_priorities = [priority for _, priority in list(
+            self.conditional_priorities_per_call.values())]
         return set([self.default_priority] + list(self.priorities_per_call.values()) + conditional_priorities)
 
     @property
@@ -82,7 +86,8 @@ class CompiledRule(object):
 
     def annotations_for_call(self, call):
         if self.dsl_rule.annotations_per_call:
-            per_call_annotations = self.dsl_rule.annotations_per_call.get(call.name)
+            per_call_annotations = self.dsl_rule.annotations_per_call.get(
+                call.name)
             if per_call_annotations:
                 return self._annotations | set(RuleCompiler._ensure_list(per_call_annotations))
         return self._annotations
@@ -124,30 +129,37 @@ class CompiledRule(object):
 
     def _constraint_exprs_for_call(self, history, call):
         exprs = []
-        per_call_constraints, _ = self.per_call_constraints_and_priority(history, call)
+        per_call_constraints, _ = self.per_call_constraints_and_priority(
+            history, call)
         if per_call_constraints:
-            exprs.extend(RuleCompiler.exprs_from_constraints(per_call_constraints, history, call))
-        exprs.extend(RuleCompiler.exprs_from_constraints(self.shared_constraints, history, call))
+            exprs.extend(RuleCompiler.exprs_from_constraints(
+                per_call_constraints, history, call))
+        exprs.extend(RuleCompiler.exprs_from_constraints(
+            self.shared_constraints, history, call))
         return exprs
 
     def meaning_of(self, history, call):
         try:
             exprs = self._constraint_exprs_for_call(history, call)
-            per_call_conditionals = self.conditional_priorities_per_call.get(call.name)
+            per_call_conditionals = self.conditional_priorities_per_call.get(
+                call.name)
             if per_call_conditionals:
                 for condition, priority in per_call_conditionals:
-                    condition_exprs = RuleCompiler.exprs_from_constraints(condition, history, call)
+                    condition_exprs = RuleCompiler.exprs_from_constraints(
+                        condition, history, call)
                     yield priority, z3.And(exprs + condition_exprs)
 
             for condition, priority in self.dsl_rule.conditional_priorities:
-                condition_exprs = RuleCompiler.exprs_from_constraints(condition, history, call)
+                condition_exprs = RuleCompiler.exprs_from_constraints(
+                    condition, history, call)
                 yield priority, z3.And(exprs + condition_exprs)
 
             _, priority = self.per_call_constraints_and_priority(history, call)
             assert priority
             yield priority, z3.And(exprs)
         except:
-            print("Exception compiling meaning_of %s over %s with %s" % (call, history.call_history.calls_string(), self))
+            print("Exception compiling meaning_of %s over %s with %s" %
+                  (call, history.call_history.calls_string(), self))
             raise
 
     # constraints accepts various forms including:
@@ -161,7 +173,8 @@ class CompiledRule(object):
         try:
             list(constraints_tuple)
         except TypeError:
-            priority = self.priorities_per_call.get(call.name, self.default_priority)
+            priority = self.priorities_per_call.get(
+                call.name, self.default_priority)
             constraints_tuple = (constraints_tuple, priority)
         assert len(constraints_tuple) == 2
         # FIXME: Is it possible to not end up with a priority anymore?
@@ -185,7 +198,7 @@ class RuleCompiler(object):
 
     @classmethod
     def _collect_from_ancestors(cls, dsl_class, property_name):
-        getter = lambda ancestor: getattr(ancestor, property_name, [])
+        def getter(ancestor): return getattr(ancestor, property_name, [])
         # The DSL expects that parent preconditions, etc. apply before child ones.
         return list(map(getter, reversed(dsl_class.__mro__)))
 
@@ -197,7 +210,8 @@ class RuleCompiler(object):
 
     @classmethod
     def _joined_list_from_ancestors(cls, dsl_class, property_name):
-        values_from_ancestors = cls._collect_from_ancestors(dsl_class, property_name)
+        values_from_ancestors = cls._collect_from_ancestors(
+            dsl_class, property_name)
         mapped_values = list(map(cls._ensure_list, values_from_ancestors))
         return list(chain.from_iterable(mapped_values))
 
@@ -207,7 +221,8 @@ class RuleCompiler(object):
             call_names = cls._ensure_list(dsl_class.call_names)
         elif priorities_per_call:
             call_names = list(priorities_per_call.keys())
-            assert dsl_class.shared_constraints or list(priorities_per_call.keys()) == list(constraints.keys())
+            assert dsl_class.shared_constraints or list(
+                priorities_per_call.keys()) == list(constraints.keys())
         else:
             call_names = list(constraints.keys())
         assert call_names, "%s: call_names or priorities_per_call or constraints map is required." % dsl_class.__name__
@@ -215,20 +230,23 @@ class RuleCompiler(object):
 
     @classmethod
     def _flatten_tuple_keyed_dict(cls, original_dict):
-        flattened_dict  = {}
+        flattened_dict = {}
         for tuple_key, value in original_dict.items():
             if hasattr(tuple_key, '__iter__'):
                 for key in tuple_key:
-                    assert key not in flattened_dict, "Key (%s) was listed twice in %s" % (key, original_dict)
+                    assert key not in flattened_dict, "Key (%s) was listed twice in %s" % (
+                        key, original_dict)
                     flattened_dict[key] = value
             else:
-                assert tuple_key not in flattened_dict, "Key (%s) was listed twice in %s" % (tuple_key, original_dict)
+                assert tuple_key not in flattened_dict, "Key (%s) was listed twice in %s" % (
+                    tuple_key, original_dict)
                 flattened_dict[tuple_key] = value
         return flattened_dict
 
     @classmethod
     def _compile_annotations(cls, dsl_class):
-        compiled_set = set(cls._joined_list_from_ancestors(dsl_class, 'annotations'))
+        compiled_set = set(cls._joined_list_from_ancestors(
+            dsl_class, 'annotations'))
         # FIXME: We should probably assert that no more than one of the "implies_artificial"
         # annotations are in this set at once.  Those all have distinct meanings.
         if implies_artificial.intersection(compiled_set):
@@ -238,20 +256,22 @@ class RuleCompiler(object):
     @classmethod
     def _validate_rule(cls, dsl_class):
         # Rules have to apply some constraints to the hand.
-        assert dsl_class.constraints or dsl_class.shared_constraints, "" + dsl_class.name() + " is missing constraints"
+        assert dsl_class.constraints or dsl_class.shared_constraints, "" + \
+            dsl_class.name() + " is missing constraints"
         # conditional_priorities doesn't work with self.constraints
         assert not dsl_class.conditional_priorities or not dsl_class.constraints
         assert not dsl_class.conditional_priorities or dsl_class.call_names
         properties = list(dsl_class.__dict__.keys())
         public_properties = [p for p in properties if not p.startswith("_")]
         unexpected_properties = set(public_properties) - Rule.ALLOWED_KEYS
-        assert not unexpected_properties, "%s defines unexpected properties: %s" % (dsl_class, unexpected_properties)
+        assert not unexpected_properties, "%s defines unexpected properties: %s" % (
+            dsl_class, unexpected_properties)
 
     @classmethod
     def _default_priority(cls, dsl_rule):
         if dsl_rule.priority:
             return dsl_rule.priority
-        return dsl_rule # Use the class as the default priority.
+        return dsl_rule  # Use the class as the default priority.
 
     @classmethod
     @memoized
@@ -259,18 +279,24 @@ class RuleCompiler(object):
         try:
             cls._validate_rule(dsl_rule)
             constraints = cls._flatten_tuple_keyed_dict(dsl_rule.constraints)
-            priorities_per_call = cls._flatten_tuple_keyed_dict(dsl_rule.priorities_per_call)
+            priorities_per_call = cls._flatten_tuple_keyed_dict(
+                dsl_rule.priorities_per_call)
             # Unclear if compiled results should be memoized on the rule?
             return CompiledRule(dsl_rule,
-                known_calls=cls._compile_known_calls(dsl_rule, constraints, priorities_per_call),
-                annotations=cls._compile_annotations(dsl_rule),
-                preconditions=cls._joined_list_from_ancestors(dsl_rule, 'preconditions'),
-                shared_constraints=cls._joined_list_from_ancestors(dsl_rule, 'shared_constraints'),
-                constraints=constraints,
-                default_priority=cls._default_priority(dsl_rule),
-                conditional_priorities_per_call=cls._flatten_tuple_keyed_dict(dsl_rule.conditional_priorities_per_call),
-                priorities_per_call=priorities_per_call,
-            )
+                                known_calls=cls._compile_known_calls(
+                                    dsl_rule, constraints, priorities_per_call),
+                                annotations=cls._compile_annotations(dsl_rule),
+                                preconditions=cls._joined_list_from_ancestors(
+                                    dsl_rule, 'preconditions'),
+                                shared_constraints=cls._joined_list_from_ancestors(
+                                    dsl_rule, 'shared_constraints'),
+                                constraints=constraints,
+                                default_priority=cls._default_priority(
+                                    dsl_rule),
+                                conditional_priorities_per_call=cls._flatten_tuple_keyed_dict(
+                                    dsl_rule.conditional_priorities_per_call),
+                                priorities_per_call=priorities_per_call,
+                                )
         except:
             print("Exception compiling %s" % dsl_rule)
             raise
@@ -283,18 +309,22 @@ class Rule(object):
     # All properties with [] (empty list) defaults, auto-collect
     # from parent classes.  foo = Parent.foo + [bar] is never necessary in this DSL.
     annotations = []
-    annotations_per_call = {} # { '1C' : (annotations.Foo, annotations.Bar) }
-    call_names = None # For when all calls share the same constraints
-    category = categories.Default # Intra-bid priority
-    conditional_priorities = [] # e.g. [(condition, priority), (condition, priority)]
-    conditional_priorities_per_call = {} # e.g. {'1C': [(condition, priority), (condition, priority)]}
-    constraints = {} # { '1C' : constraints, '1D': (constraints, priority), '1H' : constraints }
+    annotations_per_call = {}  # { '1C' : (annotations.Foo, annotations.Bar) }
+    call_names = None  # For when all calls share the same constraints
+    category = categories.Default  # Intra-bid priority
+    # e.g. [(condition, priority), (condition, priority)]
+    conditional_priorities = []
+    # e.g. {'1C': [(condition, priority), (condition, priority)]}
+    conditional_priorities_per_call = {}
+    # { '1C' : constraints, '1D': (constraints, priority), '1H' : constraints }
+    constraints = {}
     forcing = None
     preconditions = []
-    priorities_per_call = {} # { '1C': priority, '1D': another_priority }
-    priority = None # Defaults to the class if None.
+    priorities_per_call = {}  # { '1C': priority, '1D': another_priority }
+    priority = None  # Defaults to the class if None.
     requires_planning = False
-    shared_constraints = [] # constraints which apply to call possible call_names.
+    # constraints which apply to call possible call_names.
+    shared_constraints = []
     explanations_per_call = {}
     explanation = None
 
