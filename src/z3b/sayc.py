@@ -1,4 +1,5 @@
 
+from builtins import object
 from z3b.rules import *
 from z3b.cappelletti import *
 
@@ -10,7 +11,7 @@ def _get_subclasses(base_class):
     return subclasses
 
 def _concrete_rule_classes():
-    return filter(lambda cls: not cls.__subclasses__(), _get_subclasses(Rule))
+    return [cls for cls in _get_subclasses(Rule) if not cls.__subclasses__()]
 
 
 class StandardAmericanYellowCard(object):

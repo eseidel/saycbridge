@@ -3,6 +3,9 @@ from __future__ import absolute_import
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+from past.builtins import cmp
+from builtins import range
+from builtins import object
 from .suit import *
 from third_party.memoized import memoized
 
@@ -21,10 +24,13 @@ def _values_between(start, stop, iterable):
             break
 
 # Call objects should be global singletons and thus immutable.
+
+
 class Call(object):
     def __init__(self, name):
         self.name = name.upper()
-        self.strain = None if self.name in ('P', 'X', 'XX') else Strain.from_char(self.name[1])
+        self.strain = None if self.name in (
+            'P', 'X', 'XX') else Strain.from_char(self.name[1])
         self.level = int(self.name[0]) if self.is_contract() else None
         self._validate()
 
@@ -38,10 +44,12 @@ class Call(object):
 
     def _validate(self):
         if self.is_contract():
-            assert len(self.name) == 2, "%s is not a valid call name" % self.name
+            assert len(
+                self.name) == 2, "%s is not a valid call name" % self.name
             assert self.level in range(8) and self.strain in STRAINS
         else:
-            assert self.name in ('P', 'X', 'XX'), "%s is not a valid call name" % self.name
+            assert self.name in (
+                'P', 'X', 'XX'), "%s is not a valid call name" % self.name
 
     @classmethod
     @memoized

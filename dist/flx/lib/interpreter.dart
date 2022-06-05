@@ -23,9 +23,9 @@ Future<List<CallInterpretation>> getInterpretations(CallHistory callHistory) {
   String url = _getUrl(callString: callHistory.calls.join(','));
   return _memoryCache.putIfAbsent(url, () async {
     try {
-      var uri = Uri.parse(url);
-      return json.decode(await http.read(uri)).map<CallInterpretation>((item) {
-        return CallInterpretation(
+      print(url);
+      return json.decode(await http.read(url)).map<CallInterpretation>((item) {
+        return new CallInterpretation(
           ruleName: item['rule_name'],
           knowledge: item['knowledge_string'],
           call: Call.fromName(item['call_name']),

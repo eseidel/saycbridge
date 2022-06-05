@@ -1,5 +1,6 @@
 # Python does not (yet) seem to provide automatic memoization.
 
+from builtins import object
 import functools
 
 

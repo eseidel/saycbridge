@@ -3,6 +3,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+from __future__ import print_function
+from builtins import object
 import operator
 import sys
 import find_src
@@ -17,9 +19,9 @@ import z3
 
 
 def _print_usage_and_exit():
-    print "USAGE: none-finder HISTORY"
-    print " HISTORY is space or comma separated"
-    print
+    print("USAGE: none-finder HISTORY")
+    print(" HISTORY is space or comma separated")
+    print()
     sys.exit(1)
 
 
@@ -46,10 +48,10 @@ class NoneFinder(object):
         solver.add(constraints_expr)
 
         if solver.check() == z3.unsat:
-            print "Calls found for all possible hands."
+            print("Calls found for all possible hands.")
         else:
             pretty_print_model(solver.model())
-            print expectation_line(hand_from_model(solver.model()), call_history), "# from none-finder"
+            print(expectation_line(hand_from_model(solver.model()), call_history), "# from none-finder")
 
 
 if __name__ == '__main__':

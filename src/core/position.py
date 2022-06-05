@@ -2,6 +2,9 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+from builtins import map
+from builtins import range
+from builtins import object
 from third_party.memoized import memoized
 
 
@@ -58,5 +61,5 @@ class Position(object):
 
 
 # FIXME: Should these move on to Position as Position.NORTH and Position.ALL?
-NORTH, EAST, SOUTH, WEST = map(Position.from_index, range(4))
+NORTH, EAST, SOUTH, WEST = list(map(Position.from_index, list(range(4))))
 POSITIONS = [NORTH, EAST, SOUTH, WEST]

@@ -1,8 +1,14 @@
+from __future__ import division
 from __future__ import print_function
 # Copyright (c) 2013 The SAYCBridge Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+from builtins import str
+from builtins import map
+from builtins import range
+from past.utils import old_div
+from builtins import object
 import itertools
 import logging
 import multiprocessing
@@ -49,7 +55,8 @@ class CompiledTest(object):
         history_string = expectation[2] if len(expectation) > 2 else ""
         vulnerability_string = expectation[3] if len(expectation) > 3 else None
         hand = Hand.from_cdhs_string(hand_string)
-        call_history = CallHistory.from_string(history_string, vulnerability_string=vulnerability_string)
+        call_history = CallHistory.from_string(
+            history_string, vulnerability_string=vulnerability_string)
         return cls(test_group, hand, call_history, expected_call)
 
     @property
@@ -74,7 +81,8 @@ class CompiledTest(object):
         while len(partial_history.calls) >= 4:
             expected_call = partial_history.calls[-4]
             partial_history = partial_history.copy_with_partial_history(-4)
-            subtests.append(CompiledTest(self.group, self.hand, partial_history, expected_call, self))
+            subtests.append(CompiledTest(self.group, self.hand,
+                            partial_history, expected_call, self))
         return subtests
 
 
@@ -90,9 +98,11 @@ class TestGroup(object):
         previous_call = self._seen_expectations.get(test_identifier)
         if previous_call:
             if previous_call != test.expected_call:
-                _log.error("Conflicting expectations for %s, %s != %s" % (test_identifier, previous_call, test.expected_call))
+                _log.error("Conflicting expectations for %s, %s != %s" % (
+                    test_identifier, previous_call, test.expected_call))
             elif not test.parent_test:
-                 _log.debug("%s is an explicit duplicate of an earlier test." % test_identifier)
+                _log.debug(
+                    "%s is an explicit duplicate of an earlier test." % test_identifier)
             else:
                 _log.debug("Ignoring dupliate subtest %s" % test_identifier)
             return
@@ -101,9 +111,11 @@ class TestGroup(object):
 
     def add_expectation_line(self, expectation):
         try:
-            test = CompiledTest.from_expectation_tuple_in_group(expectation, self)
+            test = CompiledTest.from_expectation_tuple_in_group(
+                expectation, self)
         except:
-            print("Exception compiling: %s in group %s" % (expectation, self.name))
+            print("Exception compiling: %s in group %s" %
+                  (expectation, self.name))
             raise
         self.add_test(test)
         for test in test.subtests:
@@ -117,7 +129,7 @@ class TestGroup(object):
 class ResultsAggregator(object):
     def __init__(self, groups):
         self.groups = groups
-        self._results_count_by_group = { group.name: 0 for group in self.groups }
+        self._results_count_by_group = {group.name: 0 for group in self.groups}
         self._results_by_identifier = {}
         self._group_has_printed = [False for group in self.groups]
         self._total_failures = 0
@@ -143,19 +155,23 @@ class ResultsAggregator(object):
             result.print_captured_logs()
 
             if result.exc_str:
-                _log.error("Exception during find_call_for %s %s: %s" % (test.hand.pretty_one_line(), test.call_history.calls_string(), result.call))
+                _log.error("Exception during find_call_for %s %s: %s" % (
+                    test.hand.pretty_one_line(), test.call_history.calls_string(), result.call))
                 _log.error(result.exc_str)
                 raise StopIteration
 
             if result.call and result.call == test.expected_call:
-                _log.info("PASS: %s for %s" % (test.expected_call, test.test_string))
+                _log.info("PASS: %s for %s" %
+                          (test.expected_call, test.test_string))
             else:
                 fail_count += 1
-                print("FAIL: %s (expected %s) for %s" % (result.call, test.expected_call, test.test_string))
+                print("FAIL: %s (expected %s) for %s" %
+                      (result.call, test.expected_call, test.test_string))
 
         # FIXME: We don't need to update _total_failures here.
         self._total_failures += fail_count
-        print("Pass %s of %s hands" % (len(group.tests) - fail_count, len(group.tests)))
+        print("Pass %s of %s hands" %
+              (len(group.tests) - fail_count, len(group.tests)))
         print()
 
     def add_results_callback(self, results):
@@ -172,23 +188,32 @@ class ResultsAggregator(object):
     # These were explicitly tested and matched some hand.
     @property
     def called_rule_names(self):
-        rule_names = map(lambda result: result.rule_name, self._results_by_identifier.values())
-        return set(map(str, filter(None, rule_names)))
+        rule_names = [result.rule_name for result in list(
+            self._results_by_identifier.values())]
+        return set(map(str, [_f for _f in rule_names if _f]))
 
     # These were tested via interpretation of a call_history.
     @property
     def interpreted_rule_names(self):
-        rule_name_tuples = map(lambda result: result.last_three_rule_names, self._results_by_identifier.values())
+        rule_name_tuples = [result.last_three_rule_names for result in list(
+            self._results_by_identifier.values())]
         # result.last_three_rule_names can be None.
-        rule_name_tuples = filter(None, rule_name_tuples)
+        rule_name_tuples = [_f for _f in rule_name_tuples if _f]
         rule_names = itertools.chain.from_iterable(rule_name_tuples)
-        return set(map(str, filter(None, rule_names)))
+        return set(map(str, [_f for _f in rule_names if _f]))
 
     def print_summary(self):
         total_tests = len(self._results_by_identifier)
         total_pass = total_tests - self._total_failures
-        percent = 100.0 * total_pass / total_tests if total_tests else 0
-        print("Pass %s (%.1f%%) of %s total hands" % (total_pass, percent, total_tests))
+
+
+<< << << < HEAD
+percent = 100.0 * total_pass / total_tests if total_tests else 0
+== == == =
+percent = old_div(100.0 * total_pass, total_tests) if total_tests else 0
+>>>>>> > c7cd551(Attempt to convert to python3)
+print("Pass %s (%.1f%%) of %s total hands" %
+      (total_pass, percent, total_tests))
 
 
 # Pickle gets mad at us if we make this a member or even static function.
@@ -202,14 +227,16 @@ def _run_test(test):
     output = outputcapture.OutputCapture()
     stdout, stderr = output.capture_output()
     try:
-        call_selection = bidder.call_selection_for(test.hand, test.call_history)
+        call_selection = bidder.call_selection_for(
+            test.hand, test.call_history)
         if call_selection:
             result.call = call_selection.call
             result.rule_name = str(call_selection.rule)
             result.fill_last_three_rule_names(call_selection)
 
             if result.last_three_rule_names and result.last_three_rule_names[-2] is None:
-                print("WARNING: Failed to interpret partner's last bid: %s" % test.call_history.copy_with_partial_history(-2))
+                print("WARNING: Failed to interpret partner's last bid: %s" %
+                      test.call_history.copy_with_partial_history(-2))
 
     except Exception:
         result.exc_str = ''.join(traceback.format_exception(*sys.exc_info()))
@@ -237,21 +264,23 @@ class TestHarness(unittest2.TestCase):
 
     def run_tests_single_process(self):
         # This follows the same logic-flow as the multi-process code, yet stays single threaded.
-        all_tests = list(itertools.chain.from_iterable(group.tests for group in self.groups))
+        all_tests = list(itertools.chain.from_iterable(
+            group.tests for group in self.groups))
         for x in range(0, len(all_tests), self.test_shard_size):
-            shard = all_tests[x : x + self.test_shard_size]
-            results = map(_run_test, shard)
+            shard = all_tests[x: x + self.test_shard_size]
+            results = list(map(_run_test, shard))
             self.results.add_results_callback(results)
 
     def run_tests_multi_process(self):
-        all_tests = list(itertools.chain.from_iterable(group.tests for group in self.groups))
+        all_tests = list(itertools.chain.from_iterable(
+            group.tests for group in self.groups))
         pool = multiprocessing.Pool()
         # FIXME: outstanding_jobs + map_async is a workaround for http://bugs.python.org/issue8296 (only fixed in python 3)
         outstanding_jobs = []
         for x in range(0, len(all_tests), self.test_shard_size):
             results = pool.map_async(
                 _run_test,
-                all_tests[x : x + self.test_shard_size],
+                all_tests[x: x + self.test_shard_size],
                 self.test_shard_size,
                 self.results.add_results_callback
             )
@@ -276,18 +305,21 @@ class TestHarness(unittest2.TestCase):
         all_rule_names = set(map(str, all_rules))
 
         # Don't expect to see rules which are marked "requires_planning".
-        non_planned_rules = filter(lambda rule: not rule.requires_planning, all_rules)
+        non_planned_rules = [
+            rule for rule in all_rules if not rule.requires_planning]
         non_planned_rule_names = set(map(str, non_planned_rules))
         called_rule_names = self.results.called_rule_names
         planned_rule_count = len(all_rule_names) - len(non_planned_rule_names)
-        print("Tested call generation of %s rules of %s total (excluding %s requires_planning rules)." % (len(called_rule_names), len(non_planned_rule_names), planned_rule_count))
+        print("Tested call generation of %s rules of %s total (excluding %s requires_planning rules)." % (
+            len(called_rule_names), len(non_planned_rule_names), planned_rule_count))
         uncalled_rule_names = non_planned_rule_names - called_rule_names
         if uncalled_rule_names:
             print("Never selected call from:")
             print("\n".join(sorted(uncalled_rule_names)))
 
         interpreted_rule_names = self.results.interpreted_rule_names
-        print("\nTested interpretation of %s rules of %s total." % (len(interpreted_rule_names), len(all_rule_names)))
+        print("\nTested interpretation of %s rules of %s total." %
+              (len(interpreted_rule_names), len(all_rule_names)))
         uninterpreted_rule_names = all_rule_names - interpreted_rule_names
         # FIXME: We should print these, but we have too many right now!
         # if uninterpreted_rule_names:
@@ -296,7 +328,8 @@ class TestHarness(unittest2.TestCase):
 
         never_tested_rule_names = uncalled_rule_names & uninterpreted_rule_names
         if uninterpreted_rule_names:
-            print("\n%s rules were never used for either bidding or interpretation:" % len(never_tested_rule_names))
+            print("\n%s rules were never used for either bidding or interpretation:" % len(
+                never_tested_rule_names))
             print("\n".join(sorted(never_tested_rule_names)))
 
     def test_main(self):
@@ -328,10 +361,12 @@ class TestResult(object):
             return
         from z3b.model import positions
         # These are in call-order, so we'd access partner's via names[-2].
-        last_three_positions = (positions.LHO, positions.Partner, positions.RHO)
+        last_three_positions = (
+            positions.LHO, positions.Partner, positions.RHO)
         # This history is prior to the call_selection's call.
         history = call_selection.rule_selector.history
-        self.last_three_rule_names = map(str, map(history.rule_for_last_call, last_three_positions))
+        self.last_three_rule_names = list(
+            map(str, list(map(history.rule_for_last_call, last_three_positions))))
 
     def save_captured_logs(self, stdout, stderr):
         self.stdout = stdout.getvalue()

@@ -3,6 +3,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+from __future__ import print_function
 import logging
 import sys
 import find_src
@@ -15,9 +16,9 @@ _log = logging.getLogger(__name__)
 
 
 def _print_usage_and_exit():
-    print "USAGE: rule-for-last-call HISTORY_GLOB"
-    print " HISTORY_GLOB is space or comma separated, * means 'any call'"
-    print "Will list the rule used for the last call in each possible history."
+    print("USAGE: rule-for-last-call HISTORY_GLOB")
+    print(" HISTORY_GLOB is space or comma separated, * means 'any call'")
+    print("Will list the rule used for the last call in each possible history.")
     sys.exit(1)
 
 
@@ -29,8 +30,8 @@ if __name__ == '__main__':
     interpreter = Interpreter()
 
     glob_string = " ".join(args)
-    print "Matching '%s':" % glob_string
-    print "history : z3 rule"
+    print("Matching '%s':" % glob_string)
+    print("history : z3 rule")
     for call_history in CallExplorer().history_glob(glob_string):
         history = interpreter.create_history(call_history)
-        print "%s : %s" % (call_history.calls_string(), history.rho.rule_for_last_call)
+        print("%s : %s" % (call_history.calls_string(), history.rho.rule_for_last_call))

@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+from builtins import object
 from z3b.preconditions import annotations
 from core import suit
 from z3b.model import positions

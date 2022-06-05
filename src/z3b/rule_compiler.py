@@ -3,6 +3,8 @@ from __future__ import print_function
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+from builtins import map
+from builtins import object
 from core.call import Call
 from itertools import chain
 from third_party.memoized import memoized
@@ -35,7 +37,7 @@ class RuleOrdering(object):
         return key
 
     def order(self, *args):
-        return self.ordering.order(*map(self._check_key, args))
+        return self.ordering.order(*list(map(self._check_key, args)))
 
     def lt(self, left, right):
         try:
@@ -71,8 +73,8 @@ class CompiledRule(object):
 
     @property
     def all_priorities(self):
-        conditional_priorities = [priority for _, priority in self.conditional_priorities_per_call.values()]
-        return set([self.default_priority] + self.priorities_per_call.values() + conditional_priorities)
+        conditional_priorities = [priority for _, priority in list(self.conditional_priorities_per_call.values())]
+        return set([self.default_priority] + list(self.priorities_per_call.values()) + conditional_priorities)
 
     @property
     def requires_planning(self):
@@ -185,7 +187,7 @@ class RuleCompiler(object):
     def _collect_from_ancestors(cls, dsl_class, property_name):
         getter = lambda ancestor: getattr(ancestor, property_name, [])
         # The DSL expects that parent preconditions, etc. apply before child ones.
-        return map(getter, reversed(dsl_class.__mro__))
+        return list(map(getter, reversed(dsl_class.__mro__)))
 
     @classmethod
     def _ensure_list(cls, value_or_list):
@@ -196,7 +198,7 @@ class RuleCompiler(object):
     @classmethod
     def _joined_list_from_ancestors(cls, dsl_class, property_name):
         values_from_ancestors = cls._collect_from_ancestors(dsl_class, property_name)
-        mapped_values = map(cls._ensure_list, values_from_ancestors)
+        mapped_values = list(map(cls._ensure_list, values_from_ancestors))
         return list(chain.from_iterable(mapped_values))
 
     @classmethod
@@ -204,17 +206,17 @@ class RuleCompiler(object):
         if dsl_class.call_names:
             call_names = cls._ensure_list(dsl_class.call_names)
         elif priorities_per_call:
-            call_names = priorities_per_call.keys()
-            assert dsl_class.shared_constraints or priorities_per_call.keys() == constraints.keys()
+            call_names = list(priorities_per_call.keys())
+            assert dsl_class.shared_constraints or list(priorities_per_call.keys()) == list(constraints.keys())
         else:
-            call_names = constraints.keys()
+            call_names = list(constraints.keys())
         assert call_names, "%s: call_names or priorities_per_call or constraints map is required." % dsl_class.__name__
-        return map(Call.from_string, call_names)
+        return list(map(Call.from_string, call_names))
 
     @classmethod
     def _flatten_tuple_keyed_dict(cls, original_dict):
         flattened_dict  = {}
-        for tuple_key, value in original_dict.iteritems():
+        for tuple_key, value in original_dict.items():
             if hasattr(tuple_key, '__iter__'):
                 for key in tuple_key:
                     assert key not in flattened_dict, "Key (%s) was listed twice in %s" % (key, original_dict)
@@ -240,8 +242,8 @@ class RuleCompiler(object):
         # conditional_priorities doesn't work with self.constraints
         assert not dsl_class.conditional_priorities or not dsl_class.constraints
         assert not dsl_class.conditional_priorities or dsl_class.call_names
-        properties = dsl_class.__dict__.keys()
-        public_properties = filter(lambda p: not p.startswith("_"), properties)
+        properties = list(dsl_class.__dict__.keys())
+        public_properties = [p for p in properties if not p.startswith("_")]
         unexpected_properties = set(public_properties) - Rule.ALLOWED_KEYS
         assert not unexpected_properties, "%s defines unexpected properties: %s" % (dsl_class, unexpected_properties)
 

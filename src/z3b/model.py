@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+from builtins import map
+from builtins import zip
 from z3b import enum
 import core.suit as suit
 import z3
@@ -13,14 +15,14 @@ _honor_values = (4, 3, 2, 1, 0)
 
 
 def _honor_vars(suit):
-    return map(z3.Int, map(("{}_of_" + suit.name.lower()).format, _honor_names))
+    return list(map(z3.Int, list(map(("{}_of_" + suit.name.lower()).format, _honor_names))))
 
 
 def _suit_count_var(suit):
     return z3.Int(suit.name.lower())
 
 
-clubs, diamonds, hearts, spades = map(_suit_count_var, suit.SUITS)
+clubs, diamonds, hearts, spades = list(map(_suit_count_var, suit.SUITS))
 
 
 def expr_for_suit(suit):
@@ -49,7 +51,7 @@ voids, singletons, doubletons = z3.Ints('voids singletons doubletons')
 
 def named_count_expr(count_name, count):
     exprs = []
-    suit_count_vars = map(expr_for_suit, suit.SUITS)
+    suit_count_vars = list(map(expr_for_suit, suit.SUITS))
     suit_matches_count_vars = [z3.Int("%s_in_%s" % (count_name, s.name.lower())) for s in suit.SUITS] # void_in_spades, etc.
     exprs = [
         # FIXME: Can z3 support writing this as "void_in_spades == (spades == 0)"?

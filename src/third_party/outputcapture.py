@@ -27,9 +27,12 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
+from future import standard_library
+standard_library.install_aliases()
+from builtins import object
 import logging
 import sys
-from StringIO import StringIO
+from io import StringIO
 
 
 class OutputCapture(object):

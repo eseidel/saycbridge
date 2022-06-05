@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+from builtins import object
 from z3b import enum
 from z3b.constraints import *
 from z3b.model import *

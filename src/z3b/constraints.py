@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+from builtins import object
 from z3b.model import expr_for_suit
 import z3b.model as model
 import z3
