@@ -3,6 +3,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+from __future__ import print_function
 import logging
 import sys
 import find_src
@@ -33,9 +34,9 @@ def configure_logging(is_verbose):
 
 
 def _print_usage_and_exit():
-    print "USAGE: explain HISTORY"
-    print " HISTORY is space or comma separated"
-    print
+    print("USAGE: explain HISTORY")
+    print(" HISTORY is space or comma separated")
+    print()
     sys.exit(1)
 
 if __name__ == '__main__':
@@ -53,11 +54,11 @@ if __name__ == '__main__':
     call_history = CallHistory.from_string(history_string)
     interpreter = Interpreter()
     history = interpreter.create_history(call_history, explain=True)
-    print
-    print "Points: %s-%s" % (history.rho.min_points, history.rho.max_points)
+    print()
+    print("Points: %s-%s" % (history.rho.min_points, history.rho.max_points))
     for suit in SUITS:
-        print "%s: %s-%s" % (suit.name, history.rho.min_length(suit), history.rho.max_length(suit))
+        print("%s: %s-%s" % (suit.name, history.rho.min_length(suit), history.rho.max_length(suit)))
     if history._solver().check() == z3.sat:
         model = history._solver().model()
         pretty_print_model(model)
-        print expectation_line(hand_from_model(model), call_history)
+        print(expectation_line(hand_from_model(model), call_history))

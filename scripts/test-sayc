@@ -3,6 +3,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+from __future__ import print_function
 import logging
 import unittest2
 import sys
@@ -49,7 +50,7 @@ if __name__ == '__main__':
         sys.argv.remove('-p')
         import cProfile as profile
         profile.run("unittest2.main()", "profile")
-        print "Use 'python -m pstats profile' to see results"
+        print("Use 'python -m pstats profile' to see results")
     else:
         try:
             unittest2.main()

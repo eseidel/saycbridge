@@ -1,8 +1,12 @@
-#!/usr/bin/env python
+from __future__ import division
+from __future__ import print_function
 # Copyright (c) 2013 The SAYCBridge Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+from builtins import map
+from builtins import object
+from past.utils import old_div
 import sys
 import find_src
 
@@ -25,6 +29,7 @@ def _is_below_game(call):
         return call.level < 4
     return call.level < 5
 
+
 def _is_below_small_slam(call):
     if not call:
         return True
@@ -39,25 +44,25 @@ class AutobidForNone(object):
         self.none_count = 0
 
     def _check_for_missed_game(self, board):
-        points = map(Hand.high_card_points, board.deal.hands)
+        points = list(map(Hand.high_card_points, board.deal.hands))
         pair_points = [points[0] + points[2], points[1] + points[3]]
         contract = board.call_history.last_contract()
         # If any group has 32+ hcp and contract is below slam.
-        someone_has_slam = any(map(lambda hcp: hcp >= 32, pair_points))
+        someone_has_slam = any([hcp >= 32 for hcp in pair_points])
         if someone_has_slam and _is_below_small_slam(contract):
-            print "MISSED SLAM: %s" % board.identifier
+            print("MISSED SLAM: %s" % board.identifier)
             return True
 
         # If any group has 28+ hcp and contract is below game.
-        someone_has_game = any(map(lambda hcp: hcp >= 28, pair_points))
+        someone_has_game = any([hcp >= 28 for hcp in pair_points])
         if someone_has_game and _is_below_game(contract):
-            print "MISSED GAME: %s" % board.identifier
+            print("MISSED GAME: %s" % board.identifier)
             return True
         return False
 
     def _print_hands(self, deal):
         for hand in deal.hands:
-            print hand.pretty_one_line()
+            print(hand.pretty_one_line())
 
     def _bid_board(self, board):
         self.board_count += 1
@@ -69,22 +74,24 @@ class AutobidForNone(object):
             if call is None:
                 self.none_count += 1
 
-                print "%s partner last rule: %s" % (
+                print("%s partner last rule: %s" % (
                     board.deal.hand_for(position).pretty_one_line(),
-                    self.interpreter.create_history(board.call_history).partner.rule_for_last_call,
-                )
+                    self.interpreter.create_history(
+                        board.call_history).partner.rule_for_last_call,
+                ))
                 unittest_comment = "  # %s, %s" % (
-                    board.identifier.partition(":")[0], # remove the call history
+                    # remove the call history
+                    board.identifier.partition(":")[0],
                     position.char,
                 )
-                print expectation_line(hand, board.call_history) + unittest_comment
-                print
+                print(expectation_line(hand, board.call_history) + unittest_comment)
+                print()
                 return
 
             board.call_history.calls.append(call)
         if self._check_for_missed_game(board):
             self._print_hands(board.deal)
-            print
+            print()
 
     def main(self, args):
         if args:
@@ -96,11 +103,11 @@ class AutobidForNone(object):
             while True:
                 self._bid_board(Board.random())
         except KeyboardInterrupt:
-            print
-            print "User interrupted."
+            print()
+            print("User interrupted.")
             if self.board_count:
-                none_percent = 100.0 * self.none_count / self.board_count
-                print "%s of %s (%.1f%%) boards were None" % (self.none_count, self.board_count, none_percent)
+                none_percent = old_div(100.0 * self.none_count, self.board_count)
+                print("%s of %s (%.1f%%) boards were None" % (self.none_count, self.board_count, none_percent))
             return 0
 
 

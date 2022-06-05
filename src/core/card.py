@@ -1,5 +1,5 @@
-from __future__ import absolute_import
 from __future__ import division
+from __future__ import absolute_import
 # Copyright (c) 2013 The SAYCBridge Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -21,7 +21,8 @@ class Card(object):
     value_to_index['K'] = 11
     value_to_index['A'] = 12
 
-    index_to_value = dict([(index, value) for value, index in list(value_to_index.items())])
+    index_to_value = dict([(index, value)
+                          for value, index in list(value_to_index.items())])
 
     @classmethod
     def index_for_card(cls, value_char):
@@ -62,7 +63,8 @@ class Card(object):
         self.suit = suit
         assert suit in SUITS
         self.value_char = value_char
-        assert value_char in ('A', 'K', 'Q', 'J', 'T', '9', '8', '7', '6', '5', '4', '3', '2')
+        assert value_char in ('A', 'K', 'Q', 'J', 'T', '9',
+                              '8', '7', '6', '5', '4', '3', '2')
 
     def display_value(self):
         if self.value_char == 'T':
@@ -75,4 +77,3 @@ class Card(object):
 
     def index(self):
         return self.index_for_card(self.value_char)
-

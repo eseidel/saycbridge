@@ -3,6 +3,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+from __future__ import print_function
+from builtins import object
 import logging
 import sys
 import find_src
@@ -19,32 +21,32 @@ class SAYCBot(object):
         self.verbose = False
 
     def _print_bidding_result(self, call_history):
-        print "Bids:", call_history.calls_string()
+        print("Bids:", call_history.calls_string())
         if call_history.is_passout():
-            print "Pass Out"
+            print("Pass Out")
         else:
             contract = call_history.contract()
             declarer = call_history.declarer()
-            print "%s by %s" % (contract, declarer.name)
+            print("%s by %s" % (contract, declarer.name))
 
     def _print_hands(self, deal):
         for position, hand in enumerate(deal.hands):
-            print "%s: %s" % (Position.from_index(position).name, hand.pretty_one_line())
+            print("%s: %s" % (Position.from_index(position).name, hand.pretty_one_line()))
 
     def _bid_board(self, board, bidder):
-        print "Board:", board.identifier
+        print("Board:", board.identifier)
         while not board.call_history.is_complete():
             position_to_call = board.call_history.position_to_call().index
             hand = board.deal.hands[position_to_call]
             bid = bidder.find_call_for(hand, board.call_history)
             if not bid:
-                print "NO BID in board: %s" % board.identifier
+                print("NO BID in board: %s" % board.identifier)
                 bid = Pass()
             board.call_history.calls.append(bid)
         if self.verbose:
             self._print_bidding_result(board.call_history)
             self._print_hands(board.deal)
-            print
+            print()
 
     def configure_logging(self, is_verbose):
         handler = logging.StreamHandler(sys.stderr)
@@ -74,8 +76,8 @@ class SAYCBot(object):
             while True:
                 self._bid_board(Board.random(), bidder)
         except KeyboardInterrupt:
-            print
-            print "User interrupted."
+            print()
+            print("User interrupted.")
             return 0
 
 

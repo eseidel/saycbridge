@@ -3,6 +3,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+from __future__ import print_function
 import logging
 import sys
 import find_src
@@ -15,9 +16,9 @@ _log = logging.getLogger(__name__)
 
 
 def _print_usage_and_exit():
-    print "USAGE: rules-for HISTORY"
-    print " HISTORY is space or comma separated."
-    print "Will list the rule used for each call."
+    print("USAGE: rules-for HISTORY")
+    print(" HISTORY is space or comma separated.")
+    print("Will list the rule used for each call.")
     sys.exit(1)
 
 
@@ -35,4 +36,4 @@ if __name__ == '__main__':
     for history in history._walk_history():
         # Hack to ignore the empty history at the end.
         if history.rho.last_call:
-            print "%s : %s" % (history.rho.last_call, history.rho.rule_for_last_call)
+            print("%s : %s" % (history.rho.last_call, history.rho.rule_for_last_call))

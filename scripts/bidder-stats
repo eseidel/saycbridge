@@ -3,6 +3,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+from __future__ import print_function
+from builtins import range
 from collections import defaultdict
 import ijson
 import json
@@ -24,7 +26,7 @@ def main():
           state_data = data.setdefault(state, defaultdict(lambda: 0))
           state_data[board['calls'][index]] += 1
 
-  print json.dumps(data, sort_keys=True, indent=4, separators=(',', ': '))
+  print(json.dumps(data, sort_keys=True, indent=4, separators=(',', ': ')))
 
 if __name__ == "__main__":
       main()

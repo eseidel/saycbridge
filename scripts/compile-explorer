@@ -3,6 +3,10 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+from __future__ import print_function
+from builtins import str
+from builtins import range
+from builtins import object
 import sys
 import find_src
 import logging
@@ -16,7 +20,7 @@ from core.call import Pass
 
 log = logging.getLogger(__name__)
 
-class CompileExplorer:
+class CompileExplorer(object):
     def _bid_board(self, board, bidder):
         result = {}
         result['board'] = str(board.identifier)
@@ -53,7 +57,7 @@ class CompileExplorer:
         results_file.write('[')
         written = 0
         try:
-            for _ in xrange(count):
+            for _ in range(count):
                 # This whole dance is to avoid ^C adding a trailing comma.
                 result = self._bid_board(Board.random(), bidder)
                 if written != 0:
@@ -62,8 +66,8 @@ class CompileExplorer:
                 json.dump(result, results_file)
                 written += 1
         except KeyboardInterrupt:
-            print
-            print "User Interrupted."
+            print()
+            print("User Interrupted.")
         results_file.write('\n]\n')
         return written
 
@@ -80,7 +84,7 @@ class CompileExplorer:
             written_count = self._bid_boards_into_file(args.count, results_file)
             end = datetime.datetime.now()
             duration = round((end - start).total_seconds(), 1)
-            print "%s results written to %s in %ss" % (written_count, args.output_path, duration)
+            print("%s results written to %s in %ss" % (written_count, args.output_path, duration))
 
 
 if __name__ == '__main__':
