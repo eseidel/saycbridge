@@ -16,6 +16,11 @@ from z3b.preconditions import implies_artificial, annotations
 import z3
 
 
+# returns whether the given not empty and not None
+def _is_not_empty_or_none(x):
+    return x is not None and x is not []
+
+
 categories = enum.Enum(
     "Relay",
     "Gadget",
@@ -204,7 +209,7 @@ class RuleCompiler(object):
 
     @classmethod
     def _ensure_list(cls, value_or_list):
-        if value_or_list and not hasattr(value_or_list, '__iter__'):
+        if not hasattr(value_or_list, '__iter__') or isinstance(value_or_list, str):
             return [value_or_list]
         return value_or_list
 
@@ -221,7 +226,7 @@ class RuleCompiler(object):
             call_names = cls._ensure_list(dsl_class.call_names)
         elif priorities_per_call:
             call_names = list(priorities_per_call.keys())
-            assert dsl_class.shared_constraints or list(
+            assert _is_not_empty_or_none(dsl_class.shared_constraints) or list(
                 priorities_per_call.keys()) == list(constraints.keys())
         else:
             call_names = list(constraints.keys())
@@ -232,7 +237,8 @@ class RuleCompiler(object):
     def _flatten_tuple_keyed_dict(cls, original_dict):
         flattened_dict = {}
         for tuple_key, value in original_dict.items():
-            if hasattr(tuple_key, '__iter__'):
+            # FIXME: Unclear what this is for?
+            if hasattr(tuple_key, '__iter__') and not isinstance(tuple_key, str):
                 for key in tuple_key:
                     assert key not in flattened_dict, "Key (%s) was listed twice in %s" % (
                         key, original_dict)
@@ -256,7 +262,7 @@ class RuleCompiler(object):
     @classmethod
     def _validate_rule(cls, dsl_class):
         # Rules have to apply some constraints to the hand.
-        assert dsl_class.constraints or dsl_class.shared_constraints, "" + \
+        assert _is_not_empty_or_none(dsl_class.constraints) or _is_not_empty_or_none(dsl_class.shared_constraints), "" + \
             dsl_class.name() + " is missing constraints"
         # conditional_priorities doesn't work with self.constraints
         assert not dsl_class.conditional_priorities or not dsl_class.constraints

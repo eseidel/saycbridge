@@ -21,22 +21,22 @@ notrump_with_stoppers = enum.Enum(*Call.notrump_names())
 
 
 natural_slams = rule_order.order(
-    notrump_without_stoppers.get('6N'), 
+    notrump_without_stoppers.get('6N'),
 
     natural.get('6C'),
     natural.get('6D'),
     natural.get('6H'),
     natural.get('6S'),
 
-    notrump_with_stoppers.get('6N'), 
-    notrump_without_stoppers.get('7N'), 
+    notrump_with_stoppers.get('6N'),
+    notrump_without_stoppers.get('7N'),
 
     natural.get('7C'),
     natural.get('7D'),
     natural.get('7H'),
     natural.get('7S'),
 
-    notrump_with_stoppers.get('7N'), 
+    notrump_with_stoppers.get('7N'),
 )
 
 
@@ -87,7 +87,8 @@ rule_order.order(
 )
 
 
-natural_bids = set(natural) | set(notrump_with_stoppers) | set(notrump_without_stoppers)
+natural_bids = set(natural) | set(
+    notrump_with_stoppers) | set(notrump_without_stoppers)
 
 natural_exact_minor_games = set([
     natural.get('5C'),
@@ -105,9 +106,11 @@ natural_exact_notrump_game = set([
 ])
 
 natural_games = set([
-                                                                                notrump_with_stoppers.get('3N'), notrump_without_stoppers.get('3N'),
-                                          natural.get('4H'), natural.get('4S'), notrump_with_stoppers.get('4N'), notrump_without_stoppers.get('4N'),
-    natural.get('5C'), natural.get('5D'), natural.get('5H'), natural.get('5S'), notrump_with_stoppers.get('5N'), notrump_without_stoppers.get('5N'),
+    notrump_with_stoppers.get('3N'), notrump_without_stoppers.get('3N'),
+    natural.get('4H'), natural.get('4S'), notrump_with_stoppers.get(
+        '4N'), notrump_without_stoppers.get('4N'),
+    natural.get('5C'), natural.get('5D'), natural.get('5H'), natural.get(
+        '5S'), notrump_with_stoppers.get('5N'), notrump_without_stoppers.get('5N'),
 ])
 
 natural_minor_part_scores = set([
@@ -181,16 +184,19 @@ class Natural(Rule):
 
 
 class SoundNaturalBid(Natural):
-    shared_constraints = [SufficientCombinedLength(), SufficientCombinedPoints()]
+    shared_constraints = [
+        SufficientCombinedLength(), SufficientCombinedPoints()]
 
 
 class NaturalSuited(SoundNaturalBid):
     preconditions = [
-        InvertedPrecondition(LastBidHasAnnotation(positions.Partner, annotations.Preemptive)),
+        InvertedPrecondition(LastBidHasAnnotation(
+            positions.Partner, annotations.Preemptive)),
         WeHaveShownMorePointsThanThem(),
         PartnerHasAtLeastLengthInSuit(1),
     ]
-    priorities_per_call = copy_dict(natural, Call.suited_names_between('2C', '7S'))
+    priorities_per_call = copy_dict(
+        natural, Call.suited_names_between('2C', '7S'))
 
 
 class LawOfTotalTricks(Rule):
@@ -198,7 +204,8 @@ class LawOfTotalTricks(Rule):
         # FIXME: This should only apply over weak bids (only when NaturalSuited does not)?
         PartnerHasAtLeastLengthInSuit(1),
     ]
-    priorities_per_call = copy_dict(natural, Call.suited_names_between('2C', '5D'))
+    priorities_per_call = copy_dict(
+        natural, Call.suited_names_between('2C', '5D'))
     shared_constraints = LengthSatisfiesLawOfTotalTricks()
     category = categories.LawOfTotalTricks
 
@@ -221,7 +228,8 @@ class SufficientStoppers(Constraint):
 class NaturalNotrump(SoundNaturalBid):
     preconditions = WeHaveShownMorePointsThanThem()
     # The copy_dict is redundant, this is all notrump bids.
-    priorities_per_call = copy_dict(notrump_without_stoppers, Call.notrump_names_between('1N', '7N'))
+    priorities_per_call = copy_dict(
+        notrump_without_stoppers, Call.notrump_names_between('1N', '7N'))
     shared_constraints = SufficientStoppers()
     conditional_priorities_per_call = {
         '1N': [(StoppersInOpponentsSuits(), notrump_with_stoppers.get('1N'))],
@@ -255,7 +263,8 @@ class NaturalPass(Rule):
 class NaturalPassWithFit(NaturalPass):
     preconditions = [
         LastBidHasSuit(positions.Partner),
-        InvertedPrecondition(LastBidHasAnnotation(positions.Partner, annotations.Artificial)),
+        InvertedPrecondition(LastBidHasAnnotation(
+            positions.Partner, annotations.Artificial)),
         HaveFit(),
     ]
     shared_constraints = MinimumCombinedLength(7, use_partners_last_suit=True)
@@ -283,6 +292,7 @@ class NotrumpSlamIsRemote(NaturalPass):
         LastBidWasBelowSlam(),
     ]
     shared_constraints = MaximumCombinedPoints(32)
+
 
 game_is_remote_passes = set([
     # FIXME: Need NotrumpGameIsRemote?

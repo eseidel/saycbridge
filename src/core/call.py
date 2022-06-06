@@ -30,9 +30,14 @@ def _values_between(start, stop, iterable):
 class Call(object):
     def __init__(self, name):
         self.name = name.upper()
-        self.strain = None if self.name in (
-            'P', 'X', 'XX') else Strain.from_char(self.name[1])
-        self.level = int(self.name[0]) if self.is_contract() else None
+        if self.name in ('P', 'X', 'XX'):
+            self.strain = None
+            self.level = None
+        else:
+            assert len(
+                self.name) == 2, "%s is not a valid call name" % self.name
+            self.strain = Strain.from_char(self.name[1])
+            self.level = int(self.name[0]) if self.is_contract() else None
         self._validate()
 
     LEVELS = (1, 2, 3, 4, 5, 6, 7)
