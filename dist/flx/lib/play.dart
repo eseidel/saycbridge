@@ -175,10 +175,10 @@ class PlayControls extends StatefulWidget {
   const PlayControls(this.hand, this.position, this.playerName, {super.key});
 
   @override
-  _PlayControlsState createState() => _PlayControlsState();
+  PlayControlsState createState() => PlayControlsState();
 }
 
-class _PlayControlsState extends State<PlayControls> {
+class PlayControlsState extends State<PlayControls> {
   Card? selected;
 
   @override

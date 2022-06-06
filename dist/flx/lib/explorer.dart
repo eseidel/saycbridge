@@ -231,10 +231,10 @@ class CallMenu extends StatefulWidget {
   final ValueChanged<Call> onCall;
 
   @override
-  _CallMenuState createState() => _CallMenuState();
+  CallMenuState createState() => CallMenuState();
 }
 
-class _CallMenuState extends State<CallMenu> {
+class CallMenuState extends State<CallMenu> {
   @override
   void initState() {
     super.initState();
@@ -296,10 +296,10 @@ class BidExplorer extends StatefulWidget {
   const BidExplorer({super.key});
 
   @override
-  _BidExplorerState createState() => _BidExplorerState();
+  BidExplorerState createState() => BidExplorerState();
 }
 
-class _BidExplorerState extends State<BidExplorer> {
+class BidExplorerState extends State<BidExplorer> {
   @override
   void initState() {
     super.initState();

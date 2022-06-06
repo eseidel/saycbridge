@@ -5,9 +5,11 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  http: ^0.12.1
+  http: ^0.13.4
 dev_dependencies:
+  flutter_lints: ^2.0.1
   flutter_test:
     sdk: flutter
+  test: ^1.21.1
 flutter:
   uses-material-design: true
