@@ -7,7 +7,7 @@ from functools import total_ordering
 from builtins import range
 from builtins import object
 from .suit import *
-from third_party.memoized import memoized
+from functools import cache
 
 
 # FIXME: Doesn't python have a nicer way to do this?
@@ -53,13 +53,13 @@ class Call(object):
                 'P', 'X', 'XX'), "%s is not a valid call name" % self.name
 
     @classmethod
-    @memoized
+    @cache
     def from_string(self, string):
         return Call(string)
 
     @classmethod
     def from_level_and_strain(self, level, strain):
-        # Use from_string to share the @memoized cache.
+        # Use from_string to share the @cache cache.
         return Call.from_string("%s%s" % (level, strain.char))
 
     # This is an odd way of saying "not pass, not double, not redouble"

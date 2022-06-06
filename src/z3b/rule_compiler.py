@@ -7,7 +7,7 @@ from builtins import map
 from builtins import object
 from core.call import Call
 from itertools import chain
-from third_party.memoized import memoized
+from functools import cache
 from z3b import enum
 from z3b import model
 from z3b import ordering
@@ -274,14 +274,14 @@ class RuleCompiler(object):
         return dsl_rule  # Use the class as the default priority.
 
     @classmethod
-    @memoized
+    @cache
     def compile(cls, dsl_rule):
         try:
             cls._validate_rule(dsl_rule)
             constraints = cls._flatten_tuple_keyed_dict(dsl_rule.constraints)
             priorities_per_call = cls._flatten_tuple_keyed_dict(
                 dsl_rule.priorities_per_call)
-            # Unclear if compiled results should be memoized on the rule?
+            # Unclear if compiled results should be cached on the rule?
             return CompiledRule(dsl_rule,
                                 known_calls=cls._compile_known_calls(
                                     dsl_rule, constraints, priorities_per_call),

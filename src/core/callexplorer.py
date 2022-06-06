@@ -58,10 +58,11 @@ class CallExplorer(object):
             yield call
 
     def _glob_helper(self, history, call_name):
-        call = Call.from_string(call_name)
         # call_name can be empty if the original string is emtpy or there is trailing whitespace.
-        if call and history.is_legal_call(call):
-            yield call
+        if call_name:
+            call = Call.from_string(call_name)
+            if call and history.is_legal_call(call):
+                yield call
 
     # FIXME: Unclear if history_iglob should be so tolerant.
     def _normalize_glob_string(self, glob_string):
@@ -71,8 +72,10 @@ class CallExplorer(object):
     def history_iglob(self, glob_string):
         glob_string = self._normalize_glob_string(glob_string)
         glob_string, last_token = self._split_before_last_token(glob_string)
-        histories = self.history_iglob(glob_string) if self._has_wildcards(glob_string) else [CallHistory.from_string(glob_string)]
-        call_generator = self._match_pattern_over if self._has_wildcards(last_token) else self._glob_helper
+        histories = self.history_iglob(glob_string) if self._has_wildcards(
+            glob_string) else [CallHistory.from_string(glob_string)]
+        call_generator = self._match_pattern_over if self._has_wildcards(
+            last_token) else self._glob_helper
 
         for history in histories:
             # If we already have 3 passes in a row, there is nothing more we an add to this history.

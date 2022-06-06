@@ -16,7 +16,7 @@ from core.callexplorer import CallExplorer
 from core.callhistory import CallHistory
 from itertools import chain
 from z3b import enum
-from third_party.memoized import memoized
+from functools import cache
 from z3b.model import positions, expr_for_suit, is_possible, is_certain
 from z3b.preconditions import did_bid_annotation
 import collections
@@ -49,7 +49,7 @@ class SolverPool(object):
         solver.push()
         return solver
 
-    # This cannot be memoized, or we would leak a solver on every call if
+    # This cannot be @cache, or we would leak a solver on every call if
     # the caller fails to restore it, or worse, corrupt the solver if they do.
     def borrow_solver_for_hand(self, hand):
         solver = self.borrow()
@@ -180,15 +180,15 @@ class History(object):
         )
 
     @property
-    @memoized
+    @cache
     def legal_calls(self):
         return set(CallExplorer().possible_calls_over(self.call_history))
 
-    @memoized
+    @cache
     def _previous_position(self, position):
         return positions[(position.index - 1) % 4]
 
-    @memoized
+    @cache
     def _history_after_last_call_for(self, position):
         if position.index == positions.RHO.index:
             return self
@@ -206,7 +206,7 @@ class History(object):
                 continue
             _solver_pool.restore(previous_history._solver.take())
 
-    @memoized
+    @cache
     def _solver(self):
         previous_history = self._four_calls_ago
         solver = previous_history._solver.take(
@@ -292,7 +292,7 @@ class History(object):
     def _solve_for_consistency(self, constraints):
         return is_possible(self._solver(), constraints)
 
-    @memoized
+    @cache
     def _solve_for_min_length(self, suit):
         solver = self._solver()
         suit_expr = expr_for_suit(suit)
@@ -307,7 +307,7 @@ class History(object):
             return history._solve_for_min_length(suit)
         return 0
 
-    @memoized
+    @cache
     def _solve_for_max_length(self, suit):
         solver = self._solver()
         suit_expr = expr_for_suit(suit)
@@ -322,7 +322,7 @@ class History(object):
             return history._solve_for_max_length(suit)
         return 13
 
-    @memoized
+    @cache
     def _solve_for_is_balanced(self):
         return is_certain(self._solver(), model.balanced)
 
@@ -341,7 +341,7 @@ class History(object):
             return self._lower_bound(predicate, lo, pos)
         return self._lower_bound(predicate, pos + 1, hi)
 
-    @memoized
+    @cache
     def _solve_for_min_points(self):
         solver = self._solver()
         def predicate(points): return is_possible(
@@ -356,7 +356,7 @@ class History(object):
             return history._solve_for_min_points()
         return 0
 
-    @memoized
+    @cache
     def _solve_for_max_points(self):
         solver = self._solver()
         for cap in range(37, 0, -1):
@@ -370,7 +370,7 @@ class History(object):
             return history._solve_for_max_points()
         return 37
 
-    @memoized
+    @cache
     def _solve_for_more_points_than(self, points):
         return is_possible(self._solver(), model.points >= points)
 
@@ -380,7 +380,7 @@ class History(object):
             return history._solve_for_more_points_than(points)
         return True
 
-    @memoized
+    @cache
     def is_bid_suit(self, suit, position):
         # Look for the annotation of bidding a suit.
         if did_bid_annotation(suit) in self.annotations_for_position(position):
@@ -535,7 +535,7 @@ class RuleSelector(object):
         print("WARNING: No rule can make: %s" % self.expected_call)
 
     @property
-    @memoized
+    @cache
     def _call_to_rule(self):
         maximal = {}
         for rule in self.system.rules:
@@ -571,7 +571,7 @@ class RuleSelector(object):
     def rule_for_call(self, call):
         return self._call_to_rule.get(call)
 
-    @memoized
+    @cache
     def constraints_for_call(self, call):
         situations = []
         rule = self.rule_for_call(call)

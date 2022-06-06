@@ -6,7 +6,7 @@ from functools import total_ordering
 from builtins import map
 from builtins import range
 from builtins import object
-from third_party.memoized import memoized
+from functools import cache
 
 
 @total_ordering
@@ -37,7 +37,7 @@ class Strain(object):
         return hash(self.index)
 
     @staticmethod
-    @memoized
+    @cache
     def from_index(index):
         assert index in range(5)
         return Strain(index, this_should_not_be_called_directly=True)

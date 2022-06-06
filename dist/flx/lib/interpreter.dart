@@ -25,7 +25,7 @@ Future<List<CallInterpretation>> getInterpretations(CallHistory callHistory) {
     try {
       print(url);
       return json.decode(await http.read(url)).map<CallInterpretation>((item) {
-        return new CallInterpretation(
+        return CallInterpretation(
           ruleName: item['rule_name'],
           knowledge: item['knowledge_string'],
           call: Call.fromName(item['call_name']),
