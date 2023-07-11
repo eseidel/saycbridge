@@ -1,3 +1,17 @@
+This project is not currently maintained (for almost a decade).
+
+https://www.saycbridge.com/ is still running on AppEngine using the
+`kbb` branch.  The `master` branch uses the `z3b` which is a
+based on Microsoft Research's Z3 library and is believed to produce
+much better (less fragile) output than the KBB.  I never fully converted
+the project to z3b because I got interested in other hobbies instead.
+
+You're welcome to fork and continue the project.  I believe there is
+a memory leak in z3b which will need to be fixed to take it to
+production.
+
+
+
 SAYC Bridge
 ===========
 
