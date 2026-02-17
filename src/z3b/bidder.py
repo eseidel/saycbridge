@@ -16,7 +16,7 @@ from core.callexplorer import CallExplorer
 from core.callhistory import CallHistory
 from itertools import chain
 from z3b import enum
-from functools import cache
+from third_party.memoized import memoized
 from z3b.model import positions, expr_for_suit, is_possible, is_certain
 from z3b.preconditions import did_bid_annotation
 import collections
@@ -162,8 +162,8 @@ class History(object):
     # FIXME: Unclear if Rule should be stored on History at all.
     def __init__(self, previous_history=None, call=None, annotations=None, constraints=None, rule=None):
         self._previous_history = previous_history
-        self._annotations_for_last_call = annotations if annotations else []
-        self._constraints_for_last_call = constraints if constraints else []
+        self._annotations_for_last_call = annotations if annotations is not None else []
+        self._constraints_for_last_call = constraints if constraints is not None else []
         self._rule_for_last_call = rule
         self.call_history = copy.deepcopy(
             self._previous_history.call_history) if self._previous_history else CallHistory()
@@ -180,15 +180,15 @@ class History(object):
         )
 
     @property
-    @cache
+    @memoized
     def legal_calls(self):
         return set(CallExplorer().possible_calls_over(self.call_history))
 
-    @cache
+    @memoized
     def _previous_position(self, position):
         return positions[(position.index - 1) % 4]
 
-    @cache
+    @memoized
     def _history_after_last_call_for(self, position):
         if position.index == positions.RHO.index:
             return self
@@ -206,7 +206,7 @@ class History(object):
                 continue
             _solver_pool.restore(previous_history._solver.take())
 
-    @cache
+    @memoized
     def _solver(self):
         previous_history = self._four_calls_ago
         solver = previous_history._solver.take(
@@ -292,7 +292,7 @@ class History(object):
     def _solve_for_consistency(self, constraints):
         return is_possible(self._solver(), constraints)
 
-    @cache
+    @memoized
     def _solve_for_min_length(self, suit):
         solver = self._solver()
         suit_expr = expr_for_suit(suit)
@@ -307,7 +307,7 @@ class History(object):
             return history._solve_for_min_length(suit)
         return 0
 
-    @cache
+    @memoized
     def _solve_for_max_length(self, suit):
         solver = self._solver()
         suit_expr = expr_for_suit(suit)
@@ -322,7 +322,7 @@ class History(object):
             return history._solve_for_max_length(suit)
         return 13
 
-    @cache
+    @memoized
     def _solve_for_is_balanced(self):
         return is_certain(self._solver(), model.balanced)
 
@@ -341,7 +341,7 @@ class History(object):
             return self._lower_bound(predicate, lo, pos)
         return self._lower_bound(predicate, pos + 1, hi)
 
-    @cache
+    @memoized
     def _solve_for_min_points(self):
         solver = self._solver()
         def predicate(points): return is_possible(
@@ -356,7 +356,7 @@ class History(object):
             return history._solve_for_min_points()
         return 0
 
-    @cache
+    @memoized
     def _solve_for_max_points(self):
         solver = self._solver()
         for cap in range(37, 0, -1):
@@ -370,7 +370,7 @@ class History(object):
             return history._solve_for_max_points()
         return 37
 
-    @cache
+    @memoized
     def _solve_for_more_points_than(self, points):
         return is_possible(self._solver(), model.points >= points)
 
@@ -380,7 +380,7 @@ class History(object):
             return history._solve_for_more_points_than(points)
         return True
 
-    @cache
+    @memoized
     def is_bid_suit(self, suit, position):
         # Look for the annotation of bidding a suit.
         if did_bid_annotation(suit) in self.annotations_for_position(position):
@@ -535,7 +535,7 @@ class RuleSelector(object):
         print("WARNING: No rule can make: %s" % self.expected_call)
 
     @property
-    @cache
+    @memoized
     def _call_to_rule(self):
         maximal = {}
         for rule in self.system.rules:
@@ -571,7 +571,7 @@ class RuleSelector(object):
     def rule_for_call(self, call):
         return self._call_to_rule.get(call)
 
-    @cache
+    @memoized
     def constraints_for_call(self, call):
         situations = []
         rule = self.rule_for_call(call)
