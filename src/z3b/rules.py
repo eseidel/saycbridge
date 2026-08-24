@@ -2128,6 +2128,20 @@ two_suited_direct_overcalls = set([
     Unusual2N,
 ])
 
+# The pass-out seat over a dying two-level suit contract in the opponents' 1N auction
+# (the last contract is always LHO's bid there).  Named so standard takeout doubles can
+# exclude it, the way they exclude balancing_precondition.
+notrump_auction_passout_precondition = AndPrecondition(
+    TheyOpened(),
+    OpeningBidWas('1N'),
+    LastBidHasSuit(positions.LHO),
+    LastBidHasLevel(positions.LHO, 2),
+    LastBidWas(positions.Partner, 'P'),
+    LastBidWas(positions.RHO, 'P'),
+)
+
+
+
 class TakeoutDouble(Rule):
     call_names = 'X'
     preconditions = [
@@ -2177,6 +2191,7 @@ class TwoLevelTakeoutDouble(OvercallTakeoutDouble):
         Level(2),
         InvertedPrecondition(takeout_double_after_preempt_precondition),
         InvertedPrecondition(balancing_precondition),
+        InvertedPrecondition(notrump_auction_passout_precondition),
     ]
     shared_constraints = points >= 15
 
@@ -2218,9 +2233,33 @@ class ReopeningDouble(TakeoutDouble):
     ]
 
 
+class BalancingDoubleAfterNotrumpAuction(Rule):
+    """The opponents opened 1N and their auction is dying at a two-level suit partscore
+    (1N-P-2H-P-P, or 1N-P-2D-P-2H-P-P after a transfer): the pass-out seat doubles for
+    takeout.  Previously no rule ever contested these auctions (and when the 2-level
+    response is natural, TwoLevelTakeoutDouble claiming the same X at the same category
+    made the call selector drop the call entirely)."""
+    call_names = 'X'
+    preconditions = [
+        notrump_auction_passout_precondition,
+        InvertedPrecondition(HasBid(positions.Me)),
+    ]
+    annotations = annotations.TakeoutDouble
+    shared_constraints = [
+        points >= 11,
+        SupportForSuitsOtherThanLastContract(),
+        MaxLengthInLastContractSuit(2),
+    ]
+
+
 rule_order.order(
     DefaultPass,
     ReopeningDouble,
+)
+
+rule_order.order(
+    DefaultPass,
+    BalancingDoubleAfterNotrumpAuction,
 )
 
 

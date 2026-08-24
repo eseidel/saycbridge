@@ -181,6 +181,17 @@ class SupportForUnbidSuits(SupportForMultipleSuits):
         return self._support_for_suits(history.unbid_suits, history)
 
 
+class SupportForSuitsOtherThanLastContract(SupportForMultipleSuits):
+    """Support for the three suits other than the last contract's suit.  Unlike
+    SupportForUnbidSuits this never depends on history.unbid_suits bookkeeping (which can
+    report 4 unbid suits mid-auction, e.g. after an artificial or unrecognized 2C, and then
+    _support_for_suits asserts): a takeout action over a one-suit contract just needs the
+    other three suits."""
+    def expr(self, history, call):
+        contract_suit = history.last_contract.strain
+        return self._support_for_suits(set(suit.SUITS) - set([contract_suit]), history)
+
+
 # We support any suit partner has shown life in.  Used for cuebid responses to doubles.
 class SupportForPartnersSuits(SupportForMultipleSuits):
     def expr(self, history, call):
