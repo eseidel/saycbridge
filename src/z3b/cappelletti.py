@@ -17,12 +17,9 @@ cappelletti_calls = enum.Enum(
 rule_order.order(*reversed(cappelletti_calls))
 
 
-# Cappelletti may promise < 15 hcp, since 3-level overcalls are also on and may be preferred.
-class Cappelletti(Rule):
-    preconditions = [
-        LastBidHasAnnotation(positions.RHO, annotations.Opening),
-        LastBidWas(positions.RHO, '1N'),
-    ]
+# Shared call schedule for defending against a 1N opening, direct or balancing seat
+# (mixin pattern, like MichaelsCuebid): the responses key off annotations.Cappelletti either way.
+class CappellettiEntries(object):
     constraints = {
         '2C': [z3.Or(clubs >= 6, diamonds >= 6, hearts >= 6, spades >= 6), cappelletti_calls.LongSuit],
         '2D': [z3.And(hearts >= 5, spades >= 5), cappelletti_calls.TwoSuits],
@@ -41,12 +38,31 @@ class Cappelletti(Rule):
     # The book bids Cappelletti with 11 hcp, but seems to want 12 hcp when responding.
     # Wikipedia says Cappelletti is 9-14 hcp.
     # playing_points here is sorta compensating for us not using length_points?
-    shared_constraints = points >= 10, playing_points >= 12
     explanations_per_call = {
         'X': """Indicates a 1NT opening hand.  NT conventional responses are off.
 Responder can pass with enough points to penalize opener, but more likely should escape to a suit fit.""",
         '2C': "Indicates one-suited hand (6+ cards in an un-named suit).",
     }
+
+
+# Cappelletti may promise < 15 hcp, since 3-level overcalls are also on and may be preferred.
+class Cappelletti(CappellettiEntries, Rule):
+    preconditions = [
+        LastBidHasAnnotation(positions.RHO, annotations.Opening),
+        LastBidWas(positions.RHO, '1N'),
+    ]
+    shared_constraints = points >= 10, playing_points >= 12
+
+
+class BalancingCappelletti(CappellettiEntries, Rule):
+    """1N-P-P was previously a rule desert: every balancing rule requires a one-level SUIT
+    opening, so classic balance hands passed out 1N.  Same schedule as Cappelletti, slightly
+    lighter (the direct seat's pass has shown weakness, so the points are marked)."""
+    preconditions = [
+        balancing_precondition,
+        LastBidWas(positions.LHO, '1N'),
+    ]
+    shared_constraints = points >= 9, playing_points >= 11
 
 
 rule_order.order(
