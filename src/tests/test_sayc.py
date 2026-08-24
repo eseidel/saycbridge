@@ -1580,4 +1580,7 @@ sayc_expectations["test_balancing_cappelletti"] = [
 sayc_expectations["test_passout_double_after_notrump_auction"] = [
     ["Q765.AJ65.KJ54.9", "X", "1N P 2H P 2S P P"],   # 11, short in their spades, support
     ["Q76.AJ65.KJ5.984", "P", "1N P 2H P 2S P P"],   # 3-card spades, no shape: pass it out
+    # Advancing the double: no jumping past 3N on invitational values.
+    ["T954.Q54.AQ7.KJ4", "2N", "1N P 2H P 2S P P X P"],   # balanced 11-12 with their suit stopped
+    ["A54.K54.KJ54.T54", "3H", "1N P 2H P 2S P P X P"],   # 11 with 4 hearts: 3H, not 4H
 ]

@@ -2138,6 +2138,7 @@ notrump_auction_passout_precondition = AndPrecondition(
     LastBidHasLevel(positions.LHO, 2),
     LastBidWas(positions.Partner, 'P'),
     LastBidWas(positions.RHO, 'P'),
+    InvertedPrecondition(HasBid(positions.Me)),
 )
 
 
@@ -2242,7 +2243,7 @@ class BalancingDoubleAfterNotrumpAuction(Rule):
     call_names = 'X'
     preconditions = [
         notrump_auction_passout_precondition,
-        InvertedPrecondition(HasBid(positions.Me)),
+        InvertedPrecondition(HasBid(positions.Partner)),
     ]
     annotations = annotations.TakeoutDouble
     shared_constraints = [
@@ -2354,17 +2355,19 @@ class JumpSuitResponseToTakeoutDouble(ResponseToTakeoutDouble):
     # You can have 10 points, but no stopper in opponents suit and only a 3 card suit to bid.
     # 1C X P, xxxx.Axx.Kxx.Kxx
     shared_constraints = [MinLength(3), LongestSuitExceptOpponentSuits(), points >= 10]
+    # Jumps are invitational and stop at the THREE level: over a doubled two-level contract
+    # the old 4-level entries put 10-counts (sometimes with 3-card suits) in game.
     priorities_per_call = {
-        (      '3C', '4C'): takeout_double_responses.ThreeCardJumpClubResonseToTakeoutDouble,
-        ('2D', '3D', '4D'): takeout_double_responses.ThreeCardJumpDiamondResonseToTakeoutDouble,
-        ('2H', '3H', '4H'): takeout_double_responses.ThreeCardJumpHeartResonseToTakeoutDouble,
-        ('2S', '3S'      ): takeout_double_responses.ThreeCardJumpSpadeResonseToTakeoutDouble,
+        (      '3C',): takeout_double_responses.ThreeCardJumpClubResonseToTakeoutDouble,
+        ('2D', '3D'): takeout_double_responses.ThreeCardJumpDiamondResonseToTakeoutDouble,
+        ('2H', '3H'): takeout_double_responses.ThreeCardJumpHeartResonseToTakeoutDouble,
+        ('2S', '3S'): takeout_double_responses.ThreeCardJumpSpadeResonseToTakeoutDouble,
     }
     conditional_priorities_per_call = {
-        (      '3C', '4C'): [(clubs >= 4, takeout_double_responses.JumpClubResonseToTakeoutDouble)],
-        ('2D', '3D', '4D'): [(diamonds >= 4, takeout_double_responses.JumpDiamondResonseToTakeoutDouble)],
-        ('2H', '3H', '4H'): [(hearts >= 4, takeout_double_responses.JumpHeartResonseToTakeoutDouble)],
-        ('2S', '3S'      ): [(spades >= 4, takeout_double_responses.JumpSpadeResonseToTakeoutDouble)],
+        (      '3C',): [(clubs >= 4, takeout_double_responses.JumpClubResonseToTakeoutDouble)],
+        ('2D', '3D'): [(diamonds >= 4, takeout_double_responses.JumpDiamondResonseToTakeoutDouble)],
+        ('2H', '3H'): [(hearts >= 4, takeout_double_responses.JumpHeartResonseToTakeoutDouble)],
+        ('2S', '3S'): [(spades >= 4, takeout_double_responses.JumpSpadeResonseToTakeoutDouble)],
     }
 
 
