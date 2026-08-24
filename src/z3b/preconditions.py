@@ -215,6 +215,23 @@ class LastBidWasBelowSlam(Precondition):
         return last_contract.level < 6
 
 
+class OpeningBidWas(Precondition):
+    """The auction's opening call (first non-pass) was call_name, by whoever made it.
+    Combine with TheyOpened()/Opened(position) to constrain which side opened."""
+    def __init__(self, call_name):
+        self.call_name = call_name
+
+    @property
+    def repr_args(self):
+        return [self.call_name]
+
+    def fits(self, history, call):
+        for caller_call in history.call_history.calls:
+            if not caller_call.is_pass():
+                return caller_call.name == self.call_name
+        return False
+
+
 class LastBidHasAnnotation(Precondition):
     def __init__(self, position, annotation):
         self.position = position
