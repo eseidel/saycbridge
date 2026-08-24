@@ -1561,3 +1561,22 @@ sayc_expectations = {
         ['QJ86.K7.AKT53.T6', '2H', '1H P 2D P', 'E-W'], # Not enough points to say 3C, but we can't pass partner.
     ],
 }
+
+
+# Balancing over a 1N opening (previously a rule desert: every balancing rule required a
+# one-level suit opening, so 1N-P-P was always passed out).  Same Cappelletti schedule as
+# the direct seat, slightly lighter.  Hands are C.D.H.S.
+sayc_expectations["test_balancing_cappelletti"] = [
+    ["65.T65.AQ9876.K5", "2C", "1N P P"],    # 11 hcp, 6-card suit: bid 2C then show hearts
+    ["AQ54.Q54.A87.K54", "X", "1N P P"],      # 15 balanced: penalty-oriented double
+    ["KJ765.T5.AQ987.6", "2H", "1N P P"],    # hearts + a minor two-suiter
+    ["Q65.J65.Q876.A54", "P", "1N P P"],     # 9 balanced, no shape: nothing to say
+    ["8765.943.976.432", "2D", "1N P P 2C P"],  # advancer relays to hear the suit
+]
+
+# The pass-out seat doubles a dying two-level partscore after the opponents' 1N opening
+# (1N-P-2D-P-2H-P-P etc. were never contested by any rule).
+sayc_expectations["test_passout_double_after_notrump_auction"] = [
+    ["Q765.AJ65.KJ54.9", "X", "1N P 2H P 2S P P"],   # 11, short in their spades, support
+    ["Q76.AJ65.KJ5.984", "P", "1N P 2H P 2S P P"],   # 3-card spades, no shape: pass it out
+]
