@@ -136,7 +136,7 @@ class CompiledRule(object):
         exprs = []
         per_call_constraints, _ = self.per_call_constraints_and_priority(
             history, call)
-        if per_call_constraints:
+        if per_call_constraints is not None:
             exprs.extend(RuleCompiler.exprs_from_constraints(
                 per_call_constraints, history, call))
         exprs.extend(RuleCompiler.exprs_from_constraints(
@@ -190,7 +190,7 @@ class CompiledRule(object):
 class RuleCompiler(object):
     @classmethod
     def exprs_from_constraints(cls, constraints, history, call):
-        if not constraints:
+        if constraints is None or (isinstance(constraints, (list, tuple)) and not constraints):
             return [model.NO_CONSTRAINTS]
 
         if isinstance(constraints, Constraint):
