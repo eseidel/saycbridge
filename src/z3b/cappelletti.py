@@ -62,6 +62,10 @@ class BalancingCappelletti(CappellettiEntries, Rule):
         balancing_precondition,
         LastBidWas(positions.LHO, '1N'),
     ]
+    # The double still shows a 1N-opening HAND, not just 15+ points: with an unbalanced 15+
+    # we bid a suit or pass and defend (test_sayc "1N P P" expects P on KQ986.K.AK7.J942).
+    constraints = dict(CappellettiEntries.constraints,
+                       X=[z3.And(points >= 15, balanced), cappelletti_calls.PenaltyDouble])
     shared_constraints = points >= 9, playing_points >= 11
 
 

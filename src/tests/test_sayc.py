@@ -1571,6 +1571,7 @@ sayc_expectations["test_balancing_cappelletti"] = [
     ["AQ54.Q54.A87.K54", "X", "1N P P"],      # 15 balanced: penalty-oriented double
     ["KJ765.T5.AQ987.6", "2H", "1N P P"],    # hearts + a minor two-suiter
     ["Q65.J65.Q876.A54", "P", "1N P P"],     # 9 balanced, no shape: nothing to say
+    ["J942.AK7.K.KQ986", "P", "1N P P"],     # 16 but unbalanced: the X shows a 1N hand
     ["8765.943.976.432", "2D", "1N P P 2C P"],  # advancer relays to hear the suit
 ]
 
