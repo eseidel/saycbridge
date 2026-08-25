@@ -207,9 +207,11 @@ class RuleCompiler(object):
 
     @classmethod
     def _collect_from_ancestors(cls, dsl_class, property_name):
-        def getter(ancestor): return getattr(ancestor, property_name, [])
-        # The DSL expects that parent preconditions, etc. apply before child ones.
-        return list(map(getter, reversed(dsl_class.__mro__)))
+        # The DSL expects that parent preconditions, etc. apply before child ones.  Only the
+        # class that DEFINES the property contributes it: getattr would also return a parent's
+        # value for every child that inherits it, listing the same objects several times.
+        return [vars(ancestor)[property_name] for ancestor in reversed(dsl_class.__mro__)
+                if property_name in vars(ancestor)]
 
     @classmethod
     def _ensure_list(cls, value_or_list):

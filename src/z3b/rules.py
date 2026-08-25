@@ -9,6 +9,24 @@ from z3b.natural import *
 from z3b.preconditions import *
 from z3b.rule_compiler import Rule, RuleCompiler, all_priorities_for_rule, rule_order, categories
 
+# The rules of SAYC, roughly in the order a bidding book presents them.  Each section is a
+# base Rule class, its concrete rules, the enum of priorities they compete under, and the
+# rule_order.order() calls that rank them; the cross-section orderings sit at the end.
+#
+#   Openings ............................ Opening, OneLevelSuitOpening, NotrumpOpening, StrongTwoClubs
+#   Responses to a suit opening ......... Response, RaiseResponse, Jacoby2N, NegativeDouble, ...
+#   Responses to 2C ..................... ResponseToStrongTwoClubs
+#   Opener's rebids ..................... OpenerRebid, ReverseByOpener, JumpShiftByOpener, ...
+#   Responder's rebids .................. ResponderRebid, FourthSuitForcing, SecondNegative
+#   Notrump responses ................... NotrumpResponse, Stayman, Jacoby transfers, AcceptTransfer
+#   Overcalls and advances .............. DirectOvercall, BalancingOvercall, Michaels, Unusual2N
+#   Takeout doubles ..................... TakeoutDouble, ResponseToTakeoutDouble, RebidAfterTakeoutDouble
+#   Preempts ............................ PreemptiveOpen, PreemptiveOvercall, ResponseToPreempt
+#   Slam conventions .................... Gerber, Blackwood, TwoNotrumpFeatureRequest, GrandSlamForce
+#   Cross-section orderings ............. the rule_order.order() block at the end of the file
+#
+# Natural bids, passes and the law of total tricks live in natural.py; Cappelletti in cappelletti.py.
+
 
 def lower_calls_first(call_names):
     priorities = enum.Enum(*call_names)

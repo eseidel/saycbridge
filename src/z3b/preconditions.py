@@ -334,7 +334,7 @@ class SuitLowerThanMyLastSuit(Precondition):
         if call.strain not in suit.SUITS:
             return False
         last_call = history.me.last_call
-        if last_call.strain not in suit.SUITS:
+        if not last_call or last_call.strain not in suit.SUITS:
             return False
         return call.strain < last_call.strain
 
