@@ -3,25 +3,20 @@ Pass 6 of 6 hands
 
 test_balancing:
 FAIL: P (expected 2H) for 974.J85.AJT872.9 (hcp: 6 lp: 8 sp: 9), history: 1S P P
-FAIL: P (expected X) for QT752.73.A94.AT6 (hcp: 10 lp: 11 sp: 11), history: 1D P P
-FAIL: 1S (expected X) for AKQ5.84.72.AQJ93 (hcp: 16 lp: 17 sp: 18), history: 1H P P
-FAIL: P (expected X) for K92.QJT7.KQ4.AJ7 (hcp: 16 lp: 16 sp: 16), history: 1H P P
 FAIL: P (expected 2N) for K92.QJT7.KQ4.AJ7 (hcp: 16 lp: 16 sp: 16), history: 1H P P X P 2C P
 WARNING: Unordered: ['2S', '2H'] rules: [BalancingJumpSuitedOvercall, BalancingJumpSuitedOvercall] priorities: (<class 'z3b.rules.BalancingJumpSuitedOvercall'>, <class 'z3b.rules.BalancingJumpSuitedOvercall'>)
 FAIL: None (expected 2D) for .J.KQT762.AKT932 (hcp: 13 lp: 17 sp: 20), history: 1D P P
 FAIL: 2S (expected 3S) for QJ62.K32.A4.K843 (hcp: 13 lp: 13 sp: 14), history: 1C P P 1S P
 FAIL: 2N (expected P) for 543.AQT43.KT4.K6 (hcp: 12 lp: 13 sp: 13), history: 1D P P X P
-Pass 37 of 45 hands
+Pass 40 of 45 hands
 
 test_balancing_cappelletti:
 Pass 7 of 7 hands
 
 test_doubles:
-FAIL: P (expected X) for KJ76.KQ72..J9874 (hcp: 10 lp: 11 sp: 15), history: 1H
 FAIL: P (expected X) for 3.A6.KJ983.Q8754 (hcp: 10 lp: 12 sp: 14), history: 1C P 1D
 FAIL: X (expected 1S) for Q87.AQ62.3.AK874 (hcp: 15 lp: 16 sp: 18), history: 1H
 FAIL: X (expected P) for KQ76.Q5.A962.764 (hcp: 11 lp: 11 sp: 10), history: 2S P 3D
-FAIL: X (expected 1S) for K2.AKT86.5.AQJ76 (hcp: 17 lp: 19 sp: 21), history: 1C
 FAIL: 3S (expected 2S) for A874.AK96.8.AK84 (hcp: 18 lp: 18 sp: 21), history: 1H X P 2S P
 FAIL: 1N (expected 2D) for 98.KQJ9.AJ7.AK84 (hcp: 18 lp: 18 sp: 19), history: 1C X P 1D P
 FAIL: 1N (expected 3D) for 98.KQJ9.AQ7.AK84 (hcp: 19 lp: 19 sp: 20), history: 1C X P 1D P
@@ -34,7 +29,7 @@ FAIL: None (expected P) for K4.J3.KQ3.AK7642 (hcp: 16 lp: 18 sp: 17), history: P
 FAIL: P (expected X) for 74.876.AKJ987.63 (hcp: 8 lp: 10 sp: 10), history: 1N P 2H
 FAIL: P (expected X) for AKQ83.95.97.Q986 (hcp: 11 lp: 12 sp: 13), history: 1N P 2C
 FAIL: P (expected X) for T986542..A7.6532 (hcp: 4 lp: 7 sp: 10), history: 1H P 3H P 4N P 5D
-Pass 76 of 93 hands
+Pass 78 of 93 hands
 
 test_escape_route_stayman:
 Pass 12 of 12 hands
@@ -155,7 +150,7 @@ FAIL: 3S (expected 4S) for A7.K.QT6.KJ98543 (hcp: 13 lp: 16 sp: 14), history: 1C
 FAIL: 3H (expected 2N) for Q632.JT52.743.86 (hcp: 3 lp: 3 sp: 4), history: 1S 2S P (subtest of 1S 2S P 2N P 3C P)
 FAIL: 2S (expected 3C) for K654.AQ.864.T653 (hcp: 9 lp: 9 sp: 8), history: 2D X P (subtest of 2D X P 3C P 3H P)
 FAIL: P (expected 2N) for KQJT3.864.AQ9.AT (hcp: 16 lp: 17 sp: 17), history: 1D 2S P (subtest of 1D 2S P 2N P 3H P)
-FAIL: P (expected 4S) for KQJT3.864.AQ9.AT (hcp: 16 lp: 17 sp: 17), history: 1D 2S P 2N P 3N P
+FAIL: None (expected 4S) for KQJT3.864.AQ9.AT (hcp: 16 lp: 17 sp: 17), history: 1D 2S P 2N P 3N P
 FAIL: 2S (expected 3S) for JT87.A732..KQJ72 (hcp: 11 lp: 12 sp: 16), history: 1D 1S P 2D P
 FAIL: P (expected 1S) for JT87.A732..KQJ72 (hcp: 11 lp: 12 sp: 16), history: 1D (subtest of 1D 1S P 2D P)
 FAIL: 3N (expected 5N) for AQJT9.AQT3.5.T52 (hcp: 13 lp: 14 sp: 16), history: 2S X P 3C P 3H P
@@ -200,14 +195,13 @@ FAIL: 2D (expected 2N) for .K54.A9842.Q9543 (hcp: 9 lp: 11 sp: 14), history: P P
 FAIL: 3S (expected 4S) for Q5.962.AKQ65.AQ2 (hcp: 17 lp: 18 sp: 16), history: 1N P 2H P 2S P 2N P
 FAIL: 3C (expected P) for KT94.83.AT9654.T (hcp: 7 lp: 9 sp: 11), history: P P P 1C P 1H P 1S P 2H P 2N P
 FAIL: 2D (expected P) for K5.J86532.K6.AJ8 (hcp: 12 lp: 14 sp: 14), history: P P P 1D P 1S P
-FAIL: P (expected X) for AT6.KJ864.A4.A42 (hcp: 16 lp: 17 sp: 17), history: P 2H
 FAIL: P (expected 1H) for AK.72.KT942.AQT5 (hcp: 16 lp: 17 sp: 18), history: P 1C
-FAIL: P (expected 1N) for AKT4.AT.A82.J876 (hcp: 16 lp: 16 sp: 17), history: 1C P P
+FAIL: X (expected 1N) for AKT4.AT.A82.J876 (hcp: 16 lp: 16 sp: 17), history: 1C P P
 FAIL: 2N (expected 2H) for QJ86.K7.AKT53.T6 (hcp: 13 lp: 14 sp: 15), history: 1H P 2D P
-Pass 283 of 344 hands
+Pass 284 of 344 hands
 
 test_negative_double:
-FAIL: 4H (expected P) for 4.A3.KQ65.KJT865 (hcp: 13 lp: 15 sp: 17), history: 1C 1S P P X P
+FAIL: 3H (expected P) for 4.A3.KQ65.KJT865 (hcp: 13 lp: 15 sp: 17), history: 1C 1S P P X P
 FAIL: 1N (expected P) for 4.A3.KQ65.KJT865 (hcp: 13 lp: 15 sp: 17), history: 1C 1S (subtest of 1C 1S P P X P)
 FAIL: 1N (expected 2D) for J5.AQ864.A54.K76 (hcp: 14 lp: 15 sp: 14), history: 1D 1S X P
 FAIL: 2S (expected 3C) for AKQJT2.QJ5.Q4.A3 (hcp: 19 lp: 21 sp: 19), history: 1C 1S X P
@@ -238,13 +232,12 @@ FAIL: 3H (expected 2N) for AK43.T62.KT43.73 (hcp: 10 lp: 10 sp: 11), history: 1N
 Pass 31 of 33 hands
 
 test_overcalls:
-FAIL: X (expected 1H) for AQJ6.K96.AKJ74.3 (hcp: 18 lp: 19 sp: 21), history: 1C
 FAIL: 2H (expected P) for QJT2.76.AQ953.K8 (hcp: 12 lp: 13 sp: 14), history: 1S
 FAIL: 2S (expected 2H) for KQ8765.8.AQT95.9 (hcp: 11 lp: 14 sp: 17), history: 1S
 FAIL: 2C (expected 1S) for KQ873.85.32.AKQT (hcp: 14 lp: 15 sp: 16), history: 1H
 FAIL: P (expected 2H) for AJ8.T9.AQJT9.KQT (hcp: 17 lp: 18 sp: 18), history: 1S P 1N
 FAIL: 1N (expected 2H) for KQ4.K98.KQ873.K2 (hcp: 16 lp: 17 sp: 17), history: 1S
-Pass 31 of 37 hands
+Pass 32 of 37 hands
 
 test_passout_double_after_notrump_auction:
 Pass 10 of 10 hands
@@ -286,14 +279,13 @@ FAIL: 2H (expected P) for QJ3.KJ876.863.QT (hcp: 9 lp: 10 sp: 8), history: P P 1
 FAIL: 3D (expected P) for 643.KT94.AKJ53.7 (hcp: 11 lp: 12 sp: 14), history: P 1S 2H P P X P
 FAIL: X (expected P) for 643.KT94.AKJ53.7 (hcp: 11 lp: 12 sp: 14), history: P 1S 2H (subtest of P 1S 2H P P X P)
 FAIL: 2S (expected X) for KQ5.QJ3.2.AJ6543 (hcp: 13 lp: 15 sp: 16), history: P 1S 2H P P
-FAIL: 2H (expected X) for Q93.5.AT93.AKJ53 (hcp: 14 lp: 15 sp: 17), history: P 1S 2D P P
 FAIL: 3H (expected P) for KT6.AQJ74.874.T2 (hcp: 10 lp: 11 sp: 11), history: P 1S 2D P P X P
 FAIL: 2N (expected P) for KT6.AQJ74.874.T2 (hcp: 10 lp: 11 sp: 11), history: P 1S 2D (subtest of P 1S 2D P P X P)
 WARNING: Multiple rules have maximal category (Default) for 1S: [OneLevelNewSuitResponse, SuitResponseToTakeoutDouble] over: P 1D 1H P P X P
 FAIL: 1N (expected P) for 3.AK954.A985.AK5 (hcp: 18 lp: 19 sp: 21), history: P 1D 1H P P X P 1S P
 FAIL: P (expected X) for 3.AK954.A985.AK5 (hcp: 18 lp: 19 sp: 21), history: P 1D 1H P P (subtest of P 1D 1H P P X P 1S P)
 FAIL: 3S (expected 3H) for .KQ874.KQJ7.AKQ2 (hcp: 20 lp: 21 sp: 25), history: 1D 2C P P
-Pass 18 of 30 hands
+Pass 19 of 30 hands
 
 test_responses_to_michaels:
 FAIL: 2H (expected 2N) for AJT952.AJT9.53.9 (hcp: 10 lp: 12 sp: 14), history: 1D 2D P
@@ -373,7 +365,7 @@ FAIL: 3S (expected 4S) for K74.9.J98.KJT742 (hcp: 8 lp: 10 sp: 11), history: 1N 
 FAIL: 2N (expected P) for Q87.J843.K65.Q93 (hcp: 8 lp: 8 sp: 8), history: 1N P
 Pass 1 of 3 hands
 
-Pass 1243 (84.0%) of 1479 total hands
+Pass 1251 (84.6%) of 1479 total hands
 
 Tested call generation of 174 rules of 174 total (excluding 8 requires_planning rules).
 
