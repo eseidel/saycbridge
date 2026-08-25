@@ -7,8 +7,8 @@ license = "BSD"
 
 [tool.poetry.dependencies]
 python = "^3.10"
-z3-solver = "^4.8.17"
-networkx = "^2.8.3"
+z3-solver = ">=4.8.17"
+networkx = ">=2.8.3"
 
 [tool.poetry.dev-dependencies]
 

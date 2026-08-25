@@ -1,3 +1,19 @@
+Running the tests
+-----------------
+
+    cd src && python ../scripts/test-sayc        # core unit tests + the SAYC expectation harness (~30 s)
+    python ../scripts/check-baseline             # the regression gate (see below)
+
+`tests/test_sayc.py` holds ~1500 expectation hands from the SAYC booklet.  Not all of them
+pass: `z3b_baseline.txt` is the accepted harness output (the known misses, one FAIL line
+each, plus the group pass counts and coverage lists) and `z3b_rules_baseline.txt` records
+for every hand the call made, the rule that made it and the rules used to interpret the
+last three calls.  `scripts/check-baseline` reruns the harness and fails on ANY difference
+except a known miss that now passes; `scripts/check-baseline --accept` makes the current
+output the new baseline (only from a committed tree, printing the diff it accepts).  A
+change that fixes a miss and a change that quietly moves a call from one rule to another
+both show up in that diff; review it before accepting.
+
 Bridge Background
 ----------------
 
