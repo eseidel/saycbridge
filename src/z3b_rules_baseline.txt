@@ -634,6 +634,8 @@ AKQ6.KQT.T4.QJ96-N:BO:P	1N	NotrumpOpening	None,None,DefaultPass
 AKQ6.KQT.T4.QJ96-N:BO:P,1N,P,2C,P	2S	NaturalStaymanResponse	DefaultPass,TwoLevelStayman,DefaultPass
 AKQ6.KQT.T4.QJ96-N:BO:P,1N,P,2C,P,2S,P,3N,P	P	NotrumpSlamIsRemote	DefaultPass,NaturalNotrump,DefaultPass
 AKQ6.Q9.AKT84.K8-N:EW:2D	X	TakeoutDoubleAfterPreempt	None,None,PreemptiveOpen
+AKQ63.KQJ5.A5.87-N:NO:	1C	OneLevelSuitOpening	None,None,None
+AKQ63.KQJ5.A5.87-N:NO:1C,1S,X,P	2S	CuebidReponseToNegativeDouble	OneLevelStandardOvercall,OneLevelNegativeDouble,DefaultPass
 AKQ643.KQ76.9.72-N:BO:P,P	1C	OneLevelSuitOpening	None,DefaultPass,DefaultPass
 AKQ643.KQ76.9.72-N:BO:P,P,1C,P,1S,P	2C	ForcedRebidOriginalSuitByOpener	DefaultPass,OneLevelNewSuitResponse,DefaultPass
 AKQ643.KQ76.9.72-N:BO:P,P,1C,P,1S,P,2C,P,3C,P	None	None	-
@@ -641,9 +643,9 @@ AKQ76..AT32.AT84-N:NS:P,P,1N	X	Cappelletti	DefaultPass,DefaultPass,NotrumpOpenin
 AKQ8.KJ7.T8.AQ87-N:NS:1H,P	1S	OneLevelNewSuitResponse	None,OneLevelSuitOpening,DefaultPass
 AKQ8.KJ7.T8.AQ87-N:NS:1H,P,1S,P,2D,P	4C	JumpShiftResponderRebid	DefaultPass,NewSuitByOpener,DefaultPass
 AKQ83.95.97.Q986-N:NO:1N,P,2C	P	DefaultPass	NotrumpOpening,DefaultPass,TwoLevelStayman
-AKQ83.AKT93..A85-N:NO:2H,P	None	None	-
+AKQ83.AKT93..A85-N:NO:2H,P	3C	NewSuitResponseToPreempt	None,PreemptiveOpen,DefaultPass
 AKQ85.K.AK762.KT-N:NO:P	2C	StrongTwoClubs	None,None,DefaultPass
-AKQ85.K.AK762.KT-N:NO:P,2C,P,2D,P	None	None	-
+AKQ85.K.AK762.KT-N:NO:P,2C,P,2D,P	2H	OpenerSuitedRebidAfterStrongTwoClubs	DefaultPass,WaitingResponseToStrongTwoClubs,DefaultPass
 AKQ852.K8.T.KJ93-N:NS:1S,P	2N	Jacoby2N	None,OneLevelSuitOpening,DefaultPass
 AKQ852.K8.T.KJ93-N:NS:1S,P,2N,P,3H,P	4S	NaturalSuited	DefaultPass,SingletonResponseToJacoby2N,DefaultPass
 AKQ985.T987.62.9-N:NO:	3C	PreemptiveOpen	None,None,None
@@ -656,7 +658,7 @@ AKQJ6.T863.9.J54-N:NS:P,1C,P	1D	OneLevelNewSuitResponse	DefaultPass,OneLevelSuit
 AKQJ6.T863.9.J54-N:NS:P,1C,P,1D,P,2N,P	3N	NotrumpGameAccept	DefaultPass,NotrumpJumpRebid,DefaultPass
 AKQJ852.KT2.Q96.-N:NO:P,2H,P	3H	LawOfTotalTricks	DefaultPass,PreemptiveOpen,DefaultPass
 AKQJT2.QJ5.Q4.A3-N:NO:	1C	OneLevelSuitOpening	None,None,None
-AKQJT2.QJ5.Q4.A3-N:NO:1C,1S,X,P	None	None	-
+AKQJT2.QJ5.Q4.A3-N:NO:1C,1S,X,P	2S	CuebidReponseToNegativeDouble	OneLevelStandardOvercall,OneLevelNegativeDouble,DefaultPass
 AKQJT4.2.KT2.J98-N:EW:P,1D,2S	P	DefaultPass	DefaultPass,OneLevelSuitOpening,PreemptiveOvercall
 AKQJT4.2.KT2.J98-N:EW:P,1D,2S,3C,P,3D,P	3N	NaturalNotrump	PassResponseToPreempt,None,PassAfterPreempt
 AKQJT987...QJT43-N:NO:1S,P	2N	Jacoby2N	None,OneLevelSuitOpening,DefaultPass
@@ -768,7 +770,7 @@ AT62.J7652.J5.96-N:EW:1S,X,2S	P	DefaultPass	OneLevelSuitOpening,OneLevelTakeoutD
 AT62.J7652.J5.96-N:EW:1S,X,2S,P,P,X,P	3D	LawOfTotalTricks	SuitGameIsRemote,TakeoutDoubleAfterTakeoutDouble,DefaultPass
 AT76.K63.Q98.KJ8-N:BO:P	1C	OneLevelSuitOpening	None,None,DefaultPass
 AT76.K63.Q98.KJ8-N:BO:P,1C,2S,X,P	2N	NotrumpResponseToNegativeDouble	PreemptiveOvercall,TwoLevelNegativeDouble,PassResponseToPreempt
-AT8.J965.K85.Q97-N:NS:1D,2N,P	None	None	-
+AT8.J965.K85.Q97-N:NS:1D,2N,P	3H	Unusual2NSimplePreferenceResponse	OneLevelSuitOpening,Unusual2N,DefaultPass
 AT86.J.AT74.AJ84-N:NS:P	1C	OneLevelSuitOpening	None,None,DefaultPass
 AT86.J.AT74.AJ84-N:NS:P,1C,P,1D,X	1N	RebidOneNotrumpByOpener	DefaultPass,OneLevelNewSuitResponse,OneLevelTakeoutDouble
 AT9.Q97652..AJ64-N:EW:	1D	OneLevelSuitOpening	None,None,None
@@ -1253,7 +1255,7 @@ Q3.AQ987632.8.J2-N:NO:P	4D	PreemptiveOpen	None,None,DefaultPass
 Q3.AQJ.KQJ83.975-N:NO:1C	1H	OneLevelStandardOvercall	None,None,OneLevelSuitOpening
 Q3.KQT632.32.J86-N:NO:1H,X	3D	JumpShiftResponseToOpenAfterRHODouble	None,OneLevelSuitOpening,OneLevelTakeoutDouble
 Q4.A7.K84.AKJT74-N:NO:3C,P	P	PassResponseToPreempt	None,PreemptiveOpen,DefaultPass
-Q4.AKJ92.AQT65.T-N:NO:1C,P,P	None	None	-
+Q4.AKJ92.AQT65.T-N:NO:1C,P,P	1H	BalancingSuitedOvercall	OneLevelSuitOpening,DefaultPass,PassResponseToSuitedOpen
 Q4.K32.QJT8.AK94-N:EW:P,P,P	1N	NotrumpOpening	DefaultPass,DefaultPass,DefaultPass
 Q4.K32.QJT8.AK94-N:EW:P,P,P,1N,P,2C,P	2H	NaturalStaymanResponse	DefaultPass,TwoLevelStayman,DefaultPass
 Q4.K32.QJT8.AK94-N:EW:P,P,P,1N,P,2C,P,2H,P,2N,P	3S	NaturalSuited	DefaultPass,NaturalNotrump,DefaultPass
@@ -1436,7 +1438,7 @@ T87.AK9.A98.AK84-N:NO:1C,X,P,1D,P	1N	NotrumpAfterTakeoutDouble	DefaultPass,SuitR
 T874.876.6.AK863-N:NO:1D,X,1H	P	DefaultPass	OneLevelSuitOpening,OneLevelTakeoutDouble,OneLevelNewSuitResponse
 T874.876.86.J843-N:NO:1S,X,P	2C	SuitResponseToTakeoutDouble	OneLevelSuitOpening,OneLevelTakeoutDouble,DefaultPass
 T9.2.KJ753.T9743-N:NO:P	P	DefaultPass	None,None,DefaultPass
-T9.2.KJ753.T9743-N:NO:P,P,1N,X,P	None	None	-
+T9.2.KJ753.T9743-N:NO:P,P,1N,X,P	2H	NewSuitResponseToOneNotrumpPenaltyDouble	NotrumpOpening,Cappelletti,DefaultPass
 T9.982.AKT984.98-N:NO:	2H	PreemptiveOpen	None,None,None
 T9.982.AKT984.98-N:NO:2H,P,2N,P	3H	MinimumRebidOfPreemptSuit	DefaultPass,TwoNotrumpFeatureRequest,DefaultPass
 T9.AJ.K652.QT732-N:NO:1N,P	2C	TwoLevelStayman	None,NotrumpOpening,DefaultPass
