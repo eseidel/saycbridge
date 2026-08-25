@@ -21,7 +21,7 @@ from z3b.preconditions import annotations
 
 def get_git_revision():
     import subprocess
-    return subprocess.check_output(['git', 'rev-parse', 'HEAD']).rstrip()
+    return subprocess.check_output(['git', 'rev-parse', 'HEAD']).decode().rstrip()
 BIDDER_REVISION = get_git_revision()
 
 
