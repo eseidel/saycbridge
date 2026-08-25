@@ -132,6 +132,7 @@ class ResultsAggregator(object):
         self._results_by_identifier = {}
         self._group_has_printed = [False for group in self.groups]
         self._total_failures = 0
+        self.errors = []  # (test, traceback) for hands where the bidder raised
 
     def _is_complete(self, group):
         return self._results_count_by_group.get(group.name) == len(group.tests)
@@ -154,10 +155,12 @@ class ResultsAggregator(object):
             result.print_captured_logs()
 
             if result.exc_str:
-                _log.error("Exception during find_call_for %s %s: %s" % (
-                    test.hand.pretty_one_line(), test.call_history.calls_string(), result.call))
-                _log.error(result.exc_str)
-                raise StopIteration
+                # Never raise here: this runs on the multiprocessing pool's result thread and
+                # an exception there hangs the run.  Record it; test_main fails after the pool drains.
+                fail_count += 1
+                self.errors.append((test, result.exc_str))
+                print("ERROR: exception bidding %s (see end of run)" % test.test_string)
+                continue
 
             if result.call and result.call == test.expected_call:
                 _log.info("PASS: %s for %s" %
@@ -209,7 +212,7 @@ class ResultsAggregator(object):
             for identifier in sorted(self._results_by_identifier):
                 result = self._results_by_identifier[identifier]
                 last_three = ",".join(map(str, result.last_three_rule_names or []))
-                f.write("%s\t%s\t%s\t%s\n" % (identifier, result.call, result.rule_name, last_three))
+                f.write("%s\t%s\t%s\t%s\n" % (identifier, result.call, result.rule_name, last_three or "-"))
 
     def print_summary(self):
         total_tests = len(self._results_by_identifier)
@@ -348,6 +351,10 @@ class TestHarness(unittest.TestCase):
         self._print_coverage_summary()
         if self.rules_dump_path:
             self.results.write_rules_dump(self.rules_dump_path)
+        if self.results.errors:
+            for test, exc_str in self.results.errors:
+                print("ERROR: exception bidding %s:\n%s" % (test.test_string, exc_str))
+            self.fail("%d hands raised an exception (a broken rule, not a wrong bid)" % len(self.results.errors))
 
 
 class TestResult(object):

@@ -8,3 +8,4 @@ sayc_env
 src/z3b_actual.txt
 *.bak
 src/z3b_rules_actual.txt
+src/z3b_actual.err

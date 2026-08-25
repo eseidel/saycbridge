@@ -13,7 +13,9 @@ Two files under src/ are the baseline: z3b_baseline.txt is the harness output it
 z3b_rules_baseline.txt is one line per test: the call made, the rule that made it, and
 the rules used to interpret the last three calls.  Any difference is a behaviour change
 of the bidder.  The only difference this script accepts is a FAIL line that went away
-(a known miss got fixed) and the pass counts that move with it.
+(a known miss got fixed), that hand's own rules line, and the pass counts that move with
+it.  --accept refuses an uncommitted tree and prints the diff it is accepting, so the
+reviewed artifact is always the baseline diff in the commit.
 """
 
 import difflib
@@ -26,7 +28,9 @@ SRC = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'src')
 BASELINE = os.path.join(SRC, 'z3b_baseline.txt')
 RULES_BASELINE = os.path.join(SRC, 'z3b_rules_baseline.txt')
 ACTUAL = os.path.join(SRC, 'z3b_actual.txt')
+ACTUAL_ERR = os.path.join(SRC, 'z3b_actual.err')
 RULES_ACTUAL = os.path.join(SRC, 'z3b_rules_actual.txt')
+TIMEOUT_SECONDS = 900  # a normal run takes about 30 s
 PASS_LINE = re.compile(r'^Pass (\d+)( \([0-9.]+%\))? of (\d+) (total )?hands$')
 
 
@@ -42,14 +46,20 @@ def normalize(text):
 
 def run_harness():
     env = dict(os.environ, PYTHONHASHSEED='0')
-    with open(ACTUAL, 'w') as out:
-        subprocess.call([sys.executable, os.path.join(SRC, '..', 'scripts', 'test-sayc'),
-                         'TestHarness', '--dump', RULES_ACTUAL],
-                        cwd=SRC, stdout=out, stderr=subprocess.DEVNULL, env=env)
+    with open(ACTUAL, 'w') as out, open(ACTUAL_ERR, 'w') as err:
+        try:
+            subprocess.call([sys.executable, os.path.join(SRC, '..', 'scripts', 'test-sayc'),
+                             'TestHarness', '--dump', RULES_ACTUAL],
+                            cwd=SRC, stdout=out, stderr=err, env=env, timeout=TIMEOUT_SECONDS)
+        except subprocess.TimeoutExpired:
+            print('HARNESS TIMED OUT after %ds (a hung worker? see %s)' % (TIMEOUT_SECONDS, ACTUAL_ERR))
+            sys.exit(2)
     text = open(ACTUAL).read()
-    if not re.search(r'^Pass \d+ .* total hands$', text, re.M):
-        print(text[-2000:])
-        print('HARNESS DID NOT COMPLETE')
+    errors = [line for line in text.splitlines() if line.startswith('ERROR:')]
+    if errors or not re.search(r'^Pass \d+ .* total hands$', text, re.M):
+        print(text[-3000:])
+        print(open(ACTUAL_ERR).read()[-1500:])
+        print('HARNESS DID NOT COMPLETE CLEANLY (%d hands raised)' % len(errors))
         sys.exit(2)
     return text
 
@@ -59,6 +69,9 @@ def read(path):
         print('missing %s (run with --accept to create it)' % path)
         sys.exit(2)
     return open(path).read()
+
+
+FAIL_LINE = re.compile(r'^FAIL: (\S+) \(expected (\S+)\) for (\S+) .*history: ([^(]*?)\s*(\(subtest.*)?$')
 
 
 def compare_output(baseline, actual):
@@ -81,9 +94,18 @@ def compare_output(baseline, actual):
 
 def main():
     if '--accept' in sys.argv:
+        dirty = subprocess.run(['git', 'status', '--porcelain', '--', 'src', 'scripts'], cwd=SRC,
+                               capture_output=True, text=True).stdout
+        if dirty.strip():
+            print('refusing to accept with uncommitted changes:\n' + dirty)
+            return 2
         run_harness()
-        os.replace(ACTUAL, BASELINE)
-        os.replace(RULES_ACTUAL, RULES_BASELINE)
+        for actual, baseline in ((ACTUAL, BASELINE), (RULES_ACTUAL, RULES_BASELINE)):
+            if os.path.exists(baseline):
+                for line in difflib.unified_diff(normalize(open(baseline).read()), normalize(open(actual).read()),
+                                                 fromfile=baseline, tofile=actual, n=0, lineterm=''):
+                    print(line)
+            os.replace(actual, baseline)
         print('accepted: %s, %s' % (BASELINE, RULES_BASELINE))
         return 0
     actual = normalize(run_harness())
@@ -93,6 +115,19 @@ def main():
                                                   open(RULES_ACTUAL).read().splitlines(),
                                                   n=0, lineterm='')
                   if not l.startswith(('---', '+++', '@@'))]
+    # A fixed miss changes its own rules line (the call is now the expected one): accept
+    # exactly that line pair, nothing else.
+    expected_by_hand = {}
+    for line in fixed:
+        m = FAIL_LINE.match(line)
+        if m:
+            expected_by_hand[(m.group(3), m.group(4).strip())] = m.group(2)
+    def is_fixed_line(l):
+        identifier, call = l[1:].split('\t')[:2]
+        hand, history = identifier.split('-', 1)[0], identifier.split(':')[-1].replace(',', ' ')
+        want = expected_by_hand.get((hand, history))
+        return want is not None and (l.startswith('-') or call == want)
+    rules_diff = [l for l in rules_diff if not is_fixed_line(l)]
     for line in fixed:
         print('fixed: ' + line)
     for line in problems:
