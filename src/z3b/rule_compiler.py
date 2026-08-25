@@ -80,8 +80,9 @@ class CompiledRule(object):
 
     @property
     def all_priorities(self):
-        conditional_priorities = [priority for _, priority in list(
-            self.conditional_priorities_per_call.values())]
+        # conditional_priorities_per_call maps a call to a LIST of (condition, priority) pairs.
+        conditional_priorities = [priority for pairs in self.conditional_priorities_per_call.values()
+                                  for _, priority in pairs]
         return set([self.default_priority] + list(self.priorities_per_call.values()) + conditional_priorities)
 
     @property
