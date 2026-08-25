@@ -71,7 +71,7 @@ def read(path):
     return open(path).read()
 
 
-FAIL_LINE = re.compile(r'^FAIL: (\S+) \(expected (\S+)\) for (\S+) .*history: ([^(]*?)\s*(\(subtest.*)?$')
+FAIL_LINE = re.compile(r'^FAIL: (\S+) \(expected (\S+)\) for (\S+) .*history:\s*([^(]*?)\s*(\(subtest.*)?$')
 
 
 def compare_output(baseline, actual):
