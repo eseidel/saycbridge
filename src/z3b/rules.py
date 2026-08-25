@@ -1423,7 +1423,9 @@ class NotrumpResponse(Rule):
 class NotrumpGameInvitation(NotrumpResponse):
     # This is an explicit descriptive rule, not a ToPlay rule.
     # ToPlay is 7-9, but 7 points isn't in game range.
-    constraints = { '2N': MinimumCombinedPoints(23) }
+    # Opposite 15-17: 9+, or 8 with a 5-card suit; a flat 8 passes (p6, h2).  Opposite a
+    # balancing 1N (12-14) the combined 23 needs 9+ anyway.
+    constraints = { '2N': ConstraintOr(MinimumCombinedPoints(24), ConstraintAnd(MinimumCombinedPoints(23), z3.Or(a_five_card_suit, points >= 9))) }
     priority = nt_response_priorities.NotrumpGameInvitation
 
 
@@ -2304,7 +2306,7 @@ standard_takeout_doubles = set([
 # FIXME: Is this really true at any level?
 class TakeoutDoubleAfterPreempt(OvercallTakeoutDouble):
     preconditions = takeout_double_after_preempt_precondition
-    shared_constraints = ConstraintOr(ConstraintAnd(LightSupportForUnbidSuits(), points >= 11), points >= 17)
+    shared_constraints = ConstraintOr(ConstraintAnd(LightSupportForUnbidSuits(), points >= 12), points >= 17)
 
 
 class BalancingDouble(OvercallTakeoutDouble):
@@ -2407,6 +2409,19 @@ class ResponseToTakeoutDouble(Rule):
         LastBidWas(positions.RHO, 'P'),
         LastBidHasAnnotation(positions.Partner, annotations.TakeoutDouble),
     ]
+
+
+class PenaltyPassOfTakeoutDouble(ResponseToTakeoutDouble):
+    """Partner's takeout (or reopening / balancing) double is passed for penalties with five
+    or more of their suit and some values (p145, h20)."""
+    call_names = 'P'
+    # Six of their suit with 8+, or five with 9+ (a weak five-bagger and 8 advances instead).
+    shared_constraints = ConstraintOr(
+        ConstraintAnd(MinLengthInLastContractSuit(6), points >= 8),
+        ConstraintAnd(MinLengthInLastContractSuit(5), points >= 9),
+    )
+
+rule_order.order(takeout_double_responses, PenaltyPassOfTakeoutDouble)
 
 
 class NotrumpResponseToTakeoutDouble(ResponseToTakeoutDouble):
