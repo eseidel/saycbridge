@@ -13,9 +13,11 @@ from z3b.preconditions import implies_artificial, annotations
 import z3
 
 
-# returns whether the given not empty and not None
 def _is_not_empty_or_none(x):
-    return x is not None and x is not []
+    # x may be a z3 expression, which must not be compared with ==.
+    if isinstance(x, (list, tuple, dict)):
+        return len(x) > 0
+    return x is not None
 
 
 categories = enum.Enum(
@@ -181,6 +183,10 @@ class CompiledRule(object):
         assert len(constraints_tuple) == 2
         # FIXME: Is it possible to not end up with a priority anymore?
         assert constraints_tuple[1], "" + self.name + " is missing priority"
+        # A per-call value that is a two-element list of constraints would silently become
+        # (constraint, priority=constraint): priorities are enum values or rule classes.
+        assert isinstance(constraints_tuple[1], (enum.Enum.EnumValue, type)), \
+            "%s: %r is not a priority" % (self.name, constraints_tuple[1])
         return constraints_tuple
 
 

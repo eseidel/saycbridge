@@ -15,7 +15,7 @@ class Enum(object):
         def __repr__(self):
             return self.key
 
-        def __le__(self, other):
+        def __lt__(self, other):
             return self.enum == other.enum and self.index < other.index
 
     def __init__(self, *args):
