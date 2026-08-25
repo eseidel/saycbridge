@@ -1,12 +1,7 @@
-from __future__ import division
-from __future__ import print_function
 # Copyright (c) 2013 The SAYCBridge Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-from builtins import map
-from builtins import object
-from past.utils import old_div
 import sys
 import find_src
 
@@ -106,7 +101,7 @@ class AutobidForNone(object):
             print()
             print("User interrupted.")
             if self.board_count:
-                none_percent = old_div(100.0 * self.none_count, self.board_count)
+                none_percent = 100.0 * self.none_count / self.board_count
                 print("%s of %s (%.1f%%) boards were None" % (self.none_count, self.board_count, none_percent))
             return 0
 

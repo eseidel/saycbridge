@@ -6,7 +6,7 @@ import unittest
 
 from core.callhistory import CallHistory
 from core.position import NORTH, EAST
-from z3b.bidder import HistoryCache, Interpreter
+from z3b.bidder import History, HistoryCache, Interpreter
 
 
 class HistoryCacheTest(unittest.TestCase):
@@ -34,6 +34,14 @@ class HistoryCacheTest(unittest.TestCase):
         self.assertIsNot(cached_north, cached_east)
         self.assertEqual(cached_north.call_history.dealer, NORTH)
         self.assertEqual(cached_east.call_history.dealer, EAST)
+
+    def test_cached_root_is_not_a_match(self):
+        cache = HistoryCache()
+        call_history = CallHistory.from_string("1N P")
+        cache.add(History(call_history=call_history.copy_with_partial_history(0)))
+        history, remaining = cache.lookup(call_history)
+        self.assertEqual(remaining, call_history.calls)
+        self.assertEqual(history.call_history.calls, [])
 
     def test_longest_prefix_wins(self):
         cache = HistoryCache()

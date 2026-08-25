@@ -24,6 +24,7 @@ from core.tests.test_position import *
 from tests.test_harness import *
 from tests.test_preconditions import *
 from tests.test_bidder import *
+from tests.test_rule_compiler import *
 from tests.harness import TestHarness
 
 

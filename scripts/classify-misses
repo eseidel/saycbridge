@@ -1,0 +1,103 @@
+#!/usr/bin/env python
+# Copyright (c) 2013 The SAYCBridge Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+"""Classify the harness's known misses by mechanical cause.
+
+    scripts/classify-misses [-o report.md]
+
+For every expectation in tests/test_sayc.py that the bidder gets wrong, rebid it with
+expected_call set (which makes the bidder explain itself) and sort the miss into:
+
+  missing-rule   no rule can make the expected call over this history
+  no-fit         a rule can make it, but its constraints reject this hand
+  outranked      the expected call fits, but another call has a higher priority
+  unordered      the expected call fits and ties with the chosen one (bidder returns None)
+  tie-dropped    two rules claim the expected call at the same category, so it is dropped
+  no-call        the bidder found no call at all (a None where a call was expected)
+  exception      the bidder raised
+
+Whether the expectation itself is right is not something a program can decide; this is
+the input to that discussion, not its output.
+"""
+
+import collections
+import itertools
+import re
+import sys
+
+import find_src
+from factory import BidderFactory
+from third_party import outputcapture
+from tests import harness, test_sayc
+
+
+def classify(bidder, test):
+    output = outputcapture.OutputCapture()
+    stdout, stderr = output.capture_output()
+    try:
+        selection = bidder.call_selection_for(test.hand, test.call_history, expected_call=test.expected_call)
+        got = selection.call if selection else None
+        got_rule = str(selection.rule) if selection else None
+        expected_rule = None
+        if selection:
+            expected_rule = selection.rule_selector.rule_for_call(test.expected_call)
+        error = None
+    except Exception as e:
+        got, got_rule, expected_rule, error = None, None, None, repr(e)
+    output.restore_output()
+    text = stdout.getvalue() + stderr.getvalue()
+
+    if error:
+        cause = 'exception'
+    elif got == test.expected_call:
+        return None
+    elif 'No rule can make: %s' % test.expected_call.name in text:
+        cause = 'missing-rule'
+    elif 'Multiple rules have maximal category' in text and ' for %s ' % test.expected_call.name in text:
+        cause = 'tie-dropped'
+    elif re.search(r'^\S+ does not fit hand', text, re.M):
+        cause = 'no-fit'
+    elif 'WARNING: Unordered' in text:
+        cause = 'unordered'
+    elif got is None:
+        cause = 'no-call'
+    else:
+        cause = 'outranked'
+    detail = "; ".join(sorted(set(line.strip() for line in text.splitlines()
+                                  if 'does not fit' in line or 'Unordered' in line or 'Multiple rules' in line)))
+    return dict(group=test.group.name, hand=test.hand.cdhs_dot_string(), history=test.call_history.calls_string(),
+                vulnerability=test.call_history.vulnerability.name, expected=test.expected_call.name,
+                got=got.name if got else None, got_rule=got_rule,
+                expected_rule=str(expected_rule) if expected_rule else None, cause=cause, detail=detail[:300])
+
+
+def main(argv):
+    out_path = argv[argv.index('-o') + 1] if '-o' in argv else None
+    groups = []
+    for name, expectations in sorted(test_sayc.sayc_expectations.items()):
+        group = harness.TestGroup(name)
+        group.add_expectation_lines(expectations)
+        groups.append(group)
+    bidder = BidderFactory.default_bidder()
+    misses = [m for m in (classify(bidder, t) for g in groups for t in g.tests) if m]
+    counts = collections.Counter(m['cause'] for m in misses)
+    lines = ["# Harness misses by mechanical cause", "",
+             "%d misses. " % len(misses) + ", ".join("%s %d" % kv for kv in counts.most_common()), ""]
+    lines += ["| cause | group | hand | history | vul | expected (rule) | got (rule) | detail |", "|---|---|---|---|---|---|---|---|"]
+    for m in sorted(misses, key=lambda m: (m['cause'], m['group'], m['history'])):
+        lines.append("| %s | %s | %s | %s | %s | %s (%s) | %s (%s) | %s |" % (
+            m['cause'], m['group'], m['hand'], m['history'], m['vulnerability'], m['expected'], m['expected_rule'],
+            m['got'], m['got_rule'], m['detail'].replace('|', '/')))
+    text = "\n".join(lines) + "\n"
+    if out_path:
+        open(out_path, 'w').write(text)
+        print("%d misses -> %s" % (len(misses), out_path))
+    else:
+        sys.stdout.write(text)
+    return 0
+
+
+if __name__ == '__main__':
+    sys.exit(main(sys.argv))

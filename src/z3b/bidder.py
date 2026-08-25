@@ -627,6 +627,9 @@ class HistoryCache(object):
     def __init__(self, size_limit=100):
         self.lru = collections.deque(maxlen=size_limit)
 
+    # A key is a prefix of another only when its calls are a prefix of the other's: calls are
+    # space-separated and the only call names sharing a prefix, X and XX, are never both legal
+    # at the same point of an auction.
     @staticmethod
     def _key(call_history):
         return call_history.dealer.char + "|" + call_history.calls_string()
