@@ -23,6 +23,7 @@ from core.tests.test_hand import *
 from core.tests.test_position import *
 from tests.test_harness import *
 from tests.test_preconditions import *
+from tests.test_bidder import *
 from tests.harness import TestHarness
 
 

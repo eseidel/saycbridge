@@ -151,15 +151,29 @@ class PositionView(object):
 # This class is immutable.
 class History(object):
     # FIXME: Unclear if Rule should be stored on History at all.
-    def __init__(self, previous_history=None, call=None, annotations=None, constraints=None, rule=None):
+    # call_history: for a root History, an EMPTY CallHistory carrying the dealer and
+    # vulnerability of the auction being interpreted (defaults to North, none vulnerable).
+    def __init__(self, previous_history=None, call=None, annotations=None, constraints=None, rule=None, call_history=None):
         self._previous_history = previous_history
         self._annotations_for_last_call = annotations if annotations else []
         self._constraints_for_last_call = constraints if constraints is not None else []
         self._rule_for_last_call = rule
-        self.call_history = copy.deepcopy(
-            self._previous_history.call_history) if self._previous_history else CallHistory()
+        if self._previous_history:
+            self.call_history = self._copy_call_history(self._previous_history.call_history)
+        elif call_history is not None:
+            assert not call_history.calls, "a root History starts with an empty CallHistory"
+            self.call_history = self._copy_call_history(call_history)
+        else:
+            self.call_history = CallHistory()
         if call:
             self.call_history.calls.append(call)
+
+    @staticmethod
+    def _copy_call_history(call_history):
+        # Not deepcopy: that would clone the Position/Call singletons (dealer identity breaks).
+        copied = copy.copy(call_history)
+        copied.calls = list(call_history.calls)
+        return copied
 
     def extend_with(self, call, annotations, constraints, rule):
         return History(
@@ -605,32 +619,39 @@ class InconsistentHistoryException(Exception):
         self.rule = rule
 
 
+# Keyed by dealer + calls: the same calls dealt by a different seat are a different auction
+# (who bid what), even though SAYC itself reads nothing from the dealer.  Vulnerability is
+# deliberately not in the key: no rule reads it, and it would only cut cache hits.
 class HistoryCache(object):
     # FIXME: size_limit has not been tuned at all.
     def __init__(self, size_limit=100):
         self.lru = collections.deque(maxlen=size_limit)
 
-    # Python 3.2's functools has an @lru_cache decorator, but we can't use that yet.
+    @staticmethod
+    def _key(call_history):
+        return call_history.dealer.char + "|" + call_history.calls_string()
+
     def lookup(self, call_history):
-        calls_string = call_history.calls_string()
+        """Returns (history, remaining_calls): the longest cached History that is a prefix of
+        call_history, and the calls still to be interpreted on top of it."""
+        empty_key = self._key(call_history.copy_with_partial_history(0))
+        wanted_key = self._key(call_history)
         best_match = ""
         best_history = None
-        for call_string_and_history in self.lru:
-            key = call_string_and_history[0]
-            if len(key) > len(best_match) and calls_string.startswith(key):
+        for key, history in self.lru:
+            if len(key) > len(best_match) and wanted_key.startswith(key):
                 best_match = key
-                best_history = call_string_and_history[1]
+                best_history = history
 
-        if len(best_match):
+        if len(best_match) > len(empty_key):
             calls_matched = best_match.count(' ') + 1
             return best_history, call_history.calls[calls_matched:]
 
-        return History(), call_history.calls
+        root = History(call_history=call_history.copy_with_partial_history(0))
+        return root, call_history.calls
 
     def add(self, history):
-        call_string_and_history = (
-            history.call_history.calls_string(), history)
-        self.lru.append(call_string_and_history)
+        self.lru.append((self._key(history.call_history), history))
 
 
 history_cache = HistoryCache()
