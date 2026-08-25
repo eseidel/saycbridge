@@ -203,6 +203,8 @@ number_of_kings = king_of_spades + \
 
 balanced = z3.And(doubletons <= 1, singletons == 0, voids == 0)
 
+at_most_one_five_card_suit = z3.Sum([z3.If(suit_count >= 5, 1, 0) for suit_count in (spades, hearts, diamonds, clubs)]) <= 1
+
 stopper_spades = z3.Or(ace_of_spades == 1, z3.And(king_of_spades == 1, spades >= 2), z3.And(
     queen_of_spades == 1, spades >= 3), z3.And(jack_of_spades == 1, ten_of_spades == 1, spades >= 4))
 stopper_hearts = z3.Or(ace_of_hearts == 1, z3.And(king_of_hearts == 1, hearts >= 2), z3.And(

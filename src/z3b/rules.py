@@ -1878,8 +1878,9 @@ class StandardDirectOvercall(DirectOvercall):
     shared_constraints = [
         MinLength(5),
         ThreeOfTheTopFiveOrBetter(),
-        # With 4 cards in RHO's suit, we're likely to be doubled.
-        MaxLengthInLastContractSuit(3),
+        # With 4 cards in RHO's suit, we're likely to be doubled -- unless we are too strong
+        # to pass and too long in their suit to double (18+: overcall anyway).
+        ConstraintOr(MaxLengthInLastContractSuit(3), points >= 18),
     ]
     annotations = annotations.StandardOvercall
     forcing = False # We're limited by the fact that we didn't double.  Partner is allowed to pass.
@@ -2243,11 +2244,16 @@ class TakeoutDouble(Rule):
         UnbidSuitCountRange(2, 3),
     ]
     annotations = annotations.TakeoutDouble
-    # If this is the first bid, it seem OK to not have support for unbid suits
-    # if this is a re-bid, it seems we should have shape?
-    # e.g. 1C 1D P 2D X
-    shared_constraints = ConstraintOr(SupportForUnbidSuits(), points >= 17)
-    explanation = "Either support for all unbid suits or 17+ hcp."
+    # Shape and strength are specific to the seat: see the subclasses.
+    explanation = "Either support for all unbid suits or a hand too strong to overcall."
+
+
+# Too strong to overcall (double first, then bid): 18+, unless we hold four of their suit
+# and a 5-card suit of our own, which we overcall instead.
+too_strong_to_overcall = ConstraintAnd(
+    points >= 18,
+    ConstraintOr(MaxLengthInLastContractSuit(3), MaxLengthInUnbidSuits(4)),
+)
 
 
 takeout_double_after_preempt_precondition = AndPrecondition(
@@ -2263,7 +2269,6 @@ takeout_double_after_preempt_precondition = AndPrecondition(
 class OvercallTakeoutDouble(TakeoutDouble):
     # FIXME: Do we need to exclude takeout double rebids by responder?
     preconditions = InvertedPrecondition(Opened(positions.Me))
-    shared_constraints = ConstraintOr(SupportForUnbidSuits(), points >= 17)
 
 
 class OneLevelTakeoutDouble(OvercallTakeoutDouble):
@@ -2272,8 +2277,11 @@ class OneLevelTakeoutDouble(OvercallTakeoutDouble):
         InvertedPrecondition(takeout_double_after_preempt_precondition),
         InvertedPrecondition(balancing_precondition),
     ]
-    # FIXME: Why isn't this 12?  NaturalSuited can only respond to 12+ points currently.
-    shared_constraints = points >= 11
+    # Shape with 11+ (10 with at most a singleton in their suit), or too strong to overcall.
+    shared_constraints = ConstraintOr(
+        ConstraintAnd(SupportForUnbidSuits(), ConstraintOr(points >= 11, ConstraintAnd(points >= 10, MaxLengthInLastContractSuit(1)))),
+        too_strong_to_overcall,
+    )
 
 
 class TwoLevelTakeoutDouble(OvercallTakeoutDouble):
@@ -2284,7 +2292,7 @@ class TwoLevelTakeoutDouble(OvercallTakeoutDouble):
         InvertedPrecondition(notrump_auction_passout_precondition),
         InvertedPrecondition(two_level_balancing_precondition),
     ]
-    shared_constraints = points >= 15
+    shared_constraints = ConstraintOr(ConstraintAnd(SupportForUnbidSuits(), points >= 15), too_strong_to_overcall)
 
 
 standard_takeout_doubles = set([
@@ -2296,7 +2304,7 @@ standard_takeout_doubles = set([
 # FIXME: Is this really true at any level?
 class TakeoutDoubleAfterPreempt(OvercallTakeoutDouble):
     preconditions = takeout_double_after_preempt_precondition
-    shared_constraints = points >= 11
+    shared_constraints = ConstraintOr(ConstraintAnd(LightSupportForUnbidSuits(), points >= 11), points >= 17)
 
 
 class BalancingDouble(OvercallTakeoutDouble):
@@ -2305,7 +2313,12 @@ class BalancingDouble(OvercallTakeoutDouble):
         balancing_precondition,
         InvertedPrecondition(takeout_double_after_preempt_precondition),
     ]
-    shared_constraints = points >= 8
+    # Light shape with 8+ (with a 5-card major we overcall it instead; a minor defers to the
+    # double), or 16+: too strong to balance with a suit (p142).
+    shared_constraints = ConstraintOr(
+        ConstraintAnd(LightSupportForUnbidSuits(), points >= 8, MaxLengthInUnbidMajors(4)),
+        z3.And(points >= 16, at_most_one_five_card_suit),  # 5-5 balances with the suit
+    )
 
 
 class ReopeningDouble(TakeoutDouble):
@@ -2316,12 +2329,8 @@ class ReopeningDouble(TakeoutDouble):
         MaxLevel(2),
     ]
     # Having 17+ points is not a sufficient reason to takeout later in the auction.
-    shared_constraints = [
-        # Seems more important to be short in opponents's suit?
-        # Book mentions we likely don't want a void in ops suit however?
-        MaxLengthInLastContractSuit(1),
-        SupportForUnbidSuits(),
-    ]
+    # Short in their suit (a doubleton will do: partner may pass for penalties).
+    shared_constraints = LightSupportForUnbidSuits()
 
 
 class BalancingDoubleAfterNotrumpAuction(Rule):

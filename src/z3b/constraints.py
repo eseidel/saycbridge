@@ -180,6 +180,27 @@ class SupportForUnbidSuits(SupportForMultipleSuits):
         return self._support_for_suits(history.unbid_suits, history)
 
 
+class LightSupportForUnbidSuits(Constraint):
+    """Balancing, reopening and after a preempt the double is lighter in shape: three cards
+    in every unbid suit, four in at least one, and at most a doubleton in their suit."""
+    def expr(self, history, call):
+        unbid_suits = history.unbid_suits
+        assert len(unbid_suits) in (2, 3), "%s: %d unbid suits: %s" % (self.__class__, len(unbid_suits), history.call_history)
+        return z3.And(
+            z3.And([expr_for_suit(suit) >= 3 for suit in unbid_suits]),
+            z3.Or([expr_for_suit(suit) >= 4 for suit in unbid_suits]),
+            expr_for_suit(history.last_contract.strain) <= 2,
+        )
+
+
+class MaxLengthInUnbidSuits(Constraint):
+    def __init__(self, max_length):
+        self.max_length = max_length
+
+    def expr(self, history, call):
+        return z3.And([expr_for_suit(suit) <= self.max_length for suit in history.unbid_suits])
+
+
 class SupportForSuitsOtherThanLastContract(SupportForMultipleSuits):
     """Support for the three suits other than the last contract's suit.  Unlike
     SupportForUnbidSuits this never depends on history.unbid_suits bookkeeping (which can
