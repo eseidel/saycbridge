@@ -1,12 +1,7 @@
-from __future__ import print_function
 # Copyright (c) 2013 The SAYCBridge Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-from builtins import zip
-from builtins import str
-from builtins import map
-from builtins import range
 from z3b.model import _honor_vars
 from core.hand import Hand
 from core.suit import SUITS
@@ -20,22 +15,14 @@ def _suit_index(name):
     return suits.index(name)
 
 
-def _decl_cmp(*args):
-    names = [key.name() for key in args]
-    # Sort suit names first:
-    suit_cmp_result = cmp(*list(map(_suit_index, names)))
-    if suit_cmp_result:
-        return suit_cmp_result
-    # Sort names without _ in them to the top.
-    are_primary = [name.find("_") != -1 for name in names]
-    cmp_result = cmp(*are_primary)
-    if cmp_result:
-        return cmp_result
-    return cmp(*names)
+def _decl_sort_key(decl):
+    name = decl.name()
+    # Suit names first, then names without _ in them, then alphabetical.
+    return (_suit_index(name), "_" in name, name)
 
 
 def pretty_print_model(model):
-    for decl in sorted(model.decls(), cmp=_decl_cmp):
+    for decl in sorted(model.decls(), key=_decl_sort_key):
         if model[decl].as_long() != 0:
             print("%s: %s" % (decl, model[decl]))
 

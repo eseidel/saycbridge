@@ -1,13 +1,7 @@
-from __future__ import division
-from __future__ import absolute_import
-from __future__ import division
 # Copyright (c) 2013 The SAYCBridge Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-from builtins import map
-from builtins import range
-from builtins import object
 import math
 import random
 import itertools
@@ -137,48 +131,6 @@ class Hand(object):
     def length_points(self):
         # FIXME: Should length_points return high_card_points() - 1 for a flat hand?
         return self.high_card_points() + sum([max(self.length_of_suit(suit) - 4, 0) for suit in SUITS])
-
-    def _runnability(self, suit):
-        fast_winners = 0
-        slow_winners = 0
-        have_seen_loser = False
-
-        cards_in_hand = self.cards_by_suit_index[suit.index]
-        for card_index in reversed(list(range(13))):
-            card = Card.card_for_index(card_index)
-            if card not in cards_in_hand:
-                if have_seen_loser:
-                    break
-                if card < 1:
-                    break
-                slow_winners -= 1  # To drive out the adverse holding.
-                have_seen_loser = True
-            else:
-                if have_seen_loser:
-                    slow_winners += 1
-                else:
-                    fast_winners += 1
-                    slow_winners += 1
-        if slow_winners < fast_winners:
-            slow_winners = fast_winners
-        return fast_winners, slow_winners
-
-    def tricks(self, partner_min_lengths):
-        tricks = 0
-        for suit in SUITS:
-            length = self.length_of_suit(suit)
-            adverse_holding = 13 - length - partner_min_lengths[suit.index]
-            adverse_holding_per_hand = math.ceil(adverse_holding // 2)
-
-            fast_winners, slow_winners = self._runnability(suit)
-            if fast_winners >= adverse_holding_per_hand:
-                # The suit probably runs.
-                tricks += length
-            elif slow_winners >= adverse_holding_per_hand:
-                tricks += length - 1
-            else:
-                tricks += slow_winners
-        return tricks
 
     # For this value to be useful, it needs to be compared against the "control-neutral" table
     # http://en.wikipedia.org/wiki/Hand_evaluation#Control_count

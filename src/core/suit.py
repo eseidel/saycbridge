@@ -3,9 +3,6 @@
 # found in the LICENSE file.
 
 from functools import total_ordering
-from builtins import map
-from builtins import range
-from builtins import object
 from functools import cache
 
 

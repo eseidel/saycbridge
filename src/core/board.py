@@ -1,9 +1,7 @@
-from __future__ import absolute_import
 # Copyright (c) 2013 The SAYCBridge Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-from builtins import object
 import random
 from .deal import Deal
 from core.callhistory import CallHistory

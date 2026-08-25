@@ -1,16 +1,7 @@
-from __future__ import division
-from __future__ import print_function
-from __future__ import division
 # Copyright (c) 2013 The SAYCBridge Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-from builtins import zip
-from builtins import filter
-from builtins import map
-from builtins import str
-from builtins import range
-from builtins import object
 from core.call import Call
 from core.callexplorer import CallExplorer
 from core.callhistory import CallHistory

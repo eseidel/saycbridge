@@ -1,13 +1,7 @@
-from __future__ import division
-from __future__ import print_function
 # Copyright (c) 2013 The SAYCBridge Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-from builtins import str
-from builtins import map
-from builtins import range
-from builtins import object
 import itertools
 import logging
 import multiprocessing
@@ -217,7 +211,7 @@ class ResultsAggregator(object):
     def print_summary(self):
         total_tests = len(self._results_by_identifier)
         total_pass = total_tests - self._total_failures
-        percent = 100.0 * total_pass // total_tests if total_tests else 0
+        percent = 100.0 * total_pass / total_tests if total_tests else 0
         print("Pass %s (%.1f%%) of %s total hands" %
               (total_pass, percent, total_tests))
 

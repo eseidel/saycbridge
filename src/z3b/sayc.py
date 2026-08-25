@@ -1,5 +1,4 @@
 
-from builtins import object
 from z3b.rules import *
 from z3b.cappelletti import *
 
