@@ -40,10 +40,10 @@ class UnittestHandler(webapp2.RequestHandler):
             return test_name
         return "<a href='%s'>%s</a>" % (self._link_to_file(self.unittest_file_path, line_number), test_name)
 
-    hand_regexp = re.compile("(\w*\.\w*\.\w*\.\w*)")
+    hand_regexp = re.compile(r"(\w*\.\w*\.\w*\.\w*)")
 
     # Split out history matching to avoid matching Call('2D') as a history.
-    history_matcher = "((?:(?:\d(?:C|D|H|S|N)|P|X|XX)\s?)+)"
+    history_matcher = r"((?:(?:\d(?:C|D|H|S|N)|P|X|XX)\s?)+)"
     history_regexp = re.compile("history: %s" % history_matcher)
     subtest_of_regexp = re.compile("subtest of %s" % history_matcher)
     test_name_header_regexp = re.compile(r"(test_\w+)")

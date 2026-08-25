@@ -19,4 +19,4 @@ class JSONPrioritiesHandler(webapp2.RequestHandler):
             node['id'] = repr(node['id'])
 
         self.response.headers["Content-Type"] = "application/json"
-        self.response.out.write(json.dumps(link_data))
+        self.response.out.write(json.dumps(link_data, default=repr))  # link endpoints are priority objects too

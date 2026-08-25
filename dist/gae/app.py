@@ -1,9 +1,10 @@
 import main
 import os
 import werkzeug
+from werkzeug.middleware.shared_data import SharedDataMiddleware
 
 public_root = os.path.join(os.path.dirname(__file__), 'public')
-application_with_static = werkzeug.wsgi.SharedDataMiddleware(main.application, {
+application_with_static = SharedDataMiddleware(main.application, {
   '/favicon.ico': os.path.join(public_root, 'favicon.ico'),
   '/robots.txt':  os.path.join(public_root, 'robots.txt'),
   '/apple-touch-icon-57x57.png': os.path.join(public_root, 'apple-touch-icon-57x57.png'),

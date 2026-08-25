@@ -5,7 +5,7 @@
 import datetime
 import jinja2
 import json
-import urllib
+import urllib.parse
 import webapp2
 
 jinja_environment = jinja2.Environment(loader=jinja2.FileSystemLoader("templates"))
@@ -35,7 +35,7 @@ class ExploreHandler(webapp2.RequestHandler):
 
     def get(self, calls_string=None):
         calls_string = calls_string or ""
-        calls_string = urllib.unquote(calls_string)
+        calls_string = urllib.parse.unquote(calls_string)
         history = self._history_from_calls_string(calls_string)
         # This automatically cleans up our urls for us, which is nice when copy/pasting from unit tests:
         if calls_string and history.comma_separated_calls() != calls_string:
@@ -86,7 +86,7 @@ class JSONExploreHandler(webapp2.RequestHandler):
             history = interpreter.extend_history(history, call)
             knowledge_string = self._knowledge_string(history.rho, interpreter)
             return knowledge_string, history.rho.rule_for_last_call
-        except InconsistentHistoryException, e:
+        except InconsistentHistoryException as e:
             return None, None
 
     def get(self):

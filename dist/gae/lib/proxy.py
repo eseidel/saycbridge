@@ -40,7 +40,7 @@ class ConstraintsSerializer(object):
             return "?"
         suit_strings = [self._pretty_string_for_suit(suit) for suit in SUITS]
         # Don't bother to show suits we know nothing about.
-        suit_strings = filter(lambda string: bool(string), suit_strings)
+        suit_strings = list(filter(lambda string: bool(string), suit_strings))
         pretty_string = "%s hcp" % self._string_for_range(self._hcp_range, self.MAX_HCP_PER_HAND)
         if suit_strings:
             return "%s, %s" % (pretty_string, " ".join(suit_strings))

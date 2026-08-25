@@ -28,12 +28,12 @@ class JSONAutobidHandler(webapp2.RequestHandler):
     def _board_from_request(self):
         board_number = int(self.request.get('number'))
         vulnerability_string = self.request.get('vunerability')
-        hand_strings = map(str, [
+        hand_strings = list(map(str, [
             self.request.get('deal[north]'),
             self.request.get('deal[east]'),
             self.request.get('deal[south]'),
             self.request.get('deal[west]'),
-        ])
+        ]))
 
         deal = Deal.from_string(' '.join(hand_strings))
         dealer_char = self.request.get('dealer')
@@ -88,7 +88,7 @@ class JSONAutobidHandler(webapp2.RequestHandler):
             'board_number': board.number,
             'calls_string': until_position_history_string, # The history up to "until_position"
             'autobid_continuation': board.call_history.calls_string(), # How the autobidder would continue
-            'autobid_interpretations': map(self._json_tuple, call_selections), # Interpretations for all calls (including continuation)
+            'autobid_interpretations': list(map(self._json_tuple, call_selections)), # Interpretations for all calls (including continuation)
         }
         self.response.headers["Content-Type"] = "application/json"
         self.response.headers["Cache-Control"] = "public"
