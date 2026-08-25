@@ -75,6 +75,8 @@ rule_order.order(
     # p112, h14 seems to imply we'd rather preempt than cappelletti when available.
     set([weak_preemptive_overcalls.WeakFourLevel, weak_preemptive_overcalls.WeakThreeLevel]),
 )
+# ... and the same with a 7-card suit that is not weak.
+rule_order.order(cappelletti_calls, preemptive_overcalls)
 
 
 class ResponseToCappelletti(Rule):
@@ -152,6 +154,10 @@ class SuitRebidAfterCappellettiTwoClubs(RebidAfterCappelleti):
     # FIXME: What if they interfere?
     call_names = ('2H', '2S', '3C', '3D')
     shared_constraints = MinLength(6)
+
+
+# With a real suit, run from the doubled 2C rather than sit.
+rule_order.order(DefaultPass, SuitRebidAfterCappellettiTwoClubs)
 
 
 

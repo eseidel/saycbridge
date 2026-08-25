@@ -3392,6 +3392,43 @@ rule_order.order(
     natural_bids,
     ThreeNotrumpMajorResponse,
 )
+# A negative double (4-4 in the unbid suits) says more than a 3N raise; support can follow.
+rule_order.order(
+    ThreeNotrumpMajorResponse,
+    negative_doubles,
+)
+# With a suit worth a weak jump, preempt rather than make a shape double.
+rule_order.order(
+    standard_takeout_doubles,
+    weak_preemptive_overcalls,
+)
+# Opener reopening: a double beats a non-jump new suit or reverse; a jump shift beats the double.
+rule_order.order(
+    set(opener_one_level_new_major) | set(opener_higher_level_new_suits) | set(opener_reverses),
+    ReopeningDouble,
+    opener_jumpshifts,
+)
+# Responder's rebids of his own suit yield to a natural major game once it is in sight.
+# (Not the minor games / 3N: those sit below fourth suit forcing, which sits below these rebids.)
+rule_order.order(
+    set([ThreeLevelSuitRebidByResponder, RebidResponderSuitByResponder]),
+    natural_exact_major_games,
+)
+# A found major fit is bid on rather than converted to a minor game force.
+rule_order.order(
+    stayman_rebid_priorities.MinorGameForceRebid,
+    natural_exact_major_games,
+)
+# Over partner's preempt, an overly sufficient 4N/5N is no reason not to pass.
+rule_order.order(
+    natural_overly_sufficient_games,
+    PassAfterPreempt,
+)
+# Raising partner's suit beats an unforced rebid of our own.
+rule_order.order(
+    UnforcedRebidOriginalSuitByOpener,
+    natural_suited_part_scores,
+)
 rule_order.order(
     # We'd rather raise a major than rebid our minor.
     opener_unsupported_rebids.InvitationalMinor,
