@@ -46,6 +46,11 @@ if __name__ == '__main__':
         sys.argv.remove('-s')
         TestHarness.use_multi_process = False
 
+    if '--dump' in sys.argv:
+        index = sys.argv.index('--dump')
+        TestHarness.rules_dump_path = sys.argv[index + 1]
+        del sys.argv[index:index + 2]
+
     if '-p' in sys.argv:
         sys.argv.remove('-p')
         import cProfile as profile

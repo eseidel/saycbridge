@@ -16,6 +16,9 @@ FAIL: 2S (expected 3S) for QJ62.K32.A4.K843 (hcp: 13 lp: 13 sp: 14), history: 1C
 FAIL: 2N (expected P) for 543.AQT43.KT4.K6 (hcp: 12 lp: 13 sp: 13), history: 1D P P X P
 Pass 34 of 45 hands
 
+test_balancing_cappelletti:
+Pass 7 of 7 hands
+
 test_doubles:
 FAIL: P (expected X) for KJ76.KQ72..J9874 (hcp: 10 lp: 11 sp: 15), history: 1H
 FAIL: P (expected X) for 3.A6.KJ983.Q8754 (hcp: 10 lp: 12 sp: 14), history: 1C P 1D
@@ -128,7 +131,7 @@ Pass 35 of 49 hands
 
 test_minimum_rebid_by_opener:
 FAIL: 1N (expected P) for AT86.J.AT74.AJ84 (hcp: 14 lp: 14 sp: 16), history: P 1C P 1D X
-WARNING: Unordered: ['3D', '2S'] rules: [NaturalSuited, ForcedRebidOriginalSuitByOpener] priorities: (3D, <class 'z3b.rules.UnforcedRebidOriginalSuitByOpener'>)
+WARNING: Unordered: ['2S', '3D'] rules: [ForcedRebidOriginalSuitByOpener, NaturalSuited] priorities: (<class 'z3b.rules.UnforcedRebidOriginalSuitByOpener'>, 3D)
 FAIL: None (expected 3D) for K.A9763.6.AJT752 (hcp: 12 lp: 15 sp: 15), history: 1S P 2D P
 FAIL: 2N (expected 2D) for K32.KQJT9.QJ32.T (hcp: 12 lp: 13 sp: 15), history: P 1D P 2C P
 Pass 19 of 22 hands
@@ -163,7 +166,6 @@ FAIL: P (expected 4S) for KQJT3.864.AQ9.AT (hcp: 16 lp: 17 sp: 17), history: 1D 
 FAIL: 2S (expected 3S) for JT87.A732..KQJ72 (hcp: 11 lp: 12 sp: 16), history: 1D 1S P 2D P
 FAIL: P (expected 1S) for JT87.A732..KQJ72 (hcp: 11 lp: 12 sp: 16), history: 1D (subtest of 1D 1S P 2D P)
 FAIL: 3N (expected 5N) for AQJT9.AQT3.5.T52 (hcp: 13 lp: 14 sp: 16), history: 2S X P 3C P 3H P
-FAIL: 4C (expected 3C) for AQJT9.AQT3.5.T52 (hcp: 13 lp: 14 sp: 16), history: 2S X P (subtest of 2S X P 3C P 3H P)
 FAIL: P (expected 6N) for KQ4.KJ.K84.KQ973 (hcp: 17 lp: 18 sp: 17), history: P 1N P 2C P 2S P 5N P
 FAIL: 3H (expected 2N) for A8763.432.K6.763 (hcp: 7 lp: 8 sp: 8), history: 1S 2S P (subtest of 1S 2S P 2N P 3D P)
 FAIL: 3S (expected 2S) for AT9.Q97652..AJ64 (hcp: 11 lp: 13 sp: 16), history: 1D P 1S P (subtest of 1D P 1S P 2S P 4S P)
@@ -180,7 +182,7 @@ FAIL: 2N (expected P) for J.QJ.KQ854.AQJ53 (hcp: 16 lp: 18 sp: 16), history: P 1
 FAIL: P (expected X) for AK7432.543.QJ9.5 (hcp: 10 lp: 12 sp: 13), history: 1S 2C 2S P P
 FAIL: 3N (expected 2N) for K42.AJT7.QT8.T63 (hcp: 10 lp: 10 sp: 10), history: P 1N P
 FAIL: 3N (expected P) for AT6.K82.A64.AQ87 (hcp: 17 lp: 17 sp: 17), history: P 1N P 2N P
-WARNING: Unordered: ['2H', '3H'] rules: [MichaelsSimplePreferenceResponse, LawOfTotalTricks] priorities: (<class 'z3b.rules.MichaelsSimplePreferenceResponse'>, 3H)
+WARNING: Unordered: ['3H', '2H'] rules: [LawOfTotalTricks, MichaelsSimplePreferenceResponse] priorities: (3H, <class 'z3b.rules.MichaelsSimplePreferenceResponse'>)
 FAIL: None (expected 2H) for KT54.KJ73.KJT6.Q (hcp: 13 lp: 13 sp: 14), history: 1C 2C P
 FAIL: P (expected 4S) for AK742.A.T972.Q63 (hcp: 13 lp: 14 sp: 16), history: 1C P 1S P 1N P 3S P
 FAIL: P (expected 2H) for 732.A62.KQ964.J7 (hcp: 10 lp: 11 sp: 10), history: P P 1D 1S P
@@ -211,7 +213,7 @@ FAIL: P (expected X) for AT6.KJ864.A4.A42 (hcp: 16 lp: 17 sp: 17), history: P 2H
 FAIL: P (expected 1H) for AK.72.KT942.AQT5 (hcp: 16 lp: 17 sp: 18), history: P 1C
 FAIL: P (expected 1N) for AKT4.AT.A82.J876 (hcp: 16 lp: 16 sp: 17), history: 1C P P
 FAIL: 2N (expected 2H) for QJ86.K7.AKT53.T6 (hcp: 13 lp: 14 sp: 15), history: 1H P 2D P
-Pass 281 of 344 hands
+Pass 282 of 344 hands
 
 test_negative_double:
 FAIL: 4H (expected P) for 4.A3.KQ65.KJT865 (hcp: 13 lp: 15 sp: 17), history: 1C 1S P P X P
@@ -225,7 +227,7 @@ FAIL: X (expected 2S) for Q832.QT.K4.AQT93 (hcp: 13 lp: 14 sp: 13), history: 1D 
 FAIL: X (expected 2H) for Q832.QT.AQT93.K4 (hcp: 13 lp: 14 sp: 13), history: 1D 1S
 FAIL: 2N (expected 2D) for A.AQ94.KJT95.Q53 (hcp: 16 lp: 17 sp: 19), history: P P P 1H 1S X P
 FAIL: X (expected 2S) for Q2.A95.AT3.KT843 (hcp: 13 lp: 14 sp: 12), history: 1H 2C
-WARNING: Unordered: ['X', '3N'] rules: [TwoLevelNegativeDouble, ThreeNotrumpMajorResponse] priorities: (<class 'z3b.rules.TwoLevelNegativeDouble'>, <class 'z3b.rules.ThreeNotrumpMajorResponse'>)
+WARNING: Unordered: ['3N', 'X'] rules: [ThreeNotrumpMajorResponse, TwoLevelNegativeDouble] priorities: (<class 'z3b.rules.ThreeNotrumpMajorResponse'>, <class 'z3b.rules.TwoLevelNegativeDouble'>)
 FAIL: None (expected X) for 8532.A854.A74.AK (hcp: 15 lp: 15 sp: 16), history: P 1H 2S
 FAIL: X (expected P) for J432.AK32.AK32.2 (hcp: 15 lp: 15 sp: 18), history: 1C P 1S (subtest of 1C P 1S P 2S X P)
 Pass 68 of 80 hands
@@ -247,11 +249,11 @@ FAIL: P (expected 2N) for QT643.T962.4.965 (hcp: 2 lp: 3 sp: 5), history: 1N 2H 
 FAIL: 3H (expected 2N) for AK43.T62.KT43.73 (hcp: 10 lp: 10 sp: 11), history: 1N 2H P (subtest of 1N 2H P 2N P 3C P)
 WARNING: Unordered: ['2S', '2H'] rules: [NewSuitResponseToOneNotrumpPenaltyDouble, NewSuitResponseToOneNotrumpPenaltyDouble] priorities: (<class 'z3b.cappelletti.NewSuitResponseToOneNotrumpPenaltyDouble'>, <class 'z3b.cappelletti.NewSuitResponseToOneNotrumpPenaltyDouble'>)
 FAIL: None (expected 2H) for T9.2.KJ753.T9743 (hcp: 4 lp: 6 sp: 8), history: P P 1N X P
-WARNING: Unordered: ['3D', '2C'] rules: [PreemptiveOvercall, Cappelletti] priorities: (ThreeLevel, LongSuit)
+WARNING: Unordered: ['2C', '3D'] rules: [Cappelletti, PreemptiveOvercall] priorities: (LongSuit, ThreeLevel)
 FAIL: None (expected 3D) for 4.AKQJT83.T5.K52 (hcp: 13 lp: 16 sp: 17), history: 1N
-WARNING: Unordered: ['3S', '2C'] rules: [PreemptiveOvercall, Cappelletti] priorities: (ThreeLevel, LongSuit)
+WARNING: Unordered: ['2C', '3S'] rules: [Cappelletti, PreemptiveOvercall] priorities: (LongSuit, ThreeLevel)
 FAIL: None (expected 3S) for K75.J.Q8.KQJ9874 (hcp: 12 lp: 15 sp: 13), history: P 1N
-WARNING: Unordered: ['P', '2H'] rules: [DefaultPass, SuitRebidAfterCappellettiTwoClubs] priorities: (<class 'z3b.natural.DefaultPass'>, <class 'z3b.cappelletti.SuitRebidAfterCappellettiTwoClubs'>)
+WARNING: Unordered: ['2H', 'P'] rules: [SuitRebidAfterCappellettiTwoClubs, DefaultPass] priorities: (<class 'z3b.cappelletti.SuitRebidAfterCappellettiTwoClubs'>, <class 'z3b.natural.DefaultPass'>)
 FAIL: None (expected 2H) for QT62..KJ8763.KJT (hcp: 10 lp: 12 sp: 15), history: 1N 2C X P P
 Pass 27 of 33 hands
 
@@ -263,6 +265,9 @@ FAIL: 2C (expected 1S) for KQ873.85.32.AKQT (hcp: 14 lp: 15 sp: 16), history: 1H
 FAIL: P (expected 2H) for AJ8.T9.AQJT9.KQT (hcp: 17 lp: 18 sp: 18), history: 1S P 1N
 FAIL: 1N (expected 2H) for KQ4.K98.KQ873.K2 (hcp: 16 lp: 17 sp: 17), history: 1S
 Pass 31 of 37 hands
+
+test_passout_double_after_notrump_auction:
+Pass 10 of 10 hands
 
 test_preemption:
 FAIL: P (expected 2S) for Q98.JT8.53.AKT95 (hcp: 10 lp: 11 sp: 11), history: P P
@@ -305,7 +310,7 @@ test_reopening_double:
 FAIL: 2D (expected P) for AQT753.843.Q2.42 (hcp: 8 lp: 10 sp: 8), history: 1D 2C P P X P
 FAIL: P (expected X) for AK6.93.A42.K7652 (hcp: 14 lp: 15 sp: 15), history: P P 1S 2D P P
 FAIL: 2H (expected P) for QJ3.KJ876.863.QT (hcp: 9 lp: 10 sp: 8), history: P P 1S 2D P P X P
-FAIL: 4D (expected P) for 643.KT94.AKJ53.7 (hcp: 11 lp: 12 sp: 14), history: P 1S 2H P P X P
+FAIL: 3D (expected P) for 643.KT94.AKJ53.7 (hcp: 11 lp: 12 sp: 14), history: P 1S 2H P P X P
 FAIL: X (expected P) for 643.KT94.AKJ53.7 (hcp: 11 lp: 12 sp: 14), history: P 1S 2H (subtest of P 1S 2H P P X P)
 FAIL: 2S (expected X) for KQ5.QJ3.2.AJ6543 (hcp: 13 lp: 15 sp: 16), history: P 1S 2H P P
 FAIL: 2H (expected X) for Q93.5.AT93.AKJ53 (hcp: 14 lp: 15 sp: 17), history: P 1S 2D P P
@@ -316,9 +321,9 @@ FAIL: 1N (expected P) for 3.AK954.A985.AK5 (hcp: 18 lp: 19 sp: 21), history: P 1
 FAIL: P (expected X) for 3.AK954.A985.AK5 (hcp: 18 lp: 19 sp: 21), history: P 1D 1H P P (subtest of P 1D 1H P P X P 1S P)
 WARNING: Unordered: ['1S', 'X'] rules: [NewOneLevelMajorByOpener, ReopeningDouble] priorities: (NewSuitSpades, <class 'z3b.rules.ReopeningDouble'>)
 FAIL: None (expected X) for KT86.QT87.K.A843 (hcp: 12 lp: 12 sp: 12), history: 1D P P 1H
-WARNING: Unordered: ['X', '2H'] rules: [ReopeningDouble, ReverseByOpener] priorities: (<class 'z3b.rules.ReopeningDouble'>, ReverseHearts)
+WARNING: Unordered: ['2H', 'X'] rules: [ReverseByOpener, ReopeningDouble] priorities: (ReverseHearts, <class 'z3b.rules.ReopeningDouble'>)
 FAIL: None (expected X) for J762.KQ86.AK54.A (hcp: 17 lp: 17 sp: 20), history: 1D P P 1S
-WARNING: Unordered: ['3S', 'X'] rules: [JumpShiftByOpener, ReopeningDouble] priorities: (JumpShiftToSpades, <class 'z3b.rules.ReopeningDouble'>)
+WARNING: Unordered: ['X', '3S'] rules: [ReopeningDouble, JumpShiftByOpener] priorities: (<class 'z3b.rules.ReopeningDouble'>, JumpShiftToSpades)
 FAIL: None (expected 3H) for .KQ874.KQJ7.AKQ2 (hcp: 20 lp: 21 sp: 25), history: 1D 2C P P
 Pass 16 of 30 hands
 
@@ -383,7 +388,7 @@ FAIL: 3C (expected 3N) for KJ64.JT.KQT9.KJ9 (hcp: 14 lp: 14 sp: 14), history: 1D
 FAIL: 2C (expected 4S) for 2.KQ43.KQT8.QT98 (hcp: 12 lp: 12 sp: 15), history: 1D P 1H P 1S P
 FAIL: 3N (expected 5D) for 3.AQT743.AK95.65 (hcp: 13 lp: 15 sp: 17), history: 1D P 1H P 1N P
 FAIL: P (expected 4H) for 96.KQ65.86.JT874 (hcp: 6 lp: 7 sp: 8), history: 1H P 1S P 3H P
-WARNING: Unordered: ['4H', '2H'] rules: [NaturalSuited, RebidResponderSuitByResponder] priorities: (4H, <class 'z3b.rules.RebidResponderSuitByResponder'>)
+WARNING: Unordered: ['2H', '4H'] rules: [RebidResponderSuitByResponder, NaturalSuited] priorities: (<class 'z3b.rules.RebidResponderSuitByResponder'>, 4H)
 FAIL: None (expected 4H) for J3.A7.AKJ986.976 (hcp: 13 lp: 15 sp: 14), history: P 1D P 1H P 1N P
 FAIL: 2N (expected 2S) for KJ643.9863.A9.K9 (hcp: 11 lp: 12 sp: 13), history: 1S P 2C P 2H P
 FAIL: 2H (expected 3D) for AQ643.KQ75.763.5 (hcp: 11 lp: 12 sp: 14), history: 1S P 2C P 2D P
@@ -408,14 +413,14 @@ FAIL: 3S (expected 4S) for K74.9.J98.KJT742 (hcp: 8 lp: 10 sp: 11), history: 1N 
 FAIL: 2N (expected P) for Q87.J843.K65.Q93 (hcp: 8 lp: 8 sp: 8), history: 1N P
 Pass 1 of 3 hands
 
-Pass 1203 (82.4%) of 1460 total hands
+Pass 1221 (82.0%) of 1477 total hands
 
-Tested call generation of 169 rules of 171 total (excluding 8 requires_planning rules).
+Tested call generation of 171 rules of 173 total (excluding 8 requires_planning rules).
 Never selected call from:
 JumpNewSuitResponseToNegativeDouble
 ReopeningDouble
 
-Tested interpretation of 109 rules of 179 total.
+Tested interpretation of 111 rules of 181 total.
 
 1 rules were never used for either bidding or interpretation:
 JumpNewSuitResponseToNegativeDouble

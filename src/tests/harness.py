@@ -201,6 +201,16 @@ class ResultsAggregator(object):
         rule_names = itertools.chain.from_iterable(rule_name_tuples)
         return set(map(str, [_f for _f in rule_names if _f]))
 
+    # One line per test, sorted by identifier: the call we made, the rule that made it and the
+    # rules we used to interpret the last three calls.  scripts/check-baseline diffs this
+    # against z3b_rules_baseline.txt so a changed rule (even with the same call) is visible.
+    def write_rules_dump(self, path):
+        with open(path, 'w') as f:
+            for identifier in sorted(self._results_by_identifier):
+                result = self._results_by_identifier[identifier]
+                last_three = ",".join(map(str, result.last_three_rule_names or []))
+                f.write("%s\t%s\t%s\t%s\n" % (identifier, result.call, result.rule_name, last_three))
+
     def print_summary(self):
         total_tests = len(self._results_by_identifier)
         total_pass = total_tests - self._total_failures
@@ -241,6 +251,7 @@ def _run_test(test):
 class TestHarness(unittest.TestCase):
     use_multi_process = True
     test_shard_size = 10
+    rules_dump_path = None  # set by scripts/test-sayc --dump FILE
 
     def __init__(self, *args, **kwargs):
         super(TestHarness, self).__init__(*args, **kwargs)
@@ -335,6 +346,8 @@ class TestHarness(unittest.TestCase):
         self.results.print_summary()
         print()
         self._print_coverage_summary()
+        if self.rules_dump_path:
+            self.results.write_rules_dump(self.rules_dump_path)
 
 
 class TestResult(object):

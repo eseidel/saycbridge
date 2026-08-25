@@ -1,0 +1,112 @@
+#!/usr/bin/env python
+# Copyright (c) 2013 The SAYCBridge Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+"""Run the SAYC expectation harness and compare it with the accepted baseline.
+
+    scripts/check-baseline            # exit 0 iff nothing changed except fixed misses
+    scripts/check-baseline --accept   # make the current output the new baseline
+
+Two files under src/ are the baseline: z3b_baseline.txt is the harness output itself
+(one FAIL line per known miss, group pass counts, coverage lists, WARNING lines for ties),
+z3b_rules_baseline.txt is one line per test: the call made, the rule that made it, and
+the rules used to interpret the last three calls.  Any difference is a behaviour change
+of the bidder.  The only difference this script accepts is a FAIL line that went away
+(a known miss got fixed) and the pass counts that move with it.
+"""
+
+import difflib
+import os
+import re
+import subprocess
+import sys
+
+SRC = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'src')
+BASELINE = os.path.join(SRC, 'z3b_baseline.txt')
+RULES_BASELINE = os.path.join(SRC, 'z3b_rules_baseline.txt')
+ACTUAL = os.path.join(SRC, 'z3b_actual.txt')
+RULES_ACTUAL = os.path.join(SRC, 'z3b_rules_actual.txt')
+PASS_LINE = re.compile(r'^Pass (\d+)( \([0-9.]+%\))? of (\d+) (total )?hands$')
+
+
+def normalize(text):
+    lines = []
+    for line in text.splitlines():
+        line = line.rstrip()
+        if line.startswith('FAIL:'):
+            line = line.rstrip('.')
+        lines.append(line)
+    return lines
+
+
+def run_harness():
+    env = dict(os.environ, PYTHONHASHSEED='0')
+    with open(ACTUAL, 'w') as out:
+        subprocess.call([sys.executable, os.path.join(SRC, '..', 'scripts', 'test-sayc'),
+                         'TestHarness', '--dump', RULES_ACTUAL],
+                        cwd=SRC, stdout=out, stderr=subprocess.DEVNULL, env=env)
+    text = open(ACTUAL).read()
+    if not re.search(r'^Pass \d+ .* total hands$', text, re.M):
+        print(text[-2000:])
+        print('HARNESS DID NOT COMPLETE')
+        sys.exit(2)
+    return text
+
+
+def read(path):
+    if not os.path.exists(path):
+        print('missing %s (run with --accept to create it)' % path)
+        sys.exit(2)
+    return open(path).read()
+
+
+def compare_output(baseline, actual):
+    fixed, problems = [], []
+    for line in difflib.unified_diff(baseline, actual, n=0, lineterm=''):
+        if line.startswith(('---', '+++', '@@')):
+            continue
+        if line.startswith('-') and line[1:].startswith('FAIL:'):
+            fixed.append(line[1:])
+        elif PASS_LINE.match(line[1:]):
+            continue  # pass counts move with fixed misses; the hand counts are checked below
+        else:
+            problems.append(line)
+    old_counts = [PASS_LINE.match(l).group(3) for l in baseline if PASS_LINE.match(l)]
+    new_counts = [PASS_LINE.match(l).group(3) for l in actual if PASS_LINE.match(l)]
+    if old_counts != new_counts:
+        problems.append('hand counts changed: %s -> %s' % (old_counts, new_counts))
+    return fixed, problems
+
+
+def main():
+    if '--accept' in sys.argv:
+        run_harness()
+        os.replace(ACTUAL, BASELINE)
+        os.replace(RULES_ACTUAL, RULES_BASELINE)
+        print('accepted: %s, %s' % (BASELINE, RULES_BASELINE))
+        return 0
+    actual = normalize(run_harness())
+    baseline = normalize(read(BASELINE))
+    fixed, problems = compare_output(baseline, actual)
+    rules_diff = [l for l in difflib.unified_diff(read(RULES_BASELINE).splitlines(),
+                                                  open(RULES_ACTUAL).read().splitlines(),
+                                                  n=0, lineterm='')
+                  if not l.startswith(('---', '+++', '@@'))]
+    for line in fixed:
+        print('fixed: ' + line)
+    for line in problems:
+        print('CHANGED: ' + line)
+    for line in rules_diff:
+        print('RULES CHANGED: ' + line)
+    total = [l for l in actual if PASS_LINE.match(l) and 'total' in l]
+    print(total[-1] if total else 'no total line')
+    if problems or rules_diff:
+        print('BASELINE MISMATCH: %d output lines, %d rule lines' % (len(problems), len(rules_diff)))
+        return 1
+    print('baseline ok (%d fixed misses)' % len(fixed))
+    return 0
+
+
+if __name__ == '__main__':
+    sys.exit(main())

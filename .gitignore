@@ -7,3 +7,4 @@ dist/gae/scripts/*.js
 sayc_env
 src/z3b_actual.txt
 *.bak
+src/z3b_rules_actual.txt
