@@ -18,7 +18,7 @@ class Position(object):
 
     @classmethod
     def from_name(cls, name):
-        index = ('North', 'East', 'South', 'West').index(char)
+        index = ('North', 'East', 'South', 'West').index(name)
         return cls.from_index(index)
 
     @classmethod

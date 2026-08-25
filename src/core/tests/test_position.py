@@ -7,6 +7,10 @@ from core.position import *
 
 
 class PositionTest(unittest.TestCase):
+    def test_from_name(self):
+        self.assertEqual(Position.from_name('South'), SOUTH)
+        self.assertEqual(Position.from_char('W'), WEST)
+
     def test_partner(self):
         self.assertEqual(NORTH.partner, SOUTH)
         self.assertEqual(EAST.partner, WEST)

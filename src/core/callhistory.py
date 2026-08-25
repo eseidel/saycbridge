@@ -303,7 +303,8 @@ class CallHistory(object):
         return first_caller
 
     def dummy(self):
-        return declarer.partner
+        declarer = self.declarer()
+        return declarer.partner if declarer else None
 
     def contract(self):
         # Maybe we need a Contract object which holds declarer, suit, level, and doubles?

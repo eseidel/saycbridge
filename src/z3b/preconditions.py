@@ -191,7 +191,7 @@ class IsGame(Precondition):
         return 3
 
     def fits(self, history, call):
-        return call.is_contract() and call.level == self._game_level(bid.strain)
+        return call.is_contract() and call.level == self._game_level(call.strain)
 
 
 class LastBidWasBelowGame(IsGame):

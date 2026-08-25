@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import json
 import unittest
 from core.deal import Deal
 
@@ -13,6 +14,11 @@ class DealTest(unittest.TestCase):
         self.assertEqual(deal.identifier, '0000001555555aaaaaabffffff')
         self.assertEqual(deal.pretty_one_line(), Deal.from_identifier(
             deal.identifier).pretty_one_line())
+
+    def test_to_json(self):
+        deal = Deal.from_string(
+            "23456789TJQKA... .23456789TJQKA.. ..23456789TJQKA. ...23456789TJQKA")
+        self.assertEqual(json.loads(deal.to_json())['east'], ".AKQJT98765432..")
 
     def test_random(self):
         # Just make sure the random code path does not assert, and returns something non-None.

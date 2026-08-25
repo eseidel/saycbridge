@@ -43,6 +43,10 @@ class CallHistoryTest(unittest.TestCase):
         self.assertEqual(CallHistory.from_string(
             history_string, dealer.char).declarer(), declarer)
 
+    def test_dummy(self):
+        self.assertEqual(CallHistory.from_string("1S P 2S P P P").dummy(), SOUTH)
+        self.assertEqual(CallHistory.from_string("P P").dummy(), None)
+
     def test_declarer(self):
         self._assert_declarer("", NORTH, None)
         self._assert_declarer("P P P P", NORTH, None)

@@ -8,7 +8,12 @@ from core.position import *
 
 
 class BoardTest(unittest.TestCase):
-    @unittest.expectedFailure
+    def test_defaults(self):
+        board = Board()
+        self.assertEqual(board.number, 1)
+        self.assertEqual(board.call_history.dealer, NORTH)
+        self.assertEqual(len(board.deal.hands), 4)
+
     def test_identifier(self):
         board = Board.from_identifier("8-2190948053667986713720276813968-N:NO:")
         # Note how we can handle parsing old-style identfiiers, but we prefer new ones:
