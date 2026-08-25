@@ -1,0 +1,29 @@
+[Unit]
+Description=saycbridge uwsgi app (python3, containerized)
+
+[Container]
+Image=localhost/saycbridge:latest
+Volume=/run/saycbridge:/sockets
+Network=none
+
+# Keep the blast radius small: no capabilities,
+# no privilege escalation, immutable rootfs. Only /sockets and the tmpfs
+# mounts below are writable.
+NoNewPrivileges=true
+DropCapability=ALL
+ReadOnly=true
+Tmpfs=/tmp:rw,nosuid,nodev,noexec,size=64m
+Tmpfs=/run:rw,nosuid,nodev,size=16m
+
+[Service]
+Restart=always
+# The bidder leaks memory per request (see uwsgi --max-requests in the
+# Dockerfile). Hard-cap the container so a leak recycles workers / restarts
+# the container instead of eating the host.
+MemoryAccounting=yes
+MemoryHigh=512M
+MemoryMax=640M
+MemorySwapMax=128M
+
+[Install]
+WantedBy=default.target
