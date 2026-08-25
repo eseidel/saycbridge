@@ -17,6 +17,7 @@ from factory import BidderFactory
 
 from core.tests.test_callhistory import *
 from core.tests.test_call import *
+from core.tests.test_callexplorer import *
 from core.tests.test_board import *
 from core.tests.test_deal import *
 from core.tests.test_hand import *
