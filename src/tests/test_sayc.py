@@ -1205,7 +1205,8 @@ sayc_expectations = {
         ['KT964.QJ874.53.A', '3C', 'P P 1D 1S X 2S', 'N-S'],  # 15-d2381cacd0b0d88e797add66d4, N
 
         # Showing a 6-card suit seems better than just showing points:
-        ['AKQJT2.QJ5.Q4.A3', '3C', '1C 1S X P'],  # 8-e814ffd1ea2f99d681d2c91423, W
+        ['AKQJT2.QJ5.Q4.A3', '3C', '1C 1S X P'],
+        ['AKQ63.KQJ5.A5.87', '2S', '1C 1S X P'],  # 19+: the cuebid outranks a jump shift (which used to tie with a duplicate rule and bid nothing)  # 8-e814ffd1ea2f99d681d2c91423, W
 
         # Minimum NT responses only show shape, not more points.
         ['AT76.K63.Q98.KJ8', '2N', 'P 1C 2S X P', 'Both'],  # 13-3e5b4b44d80b70f05a7ce29e66, E

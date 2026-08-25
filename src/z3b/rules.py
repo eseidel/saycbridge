@@ -34,6 +34,32 @@ def lower_calls_first(call_names):
     return copy_dict(priorities, call_names)
 
 
+class SuitPreference(object):
+    """Priorities for a rule that may bid any of several suits, so that two fitting suits
+    never tie: the longest suit first; with equal lengths a major before a minor, then the
+    cheaper call.  Use as
+        foo_suits = SuitPreference(['2D', '2H', '2S'])
+        class Foo(Rule):
+            priorities_per_call = foo_suits.per_call
+            conditional_priorities_per_call = foo_suits.conditional
+    and order foo_suits.all against other rules."""
+    def __init__(self, call_names):
+        calls = [Call.from_string(name) for name in call_names]
+        by_preference = sorted(calls, key=lambda call: (call.strain not in suit.MAJORS, call))
+        self.preferred = enum.Enum(*[call.name for call in by_preference])
+        self.longest = enum.Enum(*[call.name for call in by_preference])
+        rule_order.order(*reversed(self.preferred))
+        rule_order.order(set(self.preferred), set(self.longest))
+        self.all = set(self.preferred) | set(self.longest)
+        self.per_call = copy_dict(self.preferred, call_names)
+        self.conditional = {}
+        for call in calls:
+            other_suits = set(other.strain for other in calls if other.strain != call.strain)
+            if other_suits:
+                is_longest = z3.And([expr_for_suit(call.strain) > expr_for_suit(other) for other in sorted(other_suits)])
+                self.conditional[call.name] = [(is_longest, self.longest.get(call.name))]
+
+
 relay_priorities = enum.Enum(
     "SuperAccept",
     "Accept",
@@ -594,20 +620,6 @@ negative_double_jump_responses = enum.Enum(
 rule_order.order(*reversed(negative_double_jump_responses))
 
 
-# FIXME: This is identical to JumpShiftByOpener and can be removed.
-class JumpNewSuitResponseToNegativeDouble(JumpResponseToNegativeDouble):
-    preconditions = UnbidSuit()
-    # Min: 1C 1D X P 2H, Max: 1C 2H X P 3S
-    priorities_per_call = {
-        # I don't think major and minor can ever occur at the same time.
-        # This diffence exists only for ordering with JumpNotrumpResonse.
-        ('2H', '2S'): negative_double_jump_responses.NewMajor,
-        ('3C', '3D'): negative_double_jump_responses.NewMinor,
-        ('3H', '3S'): negative_double_jump_responses.NewMajor,
-    }
-    shared_constraints = MinLength(4)
-
-
 class JumpRaiseResponseToNegativeDouble(JumpResponseToNegativeDouble):
     preconditions = PartnerHasAtLeastLengthInSuit(4),
     # Min: 1C 1D X P 2H, Max: 1C 2S X P 4H
@@ -1032,6 +1044,8 @@ opener_jumpshifts = enum.Enum(
     "JumpShiftToClubs",
 )
 rule_order.order(*reversed(opener_jumpshifts))
+# After a negative double the cuebid (19+, every strain still open) outranks a jump shift (19+).
+rule_order.order(opener_jumpshifts, CuebidReponseToNegativeDouble)
 
 
 opener_jumpshifts_to_minors = set([
@@ -1097,15 +1111,23 @@ class NotrumpRebidOverTwoClubs(OpenerRebidAfterStrongTwoClubs):
     shared_constraints = balanced
 
 
+opener_suited_rebids_after_two_clubs = SuitPreference(Call.suited_names_between('2H', '4C'))
+# Same place in the order as the SuitedRebid slot of two_clubs_opener_rebid_priorities.
+rule_order.order(
+    two_clubs_opener_rebid_priorities.TwoLevelNTRebid,
+    opener_suited_rebids_after_two_clubs.all,
+    two_clubs_opener_rebid_priorities.SuitedJumpRebid,
+)
+
 class OpenerSuitedRebidAfterStrongTwoClubs(OpenerRebidAfterStrongTwoClubs):
     preconditions = [UnbidSuit(), NotJumpFromLastContract()]
     # This maxes out at 4C -> 2C P 3D P 4C
     # If the opponents are competing we're just gonna double them anyway.
-    call_names = Call.suited_names_between('2H', '4C')
     # FIXME: This should either have NoMajorFit(), or have priorities separated
     # so that we prefer to support our partner's major before bidding our own new minor.
     shared_constraints = MinLength(5)
-    priority = two_clubs_opener_rebid_priorities.SuitedRebid
+    priorities_per_call = opener_suited_rebids_after_two_clubs.per_call
+    conditional_priorities_per_call = opener_suited_rebids_after_two_clubs.conditional
 
 
 class OpenerSuitedJumpRebidAfterStrongTwoClubs(OpenerRebidAfterStrongTwoClubs):
@@ -1980,6 +2002,8 @@ class BalancingNotrumpOvercall(BalancingOvercallOverSuitedOpen):
     annotations = annotations.NotrumpSystemsOn
 
 
+balancing_suited_overcalls = SuitPreference(['1D', '1H', '1S', '2C', '2D', '2H', '2S'])
+
 class BalancingSuitedOvercall(BalancingOvercallOverSuitedOpen):
     preconditions = [
         NotJumpFromLastContract(),
@@ -1989,6 +2013,8 @@ class BalancingSuitedOvercall(BalancingOvercallOverSuitedOpen):
         (      '1D', '1H', '1S'): points >= 5,
         ('2C', '2D', '2H', '2S'): points >= 7,
     }
+    priorities_per_call = balancing_suited_overcalls.per_call
+    conditional_priorities_per_call = balancing_suited_overcalls.conditional
     shared_constraints = [
         MinLength(5),
         ThreeOfTheTopFiveOrBetter(),
@@ -2103,9 +2129,12 @@ class SimplePreference(object):
     ]
 
 
+michaels_preferences = SuitPreference(Call.suited_names_between('2H', '4H'))
+
 class MichaelsSimplePreferenceResponse(SimplePreference, ForcedResponseToMichaelsCuebid):
     # Min: 1C 2C P 2H, Max: 2S 3S 4H
-    call_names = Call.suited_names_between('2H', '4H')
+    priorities_per_call = michaels_preferences.per_call
+    conditional_priorities_per_call = michaels_preferences.conditional
 
 
 class Unusual2N(Rule):
@@ -2135,9 +2164,12 @@ class ForcedResponseToUnusual2N(Rule):
     ]
 
 
+unusual_2n_preferences = SuitPreference(['3C', '3D', '3H'])
+
 class Unusual2NSimplePreferenceResponse(SimplePreference, ForcedResponseToUnusual2N):
     # Min: 1D 2N P 3C, Max: 1D 2N P 3H
-    call_names = ('3C', '3D', '3H')
+    priorities_per_call = unusual_2n_preferences.per_call
+    conditional_priorities_per_call = unusual_2n_preferences.conditional
 
 
 two_suited_direct_overcalls = set([
@@ -2664,13 +2696,15 @@ class PassResponseToPreempt(ResponseToPreempt):
     shared_constraints = NO_CONSTRAINTS
 
 
+new_suit_responses_to_preempt = SuitPreference(Call.suited_names_between('2D', '4D'))
+
 class NewSuitResponseToPreempt(ResponseToPreempt):
     preconditions = [
         UnbidSuit(),
         NotJumpFromLastContract()
     ]
-    # FIXME: These need some sort of priority ordering between the calls.
-    call_names = Call.suited_names_between('2D', '4D')
+    priorities_per_call = new_suit_responses_to_preempt.per_call
+    conditional_priorities_per_call = new_suit_responses_to_preempt.conditional
     shared_constraints = [
         MinLength(5),
         # Should this deny support for partner's preempt suit?
@@ -2684,7 +2718,7 @@ class NewSuitResponseToPreempt(ResponseToPreempt):
 rule_order.order(
     PassResponseToPreempt,
     natural_bids, # This puts the law above passing, which makes us extend preempts preferentially, is that correct?
-    NewSuitResponseToPreempt,
+    new_suit_responses_to_preempt.all,
 )
 
 
@@ -2932,6 +2966,7 @@ rule_order.order(natural_bids, stayman_response_priorities)
 rule_order.order(natural_bids, GarbagePassStaymanRebid)
 rule_order.order(natural_bids, PassAfterTakeoutDouble)
 rule_order.order(natural_bids, two_clubs_opener_rebid_priorities)
+rule_order.order(natural_bids, opener_suited_rebids_after_two_clubs.all)
 rule_order.order(natural_exact_notrump_game, stayman_rebid_priorities.GameForcingOtherMajor, natural_exact_major_games)
 rule_order.order(natural_nt_part_scores, stayman_rebid_priorities.InvitationalOtherMajor, natural_suited_part_scores)
 rule_order.order(takeout_double_responses, natural_bids)
@@ -3267,7 +3302,7 @@ rule_order.order(
 # particularly in the ordering of new majors vs. notrump.
 rule_order.order(
     DefaultPass,
-    BalancingSuitedOvercall,
+    balancing_suited_overcalls.all,
     BalancingMichaelsCuebid,
     balancing_notrumps.OneNotrump,
     BalancingDouble,

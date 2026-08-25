@@ -91,18 +91,21 @@ class PassResponseToOneNotrumpPenaltyDouble(ResponseToCappelletti):
     }
 
 
+new_suit_responses_to_penalty_double = SuitPreference(['2C', '2D', '2H', '2S'])
+
 class NewSuitResponseToOneNotrumpPenaltyDouble(ResponseToCappelletti):
     preconditions = [
         LastBidWas(positions.Partner, 'X'),
         UnbidSuit(),
         NotJumpFromLastContract(),
     ]
-    call_names = ['2C', '2D', '2H', '2S']
+    priorities_per_call = new_suit_responses_to_penalty_double.per_call
+    conditional_priorities_per_call = new_suit_responses_to_penalty_double.conditional
     shared_constraints = [MinLength(4), LongestSuitExceptOpponentSuits()]
 
 
 rule_order.order(
-    NewSuitResponseToOneNotrumpPenaltyDouble,
+    new_suit_responses_to_penalty_double.all,
     PassResponseToOneNotrumpPenaltyDouble,
 )
 
