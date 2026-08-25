@@ -1988,6 +1988,46 @@ class BalancingOvercallOverSuitedOpen(BalancingOvercall):
     preconditions = LastBidHasAnnotation(positions.LHO, annotations.OneLevelSuitOpening)
 
 
+# Balancing after their raised partscore dies: 1D P 2D P P or 1H P 2H P P (p140-142).
+two_level_balancing_precondition = AndPrecondition(
+    Opened(positions.RHO),
+    TheyRaisedToTwoAndStopped(),
+    InvertedPrecondition(HasBid(positions.Me)),
+    InvertedPrecondition(HasBid(positions.Partner)),
+)
+
+two_level_balancing_suits = SuitPreference(['2H', '2S', '3C', '3D'])
+
+class BalancingSuitedOvercallOverRaise(Rule):
+    preconditions = [
+        two_level_balancing_precondition,
+        NotJumpFromLastContract(),
+        UnbidSuit(),
+    ]
+    priorities_per_call = two_level_balancing_suits.per_call
+    conditional_priorities_per_call = two_level_balancing_suits.conditional
+    shared_constraints = [
+        points >= 7,
+        MinLength(5),
+        MaxLengthInLastContractSuit(3),
+    ]
+    forcing = False
+
+
+class BalancingDoubleOverRaise(Rule):
+    preconditions = two_level_balancing_precondition
+    call_names = 'X'
+    annotations = annotations.TakeoutDouble
+    shared_constraints = [
+        points >= 9,
+        SupportForSuitsOtherThanLastContract(),
+        MaxLengthInLastContractSuit(2),
+    ]
+
+
+rule_order.order(DefaultPass, BalancingDoubleOverRaise, two_level_balancing_suits.all)
+
+
 balancing_notrumps = enum.Enum(
     "OneNotrump",
     "TwoNotrumpJump",
@@ -2242,6 +2282,7 @@ class TwoLevelTakeoutDouble(OvercallTakeoutDouble):
         InvertedPrecondition(takeout_double_after_preempt_precondition),
         InvertedPrecondition(balancing_precondition),
         InvertedPrecondition(notrump_auction_passout_precondition),
+        InvertedPrecondition(two_level_balancing_precondition),
     ]
     shared_constraints = points >= 15
 

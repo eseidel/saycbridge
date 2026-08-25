@@ -229,6 +229,22 @@ class OpeningBidWas(Precondition):
         return False
 
 
+class TheyRaisedToTwoAndStopped(Precondition):
+    """The opponents opened a suit, raised it to the two level, and the auction is dying:
+    the opening suit is the last contract, at level two (LHO's raise), and partner and RHO
+    (the opener) have just passed.  The balancing seat."""
+    def fits(self, history, call):
+        opening = next((c for c in history.call_history.calls if not c.is_pass()), None)
+        last_contract = history.last_contract
+        if not opening or not last_contract or opening.strain not in suit.SUITS:
+            return False
+        if last_contract.level != 2 or last_contract.strain != opening.strain:
+            return False
+        return (history.lho.last_call == last_contract and
+                history.partner.last_call and history.partner.last_call.is_pass() and
+                history.rho.last_call and history.rho.last_call.is_pass())
+
+
 class LastBidHasAnnotation(Precondition):
     def __init__(self, position, annotation):
         self.position = position
