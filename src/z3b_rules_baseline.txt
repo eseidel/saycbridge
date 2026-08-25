@@ -1073,7 +1073,7 @@ KJ74.JT95.9732.A-N:NO:3C,P	4C	LawOfTotalTricks	None,PreemptiveOpen,DefaultPass
 KJ76.KQ72..J9874-N:NO:1H	P	DefaultPass	None,None,OneLevelSuitOpening
 KJ765.T5.AQ987.6-N:NO:1N,P,P	2H	BalancingCappelletti	NotrumpOpening,DefaultPass,DefaultPass
 KJ8.A74.JT874.86-N:NO:1D	P	DefaultPass	None,None,OneLevelSuitOpening
-KJ8.A74.JT874.86-N:NO:1D,P,2D,P,P	P	DefaultPass	MinimumRaise,DefaultPass,SuitGameIsRemote
+KJ8.A74.JT874.86-N:NO:1D,P,2D,P,P	2H	BalancingSuitedOvercallOverRaise	MinimumRaise,DefaultPass,SuitGameIsRemote
 KJ86.K4.A8.KQ632-N:NO:	1S	OneLevelSuitOpening	None,None,None
 KJ86.K4.A8.KQ632-N:NO:1S,P,2S,P	3C	HelpSuitGameTry	DefaultPass,MinimumRaise,DefaultPass
 KJ87.53.94.AKJT3-N:BO:1C,P,1D	1S	OneLevelStandardOvercall	OneLevelSuitOpening,DefaultPass,OneLevelNewSuitResponse
@@ -1209,7 +1209,7 @@ KT54.KJ73.KJT6.Q-N:NO:1C,2C,P	None	None	-
 KT6.AQJ74.874.T2-N:NO:P,1S,2D	2N	NaturalNotrump	DefaultPass,OneLevelSuitOpening,TwoLevelStandardOvercall
 KT6.AQJ74.874.T2-N:NO:P,1S,2D,P,P,X,P	3H	JumpSuitResponseToTakeoutDouble	DefaultPass,ReopeningDouble,DefaultPass
 KT6.QT87.84.AT84-N:NO:1H	P	DefaultPass	None,None,OneLevelSuitOpening
-KT6.QT87.84.AT84-N:NO:1H,P,2H,P,P	P	DefaultPass	MinimumRaise,DefaultPass,SuitGameIsRemote
+KT6.QT87.84.AT84-N:NO:1H,P,2H,P,P	X	BalancingDoubleOverRaise	MinimumRaise,DefaultPass,SuitGameIsRemote
 KT64.6.A873.KQ54-N:NO:	1C	OneLevelSuitOpening	None,None,None
 KT76.98.K8754.94-N:NS:	P	DefaultPass	None,None,None
 KT76.98.K8754.94-N:NS:P,1H,X,3H	P	DefaultPass	OneLevelSuitOpening,OneLevelTakeoutDouble,JumpRaiseResponseToAfterRHOTakeoutDouble
@@ -1330,7 +1330,7 @@ Q98.JT8.53.AKT95-N:NO:P	P	DefaultPass	None,None,DefaultPass
 Q98.JT8.53.AKT95-N:NO:P,P	P	DefaultPass	None,DefaultPass,DefaultPass
 Q98.JT8.53.AKT95-N:NO:P,P,P	1S	OneLevelSuitOpening	DefaultPass,DefaultPass,DefaultPass
 Q98.K74.43.QJ874-N:NO:1H	P	DefaultPass	None,None,OneLevelSuitOpening
-Q98.K74.43.QJ874-N:NO:1H,P,2H,P,P	P	DefaultPass	MinimumRaise,DefaultPass,SuitGameIsRemote
+Q98.K74.43.QJ874-N:NO:1H,P,2H,P,P	2S	BalancingSuitedOvercallOverRaise	MinimumRaise,DefaultPass,SuitGameIsRemote
 Q98.KJ732.KJ.JT9-N:NO:1H,P	2D	NewSuitAtTheTwoLevel	None,OneLevelSuitOpening,DefaultPass
 Q98.KQT2.75.AJ92-N:BO:P,P	1D	OneLevelSuitOpening	None,DefaultPass,DefaultPass
 Q98.KQT2.75.AJ92-N:BO:P,P,1D,P,1S,P	2S	SupportPartnerMajorSuit	DefaultPass,OneLevelNewSuitResponse,DefaultPass

@@ -3,10 +3,7 @@ Pass 6 of 6 hands
 
 test_balancing:
 FAIL: P (expected 2H) for 974.J85.AJT872.9 (hcp: 6 lp: 8 sp: 9), history: 1S P P
-FAIL: P (expected 2H) for KJ8.A74.JT874.86 (hcp: 9 lp: 10 sp: 10), history: 1D P 2D P P
-FAIL: P (expected 2S) for Q98.K74.43.QJ874 (hcp: 8 lp: 9 sp: 9), history: 1H P 2H P P
 FAIL: P (expected X) for QT752.73.A94.AT6 (hcp: 10 lp: 11 sp: 11), history: 1D P P
-FAIL: P (expected X) for KT6.QT87.84.AT84 (hcp: 9 lp: 9 sp: 10), history: 1H P 2H P P
 FAIL: 1S (expected X) for AKQ5.84.72.AQJ93 (hcp: 16 lp: 17 sp: 18), history: 1H P P
 FAIL: P (expected X) for K92.QJT7.KQ4.AJ7 (hcp: 16 lp: 16 sp: 16), history: 1H P P
 FAIL: P (expected 2N) for K92.QJT7.KQ4.AJ7 (hcp: 16 lp: 16 sp: 16), history: 1H P P X P 2C P
@@ -14,7 +11,7 @@ WARNING: Unordered: ['2S', '2H'] rules: [BalancingJumpSuitedOvercall, BalancingJ
 FAIL: None (expected 2D) for .J.KQT762.AKT932 (hcp: 13 lp: 17 sp: 20), history: 1D P P
 FAIL: 2S (expected 3S) for QJ62.K32.A4.K843 (hcp: 13 lp: 13 sp: 14), history: 1C P P 1S P
 FAIL: 2N (expected P) for 543.AQT43.KT4.K6 (hcp: 12 lp: 13 sp: 13), history: 1D P P X P
-Pass 34 of 45 hands
+Pass 37 of 45 hands
 
 test_balancing_cappelletti:
 Pass 7 of 7 hands
@@ -376,11 +373,11 @@ FAIL: 3S (expected 4S) for K74.9.J98.KJT742 (hcp: 8 lp: 10 sp: 11), history: 1N 
 FAIL: 2N (expected P) for Q87.J843.K65.Q93 (hcp: 8 lp: 8 sp: 8), history: 1N P
 Pass 1 of 3 hands
 
-Pass 1240 (83.8%) of 1479 total hands
+Pass 1243 (84.0%) of 1479 total hands
 
-Tested call generation of 172 rules of 172 total (excluding 8 requires_planning rules).
+Tested call generation of 174 rules of 174 total (excluding 8 requires_planning rules).
 
-Tested interpretation of 112 rules of 180 total.
+Tested interpretation of 112 rules of 182 total.
 
 0 rules were never used for either bidding or interpretation:
 
