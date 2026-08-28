@@ -290,6 +290,8 @@ class NotrumpSlamIsRemote(NaturalPass):
         LastBidHasStrain(positions.Partner, suit.NOTRUMP),
         LastBidWasGameOrAbove(),
         LastBidWasBelowSlam(),
+        # Partner's 5N (pick a slam / grand slam invitation) is forcing: never pass it.
+        InvertedPrecondition(LastBidWas(positions.Partner, '5N')),
     ]
     shared_constraints = MaximumCombinedPoints(32)
 

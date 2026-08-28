@@ -260,6 +260,15 @@ class LastBidHasAnnotation(Precondition):
         return self.annotation in history.view_for(self.position).annotations_for_last_call
 
 
+class FourthSeatOpensPreemptsAtGameOnly(Precondition):
+    """In fourth seat (three passes to us) a preempt is only worth making at the four level
+    (p88 h27: 4H in every seat); lower preempts give the opponents nothing to preempt."""
+    def fits(self, history, call):
+        from z3b.model import positions  # model imports this module; keep the import local
+        fourth_seat = LastBidWas(positions.LHO, 'P').fits(history, call)
+        return not fourth_seat or call.level >= 4
+
+
 class LastBidHasStrain(Precondition):
     def __init__(self, position, strain_or_strains):
         self.position = position

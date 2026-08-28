@@ -201,6 +201,29 @@ class LightSupportForUnbidSuits(Constraint):
         )
 
 
+class SupportForTransferOverInterference(Constraint):
+    """Completing partner's transfer is automatic, except over RHO's suit overcall, where the
+    completion at the three level promises three-card support (p17 h47)."""
+    def expr(self, history, call):
+        rho_overcalled = history.rho.last_call and history.rho.last_call.strain in suit.SUITS
+        if not rho_overcalled:
+            return model.NO_CONSTRAINTS
+        return expr_for_suit(call.strain) >= 3
+
+
+class ReopeningSupport(Constraint):
+    """Opener's reopening double (1x (1y) P P: X): three cards in every unbid suit and at most a
+    doubleton in theirs (p136-137: 3-3 shapes double; shortness in their suit is what matters).
+    The direct-seat takeout double keeps its stricter shape."""
+    def expr(self, history, call):
+        unbid_suits = history.unbid_suits
+        assert len(unbid_suits) in (2, 3), "%s: %d unbid suits: %s" % (self.__class__, len(unbid_suits), history.call_history)
+        return z3.And(
+            z3.And([expr_for_suit(suit) >= 3 for suit in unbid_suits]),
+            expr_for_suit(history.last_contract.strain) <= 2,
+        )
+
+
 class MaxLengthInUnbidSuits(Constraint):
     def __init__(self, max_length):
         self.max_length = max_length
