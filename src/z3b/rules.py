@@ -2294,7 +2294,9 @@ class TwoLevelTakeoutDouble(OvercallTakeoutDouble):
         InvertedPrecondition(notrump_auction_passout_precondition),
         InvertedPrecondition(two_level_balancing_precondition),
     ]
-    shared_constraints = ConstraintOr(ConstraintAnd(SupportForUnbidSuits(), points >= 15), too_strong_to_overcall)
+    # 12+ (was 15: a gap-filling constant stricter than the booklet's "opening values with shape";
+    # measured 2026-08-27 on 150k deals: 12 gains the doubling side +0.05 MP%, 17 loses -0.02)
+    shared_constraints = ConstraintOr(ConstraintAnd(SupportForUnbidSuits(), points >= 12), too_strong_to_overcall)
 
 
 standard_takeout_doubles = set([

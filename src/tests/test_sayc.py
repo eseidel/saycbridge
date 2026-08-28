@@ -1060,6 +1060,8 @@ sayc_expectations = {
     ],
 
     "test_doubles": [ # Chap 15
+        # better-bids 2026-08-28: a two-level takeout double needs opening values with shape, not 15
+        ["KJ83.Q75.72.AQ98", "X", "1D P 1H P 2H"],  # 12 hcp, 4-4 in the unbid suits (passed 1D: no shape for a 1-level double)
         # Penalty Double
         ["T98.KQ4.863.Q875", "P", "1N X P"],  # p116, h1
         ["J7.872.53.QJ9874", "2S", "1N X P"],  # p116, h2
