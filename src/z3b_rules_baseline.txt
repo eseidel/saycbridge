@@ -1074,6 +1074,8 @@ KJ76.KQ72..J9874-N:NO:1H	X	OneLevelTakeoutDouble	None,None,OneLevelSuitOpening
 KJ765.T5.AQ987.6-N:NO:1N,P,P	2H	BalancingCappelletti	NotrumpOpening,DefaultPass,DefaultPass
 KJ8.A74.JT874.86-N:NO:1D	P	DefaultPass	None,None,OneLevelSuitOpening
 KJ8.A74.JT874.86-N:NO:1D,P,2D,P,P	2H	BalancingSuitedOvercallOverRaise	MinimumRaise,DefaultPass,SuitGameIsRemote
+KJ83.Q75.72.AQ98-N:NO:1D	P	DefaultPass	None,None,OneLevelSuitOpening
+KJ83.Q75.72.AQ98-N:NO:1D,P,1H,P,2H	X	TwoLevelTakeoutDouble	OneLevelNewSuitResponse,DefaultPass,SupportPartnerMajorSuit
 KJ86.K4.A8.KQ632-N:NO:	1S	OneLevelSuitOpening	None,None,None
 KJ86.K4.A8.KQ632-N:NO:1S,P,2S,P	3C	HelpSuitGameTry	DefaultPass,MinimumRaise,DefaultPass
 KJ87.53.94.AKJT3-N:BO:1C,P,1D	1S	OneLevelStandardOvercall	OneLevelSuitOpening,DefaultPass,OneLevelNewSuitResponse
