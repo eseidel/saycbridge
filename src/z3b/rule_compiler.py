@@ -91,7 +91,9 @@ class CompiledRule(object):
 
     def annotations_for_call(self, call):
         if self.dsl_rule.annotations_per_call:
-            per_call_annotations = self.dsl_rule.annotations_per_call.get(
+            # Tuple keys name several calls, as in constraints (Cappelletti's ('2C', '2D', '2N')
+            # was never matched before this flattening, so those calls read as natural).
+            per_call_annotations = RuleCompiler._flatten_tuple_keyed_dict(self.dsl_rule.annotations_per_call).get(
                 call.name)
             if per_call_annotations:
                 return self._annotations | set(RuleCompiler._ensure_list(per_call_annotations))

@@ -532,6 +532,8 @@ sayc_expectations = {
         ["AQJ76.AK72.J.K75", "3S", "1C P 1S P 2D P 2S P"],  # p63
 
         ["87632.8.T86.AQ98", "2N", "1D P 1S P 2H P"],  # p64, h9
+        # Opener rebids his first suit over the 2N (our example, in the shape of h9's auction).
+        ["5.KQJ62.AK72.KJ8", "3D", "1D P 1N P 2H P 2N P"],
         # The book prints no minimum opener rebidding 3D over the 2N; the only p64 opener is
         # the 5440 monster below, which bids 4H over it.
 

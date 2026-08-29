@@ -124,7 +124,8 @@ class NotrumpOpening(Opening):
 
 
 class StrongTwoClubs(Opening):
-    annotations = annotations.StrongTwoClubOpening
+    # Artificial: says nothing about clubs (a double of it is lead-directing, not takeout).
+    annotations = [annotations.StrongTwoClubOpening, annotations.Artificial]
     call_names = '2C'
     shared_constraints = points >= 22  # FIXME: Should support "or 9+ winners"
     priority = opening_priorities.StrongTwoClubs
@@ -315,10 +316,42 @@ class NotrumpResponseToMinorOpen(ResponseToOneLevelSuitedOpen):
 class Jordan(ResponseToOneLevelSuitedOpen):
     preconditions = LastBidHasAnnotation(positions.RHO, annotations.TakeoutDouble)
     call_names = '2N'
+    # A limit raise or better of partner's suit, nothing to do with notrump (implies Artificial).
+    annotations = annotations.Jordan
     shared_constraints = [
         MinimumCombinedLength(8, use_partners_last_suit=True),
         MinimumCombinedSupportPoints(22, use_partners_last_suit=True),
     ]
+
+
+jordan_responses = enum.Enum(
+    "Game",
+    "Minimum",
+)
+# Game when the combined support points are there, else the cheapest rebid.
+rule_order.order(*reversed(jordan_responses))
+
+
+class ResponseToJordan(Rule):
+    """Opener's reply to Jordan (a limit raise or better over their takeout double, p123):
+    game in the agreed major with more than a minimum, otherwise the cheapest rebid of it.
+    Gadget category: the natural rules would read the 2N as notrump."""
+    category = categories.Gadget
+    preconditions = [
+        LastBidHasAnnotation(positions.Partner, annotations.Jordan),
+        RebidSameSuit(),
+    ]
+    constraints = {
+        ('3C', '3D', '3H', '3S'): NO_CONSTRAINTS,
+        ('4H', '4S'): MinimumCombinedSupportPoints(25),
+        ('5C', '5D'): MinimumCombinedSupportPoints(28),
+    }
+    priorities_per_call = {
+        ('3C', '3D', '3H', '3S'): jordan_responses.Minimum,
+        ('4H', '4S', '5C', '5D'): jordan_responses.Game,
+    }
+    # The minimum rebid may be passed (partner raises to game with more than a limit raise).
+    forcing = False
 
 
 class ResponseAfterRHOTakeoutDouble(ResponseToOneLevelSuitedOpen):
@@ -642,6 +675,8 @@ class CuebidReponseToNegativeDouble(ResponseToNegativeDouble):
     # we'll know they're 4-4 in the majors and can choose between a minor game and NT?
     call_names = Call.suited_names_between('2D', '3S')
     shared_constraints = points >= 19
+    # A cuebid of their suit shows nothing in it.
+    annotations = annotations.Artificial
 
 
 class NewSuitResponseToNegativeDouble(ResponseToNegativeDouble):
@@ -759,6 +794,8 @@ class CueBidRebidAfterNegativeDouble(Rule):
         CueBid(positions.RHO, use_first_suit=True),
     ]
     # Min: 1D 1H X P 2C P 2H, Max: 1H 2S X P 3D P 3S
+    # A cuebid of their suit shows nothing in it.
+    annotations = annotations.Artificial
     call_names = Call.suited_names_between('2H', '3S')
     # Shows slam interest, but in which suit?
     shared_constraints = MinimumSupportPointsForPartnersLastSuit(15) # How big should this really be?
@@ -980,8 +1017,25 @@ class ForcedMinimumResponseToOpenerReverse(Rule):
 # Also known as Ingberman 2NT
 class Lebensohl(ForcedMinimumResponseToOpenerReverse):
     call_names = '2N'
+    # Ingberman's 2N: a weak hand asking opener to rebid his first suit, not notrump (implies Artificial).
+    annotations = annotations.Lebensohl
     # Priorities imply we have no major to rebid.
     shared_constraints = NO_CONSTRAINTS
+
+
+class RebidFirstSuitAfterLebensohl(Rule):
+    """Opener's reply to the 2N over his reverse (p64): rebid the first suit, which partner will
+    pass or correct to the second.  Opener with 19+ "is not bound to comply" (the 5440 monster
+    bids 4H); that continuation is not modelled.  Gadget category: the 2N is artificial and the
+    natural rules have no reading of it."""
+    category = categories.Gadget
+    preconditions = [
+        LastBidHasAnnotation(positions.Partner, annotations.Lebensohl),
+        RebidFirstSuit(),
+    ]
+    call_names = ['3C', '3D', '3H']
+    shared_constraints = NO_CONSTRAINTS
+    forcing = False
 
 
 major_responses_to_opener_reverse = enum.Enum(
@@ -1324,6 +1378,9 @@ class WeakNewSuitAfterOneNotrumpResponse(OneLevelOpeningResponderRebid):
     preconditions = [
         LastBidWas(positions.Me, '1N'),
         LastBidHasSuit(positions.Partner),
+        # Not over opener's reverse: there a five-card major is ForcedMajorRebid (forcing to bid,
+        # the two rules would otherwise tie for the call).
+        InvertedPrecondition(LastBidHasAnnotation(positions.Partner, annotations.OpenerReverse)),
         UnbidSuit(),
         Level(2),
     ]
@@ -1466,6 +1523,10 @@ rule_order.order(*reversed(fourth_suit_forcing_response_priorities))
 rebid_response_to_fourth_suit_forcing_priorities = enum.Enum(*Call.suited_names_between('2D', '4H'))
 # Rebid is the lowest priority, so we want lower bids to be higher priority, hence the reverse, right?
 rule_order.order(*reversed(rebid_response_to_fourth_suit_forcing_priorities))
+# RHO's double of the fourth suit does not relieve opener of answering it (before the double he
+# was forced and passing was not on offer; after it DefaultPass would otherwise be unordered).
+rule_order.order(DefaultPass, fourth_suit_forcing_response_priorities)
+rule_order.order(DefaultPass, rebid_response_to_fourth_suit_forcing_priorities)
 
 rule_order.order(
     rebid_response_to_fourth_suit_forcing_priorities,
@@ -1968,6 +2029,8 @@ class DiamondStaymanResponse(StaymanResponse):
 # FIXME: This whole rule feels like a special-case penalty double?
 class StolenHeartStaymanResponse(StaymanResponse):
     constraints = { 'X': hearts >= 4 }
+    # The double stands in for the Stayman response RHO's bid took away.
+    annotations = annotations.Artificial
     priority = stayman_response_priorities.HeartStaymanResponse
 
 
@@ -1981,6 +2044,8 @@ class StolenThreeHeartStaymanResponse(StolenHeartStaymanResponse):
 
 class StolenSpadeStaymanResponse(StaymanResponse):
     constraints = { 'X': spades >= 4 }
+    # The double stands in for the Stayman response RHO's bid took away.
+    annotations = annotations.Artificial
     priority = stayman_response_priorities.SpadeStaymanResponse
 
 
@@ -2213,6 +2278,8 @@ class CuebidResponseToStandardOvercall(ResponseToStandardOvercall):
         SupportForPartnerLastBid(3),
         MinimumSupportPointsForPartnersLastSuit(11),
     ]
+    # A cuebid of their suit shows nothing in it.
+    annotations = annotations.Artificial
 
 
 class NewSuitResponseToStandardOvercall(ResponseToStandardOvercall):
@@ -2237,37 +2304,31 @@ class LeadDirectingDouble(Rule):
         LastBidHasAnnotation(positions.RHO, annotations.Artificial),
         LastBidHasSuit(positions.RHO),
     ]
-    annotations = annotations.Artificial
+    # Implies Artificial; the forcing oracle knows partner may pass it.
+    annotations = annotations.LeadDirectingDouble
 
 
 class LeadDirectingDoubleOfArtificialSuitBid(LeadDirectingDouble):
     """"Doubles of artificial bids are lead-directing" (p124): a double of Stayman, a transfer,
-    a strong 2C, a waiting 2D, a splinter, Cappelletti and the like asks for the lead of the
-    suit named, five or more with three of the top five honors (p124 h30, h31).  Not of a
-    Michaels cuebid: that names our suit, not his, and a double there is about values, not the
-    lead.  Not of a fourth-suit-forcing bid: opener's replies to the fourth suit are written for
-    an undoubled auction, so the double would leave him without a call (a hole, not a rule
-    choice -- lift this once those replies handle the double).  Not above game (the contract is
-    settled; doubles there are penalty).  The response to an ace-ask has its own rule below."""
-    # FIXME: The four exclusions below are a list of special cases, not a rule.  Replace them
-    # with the actual meaning: the double is lead-directing when the artificial bid names a
-    # suit the bidder does not hold and we do (Michaels names OUR suit; the fourth suit and
-    # the ace-ask response want their own double rules, which should then simply outrank
-    # this one).  Also: a strong 2C, splinters and Cappelletti's 2C carry no Artificial
-    # annotation yet, so this rule does not see them (annotating them is queued).
+    a strong 2C, a waiting 2D, a splinter, a cuebid of our suit and the like asks for the lead
+    of the suit named, five or more with three of the top five honors (p124 h30, h31).  Only
+    when the suit named is not one our side has shown: a double of their cuebid of our suit
+    (Michaels over our opening) is about values, not the lead.  Not above game (the contract
+    is settled; doubles there are penalty).  The response to an ace-ask has its own holding
+    requirement in the rule below, which outranks this one."""
     preconditions = [
         LastBidWasBelowGame(),
-        InvertedPrecondition(LastBidHasAnnotation(positions.RHO, annotations.MichaelsCuebid)),
-        InvertedPrecondition(LastBidHasAnnotation(positions.RHO, annotations.FourthSuitForcing)),
-        InvertedPrecondition(LastBidHasAnnotation(positions.LHO, annotations.Blackwood)),
-        InvertedPrecondition(LastBidHasAnnotation(positions.LHO, annotations.Gerber)),
+        InvertedPrecondition(LastContractSuitBidBy(positions.Me)),
+        InvertedPrecondition(LastContractSuitBidBy(positions.Partner)),
     ]
     shared_constraints = [MinLengthInLastContractSuit(5), ThreeOfTheTopFiveInLastContractSuit()]
 
 
 class LeadDirectingDoubleOfAceAskingResponse(LeadDirectingDouble):
     """A double of the response to Blackwood or Gerber asks for that suit: a void (for the
-    ruff) or the ace and king (p124 h32)."""
+    ruff) or the ace and king (p124 h32).  Gadget category: the more specific meaning wins
+    over the general five-card holding (two rules of one category for one call drop it)."""
+    category = categories.Gadget
     preconditions = EitherPrecondition(
         LastBidHasAnnotation(positions.LHO, annotations.Blackwood),
         LastBidHasAnnotation(positions.LHO, annotations.Gerber),
@@ -2917,6 +2978,8 @@ class CuebidResponseToTakeoutDouble(ResponseToTakeoutDouble):
     ]
     priority = takeout_double_responses.CuebidResponseToTakeoutDouble
     call_names = Call.suited_names_between('2C', '3S')
+    # A cuebid of their suit shows nothing in it.
+    annotations = annotations.Artificial
     # FIXME: 4+ in the available majors?
     shared_constraints = [
         points >= 13,
@@ -3079,6 +3142,8 @@ class CueBidAfterTakeoutDouble(RebidAfterTakeoutDouble):
     # Min: 1C X 1D P 2C, unclear what Max should be?
     # 1S X 2H 3D P 3S?  Should we go higher?
     call_names = Call.suited_names_between('2C', '3S')
+    # A cuebid of their suit shows nothing in it.
+    annotations = annotations.Artificial
     # The book says "with slam interest".  Unclear what that means for constraints.
     shared_constraints = points >= 21
     priority = rebids_after_takeout_double.CueBid

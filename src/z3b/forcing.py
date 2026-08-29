@@ -42,6 +42,9 @@ class SAYCForcingOracle(object):
             return False
         if self._rho_bid(history):
             return False
+        # A lead-directing double asks for a lead, not for a call: partner may pass it.
+        if annotations.LeadDirectingDouble in history.partner.annotations_for_last_call:
+            return False
         # Artificial bids are always forcing. We use explicit pass rules to convert them into natural bids.
         if annotations.Artificial in history.partner.annotations_for_last_call:
             return True

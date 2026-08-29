@@ -55,6 +55,9 @@ annotations = enum.Enum(
     "Transfer",
     "Unusual2N",
     "GrandSlamForce",
+    "Jordan",
+    "Lebensohl",
+    "LeadDirectingDouble",
 )
 
 # Used by RuleCompiler._compile_annotations.
@@ -367,6 +370,18 @@ class SuitLowerThanMyLastSuit(Precondition):
         return call.strain < last_call.strain
 
 
+class RebidFirstSuit(Precondition):
+    """The call is a rebid of the first suit we bid (opener's original suit after a reverse)."""
+    def fits(self, history, call):
+        if call.strain not in suit.SUITS:
+            return False
+        first_call = None
+        for view in history.me.walk:
+            if view.last_call:
+                first_call = view.last_call
+        return bool(first_call) and first_call.strain == call.strain
+
+
 class RebidSameSuit(Precondition):
     def fits(self, history, call):
         if call.strain not in suit.SUITS:
@@ -411,6 +426,19 @@ class DidBidSuit(Precondition):
         if call.strain not in suit.SUITS:
             return False
         return history.is_bid_suit(call.strain, self.position)
+
+
+class LastContractSuitBidBy(Precondition):
+    """The suit of the last contract bid has been shown by `position` (by bidding it or by a
+    call that promises it).  For calls that are not suits, such as a double of RHO's bid."""
+    def __init__(self, position):
+        self.position = position
+
+    def fits(self, history, call):
+        last_contract = history.last_contract
+        if not last_contract or last_contract.strain not in suit.SUITS:
+            return False
+        return history.is_bid_suit(last_contract.strain, self.position)
 
 
 class UnbidSuit(Precondition):
