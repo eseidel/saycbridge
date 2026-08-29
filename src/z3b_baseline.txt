@@ -127,11 +127,9 @@ test_minimum_stayman:
 Pass 15 of 15 hands
 
 test_misc_hands_from_play:
-FAIL: 4C (expected 3N) for AKQ532.K8.K73.A9 (hcp: 19 lp: 21 sp: 21), history: P 1C P 1D P
 FAIL: 3D (expected 2N) for A93.Q762.K832.J3 (hcp: 10 lp: 10 sp: 10), history: 1D P 1H P 1S P (subtest of 1D P 1H P 1S P 2N P 3N P)
 FAIL: 5H (expected P) for 6.AKJ75.KJT86.A4 (hcp: 16 lp: 18 sp: 20), history: 1H P 2N P 4D P 4H P
 FAIL: 1N (expected 2C) for KQT4.AT96.632.T8 (hcp: 9 lp: 9 sp: 10), history: 1C P 1D P 1S P
-FAIL: 2D (expected 2H) for K9.AJT86.AKQT4.9 (hcp: 17 lp: 19 sp: 21), history: 1S P
 FAIL: P (expected 2D) for KJ9.AK832.T987.5 (hcp: 11 lp: 12 sp: 14), history: 1S P 1N
 FAIL: None (expected P) for AKQ643.KQ76.9.72 (hcp: 14 lp: 16 sp: 18), history: P P 1C P 1S P 2C P 3C P
 FAIL: P (expected 3N) for AK83.8652.8.AJ73 (hcp: 12 lp: 12 sp: 15), history: 1D P 1S P 1N P 2N P 3S P
@@ -185,7 +183,7 @@ FAIL: 2D (expected P) for K5.J86532.K6.AJ8 (hcp: 12 lp: 14 sp: 14), history: P P
 FAIL: P (expected 1H) for AK.72.KT942.AQT5 (hcp: 16 lp: 17 sp: 18), history: P 1C
 FAIL: X (expected 1N) for AKT4.AT.A82.J876 (hcp: 16 lp: 16 sp: 17), history: 1C P P
 FAIL: 2N (expected 2H) for QJ86.K7.AKT53.T6 (hcp: 13 lp: 14 sp: 15), history: 1H P 2D P
-Pass 287 of 344 hands
+Pass 289 of 344 hands
 
 test_negative_double:
 FAIL: 1N (expected P) for 4.A3.KQ65.KJT865 (hcp: 13 lp: 15 sp: 17), history: 1C 1S (subtest of 1C 1S P P X P)
@@ -193,11 +191,8 @@ FAIL: 1N (expected 2D) for J5.AQ864.A54.K76 (hcp: 14 lp: 15 sp: 14), history: 1D
 FAIL: 2S (expected 3C) for AKQJT2.QJ5.Q4.A3 (hcp: 19 lp: 21 sp: 19), history: 1C 1S X P
 FAIL: 2S (expected 3N) for KJ6.AQJ93.K5.AJ6 (hcp: 19 lp: 20 sp: 20), history: 1D 1S X P
 FAIL: 3H (expected 2S) for AQ6.KQJ97.AQ76.5 (hcp: 18 lp: 19 sp: 21), history: 1D 1S X P
-FAIL: X (expected 2S) for Q832.QT.K4.AQT93 (hcp: 13 lp: 14 sp: 13), history: 1D 2H
-FAIL: X (expected 2H) for Q832.QT.AQT93.K4 (hcp: 13 lp: 14 sp: 13), history: 1D 1S
-FAIL: X (expected 2S) for Q2.A95.AT3.KT843 (hcp: 13 lp: 14 sp: 12), history: 1H 2C
 FAIL: X (expected P) for J432.AK32.AK32.2 (hcp: 15 lp: 15 sp: 18), history: 1C P 1S (subtest of 1C P 1S P 2S X P)
-Pass 73 of 82 hands
+Pass 76 of 82 hands
 
 test_open_one_nt:
 Pass 7 of 7 hands
@@ -317,18 +312,17 @@ FAIL: None (expected P) for J642.K97.KQ6.AJ4 (hcp: 14 lp: 14 sp: 14), history: 1
 FAIL: 1N (expected 2C) for KJ642.KT.KQT97.7 (hcp: 12 lp: 14 sp: 16), history: 1D P 1H P 1S P
 FAIL: 3S (expected 2S) for KJ6.T.KQT97.KQ74 (hcp: 14 lp: 15 sp: 17), history: 1C P 1H P 1N P
 FAIL: 3C (expected 3N) for KJ64.JT.KQT9.KJ9 (hcp: 14 lp: 14 sp: 14), history: 1D P 1H P 1N P
-FAIL: 2C (expected 4S) for 2.KQ43.KQT8.QT98 (hcp: 12 lp: 12 sp: 15), history: 1D P 1H P 1S P
+FAIL: 2S (expected 4S) for 2.KQ43.KQT8.QT98 (hcp: 12 lp: 12 sp: 15), history: 1D P 1H P 1S P
 FAIL: 3N (expected 5D) for 3.AQT743.AK95.65 (hcp: 13 lp: 15 sp: 17), history: 1D P 1H P 1N P
 FAIL: P (expected 4H) for 96.KQ65.86.JT874 (hcp: 6 lp: 7 sp: 8), history: 1H P 1S P 3H P
 FAIL: 2N (expected 2S) for KJ643.9863.A9.K9 (hcp: 11 lp: 12 sp: 13), history: 1S P 2C P 2H P
-FAIL: 2H (expected 3D) for AQ643.KQ75.763.5 (hcp: 11 lp: 12 sp: 14), history: 1S P 2C P 2D P
 FAIL: 3S (expected 4S) for KJ643.A874.T.K97 (hcp: 11 lp: 12 sp: 14), history: 1S P 2C P 3C P
 FAIL: 2N (expected P) for AKQJ2.975.53.964 (hcp: 10 lp: 11 sp: 11), history: 1H P 2C P 2H P
 FAIL: None (expected 3N) for AQJ754.J7.5.Q876 (hcp: 10 lp: 12 sp: 13), history: P 1C P 1D P 1S P 3H P
 FAIL: None (expected 4H) for 52.AQ76.AJ93.K76 (hcp: 14 lp: 14 sp: 15), history: 1D P 1H P 2H P 3H P
 FAIL: 3D (expected 3N) for A9.QJT65.QJ96.A6 (hcp: 14 lp: 15 sp: 16), history: P 1S X XX P 1N P
 FAIL: P (expected 4S) for KQ843.AKJ82.2.75 (hcp: 13 lp: 15 sp: 17), history: 1D P 1S P 2C P 3S P
-Pass 83 of 99 hands
+Pass 84 of 99 hands
 
 test_third_and_fourth_seat_opens:
 FAIL: P (expected 1C) for AKT9.T87.QJ8.J32 (hcp: 11 lp: 11 sp: 11), history: P P
@@ -342,7 +336,7 @@ test_weak_game_jump_over_one_nt:
 FAIL: 3S (expected 4S) for K74.9.J98.KJT742 (hcp: 8 lp: 10 sp: 11), history: 1N P 2H P 2S P
 Pass 2 of 3 hands
 
-Pass 1276 (86.2%) of 1481 total hands
+Pass 1282 (86.6%) of 1481 total hands
 
 Tested call generation of 180 rules of 182 total (excluding 8 requires_planning rules).
 Never selected call from:

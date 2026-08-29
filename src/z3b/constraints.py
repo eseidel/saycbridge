@@ -131,6 +131,29 @@ class MinLengthInLastContractSuit(Constraint):
         return expr_for_suit(history.last_contract.strain) >= self.min_length
 
 
+class ThreeOfTheTopFiveInLastContractSuit(Constraint):
+    """Three of the top five honors in the suit the opponents just bid: the holding a trap
+    pass wants (KJT865 is the booklet's example), trump tricks against their suit and not
+    just length."""
+    def expr(self, history, call):
+        return (
+            model.three_of_the_top_five_clubs_or_better,
+            model.three_of_the_top_five_diamonds_or_better,
+            model.three_of_the_top_five_hearts_or_better,
+            model.three_of_the_top_five_spades_or_better,
+        )[history.last_contract.strain.index]
+
+
+class VoidOrAceKingInLastContractSuit(Constraint):
+    """The holding that doubles an artificial ace-asking response for the lead (p124 h32): a
+    void (a ruff is coming) or the ace and king."""
+    def expr(self, history, call):
+        strain = history.last_contract.strain
+        ace = (model.ace_of_clubs, model.ace_of_diamonds, model.ace_of_hearts, model.ace_of_spades)[strain.index]
+        king = (model.king_of_clubs, model.king_of_diamonds, model.king_of_hearts, model.king_of_spades)[strain.index]
+        return z3.Or(expr_for_suit(strain) == 0, z3.And(ace == 1, king == 1))
+
+
 class MaxLengthInLastContractSuit(Constraint):
     def __init__(self, max_length):
         self.max_length = max_length
@@ -203,11 +226,15 @@ class LightSupportForUnbidSuits(Constraint):
 
 class SupportForTransferOverInterference(Constraint):
     """Completing partner's transfer is automatic, except over RHO's suit overcall, where the
-    completion at the three level promises three-card support (p17 h47)."""
+    completion at the three level promises three-card support (p17 h47), and over RHO's double
+    of the transfer (p17 h46)."""
     def expr(self, history, call):
         rho_overcalled = history.rho.last_call and history.rho.last_call.strain in suit.SUITS
-        if not rho_overcalled:
+        rho_doubled = history.rho.last_call and history.rho.last_call.is_double()
+        if not rho_overcalled and not rho_doubled:
             return model.NO_CONSTRAINTS
+        # Over a (lead-directing) double of the transfer the completion also promises three
+        # cards: with a doubleton opener passes, with five good ones he redoubles (p17-18).
         return expr_for_suit(call.strain) >= 3
 
 

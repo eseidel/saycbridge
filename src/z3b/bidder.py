@@ -385,19 +385,46 @@ class History(object):
             return history._solve_for_more_points_than(points)
         return True
 
-    @memoized
-    def is_bid_suit(self, suit, position):
+    def _history_after_last_contract_call_for(self, position):
+        """The history right after this position's most recent bid of a contract, skipping
+        its passes, doubles and redoubles (None when it has never bid a contract)."""
+        history = self._history_after_last_call_for(position)
+        while history:
+            last_call = history.call_history.last_call
+            if last_call and last_call.is_contract():
+                return history
+            # The same player's previous call is four calls back.
+            for _ in range(4):
+                history = history._previous_history if history else None
+        return None
+
+    def _has_shown_suit(self, suit, position, contracts_only):
         # Look for the annotation of bidding a suit.
         if did_bid_annotation(suit) in self.annotations_for_position(position):
             return True
-        previous_history = self._history_after_last_call_for(position)
+        if contracts_only:
+            previous_history = self._history_after_last_contract_call_for(position)
+        else:
+            previous_history = self._history_after_last_call_for(position)
         if not previous_history:
             return False
         # Check for the a length of 4 or more.
         return is_certain(previous_history._solver(), expr_for_suit(suit) >= 4)
 
+    @memoized
+    def is_bid_suit(self, suit, position):
+        return self._has_shown_suit(suit, position, contracts_only=False)
+
+    @memoized
     def is_unbid_suit(self, suit):
-        return not any(self.is_bid_suit(suit, position) for position in positions)
+        # A suit our side has shown, by bidding it or by a double that promises it (partner's
+        # negative double shows the unbid major: we raise it, we do not "bid" it), is not
+        # unbid.  A suit an opponent has only promised with a double is still unbid for us:
+        # after 1C P 1D X opener may bid 1H or 1S (the double promised both majors, and
+        # before this opener could only rebid 1N).
+        return not any(
+            self._has_shown_suit(suit, position, contracts_only=position in (positions.LHO, positions.RHO))
+            for position in positions)
 
     @property
     def unbid_suits(self):

@@ -33,6 +33,9 @@ annotations = enum.Enum(
 
     # Quantitiative 4N is odd, but not artificial. :)
     "QuantitativeFourNotrumpJump",
+    # A suited overcall in the pass-out seat (lighter than a direct overcall; advancer's
+    # raises and notrump bids read it that way, p144).
+    "BalancingOvercall",
 
     "Artificial",
     # NOTE: RuleCompiler._compile_annotations will automatically imply

@@ -61,8 +61,10 @@ class SuitPreference(object):
 
 
 relay_priorities = enum.Enum(
+    "RedoubleDoubledTransfer",  # five good cards in the suit they doubled: play there
     "SuperAccept",
     "Accept",
+    "PassDoubledTransfer",  # a doubleton in partner's major: let partner bid it himself
 )
 rule_order.order(*reversed(relay_priorities))
 
@@ -458,6 +460,35 @@ rule_order.order(
     minimum_raise_responses,
     MajorJumpToGame,
 )
+
+
+trap_pass = enum.Enum(
+    "Trap",  # length and honors in their suit: pass and wait for opener's reopening double
+    "Weak",  # nothing to say
+)
+
+
+class PassResponseOverOvercall(ResponseToOneLevelSuitedOpen):
+    """Responder's pass after RHO overcalls a suit at the one or two level.  With nothing to
+    say (up to 9 hcp; every stronger hand has a call) it is just a pass.  With five or more of
+    their suit with three of the top five honors and 10+ it is a trap pass (p130 h6, p137,
+    p138): we cannot double for penalties, so we pass and wait for opener's reopening double,
+    which we will pass.  One rule with both meanings so that the pass has a rule for every
+    hand in the auction (a pass rule claims the call for the whole auction)."""
+    preconditions = [
+        LastBidHasSuit(positions.RHO),
+        InvertedPrecondition(LastBidHasAnnotation(positions.RHO, annotations.Artificial)),
+        EitherPrecondition(LastBidHasLevel(positions.RHO, 1), LastBidHasLevel(positions.RHO, 2)),
+    ]
+    call_names = 'P'
+    shared_constraints = ConstraintOr(
+        ConstraintAnd(MinLengthInLastContractSuit(5), ThreeOfTheTopFiveInLastContractSuit(), points >= 10),
+        points <= 9,
+    )
+    priority = trap_pass.Weak
+    conditional_priorities = [
+        (ConstraintAnd(MinLengthInLastContractSuit(5), ThreeOfTheTopFiveInLastContractSuit(), points >= 10), trap_pass.Trap),
+    ]
 
 
 jacoby_2n = enum.Enum(
@@ -1773,6 +1804,64 @@ class SuperAcceptTransferToSpades(SuperAcceptTransfer):
     shared_constraints = spades >=4
 
 
+class OpenerOverDoubledTransfer(Rule):
+    """RHO doubled partner's transfer to a major (1N P 2H X): with three or more of partner's
+    major opener completes the transfer as usual (AcceptTransfer), with a doubleton he passes
+    (p17 h46) and with five good cards in the doubled suit he redoubles (p18 h43)."""
+    category = categories.Relay
+    preconditions = [
+        LastBidHasAnnotation(positions.Partner, annotations.Transfer),
+        LastBidHasStrain(positions.Partner, (suit.DIAMONDS, suit.HEARTS)),
+        LastBidWas(positions.RHO, 'X'),
+    ]
+
+
+class PassDoubledTransferToHearts(OpenerOverDoubledTransfer):
+    preconditions = LastBidHasStrain(positions.Partner, suit.DIAMONDS)
+    call_names = 'P'
+    shared_constraints = hearts <= 2
+    priority = relay_priorities.PassDoubledTransfer
+
+
+class PassDoubledTransferToSpades(OpenerOverDoubledTransfer):
+    preconditions = LastBidHasStrain(positions.Partner, suit.HEARTS)
+    call_names = 'P'
+    shared_constraints = spades <= 2
+    priority = relay_priorities.PassDoubledTransfer
+
+
+class RedoubleDoubledTransfer(OpenerOverDoubledTransfer):
+    preconditions = LastBidHasStrain(positions.Partner, (suit.DIAMONDS, suit.HEARTS))
+    call_names = 'XX'
+    shared_constraints = [MinLengthInLastContractSuit(5), ThreeOfTheTopFiveInLastContractSuit()]
+    priority = relay_priorities.RedoubleDoubledTransfer
+
+
+class CompleteOwnTransferAfterDouble(Rule):
+    """Our transfer was doubled and opener did not complete it (he passed with a doubleton or
+    redoubled with the doubled suit): with a weak hand we bid our major ourselves; stronger
+    hands rebid as after a completed transfer."""
+    category = categories.Relay
+    preconditions = [
+        LastBidHasAnnotation(positions.Me, annotations.Transfer),
+        LastBidWas(positions.LHO, 'X'),
+        EitherPrecondition(LastBidWas(positions.Partner, 'P'), LastBidWas(positions.Partner, 'XX')),
+        LastBidWas(positions.RHO, 'P'),
+    ]
+    shared_constraints = points <= 7
+    priority = relay_priorities.Accept
+
+
+class CompleteOwnTransferToHeartsAfterDouble(CompleteOwnTransferAfterDouble):
+    preconditions = LastBidHasStrain(positions.Me, suit.DIAMONDS)
+    call_names = '2H'
+
+
+class CompleteOwnTransferToSpadesAfterDouble(CompleteOwnTransferAfterDouble):
+    preconditions = LastBidHasStrain(positions.Me, suit.HEARTS)
+    call_names = '2S'
+
+
 class ResponseAfterTransferToClubs(Rule):
     category = categories.Relay # Is this right?
     preconditions = [
@@ -2141,6 +2230,58 @@ class NewSuitResponseToStandardOvercall(ResponseToStandardOvercall):
     ]
 
 
+class LeadDirectingDouble(Rule):
+    """Doubles of the opponents' artificial bids are lead-directing (p124)."""
+    call_names = 'X'
+    preconditions = [
+        LastBidHasAnnotation(positions.RHO, annotations.Artificial),
+        LastBidHasSuit(positions.RHO),
+    ]
+    annotations = annotations.Artificial
+
+
+class LeadDirectingDoubleOfArtificialSuitBid(LeadDirectingDouble):
+    """"Doubles of artificial bids are lead-directing" (p124): a double of Stayman, a transfer,
+    a strong 2C, a waiting 2D, a splinter, Cappelletti and the like asks for the lead of the
+    suit named, five or more with three of the top five honors (p124 h30, h31).  Not of a
+    Michaels cuebid: that names our suit, not his, and a double there is about values, not the
+    lead.  Not of a fourth-suit-forcing bid: opener's replies to the fourth suit are written for
+    an undoubled auction, so the double would leave him without a call (a hole, not a rule
+    choice -- lift this once those replies handle the double).  Not above game (the contract is
+    settled; doubles there are penalty).  The response to an ace-ask has its own rule below."""
+    # FIXME: The four exclusions below are a list of special cases, not a rule.  Replace them
+    # with the actual meaning: the double is lead-directing when the artificial bid names a
+    # suit the bidder does not hold and we do (Michaels names OUR suit; the fourth suit and
+    # the ace-ask response want their own double rules, which should then simply outrank
+    # this one).  Also: a strong 2C, splinters and Cappelletti's 2C carry no Artificial
+    # annotation yet, so this rule does not see them (annotating them is queued).
+    preconditions = [
+        LastBidWasBelowGame(),
+        InvertedPrecondition(LastBidHasAnnotation(positions.RHO, annotations.MichaelsCuebid)),
+        InvertedPrecondition(LastBidHasAnnotation(positions.RHO, annotations.FourthSuitForcing)),
+        InvertedPrecondition(LastBidHasAnnotation(positions.LHO, annotations.Blackwood)),
+        InvertedPrecondition(LastBidHasAnnotation(positions.LHO, annotations.Gerber)),
+    ]
+    shared_constraints = [MinLengthInLastContractSuit(5), ThreeOfTheTopFiveInLastContractSuit()]
+
+
+class LeadDirectingDoubleOfAceAskingResponse(LeadDirectingDouble):
+    """A double of the response to Blackwood or Gerber asks for that suit: a void (for the
+    ruff) or the ace and king (p124 h32)."""
+    preconditions = EitherPrecondition(
+        LastBidHasAnnotation(positions.LHO, annotations.Blackwood),
+        LastBidHasAnnotation(positions.LHO, annotations.Gerber),
+    )
+    shared_constraints = VoidOrAceKingInLastContractSuit()
+
+
+lead_directing_doubles = set([LeadDirectingDoubleOfArtificialSuitBid, LeadDirectingDoubleOfAceAskingResponse])
+# A lead-directing double beats passing; a suit we can overcall beats the double (the overcall
+# also directs the lead and may buy the contract).
+rule_order.order(DefaultPass, lead_directing_doubles)
+rule_order.order(lead_directing_doubles, new_suit_overcalls)
+
+
 class DirectOvercall1N(DirectOvercall):
     call_names = '1N'
     shared_constraints = [points >= 15, points <= 18, balanced, StopperInRHOSuit()]
@@ -2224,7 +2365,60 @@ class BalancingSuitedOvercall(BalancingOvercallOverSuitedOpen):
         # Even when balancing, we should not have strength in their suit.
         MaxLengthInLastContractSuit(3),
     ]
+    annotations = annotations.BalancingOvercall
     forcing = False # We're limited by the fact that we didn't double.  Partner is allowed to pass.
+
+
+balancing_overcall_advances = enum.Enum(
+    "JumpRaise",
+    "Raise",
+)
+rule_order.order(*reversed(balancing_overcall_advances))
+
+
+class ResponseToBalancingOvercall(Rule):
+    preconditions = LastBidHasAnnotation(positions.Partner, annotations.BalancingOvercall)
+
+
+class RaiseResponseToBalancingOvercall(ResponseToBalancingOvercall):
+    """Advancing a balancing suited overcall (p144): partner balanced on a hand up to a king
+    lighter than a direct overcall, so the single raise is 7-11 and the jump raise 12-14 with
+    four trumps (h16-h18).  Without these the advance was left to the Law of Total Tricks."""
+    preconditions = RaiseOfPartnersLastSuit()
+    shared_constraints = SupportForPartnerLastBid(3)
+
+
+class SingleRaiseResponseToBalancingOvercall(RaiseResponseToBalancingOvercall):
+    preconditions = NotJumpFromLastContract()
+    call_names = Call.suited_names_between('2D', '3S')
+    shared_constraints = z3.And(points >= 7, points <= 11)
+    priority = balancing_overcall_advances.Raise
+
+
+class JumpRaiseResponseToBalancingOvercall(RaiseResponseToBalancingOvercall):
+    preconditions = JumpFromLastContract(exact_size=1)
+    call_names = Call.suited_names_between('3D', '4S')
+    shared_constraints = [z3.And(points >= 12, points <= 14), SupportForPartnerLastBid(4)]
+    priority = balancing_overcall_advances.JumpRaise
+
+
+balancing_overcall_notrump_advances = enum.Enum(
+    "ThreeNotrump",
+    "TwoNotrump",
+    "OneNotrump",
+)
+rule_order.order(*reversed(balancing_overcall_notrump_advances))
+
+
+class NotrumpResponseToBalancingOvercall(ResponseToBalancingOvercall):
+    """Notrump over partner's balancing suited overcall (p144): 1N 9-12, 2N 12-14, 3N 15+,
+    with a stopper in their suit and tolerance for partner's."""
+    constraints = {
+        '1N': (z3.And(points >= 9, points <= 12), balancing_overcall_notrump_advances.OneNotrump),
+        '2N': (z3.And(points >= 12, points <= 14), balancing_overcall_notrump_advances.TwoNotrump),
+        '3N': (points >= 15, balancing_overcall_notrump_advances.ThreeNotrump),
+    }
+    shared_constraints = [StoppersInOpponentsSuits(), SupportForPartnerLastBid(2)]
 
 
 balancing_jump_suited_overcalls = SuitPreference(Call.suited_names_between('2D', '3H'))
@@ -2428,6 +2622,8 @@ class TakeoutDouble(Rule):
         LastBidHasSuit(),
         InvertedPrecondition(HasBid(positions.Partner)),
         InvertedPrecondition(LastBidWas(positions.Me, 'X')),
+        # A double of RHO's artificial bid (Stayman, a transfer) is lead-directing, not takeout.
+        InvertedPrecondition(LastBidHasAnnotation(positions.RHO, annotations.Artificial)),
         # LastBidWasNaturalSuit(),
         # LastBidWasBelowGame(),
         UnbidSuitCountRange(2, 3),
@@ -2460,6 +2656,13 @@ class OvercallTakeoutDouble(TakeoutDouble):
     preconditions = InvertedPrecondition(Opened(positions.Me))
 
 
+# A five-card major we would overcall: five or more with three of the top five honors.
+overcallable_five_card_major = z3.Or(
+    z3.And(hearts >= 5, three_of_the_top_five_hearts_or_better),
+    z3.And(spades >= 5, three_of_the_top_five_spades_or_better),
+)
+
+
 class OneLevelTakeoutDouble(OvercallTakeoutDouble):
     preconditions = [
         Level(1),
@@ -2467,8 +2670,15 @@ class OneLevelTakeoutDouble(OvercallTakeoutDouble):
         InvertedPrecondition(balancing_precondition),
     ]
     # Shape with 11+ (10 with at most a singleton in their suit), or too strong to overcall.
+    # A five-card major good enough to overcall (three of the top five) is overcalled, not
+    # doubled (p118 h10); a ragged five-card major with 4-4 in the other suits still doubles
+    # (p115 h6: J9874 with a heart void), and so does a five-card minor.
     shared_constraints = ConstraintOr(
-        ConstraintAnd(SupportForUnbidSuits(), ConstraintOr(points >= 11, ConstraintAnd(points >= 10, MaxLengthInLastContractSuit(1)))),
+        ConstraintAnd(
+            SupportForUnbidSuits(),
+            z3.Not(overcallable_five_card_major),
+            ConstraintOr(points >= 11, ConstraintAnd(points >= 10, MaxLengthInLastContractSuit(1))),
+        ),
         too_strong_to_overcall,
     )
 
@@ -2595,8 +2805,11 @@ rule_order.order(*reversed(takeout_double_responses))
 # Jump bid indicates 10-12 points (normal invitational values)
 # cue-bid in opponent's suit is a 13+ michaels-like bid.
 class ResponseToTakeoutDouble(Rule):
+    # RHO passed (we are forced to bid) or bid a suit (a free bid, p120: no longer forced,
+    # so the suit bids need values; the notrump bids, the cuebid and the penalty pass still
+    # need RHO's pass).
     preconditions = [
-        LastBidWas(positions.RHO, 'P'),
+        EitherPrecondition(LastBidWas(positions.RHO, 'P'), LastBidHasSuit(positions.RHO)),
         LastBidHasAnnotation(positions.Partner, annotations.TakeoutDouble),
     ]
 
@@ -2604,6 +2817,7 @@ class ResponseToTakeoutDouble(Rule):
 class PenaltyPassOfTakeoutDouble(ResponseToTakeoutDouble):
     """Partner's takeout (or reopening / balancing) double is passed for penalties with five
     or more of their suit and some values (p145, h20)."""
+    preconditions = LastBidWas(positions.RHO, 'P')
     call_names = 'P'
     # Six of their suit with 8+, or five with 9+ (a weak five-bagger and 8 advances instead).
     shared_constraints = ConstraintOr(
@@ -2615,7 +2829,7 @@ rule_order.order(takeout_double_responses, PenaltyPassOfTakeoutDouble)
 
 
 class NotrumpResponseToTakeoutDouble(ResponseToTakeoutDouble):
-    preconditions = NotJumpFromLastContract()
+    preconditions = [LastBidWas(positions.RHO, 'P'), NotJumpFromLastContract()]
     constraints = {
         '1N': (points >= 6, takeout_double_responses.OneNotrump),
         '2N': (points >= 11, takeout_double_responses.TwoNotrump),
@@ -2626,7 +2840,7 @@ class NotrumpResponseToTakeoutDouble(ResponseToTakeoutDouble):
 
 # FIXME: This could probably be handled by suited to play if we could get the priorities right!
 class JumpNotrumpResponseToTakeoutDouble(ResponseToTakeoutDouble):
-    preconditions = JumpFromLastContract()
+    preconditions = [LastBidWas(positions.RHO, 'P'), JumpFromLastContract()]
     constraints = {
         '2N': (points >= 11, takeout_double_responses.TwoNotrumpJump),
         '3N': (points >= 13, takeout_double_responses.ThreeNotrump),
@@ -2654,6 +2868,26 @@ class SuitResponseToTakeoutDouble(ResponseToTakeoutDouble):
     }
 
 
+class ForcedSuitResponseToTakeoutDouble(SuitResponseToTakeoutDouble):
+    """RHO passed: we must bid, with nothing if need be."""
+    preconditions = LastBidWas(positions.RHO, 'P')
+
+
+class FreeSuitResponseToTakeoutDouble(SuitResponseToTakeoutDouble):
+    """RHO bid over partner's double (1D X 1H): a non-jump suit is a free bid showing some
+    values (p120 h21: 1S on 9 hcp), a little more at the three level; with nothing we pass."""
+    preconditions = LastBidHasSuit(positions.RHO)
+    constraints = {
+        ('1D', '1H', '1S', '2C', '2D', '2H', '2S'): points >= 6,
+        ('3C', '3D', '3H', '3S'): points >= 8,
+    }
+
+
+# A free bid over partner's takeout double beats passing (when RHO passed we were forced
+# and passing was never a choice).
+rule_order.order(DefaultPass, takeout_double_responses)
+
+
 class JumpSuitResponseToTakeoutDouble(ResponseToTakeoutDouble):
     preconditions = [SuitUnbidByOpponents(), JumpFromLastContract(exact_size=1)]
     # You can have 10 points, but no stopper in opponents suit and only a 3 card suit to bid.
@@ -2677,6 +2911,7 @@ class JumpSuitResponseToTakeoutDouble(ResponseToTakeoutDouble):
 
 class CuebidResponseToTakeoutDouble(ResponseToTakeoutDouble):
     preconditions = [
+        LastBidWas(positions.RHO, 'P'),
         CueBid(positions.LHO),
         NotJumpFromLastContract(),
     ]
@@ -3736,3 +3971,29 @@ rule_order.order(DefaultPass, natural_suited_part_scores, RebidOwnSuitAfterFourt
 # Michaels pass-or-correct: both calls carry information, so they beat a default pass.
 rule_order.order(DefaultPass, MichaelsMinorPreference)
 rule_order.order(DefaultPass, CorrectMichaelsMinor)
+
+
+# The weak pass loses to every call responder can make (one edge each: order() chains its
+# arguments, and these sets are already ordered among themselves).
+rule_order.order(DefaultPass, trap_pass.Weak)
+for _responder_call in (natural_bids, negative_doubles, new_two_level_responses, new_one_level_suit_responses,
+                        OneNotrumpResponse, NewSuitAtTheThreeLevelOverJumpOvercall, JumpShiftResponseToOpen,
+                        trap_pass.Trap):
+    rule_order.order(trap_pass.Weak, _responder_call)
+# The trap pass beats the calls a hand with length in their suit would otherwise make: 1N/2N
+# (the length is not a stopper we want to declare behind), a negative double on a side
+# four-card major, a new suit, and a raise of partner's minor (which already sits below a
+# new major).  A raise of partner's major still comes first.
+for _call_with_their_suit in (negative_doubles, new_two_level_responses, new_one_level_suit_responses,
+                              OneNotrumpResponse, natural_nt_part_scores, NewSuitAtTheThreeLevelOverJumpOvercall,
+                              minor_raise_responses):
+    rule_order.order(_call_with_their_suit, trap_pass.Trap)
+rule_order.order(trap_pass.Trap, major_raise_responses)
+
+
+# Advancing a balancing overcall: a raise or notrump with values says more than a natural
+# part score, but a natural game bid still comes first; with support we raise rather than
+# bid notrump (the notrump bids only need tolerance for partner's suit).
+rule_order.order(natural_suited_part_scores, balancing_overcall_advances, natural_exact_games)
+rule_order.order(natural_nt_part_scores, balancing_overcall_notrump_advances, natural_exact_games)
+rule_order.order(balancing_overcall_notrump_advances, balancing_overcall_advances)
