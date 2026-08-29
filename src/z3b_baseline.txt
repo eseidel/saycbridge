@@ -149,7 +149,6 @@ WARNING: Unordered: ['3H', '2H'] rules: [LawOfTotalTricks, MichaelsSimplePrefere
 FAIL: None (expected 2H) for KT54.KJ73.KJT6.Q (hcp: 13 lp: 13 sp: 14), history: 1C 2C P
 FAIL: P (expected 4S) for AK742.A.T972.Q63 (hcp: 13 lp: 14 sp: 16), history: 1C P 1S P 1N P 3S P
 FAIL: P (expected 2H) for 732.A62.KQ964.J7 (hcp: 10 lp: 11 sp: 10), history: P P 1D 1S P
-FAIL: P (expected 4H) for J5.KJ7.AKQ74.963 (hcp: 14 lp: 15 sp: 14), history: 1H X 2N P
 FAIL: P (expected 2C) for A96432.5.KJ8.AQJ (hcp: 15 lp: 17 sp: 18), history: P 1D
 FAIL: P (expected X) for 84.KT9765.4.A763 (hcp: 7 lp: 9 sp: 11), history: 1H 2C
 FAIL: 2D (expected 3C) for AKT964.975.7.965 (hcp: 7 lp: 9 sp: 10), history: 2C P (subtest of 2C P 3C P 4N P)
@@ -172,7 +171,7 @@ FAIL: 2D (expected P) for K5.J86532.K6.AJ8 (hcp: 12 lp: 14 sp: 14), history: P P
 FAIL: P (expected 1H) for AK.72.KT942.AQT5 (hcp: 16 lp: 17 sp: 18), history: P 1C
 FAIL: X (expected 1N) for AKT4.AT.A82.J876 (hcp: 16 lp: 16 sp: 17), history: 1C P P
 FAIL: 2N (expected 2H) for QJ86.K7.AKT53.T6 (hcp: 13 lp: 14 sp: 15), history: 1H P 2D P
-Pass 289 of 344 hands
+Pass 290 of 344 hands
 
 test_negative_double:
 FAIL: 1N (expected 2D) for J5.AQ864.A54.K76 (hcp: 14 lp: 15 sp: 14), history: 1D 1S X P
@@ -255,11 +254,9 @@ FAIL: 2H (expected 2S) for T.8.AKJ762.AKT32 (hcp: 15 lp: 18 sp: 21), history: 1H
 FAIL: 3H (expected 3D) for 2.AKJ94.AQJ642.Q (hcp: 17 lp: 20 sp: 21), history: 1H P 1S P
 FAIL: 3C (expected 2D) for AQT542.AQJ.A.987 (hcp: 17 lp: 19 sp: 20), history: 1C P 1H P
 FAIL: 3C (expected 2D) for AQT542.AQJ.A.987 (hcp: 17 lp: 19 sp: 20), history: 1C P 1S P
-WARNING: Multiple rules have maximal category (Default) for 2H: [ForcedMajorRebid, WeakNewSuitAfterOneNotrumpResponse] over: 1C P 1N P 2D P
-WARNING: Multiple rules have maximal category (Default) for 2S: [ForcedMajorRebid, WeakNewSuitAfterOneNotrumpResponse] over: 1C P 1N P 2D P
 FAIL: 3C (expected 2N) for J932.QJ7.Q83.JT3 (hcp: 7 lp: 7 sp: 7), history: 1C P 1N P 2D P
 FAIL: 2N (expected 3C) for AKJ762.KQ72.K9.5 (hcp: 16 lp: 18 sp: 20), history: 1C P 1S P 2D P 2S P
-Pass 28 of 34 hands
+Pass 31 of 37 hands
 
 test_rule_of_twenty_open:
 Pass 15 of 15 hands
@@ -320,9 +317,9 @@ test_weak_game_jump_over_one_nt:
 FAIL: 3S (expected 4S) for K74.9.J98.KJT742 (hcp: 8 lp: 10 sp: 11), history: 1N P 2H P 2S P
 Pass 2 of 3 hands
 
-Pass 1295 (87.6%) of 1478 total hands
+Pass 1299 (87.7%) of 1481 total hands
 
-Tested call generation of 188 rules of 194 total (excluding 8 requires_planning rules).
+Tested call generation of 190 rules of 196 total (excluding 8 requires_planning rules).
 Never selected call from:
 CompleteOwnTransferToHeartsAfterDouble
 CompleteOwnTransferToSpadesAfterDouble
@@ -331,7 +328,7 @@ NotrumpResponseToBalancingOvercall
 PassDoubledTransferToHearts
 RebidOwnSuitAfterFourthSuitForcing
 
-Tested interpretation of 118 rules of 202 total.
+Tested interpretation of 119 rules of 204 total.
 
 5 rules were never used for either bidding or interpretation:
 CompleteOwnTransferToHeartsAfterDouble
