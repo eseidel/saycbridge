@@ -26,6 +26,7 @@ annotations = enum.Enum(
     "BidSpades",
 
     "LimitRaise",
+    "JumpShiftResponse",  # responder's strong jump shift over a one-level opening (19+ or the booklet's special hands)
     "OpenerReverse",
 
     # Not all Cappelletti bids are artificial, some can be treated as to-play.
@@ -145,6 +146,28 @@ class Opened(Precondition):
         return annotations.Opening in history.annotations_for_position(self.position)
 
 
+class PassedHand(Precondition):
+    """The position had a turn before the opening bid and passed (a passed hand: its later
+    calls are limited)."""
+    def __init__(self, position):
+        self.position = position
+
+    @property
+    def repr_args(self):
+        return [self.position.key]
+
+    def fits(self, history, call):
+        ch = history.call_history
+        calls = ch.calls
+        opening = next((i for i, c in enumerate(calls) if not c.is_pass()), None)
+        if opening is None:
+            return False
+        my_seat = ch.dealer.position_after_n_calls(len(calls)).index
+        # positions: RHO=0, Partner=1, LHO=2, Me=3 -> seats me+3, me+2, me+1, me.
+        seat = (my_seat + 3 - self.position.index) % 4
+        return any(ch.dealer.position_after_n_calls(i).index == seat for i in range(opening))
+
+
 class TheyOpened(Precondition):
     def fits(self, history, call):
         return annotations.Opening in history.them.annotations
@@ -236,13 +259,18 @@ class OpeningBidWas(Precondition):
 
 
 class TheyRaisedToTwoAndStopped(Precondition):
-    """The opponents opened a suit, raised it to the two level, and the auction is dying:
-    the opening suit is the last contract, at level two (LHO's raise), and partner and RHO
-    (the opener) have just passed.  The balancing seat."""
+    """The opponents opened a suit and the auction is dying at two of it: the opening suit
+    is the last contract, at level two, bid by LHO (responder's raise of RHO's opening, or
+    opener's own rebid after partner's response), and partner and RHO have just passed.  The
+    balancing seat."""
     def fits(self, history, call):
         opening = next((c for c in history.call_history.calls if not c.is_pass()), None)
         last_contract = history.last_contract
         if not opening or not last_contract or opening.strain not in suit.SUITS:
+            return False
+        # A one-level opening raised or rebid to two, not a weak two that everyone passed
+        # (that is TakeoutDoubleAfterPreempt's spot).
+        if opening.level != 1:
             return False
         if last_contract.level != 2 or last_contract.strain != opening.strain:
             return False

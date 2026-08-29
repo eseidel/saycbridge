@@ -304,6 +304,9 @@ sayc_expectations = {
         # raising spades after 1S P 3C P 3S P).
         ["AKJ95.65.KQ3.AKJ", "3C", "1S P"],  # p41, h23
         ["AQ.AKJ76.A32.KQJ", "3D", "1S P"],  # p41, h24 (the book: "hard to quarrel with an immediate 4NT")
+        # The continuation with an invented 3S rebid by opener (the book prints none): the spade raise.
+        ["AKJ95.65.KQ3.AKJ", "4S", "1S P 3C P 3S P"],  # p41, h23
+        ["AQ.AKJ76.A32.KQJ", "4S", "1S P 3D P 3S P"],  # p41, h24
     ],
 
     "test_minimum_response_to_one_of_a_minor": [

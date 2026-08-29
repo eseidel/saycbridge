@@ -154,6 +154,15 @@ class VoidOrAceKingInLastContractSuit(Constraint):
         return z3.Or(expr_for_suit(strain) == 0, z3.And(ace == 1, king == 1))
 
 
+class ShortnessInASuitTheyBid(Constraint):
+    """At most a singleton in one of the opponents' suits: the shape that lets a takeout
+    double be light (p118 h9: 10 hcp with a singleton club after 1C P 1D)."""
+    def expr(self, history, call):
+        their_suits = history.them.bid_suits
+        assert their_suits, "%s: they bid no suit: %s" % (self.__class__, history.call_history)
+        return z3.Or([expr_for_suit(suit) <= 1 for suit in their_suits])
+
+
 class MaxLengthInLastContractSuit(Constraint):
     def __init__(self, max_length):
         self.max_length = max_length

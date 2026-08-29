@@ -20,8 +20,22 @@ class SAYCForcingOracle(object):
     def _partner_last_bid_was_pass(self, history):
         return history.partner.last_call and history.partner.last_call.is_pass()
 
+    def _partner_is_a_passed_hand(self, history):
+        # Partner had a turn before the opening and passed.
+        ch = history.call_history
+        calls = ch.calls
+        opening = next((i for i, c in enumerate(calls) if not c.is_pass()), None)
+        if opening is None:
+            return False
+        partner_seat = (ch.dealer.position_after_n_calls(len(calls)).index + 2) % 4
+        return any(ch.dealer.position_after_n_calls(i).index == partner_seat for i in range(opening))
+
     def _am_opener_and_partner_last_call_was_unbid_suit(self, history):
         if annotations.Opening not in history.me.annotations:
+            return False
+        # A passed hand's new suit is not forcing: opener may pass with a minimum (agreed
+        # 2026-08-29; SAYC's "new suit by responder is forcing" assumes an unpassed hand).
+        if self._partner_is_a_passed_hand(history):
             return False
         assert annotations.Artificial not in history.partner.annotations_for_last_call
         call = history.partner.last_call
