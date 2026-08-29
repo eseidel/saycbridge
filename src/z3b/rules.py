@@ -359,20 +359,34 @@ defenses_against_takeout_double = [
 rule_order.order(*reversed(defenses_against_takeout_double))
 
 
-# FIXME: We should bid longer suits when possible, up the line for 4 cards.
-# we don't currently bid 2D over 2C when we have longer diamonds.
+# A new suit at the two level: with a five-card suit that is at least as long as every other
+# suit, bid it -- the higher of two five-card suits first (1S P: 2H on 5 hearts and 5 diamonds),
+# the longer suit first with 6-5.  A four-card minor is bid up the line (2C before 2D) and only
+# when no five-card suit qualifies.  Majors always need five.
 new_two_level_suit_responses = enum.Enum(
     "TwoClubs",
     "TwoDiamonds",
     "TwoHearts",
     "TwoSpades",
 )
-rule_order.order(*reversed(new_two_level_suit_responses))
+# Five-card suits: the higher suit first when two are equal in length.
+rule_order.order(*new_two_level_suit_responses)
+
+new_two_level_four_card_minor_responses = enum.Enum(
+    "TwoClubsWithFour",
+    "TwoDiamondsWithFour",
+)
+# Four-card minors up the line.
+rule_order.order(*reversed(new_two_level_four_card_minor_responses))
+# A five-card suit before a four-card minor.
+rule_order.order(new_two_level_four_card_minor_responses, new_two_level_suit_responses)
 
 
 new_two_level_minor_responses = set([
     new_two_level_suit_responses.TwoClubs,
     new_two_level_suit_responses.TwoDiamonds,
+    new_two_level_four_card_minor_responses.TwoClubsWithFour,
+    new_two_level_four_card_minor_responses.TwoDiamondsWithFour,
 ])
 
 
@@ -381,7 +395,14 @@ new_two_level_major_responses = set([
     new_two_level_suit_responses.TwoSpades,
 ])
 
+new_two_level_responses = new_two_level_minor_responses | new_two_level_major_responses
+
 new_minor_responses = new_one_level_minor_responses | new_two_level_minor_responses
+
+
+def longest_suit(suit_expr):
+    """The suit has five or more cards and no other suit is longer."""
+    return z3.And(suit_expr >= 5, *[suit_expr >= other for other in (clubs, diamonds, hearts, spades) if other is not suit_expr])
 
 
 class NewSuitAtTheTwoLevel(ResponseToOneLevelSuitedOpen):
@@ -389,11 +410,22 @@ class NewSuitAtTheTwoLevel(ResponseToOneLevelSuitedOpen):
         UnbidSuit(),
         NotJumpFromLastContract()
     ]
+    call_names = ['2C', '2D', '2H', '2S']
+    priorities_per_call = {
+        '2C': new_two_level_four_card_minor_responses.TwoClubsWithFour,
+        '2D': new_two_level_four_card_minor_responses.TwoDiamondsWithFour,
+        '2H': new_two_level_suit_responses.TwoHearts,
+        '2S': new_two_level_suit_responses.TwoSpades,
+    }
     constraints = {
-        '2C' : (clubs >= 4, new_two_level_suit_responses.TwoClubs),
-        '2D' : (diamonds >= 4, new_two_level_suit_responses.TwoDiamonds),
-        '2H' : (hearts >= 5, new_two_level_suit_responses.TwoHearts),
-        '2S' : (spades >= 5, new_two_level_suit_responses.TwoSpades),
+        '2C': clubs >= 4,
+        '2D': diamonds >= 4,
+        '2H': longest_suit(hearts),
+        '2S': longest_suit(spades),
+    }
+    conditional_priorities_per_call = {
+        '2C': [(longest_suit(clubs), new_two_level_suit_responses.TwoClubs)],
+        '2D': [(longest_suit(diamonds), new_two_level_suit_responses.TwoDiamonds)],
     }
     shared_constraints = MinimumCombinedPoints(22)
 
@@ -401,7 +433,7 @@ class NewSuitAtTheTwoLevel(ResponseToOneLevelSuitedOpen):
 rule_order.order(
     # Don't jump directly to some high part score or game if we have a second suit to mention first, we might miss slam.
     natural_minor_part_scores | natural_exact_minor_games,
-    new_two_level_suit_responses,
+    new_two_level_responses,
 )
 
 
@@ -1021,7 +1053,14 @@ opener_unsupported_rebids = enum.Enum(
     "InvitationalMajor",
     "InvitationalMinor",
 )
-rule_order.order(*reversed(opener_unsupported_rebids))
+# Opener rebids one suit, so a major and a minor jump never compete; the jump to game in that
+# suit beats the invitational jump in it.  (A single chain here would put the 4m jump above the
+# 3N rebid through InvitationalMajor, see below.)
+rule_order.order(opener_unsupported_rebids.InvitationalMinor, opener_unsupported_rebids.GameForcingMinor)
+rule_order.order(opener_unsupported_rebids.InvitationalMajor, opener_unsupported_rebids.GameForcingMajor)
+rule_order.order(opener_unsupported_rebids.InvitationalMinor, opener_unsupported_rebids.InvitationalMajor)
+# With a solid six-card minor, 19+ and stoppers, 3N is the game to bid, not 4m (p54 h21).
+rule_order.order(opener_unsupported_rebids.GameForcingMinor, natural_exact_notrump_game)
 
 opener_unsupported_minor_rebid = set([
     opener_unsupported_rebids.GameForcingMinor,
@@ -1342,14 +1381,31 @@ class FourthSuitForcing(Rule):
     ]
 
 
+# Fourth suit forcing with four-card support for opener's second suit and only invitational
+# values: raise the suit instead (p73 h20).  Its own enum, not a member of fourth_suit_forcing,
+# so that it can sit below the natural part scores while fourth_suit_forcing stays above them.
+fourth_suit_forcing_with_support = enum.Enum(
+    "WithSupport",
+)
+
+
 class NonJumpFourthSuitForcing(FourthSuitForcing):
     preconditions = NotJumpFromPartnerLastBid()
     # Smallest: 1D,1H,1S,2C
     # Largest: 1H,2D,3C,3S
-    priorities_per_call = {
-        ('2C', '2D', '2H', '2S'): fourth_suit_forcing.TwoLevel,
-        ('3C', '3D', '3H', '3S'): fourth_suit_forcing.ThreeLevel,
+    # The unconditional priority is the low one (a rule keeps every priority it can reach, so the
+    # demoted case must be the default); without four-card support for opener's second suit, or
+    # with game-going values, the call has its usual fourth-suit-forcing rank.
+    call_names = ['2C', '2D', '2H', '2S', '3C', '3D', '3H', '3S']
+    priority = fourth_suit_forcing_with_support.WithSupport
+    conditional_priorities_per_call = {
+        ('2C', '2D', '2H', '2S'): [(ConstraintNot(ConstraintAnd(SupportForPartnerLastBid(4), points <= 12)), fourth_suit_forcing.TwoLevel)],
+        ('3C', '3D', '3H', '3S'): [(ConstraintNot(ConstraintAnd(SupportForPartnerLastBid(4), points <= 12)), fourth_suit_forcing.ThreeLevel)],
     }
+
+
+# With four-card support and invitational values the raise says more than the fourth suit.
+rule_order.order(DefaultPass, fourth_suit_forcing_with_support, natural_suited_part_scores)
 
 
 # We'd rather explore for NT than rebid a 5-card major, but with
@@ -3167,7 +3223,7 @@ rule_order.order(natural_bids, preempt_priorities)
 rule_order.order(natural_games, nt_response_priorities, natural_slams)
 # A new suit at the two level (forcing) before a direct slam bid: 1H P -> 2C on AKJ8.J42.AKJ.KJ4
 # used to tie with 6N and drop both.
-rule_order.order(natural_slams, new_two_level_suit_responses)
+rule_order.order(natural_slams, new_two_level_responses)
 rule_order.order(natural_bids, stayman_response_priorities)
 rule_order.order(natural_bids, GarbagePassStaymanRebid)
 rule_order.order(natural_bids, PassAfterTakeoutDouble)
@@ -3420,7 +3476,7 @@ rule_order.order(
 rule_order.order(
     OneNotrumpResponse,
     jacoby_2n.Jacoby2NWithThree,
-    new_two_level_suit_responses,
+    new_two_level_responses,
 )
 rule_order.order(
     major_raise_responses,
@@ -3613,6 +3669,19 @@ rule_order.order(
 rule_order.order(
     ThreeNotrumpMajorResponse,
     negative_doubles,
+)
+# A five-card major is bid rather than doubled: the negative double shows exactly four (p129);
+# 1D (1S): 2H on Q832.QT.AQT93.K4.
+rule_order.order(
+    negative_doubles,
+    new_two_level_major_responses,
+)
+# ...but a limit raise of partner's major (three-card support, 10-12) still beats a five-card
+# suit of our own: P P 1H (2C): 3H on 52.A95.AT3.KT843.  (Before the five-card major moved above
+# the negative double this followed from raise > double > new suit.)
+rule_order.order(
+    new_two_level_major_responses,
+    major_raise_responses,
 )
 # With a suit worth a weak jump, preempt rather than make a shape double.
 rule_order.order(
